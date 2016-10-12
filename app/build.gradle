@@ -23,5 +23,9 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.2.1'
+<<<<<<< 35bdd5e6b0f895dc570a36f645ec2078f11c5961
     compile project(':lib')
+=======
+    compile 'com.android.support:recyclerview-v7:24.2.1'
+>>>>>>> init搜索
 }
