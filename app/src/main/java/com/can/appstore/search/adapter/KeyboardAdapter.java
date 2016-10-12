@@ -4,9 +4,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.search.YAroundTextView;
 
 import java.util.List;
 
@@ -17,6 +17,7 @@ import java.util.List;
 public class KeyboardAdapter extends RecyclerView.Adapter<KeyboardAdapter.KeyboardViewHolder> {
 
     private List<String> mKeyList;
+    private OnItemClickListener mOnItemClickListener;
 
     public KeyboardAdapter(List<String> keyList) {
         mKeyList = keyList;
@@ -31,6 +32,7 @@ public class KeyboardAdapter extends RecyclerView.Adapter<KeyboardAdapter.Keyboa
     @Override
     public void onBindViewHolder(KeyboardViewHolder holder, int position) {
         holder.mTextView.setText(mKeyList.get(position));
+//        holder.mTextView.setAroundColor(Color.RED);
     }
 
     @Override
@@ -39,11 +41,28 @@ public class KeyboardAdapter extends RecyclerView.Adapter<KeyboardAdapter.Keyboa
     }
 
     public class KeyboardViewHolder extends RecyclerView.ViewHolder {
-        TextView mTextView;
+        YAroundTextView mTextView;
 
         public KeyboardViewHolder(View itemView) {
             super(itemView);
-            mTextView = (TextView) itemView.findViewById(R.id.key_item_view);
+            mTextView = (YAroundTextView) itemView.findViewById(R.id.key_item_view);
+            mTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (null != mOnItemClickListener) {
+                        mOnItemClickListener.onItemClick(getLayoutPosition(), mKeyList.get(getLayoutPosition()));
+                    }
+                }
+            });
         }
     }
+
+    public interface OnItemClickListener {
+        void onItemClick(int index, String content);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.mOnItemClickListener = onItemClickListener;
+    }
+
 }

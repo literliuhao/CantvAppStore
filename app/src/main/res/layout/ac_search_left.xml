@@ -12,7 +12,8 @@
         android:layout_height="wrap_content"
         android:drawableLeft="@mipmap/ic_launcher"
         android:gravity="center_vertical"
-        android:hint="@string/search_content_hint" />
+        android:hint="@string/search_content_hint"
+        android:maxLines="1" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/keyboard_recycleview"
@@ -22,16 +23,16 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="10dp"
         android:gravity="center_horizontal">
 
-        <TextView
+        <com.can.appstore.search.YAroundTextView
             android:id="@+id/con_clear_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/search_content_clear" />
 
-        <TextView
+        <com.can.appstore.search.YAroundTextView
             android:id="@+id/con_del_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
