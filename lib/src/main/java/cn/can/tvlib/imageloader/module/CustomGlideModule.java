@@ -9,10 +9,13 @@ import com.bumptech.glide.load.engine.cache.ExternalCacheDiskCacheFactory;
 import com.bumptech.glide.load.engine.cache.LruResourceCache;
 import com.bumptech.glide.load.engine.cache.MemorySizeCalculator;
 import com.bumptech.glide.module.GlideModule;
+<<<<<<< c084de9517a8f1e53dd05bdccb5bb9edbd14211e
 import com.bumptech.glide.request.target.ViewTarget;
 
 import cn.can.tvlib.R;
 
+=======
+>>>>>>> 修复编译错误
 
 /***
  * Glide相关配置项<p/>
@@ -29,7 +32,7 @@ public class CustomGlideModule implements GlideModule {
     @Override
     public void applyOptions(Context context, GlideBuilder builder) {
 
-        ViewTarget.setTagId(R.id.glide_tag_id);
+//        ViewTarget.setTagId(R.id.glide_tag_id);
 
         MemorySizeCalculator calculator = new MemorySizeCalculator(context);
         int defaultBitmapPoolSize = calculator.getBitmapPoolSize();
