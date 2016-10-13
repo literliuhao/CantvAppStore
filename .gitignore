@@ -1,11 +1,15 @@
 *.iml
 .gradle
 /local.properties
+<<<<<<< f7fb4464dcd24c870ea0fb858e07f050fd60ad9e
 <<<<<<< 561a5ea0432030a2a6468a9f461a04f78b5177f5
 /.idea
 =======
 .idea
 >>>>>>> 过滤个人idea配置
+=======
+/.idea
+>>>>>>> fix error
 .DS_Store
 /build
 /captures

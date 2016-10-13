@@ -23,13 +23,19 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.2.1'
+<<<<<<< f7fb4464dcd24c870ea0fb858e07f050fd60ad9e
 <<<<<<< 35bdd5e6b0f895dc570a36f645ec2078f11c5961
     compile project(':lib')
 =======
+=======
+>>>>>>> fix error
     compile 'com.android.support:recyclerview-v7:24.2.1'
 <<<<<<< 11562ad2ef40690b02a80420ad8bb3d267156b08
 >>>>>>> init搜索
 =======
     compile 'com.android.support:design:24.2.1'
+<<<<<<< f7fb4464dcd24c870ea0fb858e07f050fd60ad9e
 >>>>>>> 模拟搜索
+=======
+>>>>>>> fix error
 }

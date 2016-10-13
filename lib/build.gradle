@@ -24,6 +24,11 @@ dependencies {
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.squareup.okio:okio:1.7.0'
     compile 'com.github.bumptech.glide:glide:3.6.1'
+<<<<<<< f7fb4464dcd24c870ea0fb858e07f050fd60ad9e
     compile 'com.android.support:recyclerview-v7:24.+'
     compile 'com.android.support:support-v4:24.+'
+=======
+    compile 'com.android.support:support-v4:22.2.1'
+    compile 'com.android.support:recyclerview-v7:24.2.1'
+>>>>>>> fix error
 }
