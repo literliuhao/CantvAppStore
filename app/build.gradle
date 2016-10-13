@@ -23,5 +23,10 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.2.1'
+<<<<<<< HEAD
     compile project(':lib')
+=======
+    compile 'com.android.support:recyclerview-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
+>>>>>>> 96379bf9e3c69e39f01d71dd3d809fbbd037cb66
 }

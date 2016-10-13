@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">CANAppStore</string>
+
+    <!--搜索-->
+    <string name="search_content_hint">请输入首字母</string>
+    <string name="search_content_del">删除</string>
+    <string name="search_content_clear">清空</string>
+
 </resources>
