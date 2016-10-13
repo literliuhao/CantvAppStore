@@ -5,7 +5,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -41,9 +40,9 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
 
     private static final String TAG = "CanRecyclerViewAdapter";
 
-    public static final int VIEW_TYPE_HEADER = 0x001;
-    public static final int VIEW_TYPE_CONTENT = 0x002;
-    public static final int VIEW_TYPE_FOOTER = 0x003;
+    public static final int VIEW_TYPE_HEADER = 0x101;
+    public static final int VIEW_TYPE_CONTENT = 0x102;
+    public static final int VIEW_TYPE_FOOTER = 0x103;
 
     public static final String TAG_VIEW_FLAG = "tagView%d";
 
@@ -90,11 +89,11 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         RecyclerView.ViewHolder holder;
         switch (viewType) {
             case VIEW_TYPE_HEADER:
-                holder = generateHeaderViewHolder(parent);
+                holder = new DefaultViewHolder(mHeaderView);
                 break;
 
             case VIEW_TYPE_FOOTER:
-                holder = generateFooterViewHolder(parent);
+                holder = new DefaultViewHolder(mFooterView);
                 break;
 
             default:
@@ -209,26 +208,16 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         return VIEW_TYPE_CONTENT;
     }
 
-    // 以下四个方法仅当添加了header 或 footer时被复写即可
+    // 以下两个方法仅当添加了header 或 footer时被复写即可
     protected void bindHeaderData(RecyclerView.ViewHolder holder) {
     }
 
     protected void bindFooterData(RecyclerView.ViewHolder holder) {
     }
 
-    protected RecyclerView.ViewHolder generateHeaderViewHolder(ViewGroup parent) {
-        return new RecyclerView.ViewHolder(LayoutInflater.from(parent.getContext()).inflate(mHeaderResId, parent, false)) {
-        };
-    }
-
-    protected RecyclerView.ViewHolder generateFooterViewHolder(ViewGroup parent) {
-        return new RecyclerView.ViewHolder(LayoutInflater.from(parent.getContext()).inflate(mFooterResId, parent, false)) {
-        };
-    }
-
     //----------------------------   支持添加header、footer   ----------------------------
-    private int mHeaderResId;
-    private int mFooterResId;
+    private View mHeaderView;
+    private View mFooterView;
 
     final private int getActualItemPosition(int position) {
         return hasHeader() ? position - 1 : position;
@@ -243,7 +232,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
     }
 
     final private boolean hasHeader() {
-        return mHeaderResId != 0;
+        return mHeaderView != null;
     }
 
     final private boolean hasData() {
@@ -255,14 +244,14 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
     }
 
     final private boolean hasFooter() {
-        return mFooterResId != 0;
+        return mFooterView != null;
     }
 
-    public void addHeader(int headLayoutResId) throws IllegalStateException {
+    public void addHeader(View headerView) throws IllegalStateException {
         if (hasHeader()) {
             throw new IllegalStateException("An header has been added to RecyclerView.");
         }
-        mHeaderResId = headLayoutResId;
+        mHeaderView = headerView;
         if (hasAttachedToView()) {
             changeAttachViewConfigForHeaderFooter();
             notifyItemInserted(0);
@@ -289,17 +278,17 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         if (!hasHeader()) {
             return;
         }
-        mHeaderResId = 0;
+        mHeaderView = null;
         if (hasAttachedToView()) {
             notifyItemRemoved(0);
         }
     }
 
-    public void addFooter(int footerLayoutResId) throws IllegalStateException {
+    public void addFooter(View footerView) throws IllegalStateException {
         if (hasFooter()) {
             throw new IllegalStateException("An header has been added to RecyclerView.");
         }
-        mFooterResId = footerLayoutResId;
+        mFooterView = footerView;
         if (hasAttachedToView()) {
             changeAttachViewConfigForHeaderFooter();
             notifyItemInserted(getHeaderAndContentSize());
@@ -310,7 +299,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         if (!hasFooter()) {
             return;
         }
-        mFooterResId = 0;
+        mFooterView = null;
         if (hasAttachedToView()) {
             notifyItemRemoved(getHeaderAndContentSize());
         }
@@ -428,9 +417,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         if (data != null && data instanceof Selectable) {
             ((Selectable) data).setSelected();
         }
-        if (hasAttachedToView()) {
-            changeTagViewVisibleByPosi(position, View.VISIBLE);
-        }
+        changeTagViewVisibleByPosi(position, true);
         if (mItemSelectListener != null) {
             mItemSelectListener.onSelectChanged(position, true, mDatas.get(position));
         }
@@ -444,18 +431,29 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         if (data != null && data instanceof Selectable) {
             ((Selectable) data).setUnselected();
         }
-        if (hasAttachedToView()) {
-            changeTagViewVisibleByPosi(position, View.INVISIBLE);
-        }
+        changeTagViewVisibleByPosi(position, false);
         if (mItemSelectListener != null) {
             mItemSelectListener.onSelectChanged(position, false, mDatas.get(position));
         }
     }
 
-    private void changeTagViewVisibleByPosi(int position, int visible) {
+    private void changeTagViewVisibleByPosi(int position, boolean visible) {
+        if(hasAttachedToView()){
+            return;
+        }
         View tagView = findTagView(position);
-        if (tagView != null) {
-            tagView.setVisibility(visible);
+        if(tagView == null){
+            return;
+        }
+        RecyclerView.ViewHolder viewHolder = mAttachedView.findContainingViewHolder(tagView);
+        if(viewHolder != null && viewHolder instanceof TagViewHolder){
+            if(visible){
+                ((TagViewHolder)viewHolder).showTagView();
+            } else {
+                ((TagViewHolder)viewHolder).hideTagView();
+            }
+        } else {
+            tagView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         }
     }
 
@@ -495,10 +493,10 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                         if (visible == View.VISIBLE) {
                             DataType data = mDatas.get(posi);
                             if (data instanceof Selectable && ((Selectable) data).isSelected()) {
-                                changeTagViewVisibleByPosi(posi, visible);
+                                changeTagViewVisibleByPosi(posi, true);
                             }
                         } else {
-                            changeTagViewVisibleByPosi(posi, visible);
+                            changeTagViewVisibleByPosi(posi, false);
                         }
                     }
                 }
@@ -959,6 +957,13 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         hasFocusMoveOut = true;
         mOldFocus = null;
         return mFocusChangeListener.onFocusMoveOutside(position, direction);
+    }
+
+    private static class DefaultViewHolder extends RecyclerView.ViewHolder{
+
+        public DefaultViewHolder(View itemView) {
+            super(itemView);
+        }
     }
 
 }
