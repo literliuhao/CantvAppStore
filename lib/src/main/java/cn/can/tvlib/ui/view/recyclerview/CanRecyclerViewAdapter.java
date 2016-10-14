@@ -129,14 +129,6 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
             int realPosi = getActualItemPosition(position);
             bindContentData(mDatas.get(realPosi), holder, realPosi);
             initTagViewIfNeed(holder, position);
-
-            View itemView = holder.itemView;
-            if (itemView instanceof ViewGroup) {
-                ViewGroup viewGroup = (ViewGroup) itemView;
-                viewGroup.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-                viewGroup.setFocusable(true);
-                viewGroup.setClickable(true);
-            }
         }
     }
 
@@ -145,11 +137,8 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
             TagViewHolder mHolder = (TagViewHolder) holder;
             int realPosi = getActualItemPosition(position);
             mHolder.tagView.setTag(String.format(TAG_VIEW_FLAG, realPosi));
-            if (mSelectMode == MODE_SELECT && isItemSelected(realPosi)) {
-                mHolder.showTagView();
-            } else {
-                mHolder.hideTagView();
-            }
+            boolean selected = mSelectMode == MODE_SELECT && isItemSelected(realPosi);
+            mHolder.refreshTagViewOnSelectChanged(selected);
         }
     }
 
@@ -351,6 +340,17 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
 
         protected abstract int specifyTagViewId();
 
+        public void refreshTagViewOnSelectChanged(boolean selected){
+            if (tagView == null) {
+                return;
+            }
+            if(selected){
+                showTagView();
+            } else {
+                hideTagView();
+            }
+        }
+
         public void showTagView() {
             if (tagView != null) {
                 tagView.setVisibility(View.VISIBLE);
@@ -424,7 +424,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         if (data != null && data instanceof Selectable) {
             ((Selectable) data).setSelected();
         }
-        changeTagViewVisibleByPosi(position, true);
+        changeTagViewStatusByPosi(position, true);
         if (mItemSelectListener != null) {
             mItemSelectListener.onSelectChanged(position, true, mDatas.get(position));
         }
@@ -438,7 +438,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         if (data != null && data instanceof Selectable) {
             ((Selectable) data).setUnselected();
         }
-        changeTagViewVisibleByPosi(position, false);
+        changeTagViewStatusByPosi(position, false);
         if (mItemSelectListener != null) {
             mItemSelectListener.onSelectChanged(position, false, mDatas.get(position));
         }
@@ -461,6 +461,22 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
             }
         } else {
             tagView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
+
+    private void changeTagViewStatusByPosi(int position, boolean selected) {
+        if(hasAttachedToView()){
+            return;
+        }
+        View tagView = findTagView(position);
+        if(tagView == null){
+            return;
+        }
+        RecyclerView.ViewHolder viewHolder = mAttachedView.findContainingViewHolder(tagView);
+        if(viewHolder != null && viewHolder instanceof TagViewHolder){
+            ((TagViewHolder)viewHolder).refreshTagViewOnSelectChanged(selected);
+        } else {
+            tagView.setVisibility(selected ? View.VISIBLE : View.INVISIBLE);
         }
     }
 
