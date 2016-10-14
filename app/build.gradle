@@ -34,8 +34,12 @@ dependencies {
 >>>>>>> init搜索
 =======
     compile 'com.android.support:design:24.2.1'
+<<<<<<< 519269f31d531003a1d82409a62bf2a559d0c9f0
 <<<<<<< f7fb4464dcd24c870ea0fb858e07f050fd60ad9e
 >>>>>>> 模拟搜索
 =======
 >>>>>>> fix error
+=======
+    compile project(path: ':lib')
+>>>>>>> 搜索页利用模拟数据完成基本逻辑
 }

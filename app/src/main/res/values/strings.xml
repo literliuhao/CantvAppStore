@@ -5,5 +5,9 @@
     <string name="search_content_hint">请输入首字母</string>
     <string name="search_content_del">删除</string>
     <string name="search_content_clear">清空</string>
+    <string name="search_left_top_prompt1">大家都在搜:</string>
+    <string name="search_left_top_prompt2">搜索结果:</string>
+    <string name="search_bottom_recommend_st">热门推荐:</string>
+    <string name="search_null">搜不到相关应用</string>
 
 </resources>
