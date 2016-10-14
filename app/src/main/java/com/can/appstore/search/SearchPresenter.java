@@ -51,7 +51,7 @@ public class SearchPresenter implements SearchContract.Presenter {
             return appList;
         }
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 50; i++) {
             appList.add(new SearchApp(con + "_App" + i, con + "_" + i));
         }
         return appList;
