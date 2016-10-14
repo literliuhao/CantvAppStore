@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="200dp"
+              android:layout_height="200dp"
+              android:orientation="vertical"
+              android:background="@drawable/search_key_item_selector"
+    >
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        android:id="@+id/myapp_ivicon"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/myapp_ivicon"
+        android:id="@+id/myapp_tvname"
+        android:gravity="center"
+        />
+    
+    <LinearLayout
+        android:id="@+id/myapps_ll"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        >
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/myapps_top"
+            android:text="置顶"
+            android:gravity="center"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/myapps_moveout"
+            android:text="从主移除"
+            android:gravity="center"/>
+    </LinearLayout>
+
+</RelativeLayout>
