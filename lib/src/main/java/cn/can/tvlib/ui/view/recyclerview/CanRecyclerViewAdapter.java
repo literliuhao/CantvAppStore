@@ -45,6 +45,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
     public static final int VIEW_TYPE_FOOTER = 0x103;
 
     public static final String TAG_VIEW_FLAG = "tagView%d";
+    public static final int VIEW_ID_OFFSET = 0x100;
 
     private List<DataType> mDatas;
     private RecyclerView mAttachedView;
@@ -52,6 +53,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
 
     public CanRecyclerViewAdapter(List<DataType> datas) {
         mDatas = datas;
+        setHasStableIds(true);
     }
 
     public void setDatas(List<DataType> datas) {
@@ -72,6 +74,11 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
             count += mDatas.size();
         }
         return count;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position + VIEW_ID_OFFSET;
     }
 
     @Override
@@ -224,7 +231,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
     }
 
     private int getDataCount() {
-        return hasData() ? 0 : mDatas.size();
+        return hasData() ? mDatas.size() : 0;
     }
 
     final private boolean isHeader(int position) {
