@@ -1,9 +1,14 @@
 package cn.can.tvlib.ui.view.recyclerview;
 
+import android.content.Context;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewTreeObserver;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
@@ -16,18 +21,19 @@ public class CanRecyclerViewFocusHelper {
 
     private FocusMoveUtil mFocusMoveUtil;
     private FocusScaleUtil mFocusScaleUtil;
-    private RecyclerView mAttachedView;
+    private HashMap<RecyclerView, ViewTreeObserver.OnGlobalFocusChangeListener> mFocusChangeListeners;
     private RecyclerView.OnScrollListener mOnScrollListener;
-    private ViewTreeObserver.OnGlobalFocusChangeListener mFocusChangeListener;
     private Handler mHandler;
     private View mCurrFocusView;
     private Runnable mFocusMoveRunanble;
+    private int cacheSize = 4;
 
-    public CanRecyclerViewFocusHelper(FocusMoveUtil focusMoveUtil, FocusScaleUtil focusScaleUtil) {
+    public CanRecyclerViewFocusHelper(final Context context, FocusMoveUtil focusMoveUtil, FocusScaleUtil focusScaleUtil) {
         this.mFocusMoveUtil = focusMoveUtil;
         this.mFocusScaleUtil = focusScaleUtil;
-
+        mFocusChangeListeners = new HashMap<RecyclerView, ViewTreeObserver.OnGlobalFocusChangeListener>(cacheSize);
         mHandler = new Handler();
+
         mFocusMoveRunanble = new Runnable() {
             @Override
             public void run() {
@@ -35,16 +41,6 @@ public class CanRecyclerViewFocusHelper {
                     mFocusMoveUtil.startMoveFocus(mCurrFocusView);
                     mFocusScaleUtil.scaleToLarge(mCurrFocusView);
                 }
-            }
-        };
-
-        mFocusChangeListener = new ViewTreeObserver.OnGlobalFocusChangeListener() {
-            @Override
-            public void onGlobalFocusChanged(View oldFocus, View newFocus) {
-                mFocusScaleUtil.scaleToNormal(oldFocus);
-                mCurrFocusView = newFocus;
-                mHandler.removeCallbacks(mFocusMoveRunanble);
-                mHandler.postDelayed(mFocusMoveRunanble, 30);
             }
         };
 
@@ -62,14 +58,25 @@ public class CanRecyclerViewFocusHelper {
         };
     }
 
-    public void attachToRecyclerView(RecyclerView attachedView){
-        if(mAttachedView != null){
-            mAttachedView.getViewTreeObserver().removeOnGlobalFocusChangeListener(mFocusChangeListener);
-            mAttachedView.removeOnScrollListener(mOnScrollListener);
-        }
-        this.mAttachedView = attachedView;
-        mAttachedView.getViewTreeObserver().addOnGlobalFocusChangeListener(mFocusChangeListener);
-        mAttachedView.addOnScrollListener(mOnScrollListener);
+    public void attachToRecyclerView(final RecyclerView attachedView, final int focusResId, final float focusScale){
+        ViewTreeObserver.OnGlobalFocusChangeListener listener = new ViewTreeObserver.OnGlobalFocusChangeListener() {
+            @Override
+            public void onGlobalFocusChanged(View oldFocus, View newFocus) {
+                if(oldFocus != null){
+                    mFocusScaleUtil.scaleToNormal(oldFocus);
+                }
+                if(newFocus != null){
+                    mCurrFocusView = newFocus;
+                    mFocusMoveUtil.setFocusRes(attachedView.getContext(), focusResId);
+                    mFocusScaleUtil.setFocusScale(focusScale);
+                    mHandler.removeCallbacks(mFocusMoveRunanble);
+                    mHandler.postDelayed(mFocusMoveRunanble, 30);
+                }
+            }
+        };
+        attachedView.getViewTreeObserver().addOnGlobalFocusChangeListener(listener);
+        attachedView.addOnScrollListener(mOnScrollListener);
+        mFocusChangeListeners.put(attachedView, listener);
     }
 
     public void release(){
@@ -77,13 +84,19 @@ public class CanRecyclerViewFocusHelper {
             mHandler.removeCallbacksAndMessages(null);
             mHandler = null;
         }
-        if(mAttachedView != null){
-            mAttachedView.getViewTreeObserver().removeOnGlobalFocusChangeListener(mFocusChangeListener);
-            mFocusChangeListener = null;
-            mAttachedView.removeOnScrollListener(mOnScrollListener);
-            mOnScrollListener = null;
-            mAttachedView = null;
+        if(mFocusChangeListeners != null){
+            Iterator<Map.Entry<RecyclerView, ViewTreeObserver.OnGlobalFocusChangeListener>> iterator = mFocusChangeListeners.entrySet().iterator();
+            while(iterator.hasNext()){
+                Map.Entry<RecyclerView, ViewTreeObserver.OnGlobalFocusChangeListener> entry = iterator.next();
+                RecyclerView attachedView = entry.getKey();
+                ViewTreeObserver.OnGlobalFocusChangeListener listener = entry.getValue();
+                attachedView.getViewTreeObserver().removeOnGlobalFocusChangeListener(listener);
+                attachedView.removeOnScrollListener(mOnScrollListener);
+            }
+            mFocusChangeListeners.clear();
+            mFocusChangeListeners = null;
         }
+        mOnScrollListener = null;
         mCurrFocusView = null;
         mFocusMoveRunanble = null;
         mFocusMoveUtil.release();
@@ -95,23 +108,8 @@ public class CanRecyclerViewFocusHelper {
         return mFocusMoveUtil;
     }
 
-    public void setFocusUtil(FocusMoveUtil focusMoveUtil) {
-        this.mFocusMoveUtil = focusMoveUtil;
-    }
-
     public FocusScaleUtil getFocusScaleUtil() {
         return mFocusScaleUtil;
     }
 
-    public void setFocusScaleUtil(FocusScaleUtil fousScaleUtil) {
-        this.mFocusScaleUtil = mFocusScaleUtil;
-    }
-
-    public RecyclerView getAttachedView() {
-        return mAttachedView;
-    }
-
-    public void setAttachedView(RecyclerView atachedView) {
-        this.mAttachedView = mAttachedView;
-    }
 }

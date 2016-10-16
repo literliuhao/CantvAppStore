@@ -47,7 +47,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
     public static final String TAG_VIEW_FLAG = "tagView%d";
     public static final int VIEW_ID_OFFSET = 0x100;
 
-    private List<DataType> mDatas;
+    protected List<DataType> mDatas;
     private RecyclerView mAttachedView;
     private ViewTreeObserver.OnGlobalFocusChangeListener mGlobalFocusChangeListener;
 
