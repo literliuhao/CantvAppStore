@@ -77,7 +77,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
     }
 
     @Override
-    public long getItemId(int position) {
+    final public long getItemId(int position) {
         return position + VIEW_ID_OFFSET;
     }
 
