@@ -1,6 +1,5 @@
 package cn.can.tvlib.ui.view.recyclerview;
 
-import android.content.Context;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -28,7 +27,7 @@ public class CanRecyclerViewFocusHelper {
     private Runnable mFocusMoveRunanble;
     private int cacheSize = 4;
 
-    public CanRecyclerViewFocusHelper(final Context context, FocusMoveUtil focusMoveUtil, FocusScaleUtil focusScaleUtil) {
+    public CanRecyclerViewFocusHelper(FocusMoveUtil focusMoveUtil, FocusScaleUtil focusScaleUtil) {
         this.mFocusMoveUtil = focusMoveUtil;
         this.mFocusScaleUtil = focusScaleUtil;
         mFocusChangeListeners = new HashMap<RecyclerView, ViewTreeObserver.OnGlobalFocusChangeListener>(cacheSize);
