@@ -1,6 +1,5 @@
 package cn.can.tvlib.ui.view.recyclerview;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -18,21 +17,21 @@ public class CanRecyclerViewDivider extends RecyclerView.ItemDecoration {
     private int mHorizontalDividerSize;
     private int mVerticalDividerSize;
 
-    public CanRecyclerViewDivider(Context context, int dividerSizeInPixels) {
-        this(context, Color.TRANSPARENT, dividerSizeInPixels);
+    public CanRecyclerViewDivider(int dividerSizeInPixels) {
+        this(Color.TRANSPARENT, dividerSizeInPixels, dividerSizeInPixels);
     }
 
-    public CanRecyclerViewDivider(Context context, int dividerColor, int dividerSizeInPixels) {
-        this(context, new ColorDrawable(dividerColor), dividerSizeInPixels);
+    public CanRecyclerViewDivider(int dividerColor, int horizontalDividerSize, int verticalDividerSize) {
+        this(new ColorDrawable(dividerColor), horizontalDividerSize, verticalDividerSize);
     }
 
-    public CanRecyclerViewDivider(Context context, Drawable divider, int dividerSizeInPixels) {
+    public CanRecyclerViewDivider(Drawable divider, int horizontalDividerSize, int verticalDividerSize) {
         mDivider = divider;
-        if(dividerSizeInPixels <= 0){
+        if(horizontalDividerSize <= 0 || verticalDividerSize <= 0){
             throw new IllegalArgumentException("The divider size of RecyclerView must be larger than 0.");
         }
-        mHorizontalDividerSize = dividerSizeInPixels;
-        mVerticalDividerSize = dividerSizeInPixels;
+        mHorizontalDividerSize = horizontalDividerSize;
+        mVerticalDividerSize = verticalDividerSize;
     }
 
     public void setHorizontalDividerSize(int horizontalDividerSize) {
