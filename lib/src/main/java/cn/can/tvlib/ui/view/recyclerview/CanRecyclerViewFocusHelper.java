@@ -63,10 +63,12 @@ public class CanRecyclerViewFocusHelper {
     }
 
     public void attachToRecyclerView(RecyclerView attachedView){
+        if(mAttachedView != null){
+            mAttachedView.getViewTreeObserver().removeOnGlobalFocusChangeListener(mFocusChangeListener);
+            mAttachedView.removeOnScrollListener(mOnScrollListener);
+        }
         this.mAttachedView = attachedView;
-        mAttachedView.getViewTreeObserver().removeOnGlobalFocusChangeListener(mFocusChangeListener);
         mAttachedView.getViewTreeObserver().addOnGlobalFocusChangeListener(mFocusChangeListener);
-        mAttachedView.removeOnScrollListener(mOnScrollListener);
         mAttachedView.addOnScrollListener(mOnScrollListener);
     }
 

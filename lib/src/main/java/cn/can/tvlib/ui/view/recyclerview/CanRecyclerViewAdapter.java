@@ -509,9 +509,9 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
-                firstVisiblePosi = getActualItemPosition(firstVisiblePosi);
-                lastVisiblePosi = getActualItemPosition(lastVisiblePosi);
                 if (firstVisiblePosi >= 0 && lastVisiblePosi >= 0) {
+                    firstVisiblePosi = getActualItemPosition(firstVisiblePosi);
+                    lastVisiblePosi = getActualItemPosition(lastVisiblePosi);
                     for (int posi = firstVisiblePosi; posi <= lastVisiblePosi; posi++) {
                         if (visible == View.VISIBLE) {
                             DataType data = mDatas.get(posi);
@@ -525,21 +525,31 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                 }
 
             } else if (layoutManager instanceof StaggeredGridLayoutManager) {
-                //TODO
-//                StaggeredGridLayoutManager lm = (StaggeredGridLayoutManager) layoutManager;
-//                int[] firstVisiblePosis = lm.findFirstVisibleItemPositions(null);
-//                int[] lastVisiblePosis = lm.findLastVisibleItemPositions(null);
-//                for (int i = 0, spanCount = firstVisiblePosis.length; i < spanCount; i++) {
-//                    for (int posi = firstVisiblePosis[i]; posi <= lastVisiblePosis[i]; posi++) {
-//                        if (visible == View.VISIBLE) {
-//                            if (mSelections.contains(posi)) {
-//                                changeTagViewVisibleByPosi(posi, visible);
-//                            }
-//                        } else {
-//                            changeTagViewVisibleByPosi(posi, visible);
-//                        }
-//                    }
-//                }
+                StaggeredGridLayoutManager lm = (StaggeredGridLayoutManager) layoutManager;
+                int[] firstVisiblePosis = lm.findFirstVisibleItemPositions(null);
+                int[] lastVisiblePosis = lm.findLastVisibleItemPositions(null);
+                int firstVisiblePosi = -1;
+                for(int i = 0; i < firstVisiblePosis.length; i++){
+                    firstVisiblePosi = Math.min(firstVisiblePosi, firstVisiblePosis[i]);
+                }
+                int lastVisiblePosi = -1;
+                for(int i = 0; i < lastVisiblePosis.length; i++){
+                    lastVisiblePosi = Math.max(lastVisiblePosi, lastVisiblePosis[i]);
+                }
+                if (firstVisiblePosi >= 0 && lastVisiblePosi >= 0) {
+                    firstVisiblePosi = getActualItemPosition(firstVisiblePosi);
+                    lastVisiblePosi = getActualItemPosition(lastVisiblePosi);
+                    for (int posi = firstVisiblePosi; posi <= lastVisiblePosi; posi++) {
+                        if (visible == View.VISIBLE) {
+                            DataType data = mDatas.get(posi);
+                            if (data instanceof Selectable && ((Selectable) data).isSelected()) {
+                                changeTagViewVisibleByPosi(posi, true);
+                            }
+                        } else {
+                            changeTagViewVisibleByPosi(posi, false);
+                        }
+                    }
+                }
             }
         }
     }
@@ -622,7 +632,6 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                         }
 
                     } else if (layoutManager instanceof GridLayoutManager) {
-
                         GridLayoutManager glm = (GridLayoutManager) layoutManager;
                         int spanCount = glm.getSpanCount();
                         int currItemCount = getDataCount();
@@ -631,6 +640,19 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                         range = currItemCount - (range == 0 ? spanCount : range);
                         int posi = getActualItemPosition(glm.findLastVisibleItemPosition());
                         if (posi >= range) {
+                            isLoading = true;
+                            mPageLoadCallback.onLoadMore();
+                        }
+
+                    } else if(layoutManager instanceof StaggeredGridLayoutManager) {
+                        StaggeredGridLayoutManager sglm = (StaggeredGridLayoutManager) layoutManager;
+                        int spanCount = sglm.getSpanCount();
+                        int[] lastVisiblePosis = sglm.findLastVisibleItemPositions(null);
+                        int lastVisiblePosi = -1;
+                        for(int i = 0; i < lastVisiblePosis.length; i++){
+                            lastVisiblePosi = Math.max(lastVisiblePosi, lastVisiblePosis[i]);
+                        }
+                        if (getActualItemPosition(lastVisiblePosi) == mDatas.size()) {
                             isLoading = true;
                             mPageLoadCallback.onLoadMore();
                         }
