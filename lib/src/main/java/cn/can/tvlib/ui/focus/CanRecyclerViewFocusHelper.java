@@ -1,4 +1,4 @@
-package cn.can.tvlib.ui.view.recyclerview;
+package cn.can.tvlib.ui.focus;
 
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
@@ -8,9 +8,6 @@ import android.view.ViewTreeObserver;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import cn.can.tvlib.ui.focus.FocusMoveUtil;
-import cn.can.tvlib.ui.focus.FocusScaleUtil;
 
 /**
  * Created by zhangbingyuan on 2016/10/16.

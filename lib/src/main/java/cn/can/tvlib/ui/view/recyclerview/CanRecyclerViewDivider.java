@@ -45,26 +45,30 @@ public class CanRecyclerViewDivider extends RecyclerView.ItemDecoration {
     @Override
     public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
         RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
-        if(layoutManager instanceof LinearLayoutManager){
+        if(layoutManager instanceof GridLayoutManager || layoutManager instanceof StaggeredGridLayoutManager){
+            drawHorizontalDivider(c, parent);
+            drawVerticalDivider(c, parent);
+        } else {
             LinearLayoutManager lm = (LinearLayoutManager) layoutManager;
             if(lm.getOrientation() == LinearLayoutManager.VERTICAL){
-                drawHorizontal(c, parent);
+                drawHorizontalDivider(c, parent);
             } else {
-                drawVertical(c, parent);
+                drawVerticalDivider(c, parent);
             }
-            return;
         }
-        drawHorizontal(c, parent);
-        drawVertical(c, parent);
     }
 
-    private void drawHorizontal(Canvas c, RecyclerView parent) {
+    private void drawHorizontalDivider(Canvas c, RecyclerView parent) {
         int childCount = parent.getChildCount();
+        int spanCount = getSpanCount(parent);
         for (int i = 0; i < childCount; i++) {
+            if(isLastRaw(parent, i, spanCount, childCount)){
+                continue;
+            }
             final View child = parent.getChildAt(i);
             final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
             final int left = child.getLeft() - params.leftMargin;
-            final int right = child.getRight() + params.rightMargin + mVerticalDividerSize;
+            final int right = child.getRight() + params.rightMargin;
             final int top = child.getBottom() + params.bottomMargin;
             final int bottom = top + mHorizontalDividerSize;
             mDivider.setBounds(left, top, right, bottom);
@@ -72,9 +76,14 @@ public class CanRecyclerViewDivider extends RecyclerView.ItemDecoration {
         }
     }
 
-    private void drawVertical(Canvas c, RecyclerView parent) {
+    private void drawVerticalDivider(Canvas c, RecyclerView parent) {
         final int childCount = parent.getChildCount();
+        final int spanCount = getSpanCount(parent);
+
         for (int i = 0; i < childCount; i++) {
+            if(isLastColumn(parent, i, spanCount, childCount)){
+                continue;
+            }
             final View child = parent.getChildAt(i);
             final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
             final int top = child.getTop() - params.topMargin;
@@ -88,10 +97,9 @@ public class CanRecyclerViewDivider extends RecyclerView.ItemDecoration {
 
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-        int itemPosition = parent.getLayoutManager().getPosition(view);
+        int itemPosition = parent.getChildAdapterPosition(view);
         int spanCount = getSpanCount(parent);
         int childCount = parent.getAdapter().getItemCount();
-
         if (isLastRaw(parent, itemPosition, spanCount, childCount)){ //最后一行不绘制itemView下面分隔线
             outRect.set(0, 0, mVerticalDividerSize, 0);
         } else if (isLastColumn(parent, itemPosition, spanCount, childCount)){ //最后一列不绘制itemView右边分隔线
@@ -104,13 +112,13 @@ public class CanRecyclerViewDivider extends RecyclerView.ItemDecoration {
     private int getSpanCount(RecyclerView parent) {
         int spanCount = -1;
         RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
-        if (layoutManager instanceof LinearLayoutManager) {
-            spanCount = 1;
-
-        } else if (layoutManager instanceof GridLayoutManager) {
+        if (layoutManager instanceof GridLayoutManager) {
             spanCount = ((GridLayoutManager) layoutManager).getSpanCount();
 
-        } else if (layoutManager instanceof StaggeredGridLayoutManager) {
+        } else if (layoutManager instanceof LinearLayoutManager) {
+            spanCount = 1;
+
+        }else if (layoutManager instanceof StaggeredGridLayoutManager) {
             spanCount = ((StaggeredGridLayoutManager) layoutManager).getSpanCount();
         }
         return spanCount;
@@ -119,12 +127,17 @@ public class CanRecyclerViewDivider extends RecyclerView.ItemDecoration {
     private boolean isLastRaw(RecyclerView parent, int pos, int spanCount, int childCount) {
         RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
 
-        if(layoutManager instanceof LinearLayoutManager){
-            return pos == childCount - 1;
+        if (layoutManager instanceof GridLayoutManager) {
+            int range = childCount % spanCount;
+            if(range == 0){
+                range = childCount- spanCount;
+            } else {
+                range = childCount - range;
+            }
+            return pos >= range;
 
-        } else if (layoutManager instanceof GridLayoutManager) {
-            childCount = childCount - childCount % spanCount;
-            return pos >= childCount;
+        } else if(layoutManager instanceof LinearLayoutManager){
+            return pos == childCount - 1;
 
         } else if (layoutManager instanceof StaggeredGridLayoutManager) {
             int orientation = ((StaggeredGridLayoutManager) layoutManager).getOrientation();
@@ -141,11 +154,11 @@ public class CanRecyclerViewDivider extends RecyclerView.ItemDecoration {
     private boolean isLastColumn(RecyclerView parent, int pos, int spanCount, int childCount) {
         RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
 
-        if(layoutManager instanceof LinearLayoutManager){
-            return pos == childCount - 1;
-
-        }else if (layoutManager instanceof GridLayoutManager) {
+        if (layoutManager instanceof GridLayoutManager) {
             return (pos + 1) % spanCount == 0;
+
+        } else if(layoutManager instanceof LinearLayoutManager){
+            return pos == childCount - 1;
 
         } else if (layoutManager instanceof StaggeredGridLayoutManager) {
             int orientation = ((StaggeredGridLayoutManager) layoutManager).getOrientation();
