@@ -1,6 +1,5 @@
 package com.can.appstore.myapps;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,19 +21,19 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<AppInfo> {
 
 
     List<AppInfo> mAppInfoList = null;
-    private final LayoutInflater mLayoutInflater;
+//    private final LayoutInflater mLayoutInflater;
 
-    public MyAppsRvAdapter(Context context, List<AppInfo> datas) {
+    public MyAppsRvAdapter( List<AppInfo> datas) {
         super(datas);
-        mLayoutInflater = LayoutInflater.from(context);
+//        mLayoutInflater = LayoutInflater.from(context);
         mAppInfoList = datas;
     }
 
 
     @Override
     protected RecyclerView.ViewHolder generateViewHolder(ViewGroup parent, int viewType) {
-        //        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.myapps_list_item, parent, false);
-        View view = mLayoutInflater.inflate(R.layout.myapps_list_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.myapps_list_item, parent, false);
+//        View view = mLayoutInflater.inflate(R.layout.myapps_list_item, parent, false);
         MyAppsViewHolder myAppsViewHolder = new MyAppsViewHolder(view);
         return myAppsViewHolder;
     }
