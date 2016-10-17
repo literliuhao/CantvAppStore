@@ -2,18 +2,20 @@ package com.can.appstore.myapps;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.can.appstore.R;
+import com.can.appstore.search.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
+import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 /**
  * Created by wei on 2016/10/13.
@@ -21,104 +23,68 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 
 public class MyApps extends Fragment {
 
-    CanRecyclerView mCanRecyclerView = null;
     //本地全部的第三方应用
     List<AppInfo> mAppsList = new ArrayList<AppInfo>();
-
     //主页显示的第三方应用
     List<AppInfo> mShowList = new ArrayList<AppInfo>(15);
 
-
+    //表格布局
+    CanRecyclerView  mAppsRecyclerView = null;
     MyAppsRvAdapter mMyAppsRvAdapter = null;
-
-//    Button myappstop;
-//    Button myappsmoveout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAppsList = AppUtils.findAllInstallApkInfo(getActivity());
-        initData(mAppsList, mShowList);
+        initData();
     }
 
-    private void initData(List<AppInfo> mmAppsList, List<AppInfo> mmShowList) {
-
-        //列表前两个item是自动生成
-        AppInfo allAppsItem = new AppInfo("全部应用", getActivity().getDrawable(R.drawable.ic_launcher));
-        AppInfo sysAppsItem = new AppInfo("系统应用", getActivity().getDrawable(R.drawable.ic_launcher));
-        mmShowList.add(allAppsItem);
-        mmShowList.add(sysAppsItem);
-        for (AppInfo app : mmAppsList) {
-            if (!app.isSystemApp) {
-                mmShowList.add(app);
+    private void initData() {
+        mAppsList = AppUtils.findAllInstallApkInfo(getActivity());
+        mShowList.add(new AppInfo("全部应用", getResources().getDrawable(R.drawable.ic_launcher,null)));
+        mShowList.add(new AppInfo("系统应用", getResources().getDrawable(R.drawable.ic_launcher,null)));
+        for (AppInfo  app : mAppsList){
+            if(!app.isSystemApp){
+                mShowList.add(app);
             }
         }
-        if (mmShowList.size() < 15) {
-            int addItem = mmShowList.size() - 1;
-            AppInfo addAppsItem = new AppInfo("添加应用", getActivity().getDrawable(R.drawable.ic_launcher));
-            mmAppsList.add(addAppsItem);
+        if(mShowList.size()<15){
+            mShowList.add(new AppInfo("添加应用", getResources().getDrawable(R.drawable.ic_launcher,null)));
         }
-        mShowList = mmShowList;
-        mMyAppsRvAdapter = new MyAppsRvAdapter(mShowList);
+//        Log.i("MyShowingList------DATA","yShowingList------DATA "+ mShowList.toString());
+
     }
 
-    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_myapps, container, false);
-        mCanRecyclerView = (CanRecyclerView) view.findViewById(R.id.cr_myapps);
-        mCanRecyclerView.setLayoutManager(new CanRecyclerView.LayoutManager(getActivity(), 5, GridLayoutManager.VERTICAL, false));
-
-//        mMyAppsRvAdapter.setItemKeyEventListener(new CanRecyclerViewAdapter.OnItemKeyEventListener() {
-//            @Override
-//            public boolean onItemKeyEvent(final int position, View itemview, int keyCode, KeyEvent event) {
-//                if (position != 0 && position != 1 && keyCode == KeyEvent.KEYCODE_MENU) {
-//                    final LinearLayout myappll = (LinearLayout) itemview.findViewById(R.id.myapps_ll);
-//                    myappll.setVisibility(View.VISIBLE);
-//                    myappstop = (Button) itemview.findViewById(R.id.myapps_top);
-//                    myappstop.setOnClickListener(
-//                            new View.OnClickListener() {
-//                                @Override
-//                                public void onClick(View view) {
-//                                    topItem(mShowList, position);
-//                                    myappll.setVisibility(View.GONE);
-//                                }
-//                            }
-//                    );
-//                    myappsmoveout = (Button) itemview.findViewById(R.id.myapps_moveout);
-//                    myappsmoveout.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            moveOutItem(mShowList, position);
-//                            myappll.setVisibility(View.GONE);
-//                        }
-//                    });
-//
-//                }
-//                return true;
-//            }
-//        });
-
-        mCanRecyclerView.setAdapter(mMyAppsRvAdapter);
+        View view  = inflater.inflate(R.layout.fragment_myapps,container,false);
+        mAppsRecyclerView = (CanRecyclerView) view .findViewById(R.id.cr_myapps);
+        mAppsRecyclerView.setLayoutManager(new CanRecyclerView.LayoutManager(getActivity(), 5, GridLayoutManager.VERTICAL, false));
+        mMyAppsRvAdapter = new MyAppsRvAdapter(mShowList);
+        mAppsRecyclerView.setAdapter(mMyAppsRvAdapter);
+        mMyAppsRvAdapter.setItemKeyEventListener(new MyAppsItemKeyEventListener());
+        mMyAppsRvAdapter.setOnItemClickListener(new MyAppsOnClickListenrer());
         return view;
     }
+   private class  MyAppsItemKeyEventListener extends CanRecyclerViewAdapter.OnItemKeyEventListener{
 
-//    private void moveOutItem(List<AppInfo> showList, int position) {
-//        //移除条目
-//        ToastUtil.toastShort("该条目移除");
-//        showList.remove(position);
-//        mMyAppsRvAdapter.notifyDataSetChanged();
-//
-//    }
-//
-//    private void topItem(List<AppInfo> showList, int position) {
-//        //置顶条目
-//        ToastUtil.toastShort("该条目置顶");
-//        AppInfo appInfo = showList.get(position);
-//        showList.remove(position);
-//        showList.add(2, appInfo);
-//        mMyAppsRvAdapter.notifyDataSetChanged();
-//    }
+       @Override
+       public boolean onItemKeyEvent(int position, View v, int keyCode, KeyEvent event) {
+           if(keyCode == KeyEvent.KEYCODE_MENU){
+               //菜单键
+               ToastUtil.toastShort("菜单键---"+mShowList.get(position).toString());
+           }
+
+           return false;
+       }
+   }
+
+    private class MyAppsOnClickListenrer extends   CanRecyclerViewAdapter.OnItemClickListener{
+
+        @Override
+        public void onClick(View view, int position, Object data) {
+            ToastUtil.toastShort("打开---"+mShowList.get(position).appName);
+        }
+    }
 
 
 }

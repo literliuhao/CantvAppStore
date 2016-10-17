@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="200dp"
-              android:layout_height="200dp"
-              android:background="@drawable/search_key_item_selector"
-    >
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="250dp"
+              android:layout_height="250dp"
+              android:orientation="vertical"
+              android:background="@drawable/search_key_item_selector">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="4"
+        android:layout_margin="25dp"
         android:id="@+id/myapp_ivicon"
+        android:background="@drawable/ic_launcher"
         />
 
     <TextView
@@ -23,29 +22,7 @@
         android:layout_below="@id/myapp_ivicon"
         android:id="@+id/myapp_tvname"
         android:gravity="center"
+        android:text="APP-NAME"
         />
-    </RelativeLayout>
-  <!--  <LinearLayout
-        android:id="@+id/myapps_ll"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:orientation="vertical"
-        android:visibility="gone"
-        android:background="@android:color/transparent">
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:id="@+id/myapps_top"
-            android:text="置顶"
-            android:gravity="center"/>
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:id="@+id/myapps_moveout"
-            android:text="从主移除"
-            android:gravity="center"/>
-    </LinearLayout>-->
 
-</RelativeLayout>
+</LinearLayout>
