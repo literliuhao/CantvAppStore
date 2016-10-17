@@ -65,20 +65,20 @@ public class MyApps extends Fragment {
         mMyAppsRvAdapter.setOnItemClickListener(new MyAppsOnClickListenrer());
         return view;
     }
-   private class  MyAppsItemKeyEventListener extends CanRecyclerViewAdapter.OnItemKeyEventListener{
+   private class MyAppsItemKeyEventListener implements CanRecyclerViewAdapter.OnItemKeyEventListener{
 
        @Override
        public boolean onItemKeyEvent(int position, View v, int keyCode, KeyEvent event) {
            if(keyCode == KeyEvent.KEYCODE_MENU){
                //菜单键
-               ToastUtil.toastShort("菜单键---"+mShowList.get(position).toString());
+               ToastUtil.toastShort("菜单键---"+ mShowList.get(position).toString());
            }
 
            return false;
        }
    }
 
-    private class MyAppsOnClickListenrer extends   CanRecyclerViewAdapter.OnItemClickListener{
+    private class MyAppsOnClickListenrer implements CanRecyclerViewAdapter.OnItemClickListener{
 
         @Override
         public void onClick(View view, int position, Object data) {

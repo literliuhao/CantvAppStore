@@ -25,9 +25,9 @@ public class CanRecyclerView extends RecyclerView {
 
     public interface OnFocusSearchCallback {
 
-        public void onSuccess(View view, View focused, int focusDirection, RecyclerView.Recycler recycler, RecyclerView.State state);
+        public void onSuccess(View view, View focused, int focusDirection, Recycler recycler, State state);
 
-        public void onFail(View focused, int focusDirection, RecyclerView.Recycler recycler, RecyclerView.State state);
+        public void onFail(View focused, int focusDirection, Recycler recycler, State state);
     }
 
     public CanRecyclerView(Context context) {
@@ -99,7 +99,7 @@ public class CanRecyclerView extends RecyclerView {
         }
 
         @Override
-        public View onFocusSearchFailed(View focused, int focusDirection, RecyclerView.Recycler recycler, RecyclerView.State state) {
+        public View onFocusSearchFailed(View focused, int focusDirection, Recycler recycler, State state) {
             View view = super.onFocusSearchFailed(focused, focusDirection, recycler, state);
             if (mFocusSearchCallback != null) {
                 if (view != null) {
