@@ -58,8 +58,6 @@ public class YAroundTextView extends TextView {
         super.onDraw(canvas);
 //        int currentTextColor = getCurrentTextColor();
 //        mPaint.setColor(currentTextColor);
-        mPaint.setColor(mAroundColor);
-        canvas.translate(mWidth / 2, mHeight / 2);   //将原点移动到文字中点
         //得到当前文字的长度,根据长度来设置外边框的长
         CharSequence text = getText();
         int length = text.length();
@@ -67,9 +65,12 @@ public class YAroundTextView extends TextView {
         if (this.getLayoutParams().width != (int) mWidth) {
             this.getLayoutParams().width = (int) mWidth;
             requestLayout();
+        } else {
+            mPaint.setColor(mAroundColor);
+            canvas.translate(mWidth / 2, mHeight / 2);   //将原点移动到文字中点
+            RectF rectF = new RectF(-mWidth / 2, -mHeight / 2, mWidth / 2, mHeight / 2);
+            canvas.drawRect(rectF, mPaint);
         }
-        RectF rectF = new RectF(-mWidth / 2, -mHeight / 2, mWidth / 2, mHeight / 2);
-        canvas.drawRect(rectF, mPaint);
     }
 
     /**

@@ -1,5 +1,7 @@
 package com.can.appstore.search;
 
+import java.util.List;
+
 /**
  * Created by yibh on 2016/10/12 14:33 .
  */
@@ -11,9 +13,17 @@ public interface SearchContract {
         void delContent();
 
         void clearContent();
+
+        void getDefaultList(List defaultList,List hotList);
+
+        void getAppList(List list);
+
+        void getInitials(String con);   //首字母
     }
 
     interface Presenter {
-        void getSearchList();
+        void getSearchList(String searCon);
+
+        void getDefaultList();
     }
 }
