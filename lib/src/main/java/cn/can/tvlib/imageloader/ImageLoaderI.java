@@ -23,9 +23,9 @@ public interface ImageLoaderI {
     void download(Context context, String url, GlideLoadTask.DownloadSuccCallback succCallback,
                   GlideLoadTask.DownloadFailCallback failCallback);
 
-    GlideLoadTask.Builder buildTask( ImageView view, String url);
+    GlideLoadTask.Builder buildTask(ImageView view, String url);
 
-    GlideLoadTask.DownloadTaskBuilder buildDownloadTask( String url);
+    GlideLoadTask.DownloadTaskBuilder buildDownloadTask(String url);
 
     void pauseTask(Context context);
 

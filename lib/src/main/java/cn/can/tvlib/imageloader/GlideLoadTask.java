@@ -33,9 +33,8 @@ import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 
 /**
  * 图片加载任务,用于配置各种图片加载参数<br/>
- *
+ * <p>
  * Created by zhangbingyuan on 2016/8/29.<p/>
- *
  */
 
 public class GlideLoadTask {
@@ -58,19 +57,19 @@ public class GlideLoadTask {
     public static final int SHAPE_CIRCLE = 1; // 圆形
     public static final int SHAPE_ROUND_CORNER = 2; // 圆角矩形
 
-    public interface SuccessCallback{
+    public interface SuccessCallback {
         boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource);
     }
 
-    public interface FailCallback{
+    public interface FailCallback {
         boolean onFail(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource);
     }
 
-    public interface DownloadSuccCallback{
+    public interface DownloadSuccCallback {
         void onSuccess(String url, File file);
     }
 
-    public interface DownloadFailCallback{
+    public interface DownloadFailCallback {
         void onFail(String url, Exception e);
     }
 
@@ -120,7 +119,7 @@ public class GlideLoadTask {
         private SuccessCallback loadSuccessCallback;
         private FailCallback loadFailCallback;
 
-        public GlideLoadTask build(){
+        public GlideLoadTask build() {
             GlideLoadTask task = new GlideLoadTask();
             task.imgView = this.imgView;
             task.url = this.url;
@@ -230,7 +229,7 @@ public class GlideLoadTask {
         }
     }
 
-    public static class DownloadTaskBuilder{
+    public static class DownloadTaskBuilder {
 
         private String url;
         private int width;
@@ -241,7 +240,7 @@ public class GlideLoadTask {
         private int timeout;
         private TimeUnit timeUnit;
 
-        public GlideLoadTask build(){
+        public GlideLoadTask build() {
             GlideLoadTask task = new GlideLoadTask();
             task.onlyDownload = true;
             task.url = this.url;
@@ -276,7 +275,7 @@ public class GlideLoadTask {
             return this;
         }
 
-        public DownloadTaskBuilder timeout(int timeout, TimeUnit timeUnit){
+        public DownloadTaskBuilder timeout(int timeout, TimeUnit timeUnit) {
             this.timeout = timeout;
             this.timeUnit = timeUnit;
             return this;
@@ -285,15 +284,15 @@ public class GlideLoadTask {
 
     public void start(Context context) {
         DrawableTypeRequest<String> load = Glide.with(context).load(url);
-        if(onlyDownload){
+        if (onlyDownload) {
             try {
                 File file;
-                if(width == 0 && height == 0){
+                if (width == 0 && height == 0) {
                     file = load.downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get();
-                }else {
+                } else {
                     file = load.downloadOnly(width, height).get();
                 }
-                if(file != null && file.exists() && file.length() > 0 && downloadSuccCallback != null){
+                if (file != null && file.exists() && file.length() > 0 && downloadSuccCallback != null) {
                     downloadSuccCallback.onSuccess(url, file);
                 } else {
                     downloadFailCallback.onFail(url, new NullPointerException("The download file is empty."));
@@ -308,59 +307,59 @@ public class GlideLoadTask {
                 e.printStackTrace();
                 downloadFailCallback.onFail(url, e);
             }
-        }else{
-            if(errorPlaceholder > 0){
+        } else {
+            if (errorPlaceholder > 0) {
                 load.error(errorPlaceholder);
             }
-            if(placeholder > 0){
+            if (placeholder > 0) {
                 load.placeholder(placeholder);
             }
-            if(thumbnail != 0){
+            if (thumbnail != 0) {
                 load.thumbnail(thumbnail);
             }
-            if(!cacheInMemory){
+            if (!cacheInMemory) {
                 load.skipMemoryCache(!cacheInMemory);
             }
-            if(priority == PRIORITY_HIGH){
+            if (priority == PRIORITY_HIGH) {
                 load.priority(Priority.HIGH);
-            }else if(priority == PRIORITY_IMMEDIATE){
+            } else if (priority == PRIORITY_IMMEDIATE) {
                 load.priority(Priority.IMMEDIATE);
-            }else if(priority == PRIORITY_LOW){
+            } else if (priority == PRIORITY_LOW) {
                 load.priority(Priority.LOW);
             }
-            if(diskCacheStagety == CACHE_ALL_IN_DISK){
+            if (diskCacheStagety == CACHE_ALL_IN_DISK) {
                 load.diskCacheStrategy(DiskCacheStrategy.ALL);
-            }else if(diskCacheStagety == CACHE_NONE_IN_DISK){
+            } else if (diskCacheStagety == CACHE_NONE_IN_DISK) {
                 load.diskCacheStrategy(DiskCacheStrategy.NONE);
-            }else if(diskCacheStagety == CACHE_SRC_IN_DISK){
+            } else if (diskCacheStagety == CACHE_SRC_IN_DISK) {
                 load.diskCacheStrategy(DiskCacheStrategy.SOURCE);
-            }else if(diskCacheStagety == CACHE_RESULT_IN_DISK){
+            } else if (diskCacheStagety == CACHE_RESULT_IN_DISK) {
                 load.diskCacheStrategy(DiskCacheStrategy.RESULT);
             }
-            if(resultType == RESULT_TYPE_GIF){
+            if (resultType == RESULT_TYPE_GIF) {
                 load.asGif();
-            }else if(resultType == RESULT_TYPE_BITMAP){
+            } else if (resultType == RESULT_TYPE_BITMAP) {
                 load.asBitmap();
             }
-            if(animator != null){
+            if (animator != null) {
                 load.animate(animator);
-            } else if(animResId > 0){
+            } else if (animResId > 0) {
                 load.animate(animResId);
-            } else if(crossFade){
+            } else if (crossFade) {
                 load.crossFade();
             }
-            if(transformation != null){
+            if (transformation != null) {
                 load.bitmapTransform(transformation);
-            } else if(shape == SHAPE_CIRCLE){
+            } else if (shape == SHAPE_CIRCLE) {
                 load.bitmapTransform(new GlideCircleTransform(context));
-            } else if(shape == SHAPE_ROUND_CORNER){
+            } else if (shape == SHAPE_ROUND_CORNER) {
                 load.bitmapTransform(new GlideRoundTransform(context));
             }
-            if(loadSuccessCallback != null || loadFailCallback != null){
+            if (loadSuccessCallback != null || loadFailCallback != null) {
                 load.listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                        if(loadFailCallback != null){
+                        if (loadFailCallback != null) {
                             return loadFailCallback.onFail(e, model, target, isFirstResource);
                         }
                         return false;
@@ -368,15 +367,15 @@ public class GlideLoadTask {
 
                     @Override
                     public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache,
-                           boolean isFirstResource) {
-                        if(loadSuccessCallback != null){
+                                                   boolean isFirstResource) {
+                        if (loadSuccessCallback != null) {
                             return loadSuccessCallback.onSuccess(resource, model, target, isFromMemoryCache, isFirstResource);
                         }
                         return false;
                     }
                 });
             }
-            if(width > 0 && height > 0){
+            if (width > 0 && height > 0) {
                 load.override(width, height);
             }
             load.into(imgView);

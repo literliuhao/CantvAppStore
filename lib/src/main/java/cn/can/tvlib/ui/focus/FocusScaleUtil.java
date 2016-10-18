@@ -85,4 +85,8 @@ public class FocusScaleUtil {
         }
     }
 
+    public void setFocusScale(float scale){
+        this.scale = scale;
+    }
+
 }

@@ -333,6 +333,7 @@ public class FocusMoveUtil {
     public void startMoveFocus(View view, float scaleX, float scaleY, int offsetX, int offsetY, int cancelFactor) {
         if (mAnimator != null && mAnimator.isRunning()) {
             if (cancelFactor == 0) {
+                mEvaluators.remove(mAnimator);
                 mAnimator.cancel();
             } else if (cancelFactor > 0) {
                 RectFEvaluator evaluator = mEvaluators.get(mAnimator);
