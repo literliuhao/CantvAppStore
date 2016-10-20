@@ -3,6 +3,8 @@ package com.can.appstore.homerank;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MarginLayoutParamsCompat;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,15 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.homerank.bean.RankBean;
 import com.can.appstore.search.ToastUtil;
 
 import java.util.List;
-
-import cn.can.tvlib.utils.ToastUtils;
 
 public class HomeRankFragment extends Fragment implements HomeRankContract.View {
     // TODO: Rename parameter arguments, choose names that match
@@ -32,6 +31,8 @@ public class HomeRankFragment extends Fragment implements HomeRankContract.View 
     private String mParam2;
     private HomeRankPresenter mHomeRankPresenter;
     private View mView;
+//    private RecyclerView mRecyclerView;
+    private RankAdapter mRankAdapter;
     private HorizontalScrollView mScrollView;
     private LinearLayout mLinearLayout;
 
@@ -79,6 +80,7 @@ public class HomeRankFragment extends Fragment implements HomeRankContract.View 
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Log.w("onViewCreated", "onViewCreated");
+//        mRecyclerView = (RecyclerView) view.findViewById(R.id.homerank_recycleview);
         mScrollView = (HorizontalScrollView) view.findViewById(R.id.homeran_scrollview);
         mLinearLayout = (LinearLayout) view.findViewById(R.id.ll_par_view);
     }
@@ -97,38 +99,20 @@ public class HomeRankFragment extends Fragment implements HomeRankContract.View 
 
     @Override
     public void getData(List list) {
-        for (int i = 0; i < list.size(); i++) {
-            View childView = mLinearLayout.getChildAt(i);
-            childView.setVisibility(View.VISIBLE);
-            //分类标签
-            TextView categoryTitle = (TextView) childView.findViewById(R.id.rank_tag_view);
-            //appList
-            RecyclerView recyclerView = (RecyclerView) childView.findViewById(R.id.list_view);
-            TextView categoryMore = (TextView) childView.findViewById(R.id.more_view);
-            final RankBean.DataBean mData = (RankBean.DataBean) list.get(i);
-            categoryTitle.setText(mData.getName());
+//        mRankAdapter = new RankAdapter(list);
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        for (int i=0;i<list.size();i++){
+            LinearLayout view = (LinearLayout) inflater.inflate(R.layout.homerank_item, null);
+            RecyclerView recyclerView= (RecyclerView) view.findViewById(R.id.list_view);
+            RankBean.DataBean mData = (RankBean.DataBean) list.get(i);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             HomeRankAdapter homeRankAdapter = new HomeRankAdapter(mData.getData());
             recyclerView.setAdapter(homeRankAdapter);
-
-            categoryMore.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ToastUtils.showMessage(getActivity(), mData.getName());
-                }
-            });
+//            mLinearLayout.setLayoutParams(layoutParams);
+//            view.setLeft(100);
+            mLinearLayout.addView(view);
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.w("onResume", "onResume");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.w("onPause", "onPause");
+//        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+//        mRecyclerView.setAdapter(mRankAdapter);
     }
 }
