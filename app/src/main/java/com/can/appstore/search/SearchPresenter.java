@@ -15,8 +15,8 @@ import java.util.List;
 public class SearchPresenter implements SearchContract.Presenter {
     private SearchContract.View mView;
 
-    public SearchPresenter(SearchActivity searchActivity) {
-        mView = searchActivity;
+    public SearchPresenter(SearchContract.View view) {
+        mView = view;
     }
 
     @Override
