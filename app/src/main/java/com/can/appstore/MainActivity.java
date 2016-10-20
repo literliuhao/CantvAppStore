@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import com.can.appstore.homerank.HomeRankActivity;
 import com.can.appstore.search.SearchActivity;
 
 /**
@@ -25,6 +26,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 SearchActivity.startAc(MainActivity.this);
+            }
+        });
+
+        //排行榜
+        findViewById(R.id.bt_rank).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HomeRankActivity.startAc(MainActivity.this);
             }
         });
     }

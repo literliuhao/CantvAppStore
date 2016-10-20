@@ -16,4 +16,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="到搜索" />
+
+    <Button
+        android:id="@+id/bt_rank"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="到排行榜" />
 </LinearLayout>

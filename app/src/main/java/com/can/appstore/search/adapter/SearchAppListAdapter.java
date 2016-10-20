@@ -50,7 +50,6 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
                     case SEARCH_APPLIST_TYPE:
                         SearchApp searchApp = (SearchApp) mDataList.get(position);
                         ToastUtil.toastShort("点击 " + searchApp.mName);
-//                        setInitials(searchApp.mInitials);
                         break;
                 }
             }
