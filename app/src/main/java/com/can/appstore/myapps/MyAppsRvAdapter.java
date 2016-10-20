@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,8 +20,10 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 public class MyAppsRvAdapter extends CanRecyclerViewAdapter<AppInfo>{
 
+  public   List<AppInfo>  mList = null;
     public MyAppsRvAdapter(List<AppInfo> datas) {
         super(datas);
+        mList = datas;
     }
 
     @Override
@@ -31,7 +34,7 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<AppInfo>{
     }
 
     @Override
-    protected void bindContentData(AppInfo mDatas, RecyclerView.ViewHolder holder, int position) {
+    protected void bindContentData(final AppInfo mDatas, RecyclerView.ViewHolder holder, final int position) {
         MyAppsViewHolder myAppsViewHolder = (MyAppsViewHolder)holder;
         myAppsViewHolder.mImageView.setImageDrawable(mDatas.appIcon);
         myAppsViewHolder.mTextView.setText(mDatas.appName);
@@ -41,14 +44,18 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<AppInfo>{
     private  class MyAppsViewHolder extends RecyclerView.ViewHolder{
         public ImageView mImageView;
         public TextView mTextView;
+        public Button mButtonTop;
+        public Button mButtonMoveOut;
 
         public MyAppsViewHolder(View itemView) {
             super(itemView);
             mImageView = (ImageView) itemView.findViewById(R.id.myapp_ivicon);
             mTextView = (TextView) itemView.findViewById(R.id.myapp_tvname);
+
         }
 
     }
+
 
 
 }

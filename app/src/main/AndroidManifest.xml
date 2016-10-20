@@ -19,6 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".search.SearchActivity"></activity>
+        <activity android:name=".myapps.AllAppsActivity"></activity>
     </application>
 
 </manifest>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/app_list_page_cell_edit_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/item_edit_focus"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/app_list_page_cell_open"
+        android:layout_width="match_parent"
+        android:layout_height="53dp"
+        android:background="@drawable/edit_button_selector"
+        android:text="打开"
+        android:textColor="#ffffff"
+        android:textSize="26sp" />
+
+    <Button
+        android:id="@+id/app_list_page_cell_remove"
+        android:layout_width="match_parent"
+        android:layout_height="53dp"
+        android:background="@drawable/edit_button_selector"
+        android:text="卸载"
+        android:textColor="#ffffff"
+        android:textSize="26sp" />
+
+</LinearLayout>

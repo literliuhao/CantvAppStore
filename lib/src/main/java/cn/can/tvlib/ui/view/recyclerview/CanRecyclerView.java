@@ -23,6 +23,8 @@ public class CanRecyclerView extends RecyclerView {
 
     private LayoutManager mLayoutManager;
 
+
+
     public interface OnFocusSearchCallback {
 
         public void onSuccess(View view, View focused, int focusDirection, Recycler recycler, State state);
