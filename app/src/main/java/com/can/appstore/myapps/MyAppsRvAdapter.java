@@ -1,5 +1,6 @@
 package com.can.appstore.myapps;
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +39,9 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<AppInfo>{
         MyAppsViewHolder myAppsViewHolder = (MyAppsViewHolder)holder;
         myAppsViewHolder.mImageView.setImageDrawable(mDatas.appIcon);
         myAppsViewHolder.mTextView.setText(mDatas.appName);
-
+        if(position == 3){
+            myAppsViewHolder.itemView.setBackgroundColor(Color.RED);
+        }
     }
 
     private  class MyAppsViewHolder extends RecyclerView.ViewHolder{

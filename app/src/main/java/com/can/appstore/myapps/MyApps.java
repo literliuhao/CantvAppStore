@@ -3,14 +3,17 @@ package com.can.appstore.myapps;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -84,7 +87,8 @@ public class MyApps extends Fragment implements View.OnClickListener {
                 .findViewById(R.id.app_list_page_cell_edit_layout);
         mEditView.setVisibility(View.GONE);
         RelativeLayout mContent = (RelativeLayout)view.findViewById(R.id.myapps_main_page);
-        mContent.addView(mEditView, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        FrameLayout decorView1 = (FrameLayout) getActivity().getWindow().getDecorView();
+        decorView1.addView(mEditView, new ViewGroup.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         mOpenAppBtn = (Button)mEditView. findViewById(R.id.app_list_page_cell_open);
         mOpenAppBtn.setText("置顶");
         mUninstallAppBtn = (Button)mEditView. findViewById(R.id.app_list_page_cell_remove);
@@ -156,7 +160,6 @@ public class MyApps extends Fragment implements View.OnClickListener {
                    mFocusHelper = null;
                    showMenuAction(position,view);
                }
-
            }
            return false;
        }
@@ -164,17 +167,8 @@ public class MyApps extends Fragment implements View.OnClickListener {
 
 
     private void showMenuAction(final int position, View view) {
-       
-        int[] location = new int[2];
-        view.getLocationInWindow(location);
-        RelativeLayout.LayoutParams edit_button_lp = (RelativeLayout.LayoutParams) mEditView.getLayoutParams();
-        int scalew = (int) (view.getWidth() * 1.08);
-        int scaleh = (int) (view.getHeight() * 1.08);
-        edit_button_lp.leftMargin = location[0] - (scalew - view.getWidth()) / 2;
-        edit_button_lp.topMargin = location[1] - (scaleh - view.getHeight()) / 2;
-        edit_button_lp.width = scalew;
-        edit_button_lp.height = scaleh;
-        mEditView.setLayoutParams(edit_button_lp);
+        mEditView.setBackgroundColor(Color.BLUE);
+
         if (mShowList.get(mCurrentPos).isSystemApp) {
             mUninstallAppBtn.setVisibility(View.GONE);
         } else {
@@ -185,6 +179,23 @@ public class MyApps extends Fragment implements View.OnClickListener {
         mEditView.setVisibility(View.VISIBLE);
         mEditView.requestFocus();
 
+        int[] location = new int[2];
+        view.getLocationOnScreen(location);
+
+        Log.e("zby", "location " + location[0] + ", location[]" + location[1]);
+        float w = view.getWidth() * view.getScaleX();
+        float h = view.getHeight() * view.getScaleY();
+        float wOffset = (w - view.getWidth()) / 2;
+        float hOffset = (h - view.getHeight()) / 2;
+
+
+//        mEditView.layout(, location[1], ((int)()), ((int)()));
+        FrameLayout.LayoutParams edit_button_lp = (FrameLayout.LayoutParams) mEditView.getLayoutParams();
+        edit_button_lp.leftMargin = (int)(location[0] - wOffset);
+        edit_button_lp.topMargin = (int)(location[1] - hOffset) ;
+        edit_button_lp.width = (int)(w);
+        edit_button_lp.height = (int)(h);
+        mEditView.requestLayout();
     }
 
 
@@ -214,7 +225,15 @@ public class MyApps extends Fragment implements View.OnClickListener {
         }
     }
 
-
+    public boolean dispatchKeyEvent(KeyEvent event){
+        if(event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_BACK){
+            if(mEditView.getVisibility() == View.VISIBLE){
+                mEditView.setVisibility(View.GONE);
+                return true;
+            }
+        }
+        return false;
+    }
 
 
 
