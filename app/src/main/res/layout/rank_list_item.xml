@@ -7,18 +7,18 @@
     android:focusable="true">
 
     <ImageView
-        android:id="@+id/icon_view"
+        android:id="@+id/icon_view4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@mipmap/ic_launcher" />
 
     <TextView
-        android:id="@+id/app_name_view"
+        android:id="@+id/app_name_view4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@id/icon_view"
+        android:layout_toRightOf="@id/icon_view4"
         android:gravity="center"
         android:text="测试名称" />
 </RelativeLayout>
