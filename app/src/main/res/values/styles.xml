@@ -8,8 +8,4 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="HomeRankItemStyle">
-        <item name="android:layout_marginLeft">50dp</item>
-    </style>
-
 </resources>
