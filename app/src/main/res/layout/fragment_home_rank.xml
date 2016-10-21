@@ -18,9 +18,7 @@
         <HorizontalScrollView
             android:id="@+id/homeran_scrollview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingLeft="50dp">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:id="@+id/ll_par_view"
@@ -30,17 +28,29 @@
 
                 <include layout="@layout/homerank_item" />
 
-                <include layout="@layout/homerank_item" />
+                <include
+                    style="@style/HomeRankItemStyle"
+                    layout="@layout/homerank_item" />
 
-                <include layout="@layout/homerank_item" />
+                <include
+                    style="@style/HomeRankItemStyle"
+                    layout="@layout/homerank_item" />
 
-                <include layout="@layout/homerank_item" />
+                <include
+                    style="@style/HomeRankItemStyle"
+                    layout="@layout/homerank_item" />
 
-                <include layout="@layout/homerank_item" />
+                <include
+                    style="@style/HomeRankItemStyle"
+                    layout="@layout/homerank_item" />
 
-                <include layout="@layout/homerank_item" />
+                <include
+                    style="@style/HomeRankItemStyle"
+                    layout="@layout/homerank_item" />
 
-                <include layout="@layout/homerank_item" />
+                <include
+                    style="@style/HomeRankItemStyle"
+                    layout="@layout/homerank_item" />
 
             </LinearLayout>
         </HorizontalScrollView>
