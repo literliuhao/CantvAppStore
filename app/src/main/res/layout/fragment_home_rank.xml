@@ -15,21 +15,45 @@
             android:gravity="center"
             android:text="首页排行榜" />
 
-        <!--<android.support.v7.widget.RecyclerView-->
-            <!--android:id="@+id/homerank_recycleview"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent" />-->
-
         <HorizontalScrollView
             android:id="@+id/homeran_scrollview"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
                 android:id="@+id/ll_par_view"
-                android:layout_height="match_parent"/>
-            </HorizontalScrollView>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <include layout="@layout/homerank_item" />
+
+                <include
+                    style="@style/HomeRankItemStyle"
+                    layout="@layout/homerank_item" />
+
+                <include
+                    style="@style/HomeRankItemStyle"
+                    layout="@layout/homerank_item" />
+
+                <include
+                    style="@style/HomeRankItemStyle"
+                    layout="@layout/homerank_item" />
+
+                <include
+                    style="@style/HomeRankItemStyle"
+                    layout="@layout/homerank_item" />
+
+                <include
+                    style="@style/HomeRankItemStyle"
+                    layout="@layout/homerank_item" />
+
+                <include
+                    style="@style/HomeRankItemStyle"
+                    layout="@layout/homerank_item" />
+
+            </LinearLayout>
+        </HorizontalScrollView>
 
     </LinearLayout>
 
