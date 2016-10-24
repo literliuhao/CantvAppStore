@@ -9,17 +9,10 @@ import com.bumptech.glide.load.engine.cache.ExternalCacheDiskCacheFactory;
 import com.bumptech.glide.load.engine.cache.LruResourceCache;
 import com.bumptech.glide.load.engine.cache.MemorySizeCalculator;
 import com.bumptech.glide.module.GlideModule;
-<<<<<<< c084de9517a8f1e53dd05bdccb5bb9edbd14211e
 import com.bumptech.glide.request.target.ViewTarget;
 
-<<<<<<< 221fb4672f4db32c991c4aae01e545d13259b707
 import cn.can.tvlib.R;
 
-=======
->>>>>>> 修复编译错误
-=======
-//import cn.cantv.market.R;
->>>>>>> 优化搜索代码
 
 /***
  * Glide相关配置项<p/>
