@@ -27,7 +27,7 @@ public class CanRecyclerViewDivider extends RecyclerView.ItemDecoration {
 
     public CanRecyclerViewDivider(Drawable divider, int horizontalDividerSize, int verticalDividerSize) {
         mDivider = divider;
-        if(horizontalDividerSize <= 0 || verticalDividerSize <= 0){
+        if(horizontalDividerSize < 0 || verticalDividerSize < 0){
             throw new IllegalArgumentException("The divider size of RecyclerView must be larger than 0.");
         }
         mHorizontalDividerSize = horizontalDividerSize;
@@ -43,7 +43,7 @@ public class CanRecyclerViewDivider extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+    public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
         RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
         if(layoutManager instanceof GridLayoutManager || layoutManager instanceof StaggeredGridLayoutManager){
             drawHorizontalDivider(c, parent);
@@ -128,13 +128,17 @@ public class CanRecyclerViewDivider extends RecyclerView.ItemDecoration {
         RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
 
         if (layoutManager instanceof GridLayoutManager) {
-            int range = childCount % spanCount;
-            if(range == 0){
-                range = childCount- spanCount;
+            if(((GridLayoutManager) layoutManager).getOrientation() == LinearLayoutManager.VERTICAL){
+                int range = childCount % spanCount;
+                if(range == 0){
+                    range = childCount- spanCount;
+                } else {
+                    range = childCount - range;
+                }
+                return pos >= range;
             } else {
-                range = childCount - range;
+                return (pos + 1) % spanCount == 0;
             }
-            return pos >= range;
 
         } else if(layoutManager instanceof LinearLayoutManager){
             return pos == childCount - 1;
@@ -155,7 +159,17 @@ public class CanRecyclerViewDivider extends RecyclerView.ItemDecoration {
         RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
 
         if (layoutManager instanceof GridLayoutManager) {
-            return (pos + 1) % spanCount == 0;
+            if(((GridLayoutManager) layoutManager).getOrientation() == LinearLayoutManager.VERTICAL){
+                return (pos + 1) % spanCount == 0;
+            } else {
+                int range = childCount % spanCount;
+                if(range == 0){
+                    range = childCount- spanCount;
+                } else {
+                    range = childCount - range;
+                }
+                return pos > range;
+            }
 
         } else if(layoutManager instanceof LinearLayoutManager){
             return pos == childCount - 1;
@@ -171,8 +185,5 @@ public class CanRecyclerViewDivider extends RecyclerView.ItemDecoration {
         }
         return false;
     }
-
-
-
 
 }

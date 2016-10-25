@@ -31,15 +31,21 @@ import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
  */
 public class RoundCornerImageView extends ImageView{
 
-    private float cornerRadius;
+    protected float cornerRadius;
     private Paint mPaint;
+    private Paint mMaskPaint;
     private RectF mRect;
+    private int mMaskColor;
+    private boolean showMask;
 
     public RoundCornerImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
+
+        mMaskPaint = new Paint(mPaint);
+        mMaskPaint.setStyle(Paint.Style.FILL);
 
         cornerRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, 8,
                 context.getResources().getDisplayMetrics());
@@ -98,7 +104,36 @@ public class RoundCornerImageView extends ImageView{
                     canvas.drawBitmap(bmp, new Rect(0, 0, bmpW, bmpH), mRect, new Paint());
                     canvas.restore();
                 }
+
+                if(showMask && mMaskColor != 0){
+                    mMaskPaint.setColor(mMaskColor);
+                    mRect.right = width;
+                    mRect.bottom = height;
+                    canvas.drawRoundRect(mRect, cornerRadius, cornerRadius, mMaskPaint);
+                }
             }
+        }
+    }
+
+    public void setMaskColor(int maskColor, boolean showImmidate) {
+        showMask = showImmidate;
+        mMaskColor = maskColor;
+        if(showMask){
+            postInvalidate();
+        }
+    }
+
+    public void showMask(){
+        if(!showMask && mMaskColor != 0){
+            showMask = true;
+            postInvalidate();
+        }
+    }
+
+    public void hideMask(){
+        if(showMask && mMaskColor != 0){
+            showMask = false;
+            postInvalidate();
         }
     }
 }

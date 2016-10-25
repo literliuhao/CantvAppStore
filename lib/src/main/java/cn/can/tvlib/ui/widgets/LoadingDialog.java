@@ -28,7 +28,7 @@ public class LoadingDialog extends Dialog {
 
         LoadingTipsView loadingTipsView = new LoadingTipsView(context);
         loadingTipsView.addLoadingView(loadingSize, loadingSize);
-        loadingTipsView.addMessageView();
+        loadingTipsView.setMessage();
         mLoadingView = loadingTipsView.getLoadingView();
         mMsgView = loadingTipsView.getMessageView();
 
