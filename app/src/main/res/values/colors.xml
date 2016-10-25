@@ -3,4 +3,15 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+
+    <!-- app管理器色块 -->
+    <color name="square_blue">#06A2EC</color>
+    <color name="square_brown">#A3C405</color>
+    <color name="square_purple">#B904E7</color>
+    <color name="square_green">#03AE8E</color>
+    <color name="square_red">#D33005</color>
+    <color name="square_orange">#D68800</color>
+
+    <color name="focus_light_yellow">#fef102</color>
 </resources>

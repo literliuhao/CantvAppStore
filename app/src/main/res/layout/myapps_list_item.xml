@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
+              android:layout_width="270px"
+              android:layout_height="182px"
               android:focusable="true"
-                >
+              android:id="@+id/myapps_item_rlbg"
+              android:layout_margin="5px"
+              >
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        >
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_margin="25dp"
+        android:layout_height="80px"
         android:id="@+id/myapp_ivicon"
+        android:layout_marginTop="12px"
+        android:layout_centerHorizontal="true"
         />
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16px"
         android:layout_below="@id/myapp_ivicon"
         android:id="@+id/myapp_tvname"
-        android:gravity="center"
+        android:layout_centerHorizontal="true"
         android:text="APP-NAME"
+        android:textSize="32px"
         />
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/myapps_ll_buttons"
+  <!--  <LinearLayout
+        android:id="@+id/myapps_ll_edit_button"
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:orientation="vertical"
@@ -44,6 +50,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="移除"/>
-    </LinearLayout>
+    </LinearLayout>-->
 
 </RelativeLayout>

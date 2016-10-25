@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/app_list_page_cell_edit_layout"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-
-    android:gravity="center"
-    android:orientation="vertical" >
+              android:id="@+id/allapps_edit_layout"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:gravity="center"
+              android:orientation="vertical" >
     <!--android:background="@drawable/item_edit_focus"-->
     <Button
-        android:id="@+id/app_list_page_cell_open"
+        android:id="@+id/allapps_but_edit_open"
         android:layout_width="match_parent"
         android:layout_height="53dp"
         android:background="@drawable/edit_button_selector"
@@ -17,7 +16,7 @@
         android:textSize="26sp" />
 
     <Button
-        android:id="@+id/app_list_page_cell_remove"
+        android:id="@+id/allapps_but_edit_uninstall"
         android:layout_width="match_parent"
         android:layout_height="53dp"
         android:background="@drawable/edit_button_selector"

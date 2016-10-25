@@ -30,9 +30,10 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/allapps_title"
         android:layout_centerHorizontal="true"
+        android:verticalSpacing="8dp"
         android:numColumns="5"
         android:scrollbars="none"
-        android:paddingRight="1dp"
+        android:listSelector="@android:color/transparent"
         android:clipToPadding="false"/> <!-- 修复其最后边item选中后边框显示不全的问题  by zby-->
     <!--android:listSelector="@drawable/appmanager_gridview_selector"-->
 </RelativeLayout>
