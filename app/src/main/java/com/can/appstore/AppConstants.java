@@ -10,4 +10,9 @@ package com.can.appstore;
  * ================================================
  */
 public class AppConstants {
+
+
+
+
+
 }

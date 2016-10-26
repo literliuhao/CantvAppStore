@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CANAppStore</string>
+    <string name="page_row_template" formatted="false">%d / %d</string>
 </resources>
