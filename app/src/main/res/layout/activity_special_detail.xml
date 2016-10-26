@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_special_detail"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/canbj"
+    tools:context="com.can.appstore.special_detail.SpecialDetailActivity">
+
+    <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
+        android:id="@+id/special_detail_crview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="@dimen/px100"
+        android:layout_marginBottom="@dimen/px50"/>
+</RelativeLayout>

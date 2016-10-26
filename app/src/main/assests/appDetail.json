@@ -1,0 +1,14 @@
+{
+[
+  {
+    'appId': '1',
+    'appName': 'McLaughlin',
+    'appIcon': 'http://img2.imgtn.bdimg.com/it/u=1092350862,3528911334&fm=21&gp=0.jpg'
+  },
+  {
+    'appId': '2',
+    'appName': 'Hunter',
+    'appIcon': 'http://img4.imgtn.bdimg.com/it/u=4107053065,2431804237&fm=21&gp=0.jpg'
+  }
+]
+}
