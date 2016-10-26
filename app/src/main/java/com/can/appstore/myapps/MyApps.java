@@ -75,7 +75,7 @@ public class MyApps extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view  = inflater.inflate(R.layout.fragment_myapps,container,false);
         mAppsRecyclerView = (CanRecyclerView) view .findViewById(R.id.cr_myapps);
-        mAppsRecyclerView.setLayoutManager(new CanRecyclerView.LayoutManager(getActivity(), 6, GridLayoutManager.VERTICAL, false));
+        mAppsRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(getActivity(), 6, GridLayoutManager.VERTICAL, false));
         mAppsRecyclerView.addItemDecoration(new  SpacesItemDecoration(8));
 
         mEditView = (LinearLayout) LayoutInflater.from(getActivity())
@@ -107,7 +107,7 @@ public class MyApps extends Fragment implements View.OnClickListener{
             }
 
             @Override
-            public void onItemFocusChanged(View view, int position, boolean hasFocus, Object dataType) {
+            public void onItemFocusChanged(View view, int position, boolean hasFocus) {
                 if (hasFocus || mEditView.getVisibility() == View.VISIBLE) {
                     mFocusedListChild = view;
                     Log.i(TAG, "onItemFocusChanged " + position);
@@ -116,6 +116,7 @@ public class MyApps extends Fragment implements View.OnClickListener{
                     focusScaleUtil.scaleToNormal();
                 }
             }
+
         };
         //添加焦点移动的监听,要在adapter里设置
        mMyAppsRvAdapter.setOnFocusChangeListener(mFocusChangeListener);

@@ -46,11 +46,11 @@ public  class MyAppsShowListHelper {
           }
           saveShowList(mShowList);
       }
-        mShowList.add(0,new AppInfo("全部应用", context.getResources().getDrawable(R.drawable.ic_launcher, null)));
-        mShowList.add(1,new AppInfo("系统应用", context.getResources().getDrawable(R.drawable.ic_launcher,null)));
+        mShowList.add(0,new AppInfo("全部应用", context.getResources().getDrawable(R.drawable.ic_launcher)));
+        mShowList.add(1,new AppInfo("系统应用", context.getResources().getDrawable(R.drawable.ic_launcher)));
 
         if(mShowList.size()<18){
-            mShowList.add(new AppInfo("添加应用", context.getResources().getDrawable(R.drawable.ic_launcher,null)));
+            mShowList.add(new AppInfo("添加应用", context.getResources().getDrawable(R.drawable.ic_launcher)));
         }
 
 
