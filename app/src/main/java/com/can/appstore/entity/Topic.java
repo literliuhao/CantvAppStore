@@ -3,9 +3,9 @@ package com.can.appstore.entity;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * 「列表页」左侧菜单项
+ * 「列表页」左侧分类
  */
-public class LeftTopic {
+public class Topic {
     @SerializedName("id")
     private String id;
     @SerializedName("name")

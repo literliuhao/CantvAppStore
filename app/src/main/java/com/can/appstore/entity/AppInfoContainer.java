@@ -23,7 +23,7 @@ public class AppInfoContainer {
     @SerializedName("total")
     private int total;
     @SerializedName("topics")
-    private List<LeftTopic> topics;
+    private List<Topic> topics;
     @SerializedName("data")
     private List<AppInfo> data;
 
@@ -43,11 +43,11 @@ public class AppInfoContainer {
         this.total = total;
     }
 
-    public List<LeftTopic> getTopics() {
+    public List<Topic> getTopics() {
         return CollectionUtil.emptyIfNull(topics);
     }
 
-    public void setTopics(List<LeftTopic> topics) {
+    public void setTopics(List<Topic> topics) {
         this.topics = topics;
     }
 

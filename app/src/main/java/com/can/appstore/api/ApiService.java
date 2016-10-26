@@ -1,5 +1,6 @@
 package com.can.appstore.api;
 
+import com.can.appstore.entity.Activity;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.AppInfoContainer;
 import com.can.appstore.entity.ListResult;
@@ -34,7 +35,10 @@ public interface ApiService {
     @GET
     Call<Result<SpecialTopic>> getSpecialTopic(@Query("specialId") String specialId);
 
-    // 活动接口
+    /**
+     * 活动详情
+     */
+    Call<Result<Activity>> getActivityInfo(@Query("activeId") String activeId);
 
     /**
      * 排行榜
@@ -46,14 +50,14 @@ public interface ApiService {
      * 排行榜列表
      */
     @GET
-    Call<Result<AppInfoContainer>> getAppsRanking(String rankingId, int page, int pageSize);
+    Call<Result<AppInfoContainer>> getAppsRanking(@Query("") String rankingId, @Query("pageNumber") int page, @Query("pageSize") int pageSize);
 
     /**
      * 应用列表
      */
     // TODO: 参数
     @GET
-    Call<Result<AppInfoContainer>> getAppinfos(String topicId, int page, int pageSize);
+    Call<Result<AppInfoContainer>> getAppinfos(@Query("topicId") String topicId, @Query("pageNumber") int page, @Query("pageSize") int pageSize);
 
     /**
      * 获取应用详情

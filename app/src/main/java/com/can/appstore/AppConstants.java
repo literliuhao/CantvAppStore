@@ -10,4 +10,5 @@ package com.can.appstore;
  * ================================================
  */
 public class AppConstants {
+    public static final String BASE_URL = "http://localhost/";
 }

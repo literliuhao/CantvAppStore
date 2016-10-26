@@ -1,5 +1,6 @@
 package com.can.appstore.http;
 
+import com.can.appstore.AppConstants;
 import com.can.appstore.MyApp;
 import com.can.appstore.api.ApiService;
 
@@ -19,7 +20,7 @@ public class HttpManager {
                 .addInterceptor(new RequestParamsInterceptor())
                 .build();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("") // TODO: 设置URL
+                .baseUrl(AppConstants.BASE_URL)
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();

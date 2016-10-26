@@ -17,16 +17,16 @@ public class CollectionUtil {
         return set != null ? set : Collections.<T>emptySet();
     }
 
-    public static <T> Iterator<T> emptyIfNull(Iterator<T> set) {
-        return set != null ? set : Collections.<T>emptyIterator();
+    public static <T> Iterator<T> emptyIfNull(Iterator<T> iterator) {
+        return iterator != null ? iterator : Collections.<T>emptyIterator();
     }
 
-    public static <T> Enumeration<T> emptyIfNull(Enumeration<T> set) {
-        return set != null ? set : Collections.<T>emptyEnumeration();
+    public static <T> Enumeration<T> emptyIfNull(Enumeration<T> enumeration) {
+        return enumeration != null ? enumeration : Collections.<T>emptyEnumeration();
     }
 
-    public static <T> ListIterator<T> emptyIfNull(ListIterator<T> set) {
-        return set != null ? set : Collections.<T>emptyListIterator();
+    public static <T> ListIterator<T> emptyIfNull(ListIterator<T> listIterator) {
+        return listIterator != null ? listIterator : Collections.<T>emptyListIterator();
     }
 
     public static <K, V> Map<K, V> emptyIfNull(Map<K, V> map) {
