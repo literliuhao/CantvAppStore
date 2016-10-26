@@ -22,6 +22,7 @@ import android.view.animation.Interpolator;
  * 修订历史：
  * ================================================
  */
+
 /**
  * 用于view缩放<br/>
  * <p>
@@ -40,7 +41,7 @@ public class FocusScaleUtil {
     private Interpolator interpolatorSmall;
 
     public FocusScaleUtil() {
-        this(300, 500, 1.1f, new AccelerateInterpolator(1.5f), new DecelerateInterpolator(1.5f));
+        this(300, 500, 1.1f, new AccelerateInterpolator(), new DecelerateInterpolator());
     }
 
     public FocusScaleUtil(int duration, float scale, Interpolator interpolator) {
@@ -76,7 +77,7 @@ public class FocusScaleUtil {
     }
 
     public void scaleToNormal(View item) {
-        if (this.animatorSet != null && item != null) {
+        if (item != null && this.animatorSet != null && item != null) {
             if (this.animatorSet.isRunning()) {
                 this.animatorSet.cancel();
             }
