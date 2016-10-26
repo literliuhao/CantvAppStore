@@ -130,7 +130,7 @@ public abstract class CanViewPagerAdapter extends RecyclerView.Adapter<RecyclerV
         super.onAttachedToRecyclerView(recyclerView);
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
         if (layoutManager == null) {
-            throw new NullPointerException("LayoutManager of recyclerView must be initalized.");
+            throw new NullPointerException("CanGridLayoutManager of recyclerView must be initalized.");
         }
         if (layoutManager instanceof LinearLayoutManager == false) {
             throw new NullPointerException("The type of layoutManager must be LinearLayoutManager.");
