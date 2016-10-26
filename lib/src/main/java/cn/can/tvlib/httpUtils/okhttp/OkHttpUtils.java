@@ -19,7 +19,7 @@ import cn.can.tvlib.httpUtils.okhttp.request.HeadRequest;
 import cn.can.tvlib.httpUtils.okhttp.request.PatchRequest;
 import cn.can.tvlib.httpUtils.okhttp.request.PostRequest;
 import cn.can.tvlib.httpUtils.okhttp.request.PutRequest;
-import cn.can.tvlib.utils.L;
+import cn.can.tvlib.utils.LogUtil;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okio.Buffer;
@@ -109,8 +109,8 @@ public class OkHttpUtils {
 
     /** 调试模式 */
     public static void debug(boolean debug, String tag) {
-        L.isDebug = debug;
-        L.TAG = tag;
+        LogUtil.isDebug = debug;
+        LogUtil.TAG = tag;
     }
 
     /**

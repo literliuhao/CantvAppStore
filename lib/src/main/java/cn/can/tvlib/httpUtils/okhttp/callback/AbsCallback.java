@@ -3,7 +3,7 @@ package cn.can.tvlib.httpUtils.okhttp.callback;
 import android.support.annotation.Nullable;
 
 import cn.can.tvlib.httpUtils.okhttp.request.BaseRequest;
-import cn.can.tvlib.utils.L;
+import cn.can.tvlib.utils.LogUtil;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -56,7 +56,7 @@ public abstract class AbsCallback<T> {
     /** 请求失败，响应错误，数据解析错误等，都会回调该方法， UI线程 */
     public void onError(Request request, @Nullable Response response, @Nullable Exception e) {
         if (e != null) e.printStackTrace();
-        else if (response != null) L.e("服务器内部错误，或者找不到页面等");
+        else if (response != null) LogUtil.e("服务器内部错误，或者找不到页面等");
     }
 
     public static final AbsCallback CALLBACK_DEFAULT = new AbsCallback() {

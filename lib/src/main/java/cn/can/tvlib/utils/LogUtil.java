@@ -11,21 +11,21 @@ import android.util.Log;
  * 修订历史：
  * ================================================
  */
-public class LogUtils {
+public class LogUtil {
 
-	private static final String TAG = "LogUtils";
+	public static String TAG = "LogUtil";
 
 	public static final int VERBOSE = 1;
 	public static final int DEBUG = 2;
 	public static final int INFO = 3;
 	public static final int WARNING = 4;
 	public static final int ERROR = 5;
-	public static final int NONE = 6;//禁止日志输出
 
 	public static int logLevel = VERBOSE;
+	public static boolean isDebug = true;
 
 	public static void setLogLevel(int logLevel) {
-		LogUtils.logLevel = logLevel;
+		LogUtil.logLevel = logLevel;
 	}
 
 	public static void v(String msg) {
@@ -69,31 +69,31 @@ public class LogUtils {
 	}
 
 	public static void v(String tag, String msg, Throwable tr) {
-		if (VERBOSE >= logLevel) {
+		if (isDebug && VERBOSE >= logLevel) {
 			Log.v(tag, generateLogMsg(msg), tr);
 		}
 	}
 
 	public static void d(String tag, String msg, Throwable tr) {
-		if (DEBUG >= logLevel) {
+		if (isDebug && DEBUG >= logLevel) {
 			Log.d(tag, generateLogMsg(msg), tr);
 		}
 	}
 
 	public static void i(String tag, String msg, Throwable tr) {
-		if (INFO >= logLevel) {
+		if (isDebug && INFO >= logLevel) {
 			Log.i(tag, generateLogMsg(msg), tr);
 		}
 	}
 
 	public static void w(String tag, String msg, Throwable tr) {
-		if (WARNING >= logLevel) {
+		if (isDebug && WARNING >= logLevel) {
 			Log.w(tag, generateLogMsg(msg), tr);
 		}
 	}
 
 	public static void e(String tag, String msg, Throwable tr) {
-		if (ERROR >= logLevel) {
+		if (isDebug && ERROR >= logLevel) {
 			Log.e(tag, generateLogMsg(msg), tr);
 		}
 	}
