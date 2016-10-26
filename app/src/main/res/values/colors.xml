@@ -14,4 +14,5 @@
     <color name="square_orange">#D68800</color>
 
     <color name="focus_light_yellow">#fef102</color>
+    <color name="testColor">#FF0081</color>
 </resources>

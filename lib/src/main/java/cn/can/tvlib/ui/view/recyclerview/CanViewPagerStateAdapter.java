@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static android.R.attr.id;
+import static android.R.attr.tag;
 
 /**
  * Created by zhangbingyuan on 2016/10/15.
@@ -40,17 +41,17 @@ public abstract class CanViewPagerStateAdapter extends RecyclerView.Adapter<CanV
     public static final int VIEW_ID_OFFSET = 0x100;
 
     public interface OnPageChangeListener{
-        public void onChanged(int oldPage, int newPage);
+        void onChanged(int oldPage, int newPage);
     }
 
     private RecyclerView mAttachedView;
-    private final FragmentManager mFragmentManager;
+    protected final FragmentManager mFragmentManager;
     private FragmentTransaction mCurTransaction = null;
     private Set<Integer> mIds = new HashSet<>();
     private SparseArray<Fragment.SavedState> mStates = new SparseArray<>();
     private ViewTreeObserver.OnGlobalFocusChangeListener mGlobalFocusChangeListener;
     private RecyclerView.OnScrollListener mScrollListener;
-    private CanViewPagerAdapter.OnPageChangeListener mPageChangeListener;
+    private OnPageChangeListener mPageChangeListener;
     private int mCurrPage;
 
     public CanViewPagerStateAdapter(FragmentManager fm) {
@@ -68,9 +69,9 @@ public abstract class CanViewPagerStateAdapter extends RecyclerView.Adapter<CanV
         FrameLayout fl = new FrameLayout(parent.getContext());
         fl.setFocusable(false);
         fl.setClickable(false);
-        RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams
-                .MATCH_PARENT);
-        fl.setLayoutParams(layoutParams);
+        fl.setClipChildren(false);
+        fl.setClipToPadding(false);
+        fl.setLayoutParams(new RecyclerView.LayoutParams(-1, -1));
 
         int tagId = View.generateViewId();
         mIds.add(id);
@@ -85,13 +86,12 @@ public abstract class CanViewPagerStateAdapter extends RecyclerView.Adapter<CanV
 
     @Override
     public void onViewRecycled(FragmentViewHolder holder) {
-        if (mCurTransaction == null) {
-            mCurTransaction = mFragmentManager.beginTransaction();
-        }
-        int tagId = createTagId(holder.getAdapterPosition());
-        Fragment f = mFragmentManager.findFragmentByTag(tagId + "");
+        Fragment f = mFragmentManager.findFragmentByTag(createFragmentTag(holder.getAdapterPosition()) + "");
         if (f != null) {
-            mStates.put(tagId, mFragmentManager.saveFragmentInstanceState(f));
+            if (mCurTransaction == null) {
+                mCurTransaction = mFragmentManager.beginTransaction();
+            }
+            mStates.put(tag, mFragmentManager.saveFragmentInstanceState(f));
             mCurTransaction.remove(f);
             mCurTransaction.commitAllowingStateLoss();
             mCurTransaction = null;
@@ -103,7 +103,7 @@ public abstract class CanViewPagerStateAdapter extends RecyclerView.Adapter<CanV
         super.onViewRecycled(holder);
     }
 
-    protected int createTagId(int position) {
+    protected int createFragmentTag(int position) {
         long itemId = getItemId(position);
         if (itemId == RecyclerView.NO_ID) {
             return position + 1;
@@ -117,7 +117,7 @@ public abstract class CanViewPagerStateAdapter extends RecyclerView.Adapter<CanV
         super.onAttachedToRecyclerView(recyclerView);
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
         if (layoutManager == null) {
-            throw new NullPointerException("LayoutManager of recyclerView must be initalized.");
+            throw new NullPointerException("CanGridLayoutManager of recyclerView must be initalized.");
         }
         if (layoutManager instanceof LinearLayoutManager == false) {
             throw new NullPointerException("The type of layoutManager must be LinearLayoutManager.");
@@ -134,24 +134,32 @@ public abstract class CanViewPagerStateAdapter extends RecyclerView.Adapter<CanV
             return;
         }
         mScrollListener = new RecyclerView.OnScrollListener() {
+
+            private boolean callbackFlag = false;
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if(newState == RecyclerView.SCROLL_STATE_IDLE){
-                    int posi = ((LinearLayoutManager) mAttachedView.getLayoutManager()).findFirstVisibleItemPosition();
-                    if(mCurrPage != posi){
-                        int oldPosi = posi;
-                        mCurrPage = posi;
-                        if(mPageChangeListener != null){
-                            mPageChangeListener.onChanged(oldPosi, mCurrPage);
-                        }
-                    }
+                if(newState == RecyclerView.SCROLL_STATE_SETTLING){
+                    callbackFlag = false;
                 }
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
+                int newPosi = mCurrPage;
+                if(dy > 0){
+                    newPosi = ((LinearLayoutManager) mAttachedView.getLayoutManager()).findLastVisibleItemPosition();
+                } else {
+                    newPosi = ((LinearLayoutManager) mAttachedView.getLayoutManager()).findFirstVisibleItemPosition();
+                }
+                if(callbackFlag == false && newPosi != mCurrPage){
+                    callbackFlag = true;
+                    int oldPosi = mCurrPage;
+                    mCurrPage = newPosi;
+                    if(mPageChangeListener != null){
+                        mPageChangeListener.onChanged(oldPosi, newPosi);
+                    }
+                }
             }
         };
     }
@@ -183,7 +191,7 @@ public abstract class CanViewPagerStateAdapter extends RecyclerView.Adapter<CanV
         return mAttachedView != null;
     }
 
-    public void setOnPageChangeListener(CanViewPagerAdapter.OnPageChangeListener pageChangeListener) {
+    public void setOnPageChangeListener(OnPageChangeListener pageChangeListener) {
         mPageChangeListener = pageChangeListener;
     }
 
@@ -223,7 +231,7 @@ public abstract class CanViewPagerStateAdapter extends RecyclerView.Adapter<CanV
             if (mCurTransaction == null) {
                 mCurTransaction = mFragmentManager.beginTransaction();
             }
-            final int tagId = createTagId(getLayoutPosition());
+            final int tagId = createFragmentTag(getLayoutPosition());
             final Fragment fragmentInAdapter = getItem(getLayoutPosition(), mStates.get(tagId));
             if (fragmentInAdapter != null) {
                 mCurTransaction.replace(itemView.getId(), fragmentInAdapter, tagId + "");
@@ -235,7 +243,7 @@ public abstract class CanViewPagerStateAdapter extends RecyclerView.Adapter<CanV
 
         @Override
         public void onViewDetachedFromWindow(View v) {
-            final int tagId = createTagId(getLayoutPosition());
+            final int tagId = createFragmentTag(getLayoutPosition());
             Fragment fragment = mFragmentManager.findFragmentByTag(tagId + "");
             if (fragment == null) {
                 return;
