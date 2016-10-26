@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.can.appstore.search.SearchActivity;
+import com.can.appstore.special_detail.SpecialDetailActivity;
 
 /**
  * ================================================
@@ -25,6 +26,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 SearchActivity.startAc(MainActivity.this);
+            }
+        });
+
+        findViewById(R.id.bt_specail_detail).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SpecialDetailActivity.startAc(MainActivity.this);
             }
         });
     }

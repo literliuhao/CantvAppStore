@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".search.SearchActivity"></activity>
+        <activity android:name=".special_detail.SpecialDetailActivity"></activity>
     </application>
 
 </manifest>
