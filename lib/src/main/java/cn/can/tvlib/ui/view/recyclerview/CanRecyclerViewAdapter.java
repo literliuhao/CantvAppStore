@@ -50,6 +50,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
     protected List<DataType> mDatas;
     private RecyclerView mAttachedView;
     private ViewTreeObserver.OnGlobalFocusChangeListener mGlobalFocusChangeListener;
+    private boolean mHasComplexItemView;//处理当itemView中childView获取焦点时，是否将整个itemView滑动到可见区域
 
     public CanRecyclerViewAdapter(List<DataType> datas) {
         mDatas = datas;
@@ -175,9 +176,14 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                 } else {
                     hasFocusMoveOut = false;
                 }
-                View containingItemView = mAttachedView.findContainingItemView(newFocus);
-                if (containingItemView != null) {
-                    mAttachedView.smoothScrollToPosition(mAttachedView.getChildAdapterPosition(containingItemView));
+                if(mHasComplexItemView){
+                    View containingItemView = mAttachedView.findContainingItemView(newFocus);
+                    if (containingItemView != null) {
+                        int itemViewPosi = mAttachedView.getChildAdapterPosition(containingItemView);
+                        if(itemViewPosi != RecyclerView.NO_POSITION){
+                            mAttachedView.smoothScrollToPosition(itemViewPosi);
+                        }
+                    }
                 }
             }
         };
@@ -196,6 +202,10 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
 
     protected RecyclerView getAttachedView() {
         return mAttachedView;
+    }
+
+    public void setHasComplexItemView(boolean flag){
+        mHasComplexItemView = flag;
     }
 
     //----------------------------   子类需要复写的方法   ----------------------------
@@ -872,8 +882,8 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                     }
                 }
 
-            } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && position == getItemCount()) {
-                if (layoutOrientation == LinearLayoutManager.HORIZONTAL) {
+            } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                if (layoutOrientation == LinearLayoutManager.HORIZONTAL && position == getItemCount()- 1) {
                     return mFocusChangeListener.onFocusMoveOutside(position, FOCUS_DOWN);
                 } else if (layoutOrientation == LinearLayoutManager.VERTICAL) {
                     if (isLoading) {
