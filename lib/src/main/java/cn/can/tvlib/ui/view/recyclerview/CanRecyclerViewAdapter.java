@@ -26,14 +26,14 @@ import static android.view.View.FOCUS_UP;
  * 创建日期：2016.10.12
  * 描    述：RecyclerView.Adapter封装
  * 修订历史：
- *
+ * <p>
  * 1.0  zhangbingyuan
  * 1. 添加header、footer支持
  * 2. 封装选择模式
  * 3. 提供分页加载回调
  * 4. 封装item点击、焦点变化、KeyEvent事件回调
  * 5. 增加焦点移出RecyclerView边界回调（header和footer如果为viewGroup，则其焦点移出边界情况需自己处理）
- *
+ * <p>
  * ps：如果有新的用功能可以封装 或者 出现任何问题，请及时沟通
  * ================================================
  */
@@ -180,9 +180,11 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                 } else {
                     hasFocusMoveOut = false;
                 }
-                View containingItemView = mAttachedView.findContainingItemView(newFocus);
-                if (containingItemView != null) {
-                    mAttachedView.smoothScrollToPosition(mAttachedView.getChildAdapterPosition(containingItemView));
+                if (null != newFocus) {
+                    View containingItemView = mAttachedView.findContainingItemView(newFocus);
+                    if (containingItemView != null) {
+                        mAttachedView.smoothScrollToPosition(mAttachedView.getChildAdapterPosition(containingItemView));
+                    }
                 }
             }
         };
