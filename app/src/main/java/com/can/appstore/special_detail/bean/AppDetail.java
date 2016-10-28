@@ -9,6 +9,8 @@ public class AppDetail {
     private String appId;
     private String appName;
     private String appIcon;
+    private String appSize;
+    private String appDownloadNum;
 
     public AppDetail(String appId, String appName, String appIcon) {
         this.appId = appId;
@@ -48,5 +50,21 @@ public class AppDetail {
 
     public void setAppIcon(String appIcon) {
         this.appIcon = appIcon;
+    }
+
+    public String getAppSize() {
+        return appSize;
+    }
+
+    public void setAppSize(String appSize) {
+        this.appSize = appSize;
+    }
+
+    public String getAppDownloadNum() {
+        return appDownloadNum;
+    }
+
+    public void setAppDownloadNum(String appDownloadNum) {
+        this.appDownloadNum = appDownloadNum;
     }
 }

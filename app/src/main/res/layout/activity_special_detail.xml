@@ -5,13 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@mipmap/canbj"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     tools:context="com.can.appstore.special_detail.SpecialDetailActivity">
 
     <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
         android:id="@+id/special_detail_crview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/px276"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="@dimen/px100"
-        android:layout_marginBottom="@dimen/px50"/>
+        android:paddingLeft="@dimen/px140"
+        android:paddingRight="@dimen/px140"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:layout_marginBottom="@dimen/px100"/>
 </RelativeLayout>

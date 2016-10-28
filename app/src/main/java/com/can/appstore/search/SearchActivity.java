@@ -128,7 +128,7 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
      * 得到"大家都在搜"的数据
      */
     private void initData() {
-        mSearAppList_recycle.setLayoutManager(new CanRecyclerView.LayoutManager(this, SEARCH_APP_SPANCOUNT, GridLayoutManager.VERTICAL, false));
+//        mSearAppList_recycle.setLayoutManager(new CanRecyclerView.LayoutManager(this, SEARCH_APP_SPANCOUNT, GridLayoutManager.VERTICAL, false));
         mBottom_re_recycle.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         mSearchPresenter.getDefaultList();  //获取"大家都在搜"的数据
     }

@@ -4,5 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="testColor">#FF0081</color>
-    <color name="spcialDetailItemBg">#1Affffff</color>
+    <color name="color_80_ffffff">#CCffffff</color>
+    <color name="color_50_ffffff">#80ffffff</color>
+    <color name="color_10_ffffff">#1Affffff</color>
 </resources>
