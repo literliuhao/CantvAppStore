@@ -489,4 +489,26 @@ public class DownloadManager {
         mOkHttpClient = null;
         mDownloadDao = null;
     }
+
+    /**
+     * 单一任务，不加入任务队列
+     * @param task
+     * @param listener
+     */
+    public void singleTask(DownloadTask task, DownloadTaskListener listener) {
+        if (!NetworkUtils.isNetworkConnected(mContext.getApplicationContext())) {
+            return;
+        }
+        task.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_PREPARE);
+        task.setDownloadDao(mDownloadDao);
+        task.setHttpClient(mOkHttpClient);
+        task.addDownloadListener(listener);
+        if (getDBTaskById(task.getId()) == null) {
+            DownloadDBEntity dbEntity = new DownloadDBEntity(task.getId(), task.getTotalSize(),
+                    task.getCompletedSize(), task.getUrl(), task.getSaveDirPath(), task
+                    .getFileName(), task.getDownloadStatus());
+            mDownloadDao.insertOrReplace(dbEntity);
+        }
+        new Thread(task).start();
+    }
 }

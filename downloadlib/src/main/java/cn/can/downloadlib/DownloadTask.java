@@ -174,6 +174,12 @@ public class DownloadTask implements Runnable {
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
             onError(DownloadTaskListener.DOWNLOAD_ERROR_IO_ERROR);
             return;
+        } catch (Exception e) {
+            Log.d("","*******Exception*******");
+            e.printStackTrace();
+            mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
+            onError(DownloadTaskListener.DOWNLOAD_ERROR_UNKONW_ERROR);
+            return;
         } finally {
             mDbEntity.setDownloadedSize(mDownloadedSize);
             mDownloadDao.update(mDbEntity);
