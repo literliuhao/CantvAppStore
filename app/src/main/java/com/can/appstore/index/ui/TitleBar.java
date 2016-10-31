@@ -310,7 +310,7 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
         int marginLR = (int) getResources().getDimension(R.dimen.px40);
         int textWidth = (int) getResources().getDimension(R.dimen.px100);
         int textHeight = (int) getResources().getDimension(R.dimen.px50);
-        int textSize = (int) getResources().getDimension(R.dimen.px35);
+        int textSize = (int) getResources().getDimension(R.dimen.px24);
 
         lp.setMargins(marginLR, 0, marginLR, 0);
         lp.width = textWidth;
