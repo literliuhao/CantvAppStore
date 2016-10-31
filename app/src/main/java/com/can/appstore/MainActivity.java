@@ -1,5 +1,7 @@
 package com.can.appstore;
 
+import android.support.v7.app.AppCompatActivity;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +11,7 @@ import android.widget.TextView;
 import com.can.appstore.index.Data.JokeData;
 import com.can.appstore.index.IndexActivity;
 import com.can.appstore.search.SearchActivity;
+import android.view.Window;
 
 import java.util.Random;
 
@@ -26,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         //随机获得内涵段子
         int random = new Random().nextInt(5);

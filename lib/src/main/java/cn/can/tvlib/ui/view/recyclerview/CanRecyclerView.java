@@ -24,6 +24,8 @@ public class CanRecyclerView extends RecyclerView {
 
     private CanGridLayoutManager mCanGridLayoutManager;
 
+
+
     public interface OnFocusSearchCallback {
 
         public void onSuccess(View view, View focused, int focusDirection, Recycler recycler, State state);
