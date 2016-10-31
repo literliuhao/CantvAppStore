@@ -1,10 +1,11 @@
 package com.can.appstore.myapps.ui;
 
-import android.app.Fragment;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -14,16 +15,15 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.can.appstore.R;
+import com.can.appstore.index.interfaces.ICallBack;
+import com.can.appstore.myapps.adapter.MyAppsRvAdapter;
 import com.can.appstore.myapps.model.AppInfo;
 import com.can.appstore.myapps.model.MyAppsListDataUtil;
-import com.can.appstore.myapps.adapter.MyAppsRvAdapter;
 import com.can.appstore.search.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.can.tvlib.ui.focus.FocusMoveUtil;
-import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter.OnFocusChangeListener;
@@ -45,15 +45,22 @@ public class MyAppsFragment extends Fragment {
     MyAppsRvAdapter mMyAppsRvAdapter ;
 
     LinearLayout ll_edit;
+    boolean needFocus;
 
 
-    FocusMoveUtil focusMoveUtil;
-    FocusScaleUtil focusScaleUtil;
-    private View mFocusedListChild;
-    MyFocusMoveRunnable mFocusMoveRunnable;
+//    FocusMoveUtil focusMoveUtil;
+//    FocusScaleUtil focusScaleUtil;
+//    private View mFocusedListChild;
+//    MyFocusMoveRunnable mFocusMoveRunnable;
     private OnFocusChangeListener mFocusChangeListener;
+    private ICallBack mICallBack;
 
     MyAppsListDataUtil mMyAppsListDataUtil;
+    public MyAppsFragment(ICallBack iCallBack){
+        this.mICallBack = iCallBack;
+
+    }
+
     private void initData() {
         //初始化数据
         mMyAppsListDataUtil = new MyAppsListDataUtil(getActivity());
@@ -72,9 +79,9 @@ public class MyAppsFragment extends Fragment {
         mMyAppsRvAdapter = new MyAppsRvAdapter(mShowList);
         mAppsRecyclerView.setAdapter(mMyAppsRvAdapter);
 
-        focusMoveUtil = new FocusMoveUtil(getActivity(),getActivity().getWindow().getDecorView(),R.drawable.btn_focus);
-        focusScaleUtil = new FocusScaleUtil();
-        mFocusMoveRunnable = new MyFocusMoveRunnable();
+//        focusMoveUtil = new FocusMoveUtil(getActivity(),getActivity().getWindow().getDecorView(),R.drawable.btn_focus);
+//        focusScaleUtil = new FocusScaleUtil();
+//        mFocusMoveRunnable = new MyFocusMoveRunnable();
 
         addListener();
         return view;
@@ -90,12 +97,16 @@ public class MyAppsFragment extends Fragment {
         mFocusChangeListener = new OnFocusChangeListener() {
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
-                if (hasFocus) {
-                    mFocusedListChild = view;
-                    mAppsRecyclerView.postDelayed(mFocusMoveRunnable, 50);
-                } else {
-                    focusScaleUtil.scaleToNormal();
+                if( !needFocus ){
+                    mICallBack.onSuccess(view,hasFocus);
                 }
+
+//                if (hasFocus) {
+//                    mFocusedListChild = view;
+//                    mAppsRecyclerView.postDelayed(mFocusMoveRunnable, 50);
+//                } else {
+//                    focusScaleUtil.scaleToNormal();
+//                }
             }
 
         };
@@ -108,12 +119,13 @@ public class MyAppsFragment extends Fragment {
             public boolean onItemKeyEvent(int position, View item, int keyCode, KeyEvent event) {
 
                 if(keyCode == KeyEvent.KEYCODE_MENU  && mShowList.get(position).packageName != ""){
-                        mMyAppsRvAdapter.setOnFocusChangeListener(null);
+                        needFocus = true;
                         ll_edit = (LinearLayout) item.findViewById(R.id.myapps_ll_edit);
                         ll_edit.setVisibility(View.VISIBLE);
+//                        mMyAppsRvAdapter.setOnFocusChangeListener(null);
                         int width = ll_edit.getWidth();
                         int height = ll_edit.getHeight();
-                        ToastUtil.toastShort("ll_edit--宽"+width+"高"+height+"======item--"+item.getWidth()+"高"+item.getHeight());
+//                        ToastUtil.toastShort("ll_edit--宽"+width+"高"+height+"======item--"+item.getWidth()+"高"+item.getHeight());
                         editItem(position,item);
                 }
                 return false;
@@ -163,17 +175,19 @@ public class MyAppsFragment extends Fragment {
 
 
 
-    public class MyFocusMoveRunnable  implements Runnable{
+//    public class MyFocusMoveRunnable  implements Runnable{
+//
+//        @Override
+//        public void run() {
+//            if (mFocusedListChild != null) {
 
-        @Override
-        public void run() {
-            if (mFocusedListChild != null) {
-                focusScaleUtil.scaleToLarge(mFocusedListChild);
-                focusMoveUtil.startMoveFocus(mFocusedListChild, 1.1f);
+//                mICallBack.onSuccess(mFocusedListChild,true);
+//                focusScaleUtil.scaleToLarge(mFocusedListChild);
+//                focusMoveUtil.startMoveFocus(mFocusedListChild, 1.1f);
 
-            }
-        }
-    }
+//            }
+//        }
+//    }
 
 
     //显示浮层，有置顶或移除操作
@@ -237,6 +251,7 @@ public class MyAppsFragment extends Fragment {
     }
 
     private void hideEditView(int position , View item) {
+        needFocus = false;
         ll_edit.setVisibility(View.GONE);
         item.requestFocus();
         mMyAppsRvAdapter.setOnFocusChangeListener(mFocusChangeListener);

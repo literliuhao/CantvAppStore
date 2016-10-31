@@ -18,6 +18,7 @@ import com.can.appstore.index.model.JsonFormat;
 import com.can.appstore.index.ui.FragmentBody;
 import com.can.appstore.index.ui.ManagerFragment;
 import com.can.appstore.index.ui.TitleBar;
+import com.can.appstore.myapps.ui.MyAppsFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,6 +90,8 @@ public class IndexActivity extends FragmentActivity implements ICallBack, ViewPa
         mFragmentLists.add(1, topFragment);
         ManagerFragment managerFragment = new ManagerFragment(this);
         mFragmentLists.add(4, managerFragment);
+        MyAppsFragment myAppsFragment = new MyAppsFragment(this);
+        mFragmentLists.add(5, myAppsFragment);
 
     }
 
@@ -106,6 +109,7 @@ public class IndexActivity extends FragmentActivity implements ICallBack, ViewPa
         //排行、管理、我的应用不受服务器后台配置，因此手动干预位置
         mDatas.add(1, "排行");
         mDatas.add(4, "管理");
+        mDatas.add(5, "我的应用");
         //设置导航栏Title
         mTitleBar.setTabItemTitles(mDatas);
     }
