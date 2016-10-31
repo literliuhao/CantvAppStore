@@ -1,11 +1,17 @@
 package com.can.appstore;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.Window;
+import android.widget.TextView;
 
-import com.can.appstore.homerank.HomeRankActivity;
+import com.can.appstore.index.Data.JokeData;
+import com.can.appstore.index.IndexActivity;
 import com.can.appstore.search.SearchActivity;
+
+import java.util.Random;
 
 /**
  * ================================================
@@ -21,19 +27,27 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.bt_search).setOnClickListener(new View.OnClickListener() {
+        //随机获得内涵段子
+        int random = new Random().nextInt(5);
+
+        TextView textViewTitle = (TextView) findViewById(R.id.tv_joke_title);
+        textViewTitle.setText("内涵" + (random + 1) + "段：为你提神醒脑！");
+
+        TextView textView = (TextView) findViewById(R.id.tv_joke);
+        textView.setText(JokeData.getJokeList().get(random));
+
+        findViewById(R.id.btn_index).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SearchActivity.startAc(MainActivity.this);
+                startActivity(new Intent(MainActivity.this, IndexActivity.class));
             }
         });
-
-        //排行榜
-        findViewById(R.id.bt_rank).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btn_search).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                HomeRankActivity.startAc(MainActivity.this);
+                startActivity(new Intent(MainActivity.this, SearchActivity.class));
             }
         });
     }

@@ -64,6 +64,7 @@ import java.util.Comparator;
  *
  * ================================================
  */
+
 /**
  * Layout manager that allows the user to flip left and right
  * through pages of data.  You supply an implementation of a
@@ -1383,7 +1384,7 @@ public class LazyViewPager extends ViewGroup {
 
         final VelocityTracker velocityTracker = mVelocityTracker;
         velocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
-        int initialVelocity = (int)VelocityTrackerCompat.getYVelocity(
+        int initialVelocity = (int) VelocityTrackerCompat.getYVelocity(
                 velocityTracker, mActivePointerId);
         mPopulatePending = true;
         if ((Math.abs(initialVelocity) > mMinimumVelocity)

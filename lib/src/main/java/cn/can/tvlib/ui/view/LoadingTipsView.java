@@ -1,7 +1,6 @@
 package cn.can.tvlib.ui.view;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.text.TextUtils;
@@ -113,17 +112,11 @@ public class LoadingTipsView extends RelativeLayout {
     }
 
     public void show() {
-        if (getVisibility() == View.VISIBLE) {
-            return;
-        }
         clearAnimation();
         startAnimation(mShowLoadingAnim);
     }
 
     public void hide() {
-        if (getVisibility() != View.VISIBLE) {
-            return;
-        }
         clearAnimation();
         startAnimation(mHideLoadingAnim);
     }
@@ -143,22 +136,29 @@ public class LoadingTipsView extends RelativeLayout {
         mContentView.addView(mLoadingView, 0, loadingLayoutParams);
     }
 
-    public void addMessageView() {
-        addMessageView(null);
+    public void setMessage(){
+        setMessage(null);
     }
 
-    public void addMessageView(String msg) {
-        mMsgView = new TextView(getContext());
-        mMsgView.setSingleLine();
-        Resources res = getResources();
-        mMsgView.setText(!TextUtils.isEmpty(msg) ? msg : this.msg);
+    public void setMessage(String msg){
+        if(mMsgView == null){
+            mMsgView = new TextView(getContext());
+            mMsgView.setSingleLine();
+            LinearLayout.LayoutParams msgLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            msgLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+            msgLayoutParams.topMargin = mContentSpace;
+            mContentView.addView(mMsgView, mContentView.getChildCount(), msgLayoutParams);
+        }
         mMsgView.setTextColor(mMsgTextColor);
         mMsgView.setTextSize(mMsgTextSize);
-        LinearLayout.LayoutParams msgLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        msgLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-        msgLayoutParams.topMargin = mContentSpace;
-        mContentView.addView(mMsgView, mContentView.getChildCount(), msgLayoutParams);
+        mMsgView.setText(!TextUtils.isEmpty(msg) ? msg : this.msg);
+    }
+
+    public void setMessage(String msg, int textColor, int textSize) {
+        mMsgTextColor = textColor;
+        mMsgTextSize = textSize;
+        setMessage(msg);
     }
 
     public void setContentPadding(int left, int top, int right, int bottom) {

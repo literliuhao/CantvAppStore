@@ -5,7 +5,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -41,18 +40,20 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
 
     private static final String TAG = "CanRecyclerViewAdapter";
 
-    public static final int VIEW_TYPE_HEADER = 0x001;
-    public static final int VIEW_TYPE_CONTENT = 0x002;
-    public static final int VIEW_TYPE_FOOTER = 0x003;
+    public static final int VIEW_TYPE_HEADER = 0x101;
+    public static final int VIEW_TYPE_CONTENT = 0x102;
+    public static final int VIEW_TYPE_FOOTER = 0x103;
 
     public static final String TAG_VIEW_FLAG = "tagView%d";
+    public static final int VIEW_ID_OFFSET = 0x100;
 
-    private List<DataType> mDatas;
+    protected List<DataType> mDatas;
     private RecyclerView mAttachedView;
     private ViewTreeObserver.OnGlobalFocusChangeListener mGlobalFocusChangeListener;
 
     public CanRecyclerViewAdapter(List<DataType> datas) {
         mDatas = datas;
+        setHasStableIds(true);
     }
 
     public void setDatas(List<DataType> datas) {
@@ -76,6 +77,11 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
     }
 
     @Override
+    final public long getItemId(int position) {
+        return position + VIEW_ID_OFFSET;
+    }
+
+    @Override
     final public int getItemViewType(int position) {
         if (hasHeader() && position == 0) {
             return VIEW_TYPE_HEADER;
@@ -90,11 +96,11 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         RecyclerView.ViewHolder holder;
         switch (viewType) {
             case VIEW_TYPE_HEADER:
-                holder = generateHeaderViewHolder(parent);
+                holder = new DefaultViewHolder(mHeaderView);
                 break;
 
             case VIEW_TYPE_FOOTER:
-                holder = generateFooterViewHolder(parent);
+                holder = new DefaultViewHolder(mFooterView);
                 break;
 
             default:
@@ -106,43 +112,32 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
 
     @Override
     final public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
-        initViewHolder(holder, position);
-        resolveStaggeredLayoutItemView(holder, position);
-        setupItemClickListener(holder, position);
-        setupItemFocusChangeListener(holder, position);
-        setupItemKeyEventListener(holder, position);
+        int itemViewType = getItemViewType(position);
+        if (itemViewType == VIEW_TYPE_HEADER || itemViewType == VIEW_TYPE_FOOTER) {
+            resolveStaggeredLayoutItemView(holder, position);
+            return;
+        }
+        int actualPosi = getActualItemPosition(position);
+        initViewHolder(holder, actualPosi);
+        setupItemClickListener(holder, actualPosi);
+        setupItemFocusChangeListener(holder, actualPosi);
+        setupItemKeyEventListener(holder, actualPosi);
     }
 
     private void initViewHolder(RecyclerView.ViewHolder holder, int position) {
-        int itemViewType = getItemViewType(position);
-        if (itemViewType == VIEW_TYPE_HEADER) {
-            bindHeaderData(holder);
-        } else if (itemViewType == VIEW_TYPE_FOOTER) {
-            bindFooterData(holder);
-        } else {
-            int realPosi = getActualItemPosition(position);
-            bindContentData(mDatas.get(realPosi), holder, realPosi);
-            initTagViewIfNeed(holder, position);
-
-            View itemView = holder.itemView;
-            if (itemView instanceof ViewGroup) {
-                ViewGroup viewGroup = (ViewGroup) itemView;
-                viewGroup.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-                viewGroup.setFocusable(true);
-                viewGroup.setClickable(true);
-            }
-        }
+        bindContentData(mDatas.get(position), holder, position);
+        initTagViewIfNeed(holder, position);
     }
 
     private void initTagViewIfNeed(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof TagViewHolder) {
             TagViewHolder mHolder = (TagViewHolder) holder;
-            int realPosi = getActualItemPosition(position);
-            mHolder.tagView.setTag(String.format(TAG_VIEW_FLAG, realPosi));
-            if (mSelectMode == MODE_SELECT && isItemSelected(realPosi)) {
-                mHolder.showTagView();
-            } else {
-                mHolder.hideTagView();
+            mHolder.tagView.setTag(String.format(TAG_VIEW_FLAG, position));
+            if (mSelectMode == MODE_NORMAL) {
+                mHolder.hideTagView(false);
+            } else if (mSelectMode == MODE_SELECT) {
+                mHolder.showTagView(false);
+                mHolder.refreshTagViewOnSelectChanged(isItemSelected(position));
             }
         }
     }
@@ -197,8 +192,12 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         super.onDetachedFromRecyclerView(recyclerView);
     }
 
-    private boolean hasAttachedToView() {
+    protected boolean hasAttachedToView() {
         return mAttachedView != null;
+    }
+
+    protected RecyclerView getAttachedView() {
+        return mAttachedView;
     }
 
     //----------------------------   子类需要复写的方法   ----------------------------
@@ -211,33 +210,16 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         return VIEW_TYPE_CONTENT;
     }
 
-    // 以下四个方法仅当添加了header 或 footer时被复写即可
-    protected void bindHeaderData(RecyclerView.ViewHolder holder) {
-    }
-
-    protected void bindFooterData(RecyclerView.ViewHolder holder) {
-    }
-
-    protected RecyclerView.ViewHolder generateHeaderViewHolder(ViewGroup parent) {
-        return new RecyclerView.ViewHolder(LayoutInflater.from(parent.getContext()).inflate(mHeaderResId, parent, false)) {
-        };
-    }
-
-    protected RecyclerView.ViewHolder generateFooterViewHolder(ViewGroup parent) {
-        return new RecyclerView.ViewHolder(LayoutInflater.from(parent.getContext()).inflate(mFooterResId, parent, false)) {
-        };
-    }
-
     //----------------------------   支持添加header、footer   ----------------------------
-    private int mHeaderResId;
-    private int mFooterResId;
+    private View mHeaderView;
+    private View mFooterView;
 
     final private int getActualItemPosition(int position) {
         return hasHeader() ? position - 1 : position;
     }
 
     private int getDataCount() {
-        return hasData() ? 0 : mDatas.size();
+        return hasData() ? mDatas.size() : 0;
     }
 
     final private boolean isHeader(int position) {
@@ -245,7 +227,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
     }
 
     final private boolean hasHeader() {
-        return mHeaderResId != 0;
+        return mHeaderView != null;
     }
 
     final private boolean hasData() {
@@ -257,14 +239,14 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
     }
 
     final private boolean hasFooter() {
-        return mFooterResId != 0;
+        return mFooterView != null;
     }
 
-    public void addHeader(int headLayoutResId) throws IllegalStateException {
+    public void addHeader(View headerView) throws IllegalStateException {
         if (hasHeader()) {
             throw new IllegalStateException("An header has been added to RecyclerView.");
         }
-        mHeaderResId = headLayoutResId;
+        mHeaderView = headerView;
         if (hasAttachedToView()) {
             changeAttachViewConfigForHeaderFooter();
             notifyItemInserted(0);
@@ -278,10 +260,11 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         RecyclerView.LayoutManager layoutManager = mAttachedView.getLayoutManager();
         if (layoutManager instanceof GridLayoutManager) {
             final GridLayoutManager glm = (GridLayoutManager) layoutManager;
+            final GridLayoutManager.SpanSizeLookup spanSizeLookup = glm.getSpanSizeLookup();
             glm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override
                 public int getSpanSize(int position) {
-                    return isHeader(position) || isFooter(position) ? glm.getSpanCount() : 1;
+                    return isHeader(position) || isFooter(position) ? glm.getSpanCount() : spanSizeLookup.getSpanSize(position);
                 }
             });
         }
@@ -291,17 +274,17 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         if (!hasHeader()) {
             return;
         }
-        mHeaderResId = 0;
+        mHeaderView = null;
         if (hasAttachedToView()) {
             notifyItemRemoved(0);
         }
     }
 
-    public void addFooter(int footerLayoutResId) throws IllegalStateException {
+    public void addFooter(View footerView) throws IllegalStateException {
         if (hasFooter()) {
             throw new IllegalStateException("An header has been added to RecyclerView.");
         }
-        mFooterResId = footerLayoutResId;
+        mFooterView = footerView;
         if (hasAttachedToView()) {
             changeAttachViewConfigForHeaderFooter();
             notifyItemInserted(getHeaderAndContentSize());
@@ -312,7 +295,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         if (!hasFooter()) {
             return;
         }
-        mFooterResId = 0;
+        mFooterView = null;
         if (hasAttachedToView()) {
             notifyItemRemoved(getHeaderAndContentSize());
         }
@@ -338,9 +321,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
 
         boolean isSelected();
 
-        void setSelected();
-
-        void setUnselected();
+        void setSelected(boolean selected);
     }
 
     /**
@@ -348,7 +329,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
      */
     public static abstract class TagViewHolder extends RecyclerView.ViewHolder {
 
-        public View tagView;
+        private View tagView;
 
         public TagViewHolder(View itemView) {
             super(itemView);
@@ -357,16 +338,49 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
 
         protected abstract int specifyTagViewId();
 
-        public void showTagView() {
-            if (tagView != null) {
-                tagView.setVisibility(View.VISIBLE);
+        public View getTagView() {
+            return tagView;
+        }
+
+        /**
+         * 当item选中状态改变时回调
+         *
+         * @param selected
+         * @throws IllegalStateException
+         */
+        public void refreshTagViewOnSelectChanged(boolean selected) throws IllegalStateException {
+            if (getTagView() == null) {
+                throw new IllegalStateException("The tagView in TagViewHolder didn't found.");
+            }
+            if (selected) {
+                showTagView(true);
+            } else {
+                hideTagView(true);
             }
         }
 
-        public void hideTagView() {
-            if (tagView != null) {
-                tagView.setVisibility(View.INVISIBLE);
+        /**
+         * 显示tagView
+         *
+         * @param anim
+         */
+        public void showTagView(boolean anim) {
+            if (getTagView() == null) {
+                throw new IllegalStateException("The tagView in TagViewHolder didn't found.");
             }
+            tagView.setVisibility(View.VISIBLE);
+        }
+
+        /**
+         * 隐藏tagView
+         *
+         * @param anim
+         */
+        public void hideTagView(boolean anim) {
+            if (getTagView() == null) {
+                throw new IllegalStateException("The tagView in TagViewHolder didn't found.");
+            }
+            tagView.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -388,19 +402,19 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         mSelectMode = selectMode;
         switch (selectMode) {
             case MODE_NORMAL:
-                changeTagViewVisible(View.INVISIBLE);
+                hideAllTagViews();
                 if (!alwaysKeepSelectStatus && hasData()) {
                     //退出选择模式时不保留选择状态
                     for (DataType data : mDatas) {
                         if (data instanceof Selectable) {
-                            ((Selectable) data).setUnselected();
+                            ((Selectable) data).setSelected(false);
                         }
                     }
                 }
                 break;
 
             case MODE_SELECT:
-                changeTagViewVisible(View.VISIBLE);
+                showAllTagViewsWithSelectStatus();
                 break;
         }
     }
@@ -428,11 +442,9 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         }
         DataType data = mDatas.get(position);
         if (data != null && data instanceof Selectable) {
-            ((Selectable) data).setSelected();
+            ((Selectable) data).setSelected(true);
         }
-        if (hasAttachedToView()) {
-            changeTagViewVisibleByPosi(position, View.VISIBLE);
-        }
+        refreshTagViewSelectStatus(position, true);
         if (mItemSelectListener != null) {
             mItemSelectListener.onSelectChanged(position, true, mDatas.get(position));
         }
@@ -444,20 +456,29 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         }
         DataType data = mDatas.get(position);
         if (data != null && data instanceof Selectable) {
-            ((Selectable) data).setUnselected();
+            ((Selectable) data).setSelected(false);
         }
-        if (hasAttachedToView()) {
-            changeTagViewVisibleByPosi(position, View.INVISIBLE);
-        }
+        refreshTagViewSelectStatus(position, false);
         if (mItemSelectListener != null) {
             mItemSelectListener.onSelectChanged(position, false, mDatas.get(position));
         }
     }
 
-    private void changeTagViewVisibleByPosi(int position, int visible) {
+    private void refreshTagViewSelectStatus(int position, boolean selected) {
+        if (!hasAttachedToView()) {
+            return;
+        }
         View tagView = findTagView(position);
-        if (tagView != null) {
-            tagView.setVisibility(visible);
+        if (tagView == null) {
+            return;
+        }
+        RecyclerView.ViewHolder viewHolder = mAttachedView.findContainingViewHolder(tagView);
+        if (viewHolder != null && viewHolder instanceof TagViewHolder) {
+            TagViewHolder holder = (TagViewHolder) viewHolder;
+            if (tagView.getVisibility() != View.VISIBLE) {
+                tagView.setVisibility(View.VISIBLE);
+            }
+            holder.refreshTagViewOnSelectChanged(selected);
         }
     }
 
@@ -465,7 +486,15 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         return mAttachedView.findViewWithTag(String.format(TAG_VIEW_FLAG, position));
     }
 
-    private void changeTagViewVisible(int visible) {
+    private void showAllTagViewsWithSelectStatus() {
+        changeTagViewsVisible(true);
+    }
+
+    private void hideAllTagViews() {
+        changeTagViewsVisible(false);
+    }
+
+    private void changeTagViewsVisible(boolean visible) {
         if (hasAttachedToView()) {
             RecyclerView.LayoutManager layoutManager = mAttachedView.getLayoutManager();
             if (layoutManager == null) {
@@ -490,38 +519,64 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
-                firstVisiblePosi = getActualItemPosition(firstVisiblePosi);
-                lastVisiblePosi = getActualItemPosition(lastVisiblePosi);
                 if (firstVisiblePosi >= 0 && lastVisiblePosi >= 0) {
-                    for (int posi = firstVisiblePosi; posi <= lastVisiblePosi; posi++) {
-                        if (visible == View.VISIBLE) {
-                            DataType data = mDatas.get(posi);
-                            if (data instanceof Selectable && ((Selectable) data).isSelected()) {
-                                changeTagViewVisibleByPosi(posi, visible);
-                            }
-                        } else {
-                            changeTagViewVisibleByPosi(posi, visible);
+                    for (int i = firstVisiblePosi; i <= lastVisiblePosi; i++) {
+                        if (isHeader(i) || isFooter(i)) {
+                            continue;
                         }
+                        int posi = getActualItemPosition(i);
+                        DataType data = mDatas.get(posi);
+                        boolean selected = (data instanceof Selectable) && ((Selectable) data).isSelected();
+                        changeTagViewVisible(posi, visible, selected);
                     }
                 }
 
             } else if (layoutManager instanceof StaggeredGridLayoutManager) {
-                //TODO
-//                StaggeredGridLayoutManager lm = (StaggeredGridLayoutManager) layoutManager;
-//                int[] firstVisiblePosis = lm.findFirstVisibleItemPositions(null);
-//                int[] lastVisiblePosis = lm.findLastVisibleItemPositions(null);
-//                for (int i = 0, spanCount = firstVisiblePosis.length; i < spanCount; i++) {
-//                    for (int posi = firstVisiblePosis[i]; posi <= lastVisiblePosis[i]; posi++) {
-//                        if (visible == View.VISIBLE) {
-//                            if (mSelections.contains(posi)) {
-//                                changeTagViewVisibleByPosi(posi, visible);
-//                            }
-//                        } else {
-//                            changeTagViewVisibleByPosi(posi, visible);
-//                        }
-//                    }
-//                }
+                StaggeredGridLayoutManager lm = (StaggeredGridLayoutManager) layoutManager;
+                int[] firstVisiblePosis = lm.findFirstVisibleItemPositions(null);
+                int[] lastVisiblePosis = lm.findLastVisibleItemPositions(null);
+                int firstVisiblePosi = -1;
+                for (int i = 0; i < firstVisiblePosis.length; i++) {
+                    firstVisiblePosi = Math.min(firstVisiblePosi, firstVisiblePosis[i]);
+                }
+                int lastVisiblePosi = -1;
+                for (int i = 0; i < lastVisiblePosis.length; i++) {
+                    lastVisiblePosi = Math.max(lastVisiblePosi, lastVisiblePosis[i]);
+                }
+                if (firstVisiblePosi >= 0 && lastVisiblePosi >= 0) {
+                    for (int i = firstVisiblePosi; i <= lastVisiblePosi; i++) {
+                        if (isHeader(i) || isFooter(i)) {
+                            continue;
+                        }
+                        int posi = getActualItemPosition(i);
+                        DataType data = mDatas.get(posi);
+                        boolean selected = (data instanceof Selectable) && ((Selectable) data).isSelected();
+                        changeTagViewVisible(posi, visible, selected);
+                    }
+                }
             }
+        }
+    }
+
+    private void changeTagViewVisible(int position, boolean visbile, boolean selected) {
+        if (!hasAttachedToView()) {
+            return;
+        }
+        View tagView = findTagView(position);
+        if (tagView == null) {
+            return;
+        }
+        RecyclerView.ViewHolder viewHolder = mAttachedView.findContainingViewHolder(tagView);
+        if (viewHolder != null && viewHolder instanceof TagViewHolder) {
+            TagViewHolder holder = (TagViewHolder) viewHolder;
+            if (visbile) {
+                holder.refreshTagViewOnSelectChanged(selected);
+                holder.showTagView(true);
+            } else {
+                holder.hideTagView(true);
+            }
+        } else {
+            tagView.setVisibility(visbile ? View.VISIBLE : View.INVISIBLE);
         }
     }
 
@@ -603,7 +658,6 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                         }
 
                     } else if (layoutManager instanceof GridLayoutManager) {
-
                         GridLayoutManager glm = (GridLayoutManager) layoutManager;
                         int spanCount = glm.getSpanCount();
                         int currItemCount = getDataCount();
@@ -615,6 +669,19 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                             isLoading = true;
                             mPageLoadCallback.onLoadMore();
                         }
+
+                    } else if (layoutManager instanceof StaggeredGridLayoutManager) {
+                        StaggeredGridLayoutManager sglm = (StaggeredGridLayoutManager) layoutManager;
+                        int spanCount = sglm.getSpanCount();
+                        int[] lastVisiblePosis = sglm.findLastVisibleItemPositions(null);
+                        int lastVisiblePosi = -1;
+                        for (int i = 0; i < lastVisiblePosis.length; i++) {
+                            lastVisiblePosi = Math.max(lastVisiblePosi, lastVisiblePosis[i]);
+                        }
+                        if (getActualItemPosition(lastVisiblePosi) == mDatas.size()) {
+                            isLoading = true;
+                            mPageLoadCallback.onLoadMore();
+                        }
                     }
                 }
             };
@@ -623,41 +690,20 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
 
 
     // ----------------------------   Adapter监听注册   ----------------------------
-    public static abstract class OnItemClickListener {
-        public abstract void onClick(View view, int position, Object data);
-
-        public void onHeaderClick(View view) {
-        }
-
-        public void onFooterClick(View view) {
-        }
+    public interface OnItemClickListener {
+        void onClick(View view, int position, Object data);
     }
 
-    public static abstract class OnItemKeyEventListener {
-        public abstract boolean onItemKeyEvent(int position, View v, int keyCode, KeyEvent event);
-
-        public boolean onHeaderKeyEvent(View v, int keyCode, KeyEvent event) {
-            return false;
-        }
-
-        public boolean onFooterKeyEvent(View v, int keyCode, KeyEvent event) {
-            return false;
-        }
+    public interface OnItemKeyEventListener {
+        boolean onItemKeyEvent(int position, View v, int keyCode, KeyEvent event);
     }
 
-    public static abstract class OnFocusChangeListener {
-
-        public abstract boolean onFocusMoveOutside(int currFocus, int direction);
-
-        public abstract void onItemFocusChanged(View view, int position, boolean hasFocus, Object dataType);
-
-        public boolean onHeaderFocusChanged(View view, boolean hasFocus) {
+    public abstract static class OnFocusChangeListener {
+        public boolean onFocusMoveOutside(int currFocus, int direction) {
             return false;
         }
 
-        public boolean onFooterFocusChanged(View view, boolean hasFocus) {
-            return false;
-        }
+        public abstract void onItemFocusChanged(View view, int position, boolean hasFocus);
     }
 
     private OnItemClickListener mItemClickListener;
@@ -681,36 +727,28 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
     }
 
     private void setupItemClickListener(final RecyclerView.ViewHolder holder, final int position) {
-        final int realPosi = getActualItemPosition(position);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mSelectMode == MODE_SELECT) {
-                    if (isItemSelected(realPosi)) {
-                        setItemUnselected(realPosi);
+                    if (isItemSelected(position)) {
+                        setItemUnselected(position);
                     } else {
-                        setItemSelected(realPosi);
+                        setItemSelected(position);
                     }
-                } else {
-                    if (mItemClickListener != null) {
-                        if (isHeader(position)) {
-                            mItemClickListener.onHeaderClick(v);
-                        } else if (isFooter(position)) {
-                            mItemClickListener.onFooterClick(v);
-                        } else {
-                            mItemClickListener.onClick(v, realPosi, mDatas.get(realPosi));
-                        }
-                    }
+                } else if (mSelectMode == MODE_NORMAL && mItemClickListener != null) {
+                    mItemClickListener.onClick(v, position, mDatas.get(position));
                 }
             }
         });
     }
 
-    private void setupItemFocusChangeListener(RecyclerView.ViewHolder holder, final int position) {
+    private void setupItemFocusChangeListener(final RecyclerView.ViewHolder holder, final int position) {
         holder.itemView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
+                    holder.itemView.bringToFront();
                     if (mOldFocus != null) {
                         mOldFocus = mCurrFocus;
                     }
@@ -721,14 +759,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                     }
                 }
                 if (mFocusChangeListener != null) {
-                    if (isHeader(position)) {
-                        mFocusChangeListener.onHeaderFocusChanged(v, hasFocus);
-                    } else if (isFooter(position)) {
-                        mFocusChangeListener.onFooterFocusChanged(v, hasFocus);
-                    } else {
-                        int posi = getActualItemPosition(position);
-                        mFocusChangeListener.onItemFocusChanged(v, posi, hasFocus, mDatas.get(posi));
-                    }
+                    mFocusChangeListener.onItemFocusChanged(v, position, hasFocus);
                 }
             }
         });
@@ -738,17 +769,11 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         holder.itemView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (mItemKeyEventListener != null && handleFocusMoveOut(position, v, keyCode, event)) {
+                if (mFocusChangeListener != null && handleFocusMoveOut(position, v, keyCode, event)) {
                     return true;
                 }
-                if (mItemKeyEventListener != null) {
-                    if (isHeader(position) && mItemKeyEventListener.onHeaderKeyEvent(v, keyCode, event)) {
-                        return true;
-                    } else if (isFooter(position) && mItemKeyEventListener.onFooterKeyEvent(v, keyCode, event)) {
-                        return true;
-                    } else if (mItemKeyEventListener.onItemKeyEvent(getActualItemPosition(position), v, keyCode, event)) {
-                        return true;
-                    }
+                if (mItemKeyEventListener != null && mItemKeyEventListener.onItemKeyEvent(getActualItemPosition(position), v, keyCode, event)) {
+                    return true;
                 }
                 return false;
             }
@@ -770,104 +795,62 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
             int posi = getActualItemPosition(position);
 
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                if (layoutDirection == GridLayoutManager.VERTICAL) {
-                    if (isHeader(position) || isFooter(position) || posi % spanCount == 0) {
-                        return callbackFocusMoveOutSide(position, FOCUS_LEFT);
-                    }
-                } else if (layoutDirection == GridLayoutManager.HORIZONTAL) {
-                    if (isHeader(position)) {
-                        return callbackFocusMoveOutSide(position, FOCUS_LEFT);
-                    } else if (isFooter(position)) {
-                        if (mOldFocus != null) {
-                            mOldFocus.requestFocus();
-                            return true;
-                        } else if (!hasData() && !hasFooter()) {
-                            callbackFocusMoveOutSide(position, FOCUS_LEFT);
-                        }
-                    } else if (!hasHeader() && posi < spanCount) {
-                        return callbackFocusMoveOutSide(position, FOCUS_LEFT);
-                    }
+                if (layoutDirection == GridLayoutManager.VERTICAL && posi % spanCount == 0) {
+                    return callbackFocusMoveOutSide(position, FOCUS_LEFT);
+                } else if (layoutDirection == GridLayoutManager.HORIZONTAL && posi < spanCount) {
+                    return callbackFocusMoveOutSide(position, FOCUS_LEFT);
                 }
 
             } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                if (layoutDirection == GridLayoutManager.VERTICAL) {
-                    if (isHeader(position)) {
-                        return callbackFocusMoveOutSide(position, FOCUS_UP);
-                    } else if (isFooter(position)) {
-                        if (mOldFocus != null) {
-                            mOldFocus.requestFocus();
-                            return true;
-                        } else if (!hasData() && !hasFooter()) {
-                            return callbackFocusMoveOutSide(position, FOCUS_UP);
-                        }
-                    } else if (!hasHeader() && posi < spanCount) {
-                        return callbackFocusMoveOutSide(position, FOCUS_UP);
-                    }
-
-                } else if (layoutDirection == GridLayoutManager.HORIZONTAL) {
-                    if (isHeader(position) || isFooter(position) || posi % spanCount == 0) {
-                        return callbackFocusMoveOutSide(position, FOCUS_UP);
-                    }
+                if (layoutDirection == GridLayoutManager.VERTICAL && posi < spanCount) {
+                    return callbackFocusMoveOutSide(position, FOCUS_UP);
+                } else if (layoutDirection == GridLayoutManager.HORIZONTAL && posi % spanCount == 0) {
+                    return callbackFocusMoveOutSide(position, FOCUS_UP);
                 }
 
             } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                if (layoutDirection == GridLayoutManager.VERTICAL) {
-                    if (isHeader(position) || isFooter(position) || (posi + 1) % spanCount == 0) {
-                        return callbackFocusMoveOutSide(position, FOCUS_RIGHT);
-                    }
+                if (layoutDirection == GridLayoutManager.VERTICAL && (posi + 1) % spanCount == 0) {
+                    return callbackFocusMoveOutSide(position, FOCUS_RIGHT);
                 } else if (layoutDirection == GridLayoutManager.HORIZONTAL) {
-                    if (isHeader(position)) {
-                        if (mOldFocus != null) {
-                            mOldFocus.requestFocus();
-                            return true;
-                        } else if (!hasData() && !hasFooter()) {
-                            return callbackFocusMoveOutSide(position, FOCUS_RIGHT);
-                        }
-                    } else if (isFooter(position)) {
-                        return callbackFocusMoveOutSide(position, FOCUS_RIGHT);
+                    int itemCount = getItemCount();
+                    int range = itemCount % spanCount;
+                    if (range == 0) {
+                        range = itemCount - spanCount;
                     } else {
-                        int itemCount = getItemCount();
-                        if (!hasFooter() && posi >= (itemCount - itemCount % spanCount)) {
-                            if (isLoading) {
-                                return true;
-                            }
-                            return callbackFocusMoveOutSide(position, FOCUS_RIGHT);
+                        range = itemCount - range;
+                    }
+                    if (posi >= range) {
+                        if (isLoading) {
+                            return true;
                         }
+                        return callbackFocusMoveOutSide(position, FOCUS_RIGHT);
                     }
                 }
 
             } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
                 if (layoutDirection == GridLayoutManager.VERTICAL) {
-                    if (isHeader(position)) {
-                        if (mOldFocus != null) {
-                            mOldFocus.requestFocus();
-                            return true;
-                        } else if (!hasData() && !hasFooter()) {
-                            return callbackFocusMoveOutSide(position, FOCUS_DOWN);
-                        }
-                    } else if (isFooter(position)) {
-                        return callbackFocusMoveOutSide(position, FOCUS_DOWN);
+                    int itemCount = getItemCount();
+                    int range = itemCount % spanCount;
+                    if (range == 0) {
+                        range = itemCount - spanCount;
                     } else {
-                        int itemCount = getItemCount();
-                        if (!hasFooter() && posi >= (itemCount - itemCount % spanCount)) {
-                            if (isLoading) {
-                                return true;
-                            }
-                            return callbackFocusMoveOutSide(position, FOCUS_DOWN);
-                        }
+                        range = itemCount - range;
                     }
-                } else if (layoutDirection == GridLayoutManager.HORIZONTAL) {
-                    if (isHeader(position) || isFooter(position) || (posi + 1) % spanCount == 0) {
+                    if (posi >= range) {
+                        if (isLoading) {
+                            return true;
+                        }
                         return callbackFocusMoveOutSide(position, FOCUS_DOWN);
                     }
+                } else if (layoutDirection == GridLayoutManager.HORIZONTAL && (posi + 1) % spanCount == 0) {
+                    return callbackFocusMoveOutSide(position, FOCUS_DOWN);
                 }
             }
 
         } else if (layoutManager instanceof LinearLayoutManager) {
 
             LinearLayoutManager lm = (LinearLayoutManager) layoutManager;
-            int layoutOrientation = lm.getLayoutDirection();
-            int posi = getActualItemPosition(position);
+            int layoutOrientation = lm.getOrientation();
 
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                 if (layoutOrientation == LinearLayoutManager.VERTICAL || layoutOrientation == LinearLayoutManager.HORIZONTAL && position == 0) {
@@ -961,6 +944,13 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         hasFocusMoveOut = true;
         mOldFocus = null;
         return mFocusChangeListener.onFocusMoveOutside(position, direction);
+    }
+
+    public static class DefaultViewHolder extends RecyclerView.ViewHolder {
+
+        public DefaultViewHolder(View itemView) {
+            super(itemView);
+        }
     }
 
 }

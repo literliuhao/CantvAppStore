@@ -13,11 +13,13 @@ import android.graphics.NinePatch;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.NinePatchDrawable;
+import android.os.Build;
 import android.os.Handler;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
 import java.util.HashMap;
@@ -50,7 +52,7 @@ import java.util.Iterator;
 public class FocusMoveUtil {
 
     private boolean mCacheEnable;
-    private SparseArray<NinePatch> mNinePathcs;
+    private SparseArray<Drawable> mNinePathcs;
     private SparseArray<Rect> mFocusPaddingRects;
 
     private FocusMoveView mFocusMoveView;
@@ -111,7 +113,7 @@ public class FocusMoveUtil {
         mCurRect = new RectF();
         mDestRect = new RectF();
         mAnimDuration = 300;
-        mAnimInterpolator = new AccelerateDecelerateInterpolator();
+        mAnimInterpolator = new DecelerateInterpolator();
         mEvaluators = new HashMap<Animator, RectFEvaluator>();
     }
 
@@ -120,8 +122,8 @@ public class FocusMoveUtil {
             return;
         }
         this.mCacheEnable = true;
-        mNinePathcs = new SparseArray<NinePatch>(cacheSize);
-        mFocusPaddingRects = new SparseArray<Rect>(cacheSize);
+        mNinePathcs = new SparseArray<>(cacheSize);
+        mFocusPaddingRects = new SparseArray<>(cacheSize);
     }
 
     private void initFocusView(Context context, View focusParent, boolean initWithHide) {
@@ -150,29 +152,40 @@ public class FocusMoveUtil {
         }
         mFocusResId = focusResId;
 
-        NinePatch ninePatch = null;
+        Drawable focusDrawable = null;
         Rect paddingRect = null;
         if (mCacheEnable && mNinePathcs.indexOfKey(focusResId) >= 0) {
-            ninePatch = mNinePathcs.get(mFocusResId);
+            focusDrawable = mNinePathcs.get(mFocusResId);
             paddingRect = mFocusPaddingRects.get(mFocusResId);
         } else {
             try {
                 Bitmap resBmp = BitmapFactory.decodeResource(context.getResources(), focusResId);
-                ninePatch = new NinePatch(resBmp, resBmp.getNinePatchChunk());
+                byte[] ninePatchChunk = resBmp.getNinePatchChunk();
 
-                Drawable drawable = context.getResources().getDrawable(focusResId);
-                paddingRect = new Rect();
-                drawable.getPadding(paddingRect);
+                Drawable drawable;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    drawable = context.getResources().getDrawable(focusResId, null);
+                } else {
+                    drawable = context.getResources().getDrawable(focusResId);
+                }
+
+                if (NinePatch.isNinePatchChunk(ninePatchChunk)) {
+                    focusDrawable = new NinePatchDrawable(context.getResources(), new NinePatch(resBmp, ninePatchChunk));
+                    paddingRect = new Rect();
+                    drawable.getPadding(paddingRect);
+                } else {
+                    focusDrawable = drawable;
+                }
 
                 if (mCacheEnable) {
-                    mNinePathcs.put(focusResId, ninePatch);
+                    mNinePathcs.put(focusResId, focusDrawable);
                     mFocusPaddingRects.put(focusResId, paddingRect);
                 }
             } catch (Exception e) {
             }
         }
         mFocusPaddingRect = paddingRect;
-        mFocusMoveView.setFocusResource(ninePatch);
+        mFocusMoveView.setFocusResource(focusDrawable);
     }
 
     /**
@@ -333,6 +346,7 @@ public class FocusMoveUtil {
     public void startMoveFocus(View view, float scaleX, float scaleY, int offsetX, int offsetY, int cancelFactor) {
         if (mAnimator != null && mAnimator.isRunning()) {
             if (cancelFactor == 0) {
+                mEvaluators.remove(mAnimator);
                 mAnimator.cancel();
             } else if (cancelFactor > 0) {
                 RectFEvaluator evaluator = mEvaluators.get(mAnimator);
@@ -366,10 +380,12 @@ public class FocusMoveUtil {
 
     // 根据焦点框资源文件的padding（.9图内容区之外的padding）resize焦点框
     private void resolveRectPadding(RectF mDestRect, Rect mFocusPaddingRect) {
-        mDestRect.left -= mFocusPaddingRect.left;
-        mDestRect.top -= mFocusPaddingRect.top;
-        mDestRect.right += mFocusPaddingRect.right;
-        mDestRect.bottom += mFocusPaddingRect.bottom;
+        if (mFocusPaddingRect != null) {
+            mDestRect.left -= mFocusPaddingRect.left;
+            mDestRect.top -= mFocusPaddingRect.top;
+            mDestRect.right += mFocusPaddingRect.right;
+            mDestRect.bottom += mFocusPaddingRect.bottom;
+        }
     }
 
     // 焦点框在移动过程中每帧的位置计算和移动
@@ -485,9 +501,9 @@ public class FocusMoveUtil {
             mFocusPaddingRects.clear();
             mFocusPaddingRects = null;
         }
-        if (mEvaluators != null){
+        if (mEvaluators != null) {
             Iterator<Animator> iterator = mEvaluators.keySet().iterator();
-            while(iterator.hasNext()){
+            while (iterator.hasNext()) {
                 iterator.next().cancel();
             }
             mEvaluators.clear();
@@ -495,29 +511,41 @@ public class FocusMoveUtil {
         }
     }
 
+    public int getFocusResId() {
+        return mFocusResId;
+    }
+
+    public int getAnimDuration() {
+        return mAnimDuration;
+    }
+
     public static class FocusMoveView extends View {
 
-        private NinePatch mNinePath;
-        private RectF mRectF;
+        private Drawable mFocusDrawable;
+        private Rect mFocusRegion;
 
         public FocusMoveView(Context context) {
             super(context);
-            mRectF = new RectF();
+            mFocusRegion = new Rect();
         }
 
         private boolean isInitlized() {
-            return mNinePath != null;
+            return mFocusDrawable != null;
         }
 
-        public void setFocusResource(NinePatch ninePath) {
-            mNinePath = ninePath;
+        public void setFocusResource(Drawable drawable) {
+            mFocusDrawable = drawable;
             if (isInitlized()) {
+                mFocusDrawable.setBounds(mFocusRegion);
                 postInvalidate();
             }
         }
 
         public void setFocusLayout(float left, float top, float right, float bottom) {
-            mRectF.set(left, top, right, bottom);
+            mFocusRegion.set((int) left, (int) top, (int) right, (int) bottom);
+            if (mFocusDrawable != null) {
+                mFocusDrawable.setBounds(mFocusRegion);
+            }
             if (isInitlized()) {
                 postInvalidate();
             }
@@ -526,8 +554,8 @@ public class FocusMoveUtil {
         @Override
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
-            if (isInitlized()){
-                mNinePath.draw(canvas, mRectF);
+            if (isInitlized()) {
+                mFocusDrawable.draw(canvas);
             }
         }
     }
