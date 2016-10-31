@@ -55,14 +55,14 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
             }
         });
         LayoutInflater mLayoutInflater = LayoutInflater.from(parent.getContext());
-        switch (viewType) {
-            case DEFAULT_APPLIST_TYPE:
-                View inflate = mLayoutInflater.inflate(R.layout.search_app_default_item, parent, false);
-                return new DefaultSearchViewHolder(inflate);
-            case SEARCH_APPLIST_TYPE:
-                View view = mLayoutInflater.inflate(R.layout.search_app_item, parent, false);
-                return new SearchViewHolder(view);
-        }
+//        switch (viewType) {
+//            case DEFAULT_APPLIST_TYPE:
+//                View inflate = mLayoutInflater.inflate(R.layout.search_app_default_item, parent, false);
+//                return new DefaultSearchViewHolder(inflate);
+//            case SEARCH_APPLIST_TYPE:
+//                View view = mLayoutInflater.inflate(R.layout.search_app_item, parent, false);
+//                return new SearchViewHolder(view);
+//        }
         return new RecyclerView.ViewHolder(null) {
         };
     }
@@ -88,7 +88,7 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
 
         public DefaultSearchViewHolder(View itemView) {
             super(itemView);
-            mAppName = (TextView) itemView.findViewById(R.id.default_name_view);
+//            mAppName = (TextView) itemView.findViewById(R.id.default_name_view);
         }
 
         /**
@@ -114,7 +114,7 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
         public SearchViewHolder(View itemView) {
             super(itemView);
             mAppName = (TextView) itemView.findViewById(R.id.app_name_view);
-            mAppIcon = (ImageView) itemView.findViewById(R.id.app_icon);
+//            mAppIcon = (ImageView) itemView.findViewById(R.id.app_icon);
         }
 
         /**
