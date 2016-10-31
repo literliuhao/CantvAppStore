@@ -3,9 +3,6 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-
-
-
     <color name="focus_light_yellow">#fef102</color>
     <color name="testColor">#FF0081</color>
 
@@ -19,9 +16,6 @@
     <color name="manager_7a5be0">#7a5be0</color>
     <color name="manager_069597">#069597</color>
 
-
-
-
         <!--AddAppActivity页面-->
     <color name="bt_batch_addapps_bg">#42464E</color>
     <color name="bt_batch_addapps_focus_bg">#0376A0</color>
@@ -30,4 +24,9 @@
     <color name="two_page_bg">#2d313a</color>
     <color name="tv_cur_rows_color">#CCFFFFFF</color>
     <color name="tv_total_rows_color">#7FFFFFFF</color>
+
+    <!--专题详情页面 FW-->
+    <color name="color_80_ffffff">#CCffffff</color>
+    <color name="color_50_ffffff">#80ffffff</color>
+    <color name="color_10_ffffff">#1Affffff</color>
 </resources>

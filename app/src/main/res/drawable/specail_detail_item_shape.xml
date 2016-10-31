@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 内容背景颜色设置为  10% #ffffff -->
+    <solid android:color="@color/color_10_ffffff"/>
+
+    <!-- 圆角边框  12px -->
+    <corners android:radius="@dimen/px12"/>
+</shape>
