@@ -240,7 +240,7 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
 
                 if (!(oldFocus instanceof TextView) && newFocus instanceof TextView) {
                     newFocus = textViewList.get(mViewPager.getCurrentItem());
-//                    newFocus.requestFocus();
+                    newFocus.requestFocus();
                     mCallBack.onSuccess(newFocus, true);
                 } else {
                     if (null == oldFocus || null == newFocus) return;
