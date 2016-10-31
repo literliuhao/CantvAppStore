@@ -3,7 +3,6 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:id="@+id/myapps_main_page"
-                android:background="@color/black"
               >
 
 
@@ -13,9 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/px720"
         android:layout_centerHorizontal="true"
-        android:layout_marginStart="@dimen/px80"
-        android:layout_marginEnd="@dimen/px100"
-        android:layout_marginTop="@dimen/px100"
         android:paddingTop="@dimen/px20"
         android:paddingLeft="@dimen/px20"
         android:clipChildren="false"
@@ -29,7 +25,7 @@
         android:layout_below="@+id/cr_myapps"
         android:layout_alignRight="@id/cr_myapps"
         android:orientation="horizontal"
-        android:layout_marginTop="@dimen/px70"
+        android:layout_marginTop="@dimen/px30"
         android:gravity="center"
         >
         <ImageView
