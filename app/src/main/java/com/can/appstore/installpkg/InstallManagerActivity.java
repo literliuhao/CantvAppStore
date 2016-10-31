@@ -115,7 +115,7 @@ public class InstallManagerActivity extends Activity {
                                 if (bean.getInstall()) {
                                     //bean.setInstall(true);
                                     mRecyclerAdapter.notifyItemChanged(i);
-                                Toast.makeText(MyApp.mContext, packageName + "111111", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(MyApp.mContext, packageName + "111111", Toast.LENGTH_LONG).show();
                                 }
                             }
                         }
@@ -382,9 +382,10 @@ public class InstallManagerActivity extends Activity {
 
     /**
      * 打开更新管理界面
+     *
      * @param v
      */
-    public void intoUpdate(View v){
+    public void intoUpdate(View v) {
         startActivity(new Intent(this, UpdateManagerActivity.class));
     }
 }

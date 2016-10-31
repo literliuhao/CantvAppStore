@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.util.Log;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.update.model.AppInfoBean;
@@ -18,7 +19,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.can.tvlib.utils.L;
 
 import static android.content.pm.PackageManager.GET_ACTIVITIES;
 
@@ -196,7 +196,7 @@ public class InstallPkgUtils {
             intent.setComponent(cn);
             context.startActivity(intent);
         } else {
-            L.v(packageName, "指定包名的程序并未安装...");
+            Log.i(packageName, "指定包名的程序并未安装...");
         }
     }
 

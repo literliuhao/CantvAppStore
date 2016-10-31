@@ -27,6 +27,7 @@ import java.util.List;
 import cn.can.tvlib.utils.PreferencesUtils;
 
 /**
+ * 更新管理
  * Created by shenpx on 2016/10/12 0012.
  */
 
@@ -58,7 +59,7 @@ public class UpdateManagerActivity extends Activity {
         setContentView(R.layout.activity_updatemanager);
         mDatas = new ArrayList<AppInfoBean>();
         mAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
-        if(!mAutoUpdate){
+        if (!mAutoUpdate) {
             showDialog();
         }
         initView();
@@ -118,7 +119,7 @@ public class UpdateManagerActivity extends Activity {
         mSdAvaliableSize = UpdateUtils.getSDAvaliableSize();
         mSizeProgressBar.setMax(mSdTotalSize);
         mSizeProgressBar.setProgress(mSdSurplusSize);
-        mRoomSize.setText(getString(R.string.update_sdavaliable_size)+ mSdAvaliableSize);
+        mRoomSize.setText(getString(R.string.update_sdavaliable_size) + mSdAvaliableSize);
         if (mAutoUpdate) {
             mReminder.setVisibility(View.VISIBLE);
             mReminder.setText(getString(R.string.update_start_autoupdate));
@@ -136,7 +137,7 @@ public class UpdateManagerActivity extends Activity {
                     mDatas.addAll(appList);
                     mRecyclerAdapter.notifyDataSetChanged();
                 }
-            },2000);
+            }, 2000);
         }
     }
 
@@ -164,7 +165,7 @@ public class UpdateManagerActivity extends Activity {
                     mRecyclerAdapter.notifyDataSetChanged();
                     mReminder.setVisibility(View.VISIBLE);
                     mReminder.setText(R.string.update_start_autoupdate);
-                    Toast.makeText(MyApp.mContext,R.string.update_start_autoupdate, Toast.LENGTH_LONG).show();
+                    Toast.makeText(MyApp.mContext, R.string.update_start_autoupdate, Toast.LENGTH_LONG).show();
                     return;
                 } else {
                     mDatas.clear();
@@ -175,7 +176,7 @@ public class UpdateManagerActivity extends Activity {
                         public void run() {
                             addData();
                         }
-                    },2000);
+                    }, 2000);
                     //addData();
                 }
             }
@@ -187,11 +188,11 @@ public class UpdateManagerActivity extends Activity {
                     PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", false);
                     mAutoUpdate = false;
                     mReminder.setVisibility(View.INVISIBLE);
-                    Toast.makeText(UpdateManagerActivity.this,R.string.update_end_autoupdate, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UpdateManagerActivity.this, R.string.update_end_autoupdate, Toast.LENGTH_SHORT).show();
                 } else {
                     PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", true);
                     mAutoUpdate = true;
-                    if(mDatas.size()<1){
+                    if (mDatas.size() < 1) {
                         mReminder.setVisibility(View.VISIBLE);
                         mReminder.setText(R.string.update_start_autoupdate);
                     }
@@ -242,12 +243,13 @@ public class UpdateManagerActivity extends Activity {
             }
         }, 500);
     }
+
     /**
      * 显示Dialog
      */
     private void showDialog() {
         if (mLoadingDialog == null) {
-            mLoadingDialog = LoadingDialog.createLoadingDialog(this,getString((R.string.update_search_updateinfo)));
+            mLoadingDialog = LoadingDialog.createLoadingDialog(this, getString((R.string.update_search_updateinfo)));
             mLoadingDialog.show();
         }
     }

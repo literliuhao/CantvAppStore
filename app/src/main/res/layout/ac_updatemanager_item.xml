@@ -18,7 +18,7 @@
             android:layout_marginLeft="24px"
             android:layout_marginTop="24px"
             android:scaleType="centerCrop"
-            android:src="@mipmap/cover" />
+            android:src="@mipmap/ic_launcher" />
 
         <TextView
             android:id="@+id/tv_updateapp_name"
