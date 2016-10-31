@@ -1280,6 +1280,8 @@
     <dimen name="px1278">852.04px</dimen>
     <dimen name="px1279">852.7px</dimen>
     <dimen name="px1280">853.37px</dimen>
+    <dimen name="px1400">933.33px</dimen>
+    <dimen name="px1600">1066.66px</dimen>
 
     <dimen name="pxn16">-10.6px</dimen>
 

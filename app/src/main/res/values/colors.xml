@@ -4,4 +4,14 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="testColor">#FF0081</color>
+
+    <!--首页管理色块-->
+    <color name="manager_008fc3">#008fc3</color>
+    <color name="manager_cb8123">#cb8123</color>
+    <color name="manager_039979">#039979</color>
+    <color name="manager_c45341">#c45341</color>
+    <color name="manager_c45241">#c45241</color>
+    <color name="manager_448c15">#448c15</color>
+    <color name="manager_7a5be0">#7a5be0</color>
+    <color name="manager_069597">#069597</color>
 </resources>

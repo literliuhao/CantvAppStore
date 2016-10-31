@@ -3,10 +3,7 @@ package com.can.appstore.index.ui;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
-import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -22,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.index.interfaces.ICallBack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +27,7 @@ import java.util.List;
 /**
  * Created by liuhao on 2016/10/17.
  */
-public class ViewPagerIndicator extends LinearLayout {
+public class TitleBar extends LinearLayout implements View.OnFocusChangeListener {
     private Paint mPaint;
     private Path mPath;
     private int mTriangleWidth;
@@ -38,6 +36,7 @@ public class ViewPagerIndicator extends LinearLayout {
     private static final float RADIO_TRIANGEL = 1.0f / 6;
     private final int DIMENSION_TRIANGEL_WIDTH = (int) (getScreenWidth() / 3 * RADIO_TRIANGEL);
 
+    private int offsetX = (int) getResources().getDimension(R.dimen.px30);
     private int mInitTranslationX;
     private float mTranslationX;
 
@@ -54,26 +53,27 @@ public class ViewPagerIndicator extends LinearLayout {
 
     private List<TextView> textViewList;
     private int mCurrentIndex = 0;
+    private ICallBack mCallBack;
 
-    public ViewPagerIndicator(Context context) {
+    public TitleBar(Context context) {
         this(context, null);
     }
 
-    public ViewPagerIndicator(Context context, AttributeSet attrs) {
+    public TitleBar(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         // 获得自定义属性，tab的数量
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ViewPagerIndicator);
-        mTabVisibleCount = a.getInt(R.styleable.ViewPagerIndicator_item_count, COUNT_DEFAULT_TAB);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TitleBar);
+        mTabVisibleCount = a.getInt(R.styleable.TitleBar_item_count, COUNT_DEFAULT_TAB);
         if (mTabVisibleCount < 0) mTabVisibleCount = COUNT_DEFAULT_TAB;
         a.recycle();
 
         // 初始化画笔
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        mPaint.setColor(Color.parseColor("#ffffffff"));
-        mPaint.setStyle(Style.FILL);
-        mPaint.setPathEffect(new CornerPathEffect(3));
+//        mPaint = new Paint();
+//        mPaint.setAntiAlias(true);
+//        mPaint.setColor(Color.parseColor("#ffffffff"));
+//        mPaint.setStyle(Style.FILL);
+//        mPaint.setPathEffect(new CornerPathEffect(3));
         textViewList = new ArrayList<TextView>();
     }
 
@@ -85,7 +85,7 @@ public class ViewPagerIndicator extends LinearLayout {
         canvas.save();
         // 画笔平移到正确的位置
         canvas.translate(mInitTranslationX + mTranslationX, getHeight() + 1);
-        canvas.drawPath(mPath, mPaint);
+//        canvas.drawPath(mPath, mPaint);
         canvas.restore();
 
         super.dispatchDraw(canvas);
@@ -108,6 +108,11 @@ public class ViewPagerIndicator extends LinearLayout {
         mInitTranslationX = getWidth() / mTabVisibleCount / 2 - mTriangleWidth / 2;
     }
 
+    public void initTitle(ICallBack callBack) {
+        this.mCallBack = callBack;
+
+    }
+
     /**
      * 设置可见的tab的数量
      *
@@ -127,30 +132,32 @@ public class ViewPagerIndicator extends LinearLayout {
         if (datas != null && datas.size() > 0) {
             this.removeAllViews();
             this.mTabTitles = datas;
-            for (String title : mTabTitles) {
-                // 添加view
-                addView(generateTextView(title));
+
+            for (int i = 0; i < mTabTitles.size(); i++) {
+                addView(generateTextView(mTabTitles.get(i),i));
             }
-            onFocusView();
+//            onFocusView();
             // 设置item的click事件
             setItemClickEvent();
         }
 
     }
 
-    private void onFocusView() {
-        for (int i = 0; i < textViewList.size(); i++) {
-            final TextView textView = textViewList.get(i);
-            textView.setOnFocusChangeListener(new OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-                    if (hasFocus) {
-                        Log.i("onFocusChange", textViewList.get(mCurrentIndex).getText() + "");
-                        textViewList.get(mCurrentIndex).callOnClick();
-                    }
-                }
-            });
-        }
+//    private void onFocusView() {
+//        for (int i = 0; i < textViewList.size(); i++) {
+//            final TextView textView = textViewList.get(i);
+//            textView.setOnFocusChangeListener(new OnFocusChangeListener() {
+//                @Override
+//                public void onFocusChange(View view, boolean hasFocus) {
+//                    mCallBack.onSuccess(view,hasFocus);
+//                }
+//            });
+//        }
+//    }
+
+    @Override
+    public void onFocusChange(View view, boolean b) {
+//        Log.i("TitleBar", "onFocusChange " + String.valueOf(view));
     }
 
     /**
@@ -175,10 +182,10 @@ public class ViewPagerIndicator extends LinearLayout {
     private boolean isScrolling = false;
 
     // 设置关联的ViewPager
-    public void setViewPager(ViewPager mViewPager, final int pos) {
+    public void setViewPager(final ViewPager mViewPager, final int pos) {
         this.mViewPager = mViewPager;
 
-        mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
+        this.mViewPager.addOnPageChangeListener(new OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 Log.i("onPageSelected", position + "");
@@ -186,14 +193,6 @@ public class ViewPagerIndicator extends LinearLayout {
                 // 设置字体颜色高亮
                 resetTextViewColor();
                 highLightTextView(position);
-                for (int i = 0; i < ViewPagerIndicator.this.getChildCount(); i++) {
-                    TextView textView = (TextView) ViewPagerIndicator.this.getChildAt(i);
-//                    if(position == i){
-//                        textView.setFocusable(true);
-//                    }else{
-//                        textView.setFocusable(false);
-//                    }
-                }
                 // 回调
                 if (onPageChangeListener != null) {
                     onPageChangeListener.onPageSelected(position);
@@ -202,7 +201,7 @@ public class ViewPagerIndicator extends LinearLayout {
 
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                Log.i("onPagescrolled", "position " + position);
+//                Log.i("onPagescrolled", "position " + position);
 //                Log.i("onPagescrolled", "positionOffset " + positionOffset);
 //                Log.i("onPagescrolled", "positionOffsetPixels " + positionOffsetPixels);
                 // 滚动
@@ -233,16 +232,21 @@ public class ViewPagerIndicator extends LinearLayout {
             }
         });
 
-        ViewPagerIndicator.this.getViewTreeObserver().addOnGlobalFocusChangeListener(new ViewTreeObserver.OnGlobalFocusChangeListener() {
+        TitleBar.this.getViewTreeObserver().addOnGlobalFocusChangeListener(new ViewTreeObserver.OnGlobalFocusChangeListener() {
             @Override
             public void onGlobalFocusChanged(View oldFocus, View newFocus) {
-                Log.i("onGlobalFocusChanged", oldFocus + "" + newFocus);
-                if ((oldFocus instanceof MyImageView) && (newFocus instanceof TextView)) {
-//                    TextView textView = textViewList.get(mCurrentIndex);
-//                    textView.callOnClick();
-//                    textView.requestFocus();
-                } else if ((oldFocus instanceof TextView) && (newFocus instanceof TextView)) {
-                    newFocus.callOnClick();
+                Log.i("TitleBar", "onGlobalFocusChanged old " + String.valueOf(oldFocus));
+                Log.i("TitleBar", "onGlobalFocusChanged new " + String.valueOf(newFocus));
+
+                if (!(oldFocus instanceof TextView) && newFocus instanceof TextView) {
+                    newFocus = textViewList.get(mViewPager.getCurrentItem());
+                    newFocus.requestFocus();
+                    mCallBack.onSuccess(newFocus, true);
+                } else {
+                    if (null == oldFocus || null == newFocus) return;
+                    Log.i("TitleBar", "onGlobalFocusChanged else old" + String.valueOf(oldFocus.getId()));
+                    Log.i("TitleBar", "onGlobalFocusChanged else new " + String.valueOf(newFocus.getId()));
+                    mCallBack.onSuccess(newFocus, true);
                 }
             }
         });
@@ -299,16 +303,26 @@ public class ViewPagerIndicator extends LinearLayout {
      * @param text
      * @return
      */
-    private TextView generateTextView(String text) {
+    private TextView generateTextView(String text,int viewID) {
         final TextView textView = new TextView(getContext());
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        lp.width = getScreenWidth() / mTabVisibleCount;
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+
+        int marginLR = (int) getResources().getDimension(R.dimen.px40);
+        int textWidth = (int) getResources().getDimension(R.dimen.px100);
+        int textHeight = (int) getResources().getDimension(R.dimen.px50);
+        int textSize = (int) getResources().getDimension(R.dimen.px35);
+
+        lp.setMargins(marginLR, 0, marginLR, 0);
+        lp.width = textWidth;
+        lp.height = textHeight;
+        textView.setId(viewID);
         textView.setGravity(Gravity.CENTER);
         textView.setTextColor(COLOR_TEXT_NORMAL);
         textView.setText(text);
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
         textView.setLayoutParams(lp);
         textView.setFocusable(true);
+        textView.setOnFocusChangeListener(this);
         textViewList.add(textView);
         return textView;
     }

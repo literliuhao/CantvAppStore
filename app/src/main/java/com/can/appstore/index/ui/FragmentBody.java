@@ -8,29 +8,34 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 
 import com.can.appstore.index.entity.ChildBean;
 import com.can.appstore.index.entity.LayoutBean;
-import com.can.appstore.index.entity.PageBean;
 import com.can.appstore.index.interfaces.ICallBack;
 
 /**
  * Created by liuhao on 2016/10/17.
  */
-public class VpSimpleFragment extends Fragment implements View.OnFocusChangeListener {
+public class FragmentBody extends Fragment implements View.OnFocusChangeListener {
     public static final String BUNDLE_TITLE = "title";
     private String mTitle = "DefaultValue";
-    private PageBean mPageBean;
     private LayoutBean mLayoutBean;
     private ICallBack mICallBack;
-    private View view;
+    private int bodeColor = 0x782A2B2B;
 
-    public VpSimpleFragment(LayoutBean layoutBean, ICallBack iCallBack) {
+    public FragmentBody(LayoutBean layoutBean, ICallBack iCallBack) {
         mLayoutBean = layoutBean;
         mICallBack = iCallBack;
     }
 
+    /**
+     * CreateView 再次之前可通过Bundle传递需要的参数
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle arguments = getArguments();
@@ -38,15 +43,16 @@ public class VpSimpleFragment extends Fragment implements View.OnFocusChangeList
             mTitle = arguments.getString(BUNDLE_TITLE);
             Log.i("onCreateView", mTitle);
         }
-//		inflater = LayoutInflater.from(mContext).finflate(R.layout.item_layout, null, false);
+        return drawView(container, measureZoom());
+    }
 
-//		Button button = new Button(getActivity());
-//		button.setText(mTitle);
-//		button.setGravity(Gravity.CENTER);
-
-        //计算缩放
-        float percentage = measureZoom();
-
+    /**
+     * 根据服务器配置文件动态生成界面
+     *
+     * @param container
+     * @param scaleX    当前缩放比例
+     */
+    private HorizontalScrollView drawView(ViewGroup container, float scaleX) {
         HorizontalScrollView horizontalScrollView = new HorizontalScrollView(container.getContext());
         ViewGroup.LayoutParams scrollParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         horizontalScrollView.setLayoutParams(scrollParams);
@@ -55,30 +61,41 @@ public class VpSimpleFragment extends Fragment implements View.OnFocusChangeList
         frameLayout.setLayoutParams(params);
         FrameLayout.LayoutParams layoutParams;
         for (int j = 0; j < mLayoutBean.getPages().size(); j++) {
-            ChildBean childBean = mLayoutBean.getPages().get(j);
+            final ChildBean childBean = mLayoutBean.getPages().get(j);
             MyImageView myImageView = new MyImageView(getActivity());
             myImageView.setId(j);
             myImageView.setImageURI(childBean.getBg());
-            myImageView.setColour(0x782A2B2B);
+            myImageView.setColour(bodeColor);
             myImageView.setBorder(2);
             myImageView.setFocusable(true);
-            myImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            myImageView.setBackgroundColor(0x782A2B2B);
-            myImageView.setOnFocusChangeListener(VpSimpleFragment.this);
-            int[] rect = scaleXY(childBean, percentage);
+            myImageView.setScaleType(MyImageView.ScaleType.CENTER_CROP);
+            myImageView.setBackgroundColor(bodeColor);
+            myImageView.setOnFocusChangeListener(FragmentBody.this);
+            myImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.i("FragmentBody", String.valueOf(childBean.getId()));
+                    Log.i("FragmentBody", String.valueOf(childBean.getBg()));
+                }
+            });
+            int[] rect = scaleXY(childBean, scaleX);
             layoutParams = new FrameLayout.LayoutParams(rect[2], rect[3]);
             layoutParams.setMargins(rect[0], rect[1], 0, 0);
             myImageView.setLayoutParams(layoutParams);
-            if (j == 0) {
-                view = myImageView;
-            }
             frameLayout.addView(myImageView);
         }
-
         horizontalScrollView.addView(frameLayout);
+
         return horizontalScrollView;
     }
 
+    /**
+     * 根据分辨率计算当前缩放
+     *
+     * @param childBean
+     * @param percentage
+     * @return
+     */
     private int[] scaleXY(ChildBean childBean, float percentage) {
         int x = (int) (childBean.getX() * percentage);
         int y = (int) (childBean.getY() * percentage);
@@ -87,8 +104,17 @@ public class VpSimpleFragment extends Fragment implements View.OnFocusChangeList
         return new int[]{x, y, width, height};
     }
 
+    /**
+     * 已知服务器和当前设备分辨率计算基数
+     *
+     * @return
+     */
     private float measureZoom() {
-        return 720f / 720f;
+        //得到当前分辨率
+        float currentH = 720f;
+        //已知后端配置为1080p
+        float serviceH = 1080f;
+        return currentH / serviceH;
     }
 
     @Override
@@ -96,11 +122,15 @@ public class VpSimpleFragment extends Fragment implements View.OnFocusChangeList
         super.onDestroy();
     }
 
+    /**
+     * 回调给首页当前焦点，做统一处理
+     *
+     * @param v
+     * @param hasFocus
+     */
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-        if (hasFocus) {
-            mICallBack.onSuccess(v,hasFocus);
-        }
+        mICallBack.onSuccess(v, hasFocus);
     }
 
 }

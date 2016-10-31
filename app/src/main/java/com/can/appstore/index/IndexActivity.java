@@ -7,145 +7,187 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.index.entity.LayoutBean;
 import com.can.appstore.index.entity.PageBean;
-import com.can.appstore.index.focus.FocusScaleUtils;
-import com.can.appstore.index.focus.FocusUtils;
 import com.can.appstore.index.interfaces.ICallBack;
 import com.can.appstore.index.model.JsonFormat;
-import com.can.appstore.index.ui.CustormFragment;
-import com.can.appstore.index.ui.ViewPagerIndicator;
-import com.can.appstore.index.ui.VpSimpleFragment;
-import com.can.appstore.index.ui.WidgetTvViewBring;
+import com.can.appstore.index.ui.FragmentBody;
+import com.can.appstore.index.ui.ManagerFragment;
+import com.can.appstore.index.ui.TitleBar;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.ui.focus.FocusMoveUtil;
+import cn.can.tvlib.ui.focus.FocusScaleUtil;
+
 /**
  * Created by liuhao on 2016/10/15.
  */
-public class IndexActivity extends FragmentActivity {
-    private List<Fragment> mTabContents = new ArrayList<Fragment>();
+public class IndexActivity extends FragmentActivity implements ICallBack, ViewPager.OnPageChangeListener {
+    private List<Fragment> mFragmentLists;
+    private PageBean mPageBeans;
     private FragmentPagerAdapter mAdapter;
     private ViewPager mViewPager;
-    //    private List<String> mDatas = Arrays.asList("推荐", "排行", "应用", "游戏", "教育", "管理", "我的应用");
-    private List<String> mDatas = new ArrayList<String>();
 
-    private ViewPagerIndicator mIndicator;
-    private FocusUtils mFocusUtils;
-    private FocusScaleUtils mFocusScaleUtils;
-    private View moveView = null;
-    private WidgetTvViewBring widgetTvViewBring;
+    private TitleBar mTitleBar;
+    private FocusMoveUtil mFocusUtils;
+    private FocusScaleUtil mFocusScaleUtils;
     private View lastView = null;
+
+    //滚动中
+    private final int SCROLLING = 2;
+    //滚动停止
+    private final int SCROLLED = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.vp_indicator);
-        PageBean mPageBean = JsonFormat.parseJson("");
-        if (null != mPageBean) {
-            initView();
-            initDatas(mPageBean);
-            //设置Tab上的标题
-            mIndicator.setTabItemTitles(mDatas);
-            mIndicator.setOnPageChangeListener(new ViewPagerIndicator.PageChangeListener() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                    Log.i("onPageSelected", position + "");
-
-                }
-
-                @Override
-                public void onPageSelected(int position) {
-                    if (position == 1 || position == 4) {
-                        CustormFragment fragment = (CustormFragment) mTabContents.get(position);
-//                        View view = fragment.setOnFocus();
-//                        mFocusUtils.startMoveFocus(view, null, true, 1f, 1f, 0f, 0f);
-                    } else {
-                        VpSimpleFragment fragment = (VpSimpleFragment) mTabContents.get(position);
-//                        View view = fragment.setOnFocus();
-//                        mFocusUtils.startMoveFocus(view, null, true, 1f, 1f, 0f, 0f);
-                    }
-//                    mFocusUtils.showFocus();
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int state) {
-                    Log.i("onPageScrollStateChanged", state + "");
-                    if (state == 2) {
-                        mFocusUtils.hideFocus();
-                    } else if (state == 0) {
-                        View view = IndexActivity.this.getCurrentFocus();
-//                        if(view instanceof MyImageView){
-                        mFocusUtils.startMoveFocus(view, null, true, 1f, 1f, 0f, 0f);
-                        mFocusUtils.showFocus();
-//                        }
-                    }
-                }
-            });
-            mViewPager.setAdapter(mAdapter);
-            //设置关联的ViewPager
-            mIndicator.setViewPager(mViewPager, 0);
-            mFocusUtils = new FocusUtils(this, getWindow().getDecorView(), R.drawable.image_focus);
-            mFocusScaleUtils = new FocusScaleUtils(300, 300, 1.05f, null, null);
-            widgetTvViewBring = new WidgetTvViewBring((ViewGroup) this.getWindow().getDecorView());
-        }
+        setStyle();
+        initView();
+        initData();
+        initFocus();
+        bindData();
     }
 
-    private void initDatas(PageBean mPageBean) {
-        for (int i = 0; i < mPageBean.getPageLists().size(); i++) {
-            LayoutBean layoutBean = mPageBean.getPageLists().get(i);
+    /**
+     * 当前Activity样式及载入的布局
+     */
+    private void setStyle() {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.index);
+    }
+
+    /**
+     * 首页初始化所有View
+     */
+    private void initView() {
+        mViewPager = (ViewPager) findViewById(R.id.id_vp);
+        mTitleBar = (TitleBar) findViewById(R.id.id_indicator);
+        mTitleBar.initTitle(this);
+    }
+
+    /**
+     * 首页数据初始化
+     */
+    private void initData() {
+        mFragmentLists = new ArrayList<>();
+        mPageBeans = JsonFormat.parseJson("");
+        if (null == mPageBeans) return;
+        //根据服务器配置文件生成不同样式加入Fragment列表中
+        for (int i = 0; i < mPageBeans.getPageLists().size(); i++) {
+            FragmentBody fragment = new FragmentBody(mPageBeans.getPageLists().get(i), this);
+            mFragmentLists.add(fragment);
+
+        }
+        //排行、管理、我的应用不受服务器后台配置，因此手动干预位置
+        ManagerFragment topFragment = new ManagerFragment(this);
+        mFragmentLists.add(1, topFragment);
+        ManagerFragment managerFragment = new ManagerFragment(this);
+        mFragmentLists.add(4, managerFragment);
+
+    }
+
+    /**
+     * 首页与TitleBar的数据绑定
+     *
+     * @param mPage 导航栏数据
+     */
+    private void bindTtile(PageBean mPage) {
+        List<String> mDatas = new ArrayList<>();
+        for (int i = 0; i < mPage.getPageLists().size(); i++) {
+            LayoutBean layoutBean = mPage.getPageLists().get(i);
             mDatas.add(layoutBean.getTitle());
         }
-        for (int i = 0; i < mPageBean.getPageLists().size(); i++) {
-            VpSimpleFragment fragment = new VpSimpleFragment(mPageBean.getPageLists().get(i), new ICallBack() {
-                @Override
-                public void onSuccess(View view, boolean hasFocus) {
-                    Log.i("onSuccess", view.getParent() + " " + view.getId() + "");
-                    //此方法不能交换View层结构
-                    mFocusUtils.showFocus();
-                    mFocusUtils.startMoveFocus(view, null, true, 1f, 1f, 0f, 0f);
-                    mFocusScaleUtils.scaleToLargeWH(view, 1.1F, 1.1f);
-                    widgetTvViewBring.bringChildToFront((ViewGroup) getWindow().getDecorView(), view);
-                }
-            });
-            if (i == 1) {
-                CustormFragment custormFragment = CustormFragment.newInstance("custorm");
-                mTabContents.add(custormFragment);
-            } else if (i == 4) {
-                CustormFragment custormFragment = CustormFragment.newInstance("custorm");
-                mTabContents.add(custormFragment);
-            } else {
-                mTabContents.add(fragment);
-            }
-//            Bundle bundle = new Bundle();
-//            bundle.putString("title", mDatas.get(i));
-//            fragment.setArguments(bundle);
-        }
+        //排行、管理、我的应用不受服务器后台配置，因此手动干预位置
+        mDatas.add(1, "排行");
+        mDatas.add(4, "管理");
+        //设置导航栏Title
+        mTitleBar.setTabItemTitles(mDatas);
+    }
 
+    /**
+     * 首页焦点初始化，并且在IndexActivity做统一处理
+     */
+    private void initFocus() {
+        mFocusUtils = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
+        mFocusScaleUtils = new FocusScaleUtil(300, 300, 1.05f, null, null);
+    }
+
+    /**
+     * mViewPager、mTitleBar 数据绑定与页面绑定
+     */
+    private void bindData() {
+        bindTtile(mPageBeans);
         mAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
             public int getCount() {
-                return mTabContents.size();
+                return mFragmentLists.size();
             }
 
             @Override
             public Fragment getItem(int position) {
-                return mTabContents.get(position);
+                return mFragmentLists.get(position);
             }
         };
+        mViewPager.setAdapter(mAdapter);
+        mViewPager.setOffscreenPageLimit(5);
+        mViewPager.addOnPageChangeListener(this);
+        mTitleBar.setViewPager(mViewPager, 0);
+
 
     }
 
-    private void initView() {
-        mViewPager = (ViewPager) findViewById(R.id.id_vp);
-        mIndicator = (ViewPagerIndicator) findViewById(R.id.id_indicator);
+    /**
+     * 自定义onSuccess接口，首页所有Fragment实现后都可以在此做统一焦点处理
+     *
+     * @param v        焦点动画对象
+     * @param hasFocus 是否获得焦点
+     */
+    @Override
+    public void onSuccess(View v, boolean hasFocus) {
+        if (hasFocus) {
+            mFocusUtils.startMoveFocus(v);
+            if (v == null) return;
+            Log.i("onSuccess", v.getId() + "");
+            if (v instanceof TextView) {
+                v.callOnClick();
+            } else {
+                mFocusScaleUtils.scaleToLarge(v);
+            }
+        } else {
+            mFocusScaleUtils.scaleToNormal();
+        }
+        //此方法不能交换View层结构
+//        mFocusUtils.showFocus();
+//        widgetTvViewBring.bringChildToFront((ViewGroup) getWindow().getDecorView(), v);
     }
 
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//        Log.i("IndexActivity", "onPageScrolled " + position + "");
+    }
 
+    @Override
+    public void onPageSelected(int position) {
+        Log.i("IndexActivity", "onPageSelected " + position + "");
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+        Log.i("IndexActivity", "onPageScrollStateChanged " + state + "");
+        //ViewPager切换时候焦点框先消失，滚动完成后设置位置并显示
+        if (state == SCROLLING) {
+            if (!(getCurrentFocus() instanceof TextView)) {
+                mFocusUtils.hideFocus();
+            }
+        } else if (state == SCROLLED) {
+            mFocusUtils.startMoveFocus(getCurrentFocus());
+            mFocusUtils.showFocus(200);
+        }
+    }
 }

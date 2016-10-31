@@ -13,7 +13,7 @@ import com.can.appstore.R;
  * Created by liuhao on 2016/10/21.
  */
 
-public class CustormFragment extends Fragment  {
+public class TopFragment extends Fragment  {
     public static final String BUNDLE_TITLE = "title";
     private String mTitle = "DefaultValue";
     private View viewAll;
@@ -32,10 +32,10 @@ public class CustormFragment extends Fragment  {
         super.onDestroy();
     }
 
-    public static CustormFragment newInstance(String title) {
+    public static TopFragment newInstance(String title) {
         Bundle bundle = new Bundle();
         bundle.putString(BUNDLE_TITLE, title);
-        CustormFragment fragment = new CustormFragment();
+        TopFragment fragment = new TopFragment();
         fragment.setArguments(bundle);
         return fragment;
     }

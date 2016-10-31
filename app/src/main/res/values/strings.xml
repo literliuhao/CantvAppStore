@@ -10,4 +10,12 @@
     <string name="search_bottom_recommend_st">热门推荐:</string>
     <string name="search_null">搜不到相关应用</string>
 
+    <string name="index_manager_text1">一键加速</string>
+    <string name="index_manager_text2">更新管理</string>
+    <string name="index_manager_text3">文件管理</string>
+    <string name="index_manager_text4">电视助手</string>
+    <string name="index_manager_text5">网络测速</string>
+    <string name="index_manager_text6">卸载管理</string>
+    <string name="index_manager_text7">安装包管理</string>
+    <string name="index_manager_text8">下载管理</string>
 </resources>

@@ -3,7 +3,7 @@
 
     <attr name="item_count" format="integer"></attr>
 
-    <declare-styleable name="ViewPagerIndicator">
+    <declare-styleable name="TitleBar">
         <attr name="item_count" />
     </declare-styleable>
 
