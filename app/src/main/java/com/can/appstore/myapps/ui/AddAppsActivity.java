@@ -1,4 +1,4 @@
-package com.can.appstore.myapps;
+package com.can.appstore.myapps.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.myapps.model.AppInfo;
+import com.can.appstore.myapps.model.MyAppsListDataUtil;
 
 import java.util.List;
 

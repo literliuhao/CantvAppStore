@@ -1,4 +1,4 @@
-package com.can.appstore.myapps;
+package com.can.appstore.myapps.ui;
 
 import android.app.Fragment;
 import android.content.Intent;
@@ -14,6 +14,9 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.can.appstore.R;
+import com.can.appstore.myapps.model.AppInfo;
+import com.can.appstore.myapps.model.MyAppsListDataUtil;
+import com.can.appstore.myapps.adapter.MyAppsRvAdapter;
 import com.can.appstore.search.ToastUtil;
 
 import java.util.ArrayList;

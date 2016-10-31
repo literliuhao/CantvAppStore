@@ -1,4 +1,4 @@
-package com.can.appstore.myapps;
+package com.can.appstore.myapps.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,6 +13,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.myapps.model.AppInfo;
+import com.can.appstore.myapps.model.MyAppsListDataUtil;
+import com.can.appstore.myapps.adapter.AllAppsRecyclerViewAdapter;
 
 import java.util.List;
 
@@ -30,7 +33,7 @@ public class AllAppsActivity extends Activity{
 
     List<AppInfo> allAppList = null;
     CanRecyclerView mAllAppsRecyclerView;
-    AllAppsRecyclerViewAdapter  mAdapter;
+    AllAppsRecyclerViewAdapter mAdapter;
     TextView tvCurRows;
     TextView tvTotalRows;
     LinearLayout ll_edit;

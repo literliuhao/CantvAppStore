@@ -1,4 +1,4 @@
-package com.can.appstore.myapps;
+package com.can.appstore.myapps.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.myapps.model.AppInfo;
 
 import java.util.List;
 

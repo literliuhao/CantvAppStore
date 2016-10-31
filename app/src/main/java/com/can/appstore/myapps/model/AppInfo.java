@@ -1,4 +1,4 @@
-package com.can.appstore.myapps;
+package com.can.appstore.myapps.model;
 
 import android.graphics.drawable.Drawable;
 
