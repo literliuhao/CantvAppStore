@@ -1,0 +1,131 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#2d313a">
+
+    <TextView
+        android:id="@+id/tv_install_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="424px"
+        android:layout_marginTop="80px"
+        android:drawableLeft="@mipmap/title_line"
+        android:text="@string/install_title"
+        android:textColor="#ccffffff"
+        android:textSize="35px" />
+
+    <TextView
+        android:id="@+id/tv_install_totalnum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/tv_install_title"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="160px"
+        android:text="@string/install_totalnum"
+        android:textColor="#80ffffff"
+        android:textSize="32px" />
+
+    <TextView
+        android:id="@+id/tv_install_currentnum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/tv_install_title"
+        android:layout_marginRight="3px"
+        android:layout_toLeftOf="@id/tv_install_totalnum"
+        android:text="1 "
+        android:textColor="#ccffffff"
+        android:textSize="32px" />
+
+    <Button
+        android:id="@+id/bt_install_deleteall"
+        android:layout_width="200px"
+        android:layout_height="72px"
+        android:layout_below="@id/tv_install_title"
+        android:layout_marginLeft="153px"
+        android:layout_marginTop="30px"
+        android:background="@drawable/selector_updateitem"
+        android:focusable="true"
+        android:gravity="center"
+        android:text="@string/install_bt_deleteall"
+        android:textColor="#ccffffff"
+        android:textSize="35px"
+        android:visibility="visible" />
+
+    <Button
+        android:id="@+id/bt_install_delete"
+        android:layout_width="200px"
+        android:layout_height="72px"
+        android:layout_below="@id/bt_install_deleteall"
+        android:layout_marginLeft="153px"
+        android:layout_marginTop="24px"
+        android:background="@drawable/selector_updateitem"
+        android:focusable="true"
+        android:text="@string/install_bt_deleteinstall"
+        android:textColor="#ccffffff"
+        android:textSize="35px"
+        android:visibility="visible" />
+    <Button
+        android:id="@+id/bt_install_update"
+        android:layout_width="200px"
+        android:layout_height="72px"
+        android:layout_below="@id/bt_install_delete"
+        android:layout_marginLeft="153px"
+        android:layout_marginTop="24px"
+        android:background="@drawable/selector_updateitem"
+        android:focusable="true"
+        android:onClick="intoUpdate"
+        android:text="更新管理"
+        android:textColor="#ccffffff"
+        android:textSize="35px"
+        android:visibility="visible" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tv_install_title"
+        android:layout_marginLeft="52px"
+        android:layout_marginTop="16px"
+        android:layout_toRightOf="@id/bt_install_deleteall">
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_install_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginRight="140px"
+        android:focusable="true" />
+        <TextView
+            android:id="@+id/tv_install_reminder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="300dp"
+            android:layout_centerInParent="true"
+            android:text="@string/install_updateall"
+            android:textColor="@android:color/white"
+            android:textSize="25dp"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/pb_install_progressbar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="380px"
+        android:layout_height="25px"
+        android:layout_alignBottom="@+id/tv_install_title"
+        android:layout_marginBottom="8px"
+        android:layout_marginLeft="40px"
+        android:layout_toEndOf="@+id/tv_install_title"
+        android:progressDrawable="@drawable/progress_size" />
+
+    <TextView
+        android:id="@+id/tv_install_roomsize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tv_install_title"
+        android:layout_marginBottom="8px"
+        android:layout_marginLeft="80px"
+        android:layout_toEndOf="@+id/tv_install_title"
+        android:text="@string/install_sdavaliable_size"
+        android:textColor="#ccffffff"
+        android:textSize="19px" />
+</RelativeLayout>
