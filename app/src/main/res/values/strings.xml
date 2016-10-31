@@ -12,6 +12,7 @@
 
     <!--首页排行榜-->
     <string name="rank_more_str">更多</string>
+
     <string name="index_manager_text1">一键加速</string>
     <string name="index_manager_text2">更新管理</string>
     <string name="index_manager_text3">文件管理</string>
