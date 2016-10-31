@@ -9,8 +9,12 @@
     </style>
 
     <style name="HomeRankItemStyle">
+<<<<<<< HEAD
         <item name="android:layout_marginLeft">100dp</item>
         <item name="android:visibility">gone</item>
+=======
+        <item name="android:layout_marginLeft">50dp</item>
+>>>>>>> 550611253357db8243f36c9614afe64e58bd49f6
     </style>
 
 </resources>
