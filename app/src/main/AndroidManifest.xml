@@ -23,8 +23,8 @@
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>
         <activity android:name=".search.SearchActivity"></activity>
-        <activity android:name=".myapps.AllAppsActivity"></activity>
-        <activity android:name=".myapps.AddAppsActivity"></activity>
+        <activity android:name=".myapps.ui.AllAppsActivity"></activity>
+        <activity android:name=".myapps.ui.AddAppsActivity"></activity>
     </application>
 
 </manifest>
