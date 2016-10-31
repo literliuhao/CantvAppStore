@@ -9,6 +9,6 @@
     android:id="@+id/myapps_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:name="com.can.appstore.myapps.MyApps"
+    android:name="com.can.appstore.myapps.MyAppsFragment"
     />
 </LinearLayout>

@@ -6,35 +6,42 @@ import android.util.ArrayMap;
 
 import com.can.appstore.R;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import cn.can.tvlib.utils.PreferencesUtils;
 
 
 /**
  * Created by wei on 2016/10/25.
  */
 
-public  class MyAppsShowListHelper {
+public  class MyAppsListDataUtil {
 
     private final Context context;
     private Map<String,AppInfo> allapps = new ArrayMap<String,AppInfo>();
 
-    public MyAppsShowListHelper(Context  context) {
+    public MyAppsListDataUtil(Context  context) {
         this.context = context;
     }
 
+    /**
+     * 主页：我的应用显示的列表，可编辑。列表数据已包名拼接字符串的形式存在SP文件中
+     *      首次：SP存在，获取本地所有应用最多添加16个
+     *
+     * @return
+     */
     public  List<AppInfo>  getShowList(){
         List<AppInfo> mShowList = new ArrayList<AppInfo>(18);
-        File file = new File("/data/data/com.can.appstore/files/myappsshowlist.txt");
+//        File file = new File("/data/data/com.can.appstore/files/myappsshowlist.txt");
         List<AppInfo>  allAppsList = getAllAppList();
-      if(file.exists()){
+      if( !PreferencesUtils.getString(context,"myappsshowlist","0").equals("0")){
           //存在，证明我在本地已写过过文件
           mShowList = getList();
+          if(mShowList.size() < 16){
+              mShowList.add(new AppInfo("添加应用", context.getResources().getDrawable(R.drawable.ic_launcher)));
+          }
       }else{
           //文件不存在，初次
           for (int i=0;i<allAppsList.size();i++){
@@ -44,72 +51,76 @@ public  class MyAppsShowListHelper {
                   break;
               }
           }
+          if(mShowList.size()<16){
+              mShowList.add(new AppInfo("添加应用", context.getResources().getDrawable(R.drawable.ic_launcher)));
+          }
           saveShowList(mShowList);
       }
         mShowList.add(0,new AppInfo("全部应用", context.getResources().getDrawable(R.drawable.ic_launcher)));
         mShowList.add(1,new AppInfo("系统应用", context.getResources().getDrawable(R.drawable.ic_launcher)));
-
-        if(mShowList.size()<18){
-            mShowList.add(new AppInfo("添加应用", context.getResources().getDrawable(R.drawable.ic_launcher)));
-        }
-
-
         return mShowList;
     }
 
+    /**
+     * 全部应用Activity显示的列表，本地已安装的所有非系统应用
+     * 在内存维护List
+     * @return
+     */
     public  List<AppInfo> getAllAppList(){
         List<AppInfo> mAppsList = AppUtils.findAllInstallApkInfo(context);
         List<AppInfo> allAppslist = new ArrayList<AppInfo>();
+//        TreeMap<long,AppInfo> map = new TreeMap<>();
         for (AppInfo  app : mAppsList){
             if(!app.isSystemApp){
                 allAppslist.add(app);
                 allapps.put(app.packageName,app);
             }
         }
+//        for (AppInfo  app :allAppslist) {
+//            map.put(app.installTime,app);
+//        }
+//        for (int i = 0; i<map.size();i++){
+//            allAppslist.add(map.);
+//        }
         return allAppslist;
     }
 
+    /**
+     * 主页我的应用页，编辑后保存到本地
+     * @param list
+     */
     public void saveShowList(List<AppInfo>  list ){
-        try {
-            FileOutputStream outputStream =context.openFileOutput("myappsshowlist.txt",Context.MODE_PRIVATE);
-            StringBuilder builder = new StringBuilder();
+            String string  = "";
             for(int i = 0; i<list.size();i++){
                 if(TextUtils.isEmpty(list.get(i).packageName)){
                     continue;
                 }
-                builder.append(list.get(i).packageName);
+                string += (list.get(i).packageName);
                 if(i==list.size()-1){
                     break;
                 }
-                builder.append("&");
+                string += ("&");
             }
-            outputStream.write(builder.toString().getBytes());
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        PreferencesUtils.putString(context,"myappsshowlist",string);
     }
 
     public List<AppInfo> getList(){
-        String listString = "";
+        String listString = PreferencesUtils.getString(context,"myappsshowlist");
         List<AppInfo> list = new ArrayList<AppInfo>();
-        try {
-            FileInputStream inputStream = context.openFileInput("myappsshowlist.txt");
-            int lenght = inputStream.available();
-            byte[] buffer = new byte[lenght];
-            inputStream.read(buffer);
-            listString = new String(buffer, "GB2312");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         String[] split = listString.split("&");
 
         for (int i = 0;i< split.length;i++){
-            list.add(allapps.get(split[i]));
+            if(allapps.containsKey(split[i])){
+                list.add(allapps.get(split[i]));
+            }
         }
         return list;
     }
 
+    public List<AppInfo>  getAddActivityList(){
+
+        return null;
+    }
 
 
 

@@ -43,7 +43,10 @@ public class AppUtils {
             bean.versionCode = info.versionCode;
             // 大小
             File apk = new File(applicationInfo.sourceDir);
-            bean.size = apk.length();// apk包文件大小
+            //初次安装时间
+            bean.installTime = info.firstInstallTime;
+            // apk包文件大小
+            bean.size = apk.length();
 
             // 是否是系统权限
             if ((applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM) {

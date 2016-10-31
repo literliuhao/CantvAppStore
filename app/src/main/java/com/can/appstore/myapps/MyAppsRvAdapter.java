@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
@@ -26,8 +26,7 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<AppInfo>{
         mList = datas;
     }
 
-//    int[] mItemColors = { R.color.square_blue, R.color.square_brown, R.color.square_green, R.color.square_orange,
-//            R.color.square_purple/*, R.color.square_red */};
+
     int[] mItemColors = {
             R.drawable.bj_01,
             R.drawable.bj_02,
@@ -51,7 +50,7 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<AppInfo>{
         MyAppsViewHolder myAppsViewHolder = (MyAppsViewHolder)holder;
         myAppsViewHolder.mImageView.setImageDrawable(mDatas.appIcon);
         myAppsViewHolder.mTextView.setText(mDatas.appName);
-        myAppsViewHolder.mRelativeLayout.setBackgroundResource(mItemColors[position%8]);
+        myAppsViewHolder.mLinearLayout.setBackgroundResource(mItemColors[position%8]);
 
 
     }
@@ -59,13 +58,13 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<AppInfo>{
     private  class MyAppsViewHolder extends RecyclerView.ViewHolder{
         public ImageView mImageView;
         public TextView mTextView;
-        public RelativeLayout  mRelativeLayout;
+        public LinearLayout  mLinearLayout;
 
         public MyAppsViewHolder(View itemView) {
             super(itemView);
             mImageView = (ImageView) itemView.findViewById(R.id.myapp_ivicon);
             mTextView = (TextView) itemView.findViewById(R.id.myapp_tvname);
-            mRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.myapps_item_rlbg);
+            mLinearLayout = (LinearLayout) itemView.findViewById(R.id.myapps_item_rlbg);
 
         }
 

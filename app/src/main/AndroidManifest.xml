@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.can.appstore">
 
+    <uses-permission android:name="android.permission.DELETE_PACKAGES"/>
     <application
         android:allowBackup="true"
         android:name=".MyApp"
@@ -20,6 +21,7 @@
         </activity>
         <activity android:name=".search.SearchActivity"></activity>
         <activity android:name=".myapps.AllAppsActivity"></activity>
+        <activity android:name=".myapps.AddAppsActivity"></activity>
     </application>
 
 </manifest>

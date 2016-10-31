@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <color name="focus_light_yellow">#fef102</color>
+    <color name="testColor">#FF0081</color>
 
     <!-- app管理器色块 -->
     <color name="square_blue">#06A2EC</color>
@@ -13,6 +15,14 @@
     <color name="square_red">#D33005</color>
     <color name="square_orange">#D68800</color>
 
-    <color name="focus_light_yellow">#fef102</color>
-    <color name="testColor">#FF0081</color>
+
+        <!--AddAppActivity页面-->
+    <color name="bt_batch_addapps_bg">#42464E</color>
+    <color name="bt_batch_addapps_focus_bg">#0376A0</color>
+    <color name="app_name_color">#CCFFFFFF</color>
+    <color name="select_app_count">#CCfdf352</color>
+    <color name="two_page_bg">#2d313a</color>
+    <color name="tv_cur_rows_color">#CCFFFFFF</color>
+    <color name="tv_total_rows_color">#7FFFFFFF</color>
+
 </resources>

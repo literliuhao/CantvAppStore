@@ -2,11 +2,13 @@ package com.can.appstore.myapps;
 
 import android.graphics.drawable.Drawable;
 
+import java.io.Serializable;
+
 /**
  * Created by wei on 2016/10/11.
  */
 
-public class AppInfo{
+public class AppInfo implements Serializable{
     public String appName = "";
     public String packageName = "";
     public String versionName = "";
@@ -16,13 +18,22 @@ public class AppInfo{
     public long size = 0;
     public String installApkpath = "";   //已经安装的apk文件的路径  在data/app下有   .apk文件
     public String Apkpath = "";  // 所有的apk文件的路径
+    public long  installTime = 0;
 
     @Override
     public String toString() {
-        return "AppInfo [appName=" + appName + ", packageName=" + packageName + ", versionName="
-                + versionName + ", versionCode=" + versionCode + ", appIcon=" + appIcon
-                + ", isSystemApp=" + isSystemApp + ", size=" + size + ", installApkpath="
-                + installApkpath + ", Apkpath=" + Apkpath + "]";
+        return "AppInfo{" +
+                "appName='" + appName + '\'' +
+                ", packageName='" + packageName + '\'' +
+                ", versionName='" + versionName + '\'' +
+                ", versionCode=" + versionCode +
+                ", appIcon=" + appIcon +
+                ", isSystemApp=" + isSystemApp +
+                ", size=" + size +
+                ", installApkpath='" + installApkpath + '\'' +
+                ", Apkpath='" + Apkpath + '\'' +
+                ", installTime=" + installTime +
+                '}';
     }
 
     public AppInfo(String appName, Drawable appIcon) {
@@ -31,4 +42,6 @@ public class AppInfo{
     }
 
     public AppInfo() {   }
+
+
 }

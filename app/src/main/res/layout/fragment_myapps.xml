@@ -3,15 +3,21 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:id="@+id/myapps_main_page"
+                android:background="@color/black"
               >
 
 
 
     <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
         android:id="@+id/cr_myapps"
-        android:layout_width="1760px"
-        android:layout_height="720px"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/px720"
         android:layout_centerHorizontal="true"
+        android:layout_marginStart="@dimen/px80"
+        android:layout_marginEnd="@dimen/px100"
+        android:layout_marginTop="@dimen/px100"
+        android:paddingTop="@dimen/px20"
+        android:paddingLeft="@dimen/px20"
         android:clipChildren="false"
         android:clipToPadding="false"
         ></cn.can.tvlib.ui.view.recyclerview.CanRecyclerView>
@@ -23,20 +29,23 @@
         android:layout_below="@+id/cr_myapps"
         android:layout_alignRight="@id/cr_myapps"
         android:orientation="horizontal"
-        android:layout_marginTop="70px"
+        android:layout_marginTop="@dimen/px70"
+        android:gravity="center"
         >
         <ImageView
-            android:layout_width="32px"
-            android:layout_height="32px"
-            android:layout_marginTop="7px"
+            android:layout_width="@dimen/px32"
+            android:layout_height="@dimen/px32"
             android:background="@drawable/menu_icon"
             />
     <TextView
-        android:layout_marginLeft="8px"
+        android:layout_marginLeft="@dimen/px8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="32px"
-        android:text="按菜单可管理应用排序"/>
+        android:textSize="@dimen/fontsize_32"
+        android:text="按菜单可管理应用排序"
+        android:textColor="#ffffff"
+        />
+
     </LinearLayout>
 
 </RelativeLayout>
