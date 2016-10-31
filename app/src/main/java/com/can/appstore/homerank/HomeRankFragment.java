@@ -119,16 +119,4 @@ public class HomeRankFragment extends Fragment implements HomeRankContract.View 
             });
         }
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.w("onResume", "onResume");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.w("onPause", "onPause");
-    }
 }
