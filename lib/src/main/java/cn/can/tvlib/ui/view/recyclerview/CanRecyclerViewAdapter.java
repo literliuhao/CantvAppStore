@@ -56,6 +56,8 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         setHasStableIds(true);
     }
 
+
+
     public void setDatas(List<DataType> datas) {
         mDatas = datas;
         mTotalDataCount = datas.size();

@@ -37,7 +37,7 @@
 
 
         <TextView
-            android:id="@+id/tv_select_count"
+            android:id="@+id/tv_addselect_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="4"
@@ -85,7 +85,7 @@
         </LinearLayout>
 
         <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
-            android:id="@+id/crlv_grid"
+            android:id="@+id/addapps_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/px42"

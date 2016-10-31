@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/addapps_iv_check"
+        android:layout_width="@dimen/px36"
+        android:layout_height="@dimen/px36"
+        android:layout_marginStart="@dimen/px4"
+        android:layout_marginTop="@dimen/px4"
+        android:src="@drawable/unselect"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        >
+        <ImageView
+            android:layout_width="@dimen/px80"
+            android:layout_height="@dimen/px80"
+            android:id="@+id/addapps_item_ivicon"
+            android:layout_gravity="center"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/fontsize_32"
+            android:id="@+id/addapps_item_tvname"
+            android:layout_marginTop="@dimen/px24"
+            android:gravity="center"
+            />
+
+</LinearLayout>
+</RelativeLayout>
