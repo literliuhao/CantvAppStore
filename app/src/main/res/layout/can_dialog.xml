@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="@dimen/px1056"
+        android:layout_height="@dimen/px696"
+        android:background="@mipmap/canbj"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/px128"
+        android:paddingRight="@dimen/px128"
+        android:layout_gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/px185"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/iv_dialog_title"
+                android:layout_width="@dimen/px60"
+                android:layout_height="@dimen/px60"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/ic_launcher"/>
+
+            <TextView
+                android:id="@+id/tv_dialog_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/px24"
+                android:text="更新设置"
+                android:textColor="@color/white_opa80"
+                android:textSize="@dimen/px40"/>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/px270"
+            android:background="@color/black"
+            android:padding="@dimen/px32">
+
+            <TextView
+                android:id="@+id/tv_top_left_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:text="自动更新"
+                android:textColor="@color/white_opa80"
+                android:textSize="@dimen/px34"/>
+
+            <TextView
+                android:id="@+id/tv_top_right_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="已开启"
+                android:textColor="@color/white_opa80"
+                android:textSize="@dimen/px34"/>
+
+            <TextView
+                android:id="@+id/tv_bellow_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_top_left_content"
+                android:layout_marginTop="@dimen/px8"
+                android:text="应用更新开启时，自动开始下载应用"
+                android:textColor="@color/white_opa50"
+                android:textSize="@dimen/px26"/>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/px241"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_dialog_positive"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/px80"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="@dimen/px34"
+                android:textColor="@color/white_opa80"
+                android:text="开启"/>
+
+            <Button
+                android:id="@+id/btn_dialog_negative"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/px80"
+                android:layout_marginStart="@dimen/px40"
+                android:textSize="@dimen/px34"
+                android:textColor="@color/white_opa80"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="关闭"/>
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>
