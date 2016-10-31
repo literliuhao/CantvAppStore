@@ -21,9 +21,10 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 public class HotRecommendAdapter extends CanRecyclerViewAdapter {
     private List mDataList;
+
     public HotRecommendAdapter(List datas) {
         super(datas);
-        mDataList=datas;
+        mDataList = datas;
     }
 
     @Override
@@ -35,8 +36,9 @@ public class HotRecommendAdapter extends CanRecyclerViewAdapter {
                 ToastUtil.toastShort("点击 " + searchApp.mName);
             }
         });
-        View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_app_item, parent, false);
-        return new HotViewHolder(inflate);
+//        View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_app_item, parent, false);
+//        return new HotViewHolder(inflate);
+        return null;
     }
 
     @Override
@@ -51,7 +53,7 @@ public class HotRecommendAdapter extends CanRecyclerViewAdapter {
         public HotViewHolder(View itemView) {
             super(itemView);
             mAppName = (TextView) itemView.findViewById(R.id.app_name_view);
-            mAppIcon = (ImageView) itemView.findViewById(R.id.app_icon);
+//            mAppIcon = (ImageView) itemView.findViewById(R.id.app_icon);
         }
 
         /**
