@@ -1,19 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="@dimen/px1000"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
+    android:layout_gravity="center_horizontal"
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/tv_joke_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:textColor="@color/black_opa85"
+        android:textSize="@dimen/px30"/>
 
-    <Button
-        android:id="@+id/bt_search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="到搜索" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_joke"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black_opa60"
+            android:textSize="@dimen/px26"/>
+
+        <Button
+            android:id="@+id/btn_index"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="首 页"/>
+
+        <Button
+            android:id="@+id/btn_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="搜 索"/>
+    </LinearLayout>
+
 </LinearLayout>
