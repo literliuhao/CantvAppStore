@@ -1,14 +1,14 @@
 package com.can.appstore;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 
-import com.can.appstore.index.data.JokeData;
 import com.can.appstore.index.IndexActivity;
+import com.can.appstore.index.data.JokeData;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.special_detail.SpecialDetailActivity;
 
@@ -23,7 +23,7 @@ import java.util.Random;
  * 修订历史：
  * ================================================
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
