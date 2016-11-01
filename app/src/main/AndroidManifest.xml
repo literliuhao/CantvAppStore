@@ -25,6 +25,11 @@
         <activity android:name=".search.SearchActivity"></activity>
         <activity android:name=".myapps.ui.AllAppsActivity"></activity>
         <activity android:name=".myapps.ui.AddAppsActivity"></activity>
+<<<<<<< HEAD
+=======
+        <activity android:name=".myapps.ui.AllAppsActivity"></activity>
+        <activity android:name=".special_detail.SpecialDetailActivity"></activity>
+>>>>>>> a9d7c8d... 更新
     </application>
 
 </manifest>
