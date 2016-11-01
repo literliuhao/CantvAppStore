@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 
-import com.can.appstore.index.Data.JokeData;
+import com.can.appstore.index.data.JokeData;
 import com.can.appstore.index.IndexActivity;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.special_detail.SpecialDetailActivity;
