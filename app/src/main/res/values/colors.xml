@@ -7,4 +7,8 @@
     <color name="color_80_ffffff">#CCffffff</color>
     <color name="color_50_ffffff">#80ffffff</color>
     <color name="color_10_ffffff">#1Affffff</color>
+    <color name="color_F0D625">#F0D625</color>
+    <color name="color_E0E0E0">#E0E0E0</color>
+    <color name="color_EAEAEA">#EAEAEA</color>
+    <color name="color_96989D">#96989D</color>
 </resources>

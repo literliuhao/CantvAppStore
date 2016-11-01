@@ -10,4 +10,5 @@
     <string name="search_bottom_recommend_st">热门推荐:</string>
     <string name="search_null">搜不到相关应用</string>
 
+    <string name="page_row_template" formatted="false">%d / %d</string>
 </resources>

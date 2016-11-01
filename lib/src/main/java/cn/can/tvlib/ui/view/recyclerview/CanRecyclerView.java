@@ -45,6 +45,11 @@ public class CanRecyclerView extends RecyclerView {
     }
 
     @Override
+    public void setOnFocusChangeListener(OnFocusChangeListener l) {
+        super.setOnFocusChangeListener(l);
+    }
+
+    @Override
     protected int getChildDrawingOrder(int childCount, int i) {
         int focusIndex = getFocusChildIndex();
         if (focusIndex < 0) {

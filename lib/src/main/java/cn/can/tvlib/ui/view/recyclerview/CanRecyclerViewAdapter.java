@@ -50,6 +50,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
     protected List<DataType> mDatas;
     private RecyclerView mAttachedView;
     private ViewTreeObserver.OnGlobalFocusChangeListener mGlobalFocusChangeListener;
+    private boolean mHasComplexItemView;//处理当itemView中childView获取焦点时，是否将整个itemView滑动到可见区域
 
     public CanRecyclerViewAdapter(List<DataType> datas) {
         mDatas = datas;
@@ -117,11 +118,10 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
             resolveStaggeredLayoutItemView(holder, position);
             return;
         }
-        int actualPosi = getActualItemPosition(position);
-        initViewHolder(holder, actualPosi);
-        setupItemClickListener(holder, actualPosi);
-        setupItemFocusChangeListener(holder, actualPosi);
-        setupItemKeyEventListener(holder, actualPosi);
+        initViewHolder(holder, getActualItemPosition(position));
+        setupItemClickListener(holder);
+        setupItemFocusChangeListener(holder);
+        setupItemKeyEventListener(holder);
     }
 
     private void initViewHolder(RecyclerView.ViewHolder holder, int position) {
@@ -175,9 +175,14 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                 } else {
                     hasFocusMoveOut = false;
                 }
-                View containingItemView = mAttachedView.findContainingItemView(newFocus);
-                if (containingItemView != null) {
-                    mAttachedView.smoothScrollToPosition(mAttachedView.getChildAdapterPosition(containingItemView));
+                if(mHasComplexItemView){
+                    View containingItemView = mAttachedView.findContainingItemView(newFocus);
+                    if (containingItemView != null) {
+                        int itemViewPosi = mAttachedView.getChildAdapterPosition(containingItemView);
+                        if(itemViewPosi != RecyclerView.NO_POSITION){
+                            mAttachedView.smoothScrollToPosition(itemViewPosi);
+                        }
+                    }
                 }
             }
         };
@@ -196,6 +201,10 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
 
     protected RecyclerView getAttachedView() {
         return mAttachedView;
+    }
+
+    public void setHasComplexItemView(boolean flag){
+        mHasComplexItemView = flag;
     }
 
     //----------------------------   子类需要复写的方法   ----------------------------
@@ -724,24 +733,26 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         this.mItemKeyEventListener = listener;
     }
 
-    private void setupItemClickListener(final RecyclerView.ViewHolder holder, final int position) {
+    private void setupItemClickListener(final RecyclerView.ViewHolder holder) {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int posi = mAttachedView.getChildAdapterPosition(v);
+                int actualPosi = getActualItemPosition(posi);
                 if (mSelectMode == MODE_SELECT) {
-                    if (isItemSelected(position)) {
-                        setItemUnselected(position);
+                    if (isItemSelected(actualPosi)) {
+                        setItemUnselected(actualPosi);
                     } else {
-                        setItemSelected(position);
+                        setItemSelected(actualPosi);
                     }
                 } else if (mSelectMode == MODE_NORMAL && mItemClickListener != null) {
-                    mItemClickListener.onClick(v, position, mDatas.get(position));
+                    mItemClickListener.onClick(v, actualPosi, mDatas.get(actualPosi));
                 }
             }
         });
     }
 
-    private void setupItemFocusChangeListener(final RecyclerView.ViewHolder holder, final int position) {
+    private void setupItemFocusChangeListener(final RecyclerView.ViewHolder holder) {
         holder.itemView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -757,20 +768,23 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                     }
                 }
                 if (mFocusChangeListener != null) {
-                    mFocusChangeListener.onItemFocusChanged(v, position, hasFocus);
+                    int posi = mAttachedView.getChildAdapterPosition(v);
+                    mFocusChangeListener.onItemFocusChanged(v, getActualItemPosition(posi), hasFocus);
                 }
             }
         });
     }
 
-    private void setupItemKeyEventListener(RecyclerView.ViewHolder holder, final int position) {
+    private void setupItemKeyEventListener(RecyclerView.ViewHolder holder) {
         holder.itemView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (mFocusChangeListener != null && handleFocusMoveOut(position, v, keyCode, event)) {
+                int posi = mAttachedView.getChildAdapterPosition(v);
+                int actualPosi = getActualItemPosition(posi);
+                if (mFocusChangeListener != null && handleFocusMoveOut(actualPosi, v, keyCode, event)) {
                     return true;
                 }
-                if (mItemKeyEventListener != null && mItemKeyEventListener.onItemKeyEvent(getActualItemPosition(position), v, keyCode, event)) {
+                if (mItemKeyEventListener != null && mItemKeyEventListener.onItemKeyEvent(actualPosi, v, keyCode, event)) {
                     return true;
                 }
                 return false;
@@ -872,8 +886,8 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                     }
                 }
 
-            } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && position == getItemCount()) {
-                if (layoutOrientation == LinearLayoutManager.HORIZONTAL) {
+            } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                if (layoutOrientation == LinearLayoutManager.HORIZONTAL && position == getItemCount()- 1) {
                     return mFocusChangeListener.onFocusMoveOutside(position, FOCUS_DOWN);
                 } else if (layoutOrientation == LinearLayoutManager.VERTICAL) {
                     if (isLoading) {

@@ -15,7 +15,6 @@ import cn.can.tvlib.ui.view.RotateView;
  */
 
 public class LoadingDialog extends Dialog {
-
     private RotateView mLoadingView;
     private TextView mMsgView;
 

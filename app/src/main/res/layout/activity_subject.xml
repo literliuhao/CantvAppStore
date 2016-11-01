@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_subject"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/bg_all"
+    tools:context="com.can.appstore.subject.SubjectActivity">
+    <TextView
+        android:id="@+id/subject_title_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/px160"
+        android:layout_marginTop="@dimen/px80"
+        android:textColor="@color/color_E0E0E0"
+        android:textSize="@dimen/fontsize_35"
+        android:drawableLeft="@drawable/ic_vertical_linear"
+        android:drawablePadding="@dimen/px20"
+        android:gravity="center_vertical"
+        android:text="专题"/>
+    <TextView
+        android:id="@+id/subject_row_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/px160"
+        android:layout_marginTop="@dimen/px80"
+        android:text="1/25行"
+        android:textSize="@dimen/fontsize_30"
+        android:gravity="center"
+        android:textColor="@color/color_96989D"
+        />
+    <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
+        android:id="@+id/subject_recyclerview"
+        android:paddingTop="@dimen/px20"
+        android:paddingStart="@dimen/px160"
+        android:paddingEnd="@dimen/px160"
+        android:paddingBottom="@dimen/px90"
+        android:clipToPadding="false"
+        android:clipChildren="false"
+        android:layout_below="@+id/subject_title_tv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </cn.can.tvlib.ui.view.recyclerview.CanRecyclerView>
+
+</RelativeLayout>

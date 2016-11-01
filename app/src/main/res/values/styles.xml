@@ -7,5 +7,15 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <style name="AppTheme.Translucent.FadeIn" parent="@style/AppTheme">
+        <item name="android:windowAnimationStyle">@style/anim_fade_in</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+    <style name="commen_textview">
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:marqueeRepeatLimit">marquee_forever</item>
+    </style>
 
 </resources>
