@@ -40,7 +40,7 @@
             android:id="@+id/tv_addselect_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="4"
+            android:text="0"
             android:textColor="@color/select_app_count"
             android:textSize="@dimen/fontsize_44"/>
 

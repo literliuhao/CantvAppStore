@@ -25,6 +25,7 @@
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>
         <activity android:name=".myapps.ui.AddAppsActivity"></activity>
+        <activity android:name=".myapps.ui.AllAppsActivity"></activity>
         <activity android:name=".special_detail.SpecialDetailActivity"></activity>
     </application>
 
