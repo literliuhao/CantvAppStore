@@ -87,7 +87,7 @@
         android:layout_marginLeft="52px"
         android:layout_marginTop="16px"
         android:layout_toRightOf="@id/bt_install_deleteall">
-    <android.support.v7.widget.RecyclerView
+    <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
         android:id="@+id/rv_install_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

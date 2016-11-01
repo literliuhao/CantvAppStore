@@ -13,64 +13,38 @@ import com.can.appstore.update.model.AppInfoBean;
 
 import java.util.List;
 
+import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
+
 /**
  * Created by shenpx on 2016/10/12 0012.
  */
 
-public class InstallManagerAdapter extends RecyclerView.Adapter<InstallManagerAdapter.InstallViewHolder> {
+public class InstallManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
 
     private List<AppInfoBean> mDatas;
-    private LayoutInflater mInflater;
-    private Context mContext;
 
-    public interface OnItemClickLitener {
-        void onItemClick(View view, int position);
-    }
-
-    private OnItemClickLitener mOnItemClickLitener;
-
-    public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
-        this.mOnItemClickLitener = mOnItemClickLitener;
-    }
-
-
-    public InstallManagerAdapter(Context context, List<AppInfoBean> datas) {
-        mInflater = LayoutInflater.from(context);
+    public InstallManagerAdapter(List<AppInfoBean> datas) {
+        super(datas);
         mDatas = datas;
-        this.mContext = context;
     }
 
     @Override
-    public InstallViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        InstallViewHolder holder = new InstallViewHolder(mInflater.inflate(
-                R.layout.ac_installmanager_item, parent, false));
+    protected RecyclerView.ViewHolder generateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.ac_installmanager_item, parent, false);
+        InstallViewHolder holder = new InstallViewHolder(view);
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(final InstallViewHolder holder, final int position) {
-        holder.appName.setText(mDatas.get(position).getAppName());
-        holder.appSize.setText(mDatas.get(position).getAppSize());
-        holder.appVersioncode.setText(mDatas.get(position).getVersionName());
+    protected void bindContentData(AppInfoBean data, RecyclerView.ViewHolder holder, int position) {
+        InstallViewHolder Installholder = (InstallViewHolder) holder;
+        Installholder.appName.setText(mDatas.get(position).getAppName());
+        Installholder.appSize.setText(mDatas.get(position).getAppSize());
+        Installholder.appVersioncode.setText(mDatas.get(position).getVersionName());
         //Glide.with(MyApp.mContext).load(mDatas.get(position).getIcon()).into(holder.appIcon);
-        holder.appIcon.setImageDrawable(mDatas.get(position).getIcon());
-        holder.installIcon.setVisibility(mDatas.get(position).getInstall() ? View.VISIBLE : View.INVISIBLE);
-        holder.installing.setVisibility(mDatas.get(position).getIsInstalling() ? (mDatas.get(position).getInstall() ? View.INVISIBLE : View.VISIBLE) : View.INVISIBLE);
-        if (mOnItemClickLitener != null) {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int pos = holder.getLayoutPosition();
-                    mOnItemClickLitener.onItemClick(holder.itemView, pos);
-                }
-            });
-
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        return mDatas.size();
+        Installholder.appIcon.setImageDrawable(mDatas.get(position).getIcon());
+        Installholder.installIcon.setVisibility(mDatas.get(position).getInstall() ? View.VISIBLE : View.INVISIBLE);
+        Installholder.installing.setVisibility(mDatas.get(position).getIsInstalling() ? (mDatas.get(position).getInstall() ? View.INVISIBLE : View.VISIBLE) : View.INVISIBLE);
     }
 
     class InstallViewHolder extends RecyclerView.ViewHolder {

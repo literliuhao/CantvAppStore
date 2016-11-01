@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +30,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.ui.focus.FocusMoveUtil;
+import cn.can.tvlib.ui.focus.FocusScaleUtil;
+import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
+import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
+
 
 /**
  * 安装包管理界面
@@ -39,12 +43,13 @@ import java.util.List;
 
 public class InstallManagerActivity extends Activity {
 
-    private RecyclerView mRecyclerView;
+    private CanRecyclerView mRecyclerView;
     private List<AppInfoBean> mDatas;//安装包集合
     private InstallManagerAdapter mRecyclerAdapter;
     private TextView mReminder;
     private Button mDeleteButton;
     private Button mDeleteAllButton;
+    private Button mUpdateButton;
     private boolean isVisibility = false;
     private int mCurrentPositon;
     private RelativeLayout deleteLayout;
@@ -62,6 +67,10 @@ public class InstallManagerActivity extends Activity {
     private List<AppInfoBean> mInstallDatas;//安装中集合
     private List<AppInfoBean> mInstalledDatas;//安装完成集合
     private Dialog mLoadingDialog;
+    FocusMoveUtil mFocusMoveUtil;
+    FocusScaleUtil mFocusScaleUtil;
+    private View mFocusedListChild;
+    private MyFocusRunnable myFocusRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +81,8 @@ public class InstallManagerActivity extends Activity {
 
         initView();
         initData();
-        initEvent();
+        initFocusChange();
+        initClick();
 
     }
 
@@ -157,26 +167,91 @@ public class InstallManagerActivity extends Activity {
         unregisterReceiver(mInstallApkReceiver);
     }
 
-    private void initEvent() {
-        mRecyclerAdapter.setOnItemClickLitener(new InstallManagerAdapter.OnItemClickLitener() {
+    private void initFocusChange() {
+
+        mDeleteAllButton.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onItemClick(View view, final int position) {
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    mFocusMoveUtil.startMoveFocus(mDeleteAllButton, 1.1f);
+                    mFocusScaleUtil.scaleToLarge(mDeleteAllButton);
+                } else {
+                    mFocusScaleUtil.scaleToNormal(mDeleteAllButton);
+                }
+            }
+        });
+
+        mDeleteButton.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    mFocusMoveUtil.startMoveFocus(mDeleteButton, 1.1f);
+                    mFocusScaleUtil.scaleToLarge(mDeleteButton);
+                } else {
+                    mFocusScaleUtil.scaleToNormal(mDeleteButton);
+                }
+            }
+        });
+
+        mUpdateButton.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    mFocusMoveUtil.startMoveFocus(mUpdateButton, 1.1f);
+                    mFocusScaleUtil.scaleToLarge(mUpdateButton);
+                } else {
+                    mFocusScaleUtil.scaleToNormal(mUpdateButton);
+                }
+            }
+        });
+
+        mRecyclerAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
+            @Override
+            public void onItemFocusChanged(View view, int position, boolean hasFocus) {
+                if (hasFocus) {
+                    mFocusedListChild = view;
+                    mRecyclerView.postDelayed(myFocusRunnable, 50);
+                    int total = mDatas.size() / 3;
+                    if (mDatas.size() % 3 != 0) {
+                        total += 1;
+                    }
+                    int cur = position / 3 + 1;
+                    mCurrentnum.setText(cur + "/");
+                    mTotalnum.setText(total + "行");
+
+                } else {
+                    mFocusScaleUtil.scaleToNormal();
+                }
+            }
+        });
+
+    }
+
+    private void initClick() {
+
+        mDeleteAllButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                removeAllData();
+            }
+        });
+
+        mDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                removeSelectData();
+            }
+        });
+
+        mRecyclerAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(View view, int position, Object data) {
                 Toast.makeText(InstallManagerActivity.this, position + 1 + "/" + mDatas.size(),
                         Toast.LENGTH_SHORT).show();
                 mCurrentPositon = position;
                 showMenu(view, position);
-//                mCurrentnum.setText(position+1);
-//                mTotalnum.setText(mDatas.size());
             }
         });
-
-        mRecyclerView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-
-            }
-        });
-
     }
 
     protected void initData() {
@@ -203,32 +278,32 @@ public class InstallManagerActivity extends Activity {
     private void initView() {
         mTotalnum = (TextView) findViewById(R.id.tv_install_totalnum);
         mCurrentnum = (TextView) findViewById(R.id.tv_install_currentnum);
-        mRecyclerView = (RecyclerView) findViewById(R.id.rv_install_recyclerview);
+        mRecyclerView = (CanRecyclerView) findViewById(R.id.rv_install_recyclerview);
         mReminder = (TextView) findViewById(R.id.tv_install_reminder);
         mDeleteAllButton = (Button) findViewById(R.id.bt_install_deleteall);
         mDeleteButton = (Button) findViewById(R.id.bt_install_delete);
+        mUpdateButton = (Button) findViewById(R.id.bt_install_update);
         mRoomSize = (TextView) findViewById(R.id.tv_install_roomsize);
         mProgressBar = (ProgressBar) findViewById(R.id.pb_install_progressbar);
-        mRecyclerAdapter = new InstallManagerAdapter(this, mDatas);
+        mFocusMoveUtil = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
+        mFocusScaleUtil = new FocusScaleUtil();
+        myFocusRunnable = new MyFocusRunnable();
+        mRecyclerAdapter = new InstallManagerAdapter(mDatas);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         mRecyclerView.setAdapter(mRecyclerAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setSelected(true);
 
-        mDeleteAllButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                removeAllData();
-            }
-        });
+    }
 
-        mDeleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                removeSelectData();
+    private class MyFocusRunnable implements Runnable {
+        @Override
+        public void run() {
+            if (mFocusedListChild != null) {
+                mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.1f);
+                mFocusScaleUtil.scaleToLarge(mFocusedListChild);
             }
-        });
-
+        }
     }
 
     /**
@@ -300,8 +375,30 @@ public class InstallManagerActivity extends Activity {
             }
 
         }
-        Button start = (Button) view.findViewById(R.id.bt_installpkg_start);
-        Button delete = (Button) view.findViewById(R.id.bt_installpkg_delete);
+        final Button start = (Button) view.findViewById(R.id.bt_installpkg_start);
+        final Button delete = (Button) view.findViewById(R.id.bt_installpkg_delete);
+        start.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    mFocusMoveUtil.startMoveFocus(start, 1.1f);
+                    mFocusScaleUtil.scaleToLarge(start);
+                } else {
+                    mFocusScaleUtil.scaleToNormal(start);
+                }
+            }
+        });
+        delete.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    mFocusMoveUtil.startMoveFocus(delete, 1.1f);
+                    mFocusScaleUtil.scaleToLarge(delete);
+                } else {
+                    mFocusScaleUtil.scaleToNormal(delete);
+                }
+            }
+        });
         start.requestFocus();
         start.setNextFocusDownId(R.id.bt_installpkg_delete);
         start.setNextFocusUpId(R.id.bt_installpkg_start);
@@ -318,7 +415,6 @@ public class InstallManagerActivity extends Activity {
                 //删除键
                 removeData(position);
                 isVisibility = false;
-                view.requestFocus();
             }
         });
         start.setOnClickListener(new View.OnClickListener() {
