@@ -9,8 +9,11 @@ import android.widget.TextView;
 
 import com.can.appstore.index.Data.JokeData;
 import com.can.appstore.index.IndexActivity;
+import com.can.appstore.installpkg.InstallManagerActivity;
+import com.can.appstore.installpkg.InstallManagerAdapter;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.special_detail.SpecialDetailActivity;
+import com.can.appstore.update.UpdateManagerActivity;
 
 import java.util.Random;
 
@@ -55,7 +58,13 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.bt_specail_detail).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    SpecialDetailActivity.startAc(MainActivity.this);
+                SpecialDetailActivity.startAc(MainActivity.this);
+            }
+        });
+        findViewById(R.id.bt_install).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, InstallManagerActivity.class));
             }
         });
     }

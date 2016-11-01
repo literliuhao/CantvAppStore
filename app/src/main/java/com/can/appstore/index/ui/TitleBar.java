@@ -240,7 +240,7 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
 
                 if (!(oldFocus instanceof TextView) && newFocus instanceof TextView) {
                     newFocus = textViewList.get(mViewPager.getCurrentItem());
-//                    newFocus.requestFocus();
+                    newFocus.requestFocus();
                     mCallBack.onSuccess(newFocus, true);
                 } else {
                     if (null == oldFocus || null == newFocus) return;
@@ -310,7 +310,7 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
         int marginLR = (int) getResources().getDimension(R.dimen.px40);
         int textWidth = (int) getResources().getDimension(R.dimen.px100);
         int textHeight = (int) getResources().getDimension(R.dimen.px50);
-        int textSize = (int) getResources().getDimension(R.dimen.px30);
+        int textSize = (int) getResources().getDimension(R.dimen.px24);
 
         lp.setMargins(marginLR, 0, marginLR, 0);
         lp.width = textWidth;
