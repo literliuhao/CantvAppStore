@@ -9,12 +9,14 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.installpkg.InstallManagerAdapter;
 import com.can.appstore.update.model.AppInfoBean;
 
 import java.util.List;
 
+import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 /**
@@ -43,8 +45,8 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
         updateHolder.appName.setText(mDatas.get(position).getAppName());
         updateHolder.appSize.setText(mDatas.get(position).getAppSize());
         updateHolder.appVersioncode.setText(mDatas.get(position).getVersionName());
-        //Glide.with(MyApp.mContext).load(mDatas.get(position).getIcon()).into(holder.appIcon);
         updateHolder.appIcon.setImageDrawable(mDatas.get(position).getIcon());
+//        ImageLoader.getInstance().load(MyApp.mContext,updateHolder.appIcon,mDatas.get(position).getIconUrl(),0,0,null,null);
         updateHolder.updatedIcon.setVisibility(mDatas.get(position).getInstall() ? View.VISIBLE : View.INVISIBLE);
         updateHolder.downloading.setVisibility(mDatas.get(position).getIsInstalling() ? (mDatas.get(position).getInstall() ? View.INVISIBLE : View.VISIBLE) : View.INVISIBLE);
     }

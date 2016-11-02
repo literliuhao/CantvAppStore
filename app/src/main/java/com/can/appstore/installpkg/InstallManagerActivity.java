@@ -71,6 +71,8 @@ public class InstallManagerActivity extends Activity {
     FocusScaleUtil mFocusScaleUtil;
     private View mFocusedListChild;
     private MyFocusRunnable myFocusRunnable;
+    private String mCurPackageName = "";//当前包名
+    private String mCurVersionCode = "";//当前版本号
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +123,8 @@ public class InstallManagerActivity extends Activity {
                         int versonCode = UpdateUtils.getVersonCode(MyApp.mContext, packageName);
                         for (int i = mDatas.size() - 1; i >= 0; i--) {
                             AppInfoBean bean = mDatas.get(i);
-                            if (bean.getPackageName().equals(packageName)) {
+                            if (bean.getPackageName().equals(packageName) && bean.getVersionCode().equals(String.valueOf(versonCode)))
+                            {
                                 if (bean.getInstall()) {
                                     //bean.setInstall(true);
                                     mRecyclerAdapter.notifyItemChanged(i);
@@ -211,13 +214,8 @@ public class InstallManagerActivity extends Activity {
                 if (hasFocus) {
                     mFocusedListChild = view;
                     mRecyclerView.postDelayed(myFocusRunnable, 50);
-                    int total = mDatas.size() / 3;
-                    if (mDatas.size() % 3 != 0) {
-                        total += 1;
-                    }
-                    int cur = position / 3 + 1;
-                    mCurrentnum.setText(cur + "/");
-                    mTotalnum.setText(total + "行");
+                    setNum(position);
+                    mCurrentPositon = position;
 
                 } else {
                     mFocusScaleUtil.scaleToNormal();
@@ -248,7 +246,7 @@ public class InstallManagerActivity extends Activity {
             public void onClick(View view, int position, Object data) {
                 Toast.makeText(InstallManagerActivity.this, position + 1 + "/" + mDatas.size(),
                         Toast.LENGTH_SHORT).show();
-                mCurrentPositon = position;
+                //mCurrentPositon = position;
                 showMenu(view, position);
             }
         });
@@ -271,6 +269,7 @@ public class InstallManagerActivity extends Activity {
         } else {
             //closeDialog();
             mDatas.addAll(appList);
+            setNum(0);
             mRecyclerAdapter.notifyDataSetChanged();
         }
     }
@@ -340,8 +339,8 @@ public class InstallManagerActivity extends Activity {
     public void removeData(int position) {
         mDatas.remove(position);
 //        InstallPkgUtils.deleteApkPkg(mDatas.get(position).getFliePath());//可以删除安装包
-        mRecyclerAdapter.notifyItemRemoved(position);//自带动画
-        //mRecyclerAdapter.notifyDataSetChanged();无自带动画
+        //mRecyclerAdapter.notifyItemRemoved(position);//自带动画
+        mRecyclerAdapter.notifyDataSetChanged();//无自带动画
     }
 
     /**
@@ -413,7 +412,7 @@ public class InstallManagerActivity extends Activity {
             public void onClick(View v) {
                 deleteLayout.setVisibility(View.INVISIBLE);
                 //删除键
-                removeData(position);
+                removeData(mCurrentPositon);
                 isVisibility = false;
             }
         });
@@ -423,6 +422,8 @@ public class InstallManagerActivity extends Activity {
                 deleteLayout.setVisibility(View.INVISIBLE);
                 //开始安装应用，安装键
                 mInstalling.setVisibility(View.VISIBLE);
+                //mCurPackageName = mDatas.get(position).getPackageName();
+                //mCurVersionCode = mDatas.get(position).getVersionCode();
                 mDatas.get(position).setInstalling(true);//开始安装
                 //mInstallDatas.add(mDatas.get(position));//加入安装中集合
                 mDatas.get(position).setInstall(true);//positon传递
@@ -483,5 +484,23 @@ public class InstallManagerActivity extends Activity {
      */
     public void intoUpdate(View v) {
         startActivity(new Intent(this, UpdateManagerActivity.class));
+    }
+
+    /**
+     * 行数提示
+     *
+     * @param position
+     */
+    private void setNum(int position) {
+        int total = mDatas.size() / 3;
+        if (mDatas.size() % 3 != 0) {
+            total += 1;
+        }
+        int cur = position / 3 + 1;
+        if (total == 0) {
+            cur = 0;
+        }
+        mCurrentnum.setText(cur + "/");
+        mTotalnum.setText(total + "行");
     }
 }

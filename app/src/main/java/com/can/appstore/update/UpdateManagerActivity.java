@@ -2,6 +2,7 @@ package com.can.appstore.update;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.DownloadManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -18,10 +19,14 @@ import com.can.appstore.R;
 import com.can.appstore.installpkg.view.LoadingDialog;
 import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.update.utils.UpdateUtils;
+import com.can.appstore.wights.CanDialog;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.downloadlib.DownloadTask;
+import cn.can.downloadlib.DownloadTaskListener;
+import cn.can.tvlib.httpUtils.okhttp.OkHttpUtils;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
@@ -57,6 +62,8 @@ public class UpdateManagerActivity extends Activity {
     FocusScaleUtil mFocusScaleUtil;
     private View mFocusedListChild;
     private MyFocusRunnable myFocusRunnable;
+    private CanDialog canDialog;
+    private cn.can.downloadlib.DownloadManager manager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +78,6 @@ public class UpdateManagerActivity extends Activity {
         initData();
         initFocusChange();
         initClick();
-
 
     }
 
@@ -132,18 +138,13 @@ public class UpdateManagerActivity extends Activity {
                 if (hasFocus) {
                     mFocusedListChild = view;
                     mRecyclerView.postDelayed(myFocusRunnable, 50);
-                    int total = mDatas.size() / 3;
-                    if (mDatas.size() % 3 != 0) {
-                        total += 1;
-                    }
-                    int cur = position / 3 + 1;
-                    mCurrentnum.setText(cur + "/");
-                    mTotalnum.setText(total + "行");
+                    setNum(position);
 
                 } else {
                     mFocusScaleUtil.scaleToNormal();
                 }
             }
+
         });
     }
 
@@ -182,11 +183,13 @@ public class UpdateManagerActivity extends Activity {
                 if (mAutoUpdate) {
                     PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", false);
                     mAutoUpdate = false;
+                    //initDialog("已开启");
                     mReminder.setVisibility(View.INVISIBLE);
                     Toast.makeText(UpdateManagerActivity.this, R.string.update_end_autoupdate, Toast.LENGTH_SHORT).show();
                 } else {
                     PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", true);
                     mAutoUpdate = true;
+                    //initDialog("未开启");
                     if (mDatas.size() < 1) {
                         mReminder.setVisibility(View.VISIBLE);
                         mReminder.setText(R.string.update_start_autoupdate);
@@ -207,6 +210,25 @@ public class UpdateManagerActivity extends Activity {
             }
         });
 
+    }
+
+    private void initDialog(String str) {
+        canDialog = new CanDialog(UpdateManagerActivity.this);
+        canDialog.showDialogForUpdateSetting("更新设置", "开启后将自动更新", str, "", "开启", "关闭", new CanDialog.OnCanBtnClickListener() {
+            @Override
+            public void onClickPositive() {
+                PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", true);
+                mAutoUpdate = true;
+                canDialog.dismiss();
+            }
+
+            @Override
+            public void onClickNegative() {
+                PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", false);
+                mAutoUpdate = false;
+                canDialog.dismiss();
+            }
+        });
     }
 
     protected void initData() {
@@ -232,6 +254,7 @@ public class UpdateManagerActivity extends Activity {
                     closeDialog();
                     mDatas.addAll(appList);
                     mRecyclerAdapter.notifyDataSetChanged();
+                    setNum(0);
                 }
             }, 2000);
         }
@@ -326,5 +349,22 @@ public class UpdateManagerActivity extends Activity {
             mLoadingDialog.dismiss();
             mLoadingDialog = null;
         }
+    }
+
+    /**
+     * 行数提示
+     * @param position
+     */
+    private void setNum(int position) {
+        int total = mDatas.size() / 3;
+        if (mDatas.size() % 3 != 0) {
+            total += 1;
+        }
+        int cur = position / 3 + 1;
+        if(total==0){
+            cur = 0;
+        }
+        mCurrentnum.setText(cur + "/");
+        mTotalnum.setText(total + "行");
     }
 }
