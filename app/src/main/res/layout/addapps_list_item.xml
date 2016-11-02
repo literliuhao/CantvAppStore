@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<<<<<<< HEAD
               android:layout_width="@dimen/px270"
               android:layout_height="@dimen/px180"
               android:focusable="true"
     >
+=======
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+
+>>>>>>> canStore_v1.0
 
     <LinearLayout
         android:id="@+id/addapps_llbg"

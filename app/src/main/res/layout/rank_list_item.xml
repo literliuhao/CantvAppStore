@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/search_key_item_selector"
     android:clickable="true"
-    android:focusable="true"
-    android:gravity="center_horizontal"
-    android:orientation="vertical">
+    android:focusable="true">
 
     <ImageView
-        android:id="@+id/app_icon"
+        android:id="@+id/icon_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@mipmap/ic_launcher" />
@@ -18,5 +16,9 @@
         android:id="@+id/app_name_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="app名称" />
-</LinearLayout>
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/icon_view"
+        android:gravity="center"
+        android:text="测试名称" />
+</RelativeLayout>

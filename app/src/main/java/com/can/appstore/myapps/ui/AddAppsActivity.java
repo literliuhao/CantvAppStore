@@ -3,6 +3,7 @@ package com.can.appstore.myapps.ui;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -22,6 +23,8 @@ import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
+
+import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
 /**
  * Created by wei on 2016/10/26.
@@ -49,7 +52,11 @@ public class AddAppsActivity extends Activity {
     FocusScaleUtil mFocusScaleUtil;
     View mFocusChild;
     MyFocusRunnable  mFocusRunnable;
+<<<<<<< HEAD
     private ArrayList<AppInfo> mSelectAppInfo;
+=======
+    private ArrayList<String> mSelectPackageName;
+>>>>>>> canStore_v1.0
 
 
     class MyFocusRunnable implements Runnable {
@@ -114,6 +121,7 @@ public class AddAppsActivity extends Activity {
         addButtonFocusListener();
         addRecyclerViewFocusListener();
         addRecyclerViewOnclickListener();
+<<<<<<< HEAD
         addButtonOnclickListener();
     }
 
@@ -159,6 +167,29 @@ public class AddAppsActivity extends Activity {
                     }
                 }
                tv_select.setText(""+mSelectAppInfo.size());
+=======
+    }
+
+    private void addRecyclerViewOnclickListener() {
+        mAllAppsRecyclerViewAdapter.setOnItemSelectListener(new CanRecyclerViewAdapter.OnItemSelectChangeListener(){
+            @Override
+            public void onSelectChanged(int position, boolean selected, Object data) {
+                Log.d(TAG, "onSelectChanged = " + position + ",    " + selected);
+                AppInfo info = (AppInfo) data;
+                if (mSelectPackageName == null) {
+                    mSelectPackageName = new ArrayList<String>();
+                }
+                if (selected) {
+                    mSelectPackageName.add(info.packageName);
+                } else {
+                    for (int i = 0; i < mSelectPackageName.size(); i++) {
+                        if (mSelectPackageName.get(i).equals(info.packageName)) {
+                            mSelectPackageName.remove(i);
+                        }
+                    }
+                }
+                tv_select.setText(mSelectPackageName.size() + "");
+>>>>>>> canStore_v1.0
             }
         });
     }

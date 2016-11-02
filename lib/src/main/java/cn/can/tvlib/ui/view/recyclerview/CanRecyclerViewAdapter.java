@@ -177,9 +177,11 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                 } else {
                     hasFocusMoveOut = false;
                 }
-                View containingItemView = mAttachedView.findContainingItemView(newFocus);
-                if (containingItemView != null) {
-                    mAttachedView.smoothScrollToPosition(mAttachedView.getChildAdapterPosition(containingItemView));
+                if (null != newFocus) {
+                    View containingItemView = mAttachedView.findContainingItemView(newFocus);
+                    if (containingItemView != null) {
+                        mAttachedView.smoothScrollToPosition(mAttachedView.getChildAdapterPosition(containingItemView));
+                    }
                 }
             }
         };
