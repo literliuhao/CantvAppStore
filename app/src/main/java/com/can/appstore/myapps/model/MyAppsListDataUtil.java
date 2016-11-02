@@ -51,7 +51,7 @@ public  class MyAppsListDataUtil {
                   break;
               }
           }
-          if(mShowList.size()<16){
+          if(mShowList.size()<allAppsList.size()){
               mShowList.add(new AppInfo("添加应用", context.getResources().getDrawable(R.drawable.ic_launcher)));
           }
           saveShowList(mShowList);

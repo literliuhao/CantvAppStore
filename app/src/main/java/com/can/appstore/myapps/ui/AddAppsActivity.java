@@ -3,15 +3,16 @@ package com.can.appstore.myapps.ui;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.can.appstore.R;
-import com.can.appstore.myapps.adapter.AllAppsRecyclerViewAdapter;
+import com.can.appstore.myapps.adapter.AddAppsRvAdapter;
 import com.can.appstore.myapps.model.AppInfo;
 import com.can.appstore.myapps.model.MyAppsListDataUtil;
+import com.can.appstore.search.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +22,6 @@ import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
-
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
 /**
  * Created by wei on 2016/10/26.
@@ -44,13 +43,13 @@ public class AddAppsActivity extends Activity {
     TextView  tv_totalRows;
     CanRecyclerView mAddRecyclerView;
 
-    AllAppsRecyclerViewAdapter  mAllAppsRecyclerViewAdapter ;
+    AddAppsRvAdapter mAddAppsRecyclerViewAdapter ;
 
     FocusMoveUtil mFocusMoveUtil ;
     FocusScaleUtil mFocusScaleUtil;
     View mFocusChild;
     MyFocusRunnable  mFocusRunnable;
-    private ArrayList<String> mSelectPackageName;
+    private ArrayList<AppInfo> mSelectAppInfo;
 
 
     class MyFocusRunnable implements Runnable {
@@ -109,39 +108,63 @@ public class AddAppsActivity extends Activity {
 
        mAddRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(this,4, GridLayoutManager.VERTICAL,false));
        mAddRecyclerView.addItemDecoration(new CanRecyclerViewDivider(android.R.color.transparent,40,85));
-        mAllAppsRecyclerViewAdapter = new AllAppsRecyclerViewAdapter(addShowList);
-        mAddRecyclerView.setAdapter(mAllAppsRecyclerViewAdapter);
+        mAddAppsRecyclerViewAdapter = new AddAppsRvAdapter(addShowList);
+        mAddRecyclerView.setAdapter(mAddAppsRecyclerViewAdapter);
 
         addButtonFocusListener();
         addRecyclerViewFocusListener();
         addRecyclerViewOnclickListener();
+        addButtonOnclickListener();
+    }
+
+    private void addButtonOnclickListener() {
+        addBut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mSelectAppInfo == null){
+                    ToastUtil.toastShort("您没有选择任何应用");
+                }else{
+                    //TODO 存
+                    isShown.addAll(mSelectAppInfo);
+                    mMyAppListData.saveShowList(isShown);
+                    finish();
+                }
+            }
+        });
     }
 
     private void addRecyclerViewOnclickListener() {
-        mAllAppsRecyclerViewAdapter.setOnItemSelectListener(new CanRecyclerViewAdapter.OnItemSelectChangeListener(){
+        mAddAppsRecyclerViewAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
             @Override
-            public void onSelectChanged(int position, boolean selected, Object data) {
-                Log.d(TAG, "onSelectChanged = " + position + ",    " + selected);
-                AppInfo info = (AppInfo) data;
-                if (mSelectPackageName == null) {
-                    mSelectPackageName = new ArrayList<String>();
+            public void onClick(View view, int position, Object data) {
+                ImageView imSelect = (ImageView)view.findViewById(R.id.addapps_iv_check);
+                AppInfo app= (AppInfo)data;
+                if(mSelectAppInfo == null){
+                    mSelectAppInfo = new ArrayList<AppInfo>();
                 }
-                if (selected) {
-                    mSelectPackageName.add(info.packageName);
-                } else {
-                    for (int i = 0; i < mSelectPackageName.size(); i++) {
-                        if (mSelectPackageName.get(i).equals(info.packageName)) {
-                            mSelectPackageName.remove(i);
-                        }
+                if(mSelectAppInfo.size() >= canSelect ){
+                    if(mSelectAppInfo.contains(app)){
+                        imSelect.setBackgroundResource(R.drawable.unselect);
+                        mSelectAppInfo.remove(app);
+                    }else{
+                        ToastUtil.toastShort("当前桌面已满，无法继续添加");
+                    }
+                }else{
+                    if(mSelectAppInfo.contains(app)){
+                        imSelect.setBackgroundResource(R.drawable.unselect);
+                        mSelectAppInfo.remove(app);
+                    }else{
+                        imSelect.setBackgroundResource(R.drawable.select);
+                        mSelectAppInfo.add(app);
                     }
                 }
-                tv_select.setText(mSelectPackageName.size() + "");
+               tv_select.setText(""+mSelectAppInfo.size());
             }
         });
     }
 
     private void addRecyclerViewFocusListener() {
-        mAllAppsRecyclerViewAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
+        mAddAppsRecyclerViewAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
                 if(hasFocus){
@@ -163,6 +186,7 @@ public class AddAppsActivity extends Activity {
                 if (hasFocus) {
                     mFocusMoveUtil.startMoveFocus(addBut, 1.1f);
                     mFocusScaleUtil.scaleToLarge(addBut);
+                    tv_curRows.setText("0");
                 } else {
                     mFocusScaleUtil.scaleToNormal(addBut);
                 }

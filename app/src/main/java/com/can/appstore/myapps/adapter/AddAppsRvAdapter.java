@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
@@ -22,6 +23,17 @@ public class AddAppsRvAdapter  extends CanRecyclerViewAdapter{
     List<AppInfo> data ;
 
 
+    List<AppInfo> list ;
+    int[] mItemColors = {
+            R.drawable.bj_01,
+            R.drawable.bj_02,
+            R.drawable.bj_03,
+            R.drawable.bj_04,
+            R.drawable.bj_05,
+            R.drawable.bj_06,
+            R.drawable.bj_07,
+            R.drawable.bj_08,
+    };
     public AddAppsRvAdapter(List datas) {
         super(datas);
         this.data = datas;
@@ -40,32 +52,23 @@ public class AddAppsRvAdapter  extends CanRecyclerViewAdapter{
         AppInfo app = data.get(position);
         myViewHolder.imgIcon.setImageDrawable(app.appIcon);
         myViewHolder.tvName.setText(app.appName);
+        myViewHolder.llbg.setBackgroundResource(mItemColors[position % 8]);
 
     }
 
-    private class MyViewHolder extends TagViewHolder{
+    private class MyViewHolder extends RecyclerView.ViewHolder{
         ImageView imgIcon;
         TextView tvName;
+        LinearLayout  llbg;
+
         public MyViewHolder(View itemView) {
             super(itemView);
             imgIcon = (ImageView)itemView.findViewById(R.id.addapps_item_ivicon);
             tvName = (TextView)itemView.findViewById(R.id.addapps_item_tvname);
+            llbg = (LinearLayout) itemView.findViewById(R.id.addapps_llbg);
         }
 
-        @Override
-        protected int specifyTagViewId() {
-            return R.id.addapps_iv_check;
-        }
 
-        @Override
-        public void refreshTagViewOnSelectChanged(boolean selected) throws IllegalStateException {
-            if(selected){
-                getTagView().setBackgroundResource(R.drawable.select);
-            }else{
-                getTagView().setBackgroundResource(R.drawable.unselect);
-            }
-
-        }
     }
 
 

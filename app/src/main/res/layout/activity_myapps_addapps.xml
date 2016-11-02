@@ -25,7 +25,7 @@
         android:background="@drawable/bjs"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:visibility="invisible">
+        >
 
         <TextView
             android:layout_width="wrap_content"
