@@ -16,7 +16,6 @@ public class HttpManager {
 
     private HttpManager() {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .cache(new Cache(getCacheDir(), 20 * 2 << 20))
                 .addInterceptor(new RequestParamsInterceptor())
                 .build();
         Retrofit retrofit = new Retrofit.Builder()
@@ -31,9 +30,6 @@ public class HttpManager {
         return HttpManagerHolder.HTTP_MANAGER.apiService;
     }
 
-    private static File getCacheDir() {
-        return new File(MyApp.getApplication().getCacheDir(), "OkHttpCaches");
-    }
 
     private static class HttpManagerHolder {
         static final HttpManager HTTP_MANAGER = new HttpManager();

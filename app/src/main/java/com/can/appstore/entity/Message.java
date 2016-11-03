@@ -76,4 +76,17 @@ public class Message {
     public void setActionData(String actionData) {
         this.actionData = actionData;
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("Message{");
+        sb.append("id='").append(id).append('\'');
+        sb.append(", title='").append(title).append('\'');
+        sb.append(", date='").append(date).append('\'');
+        sb.append(", expires=").append(expires);
+        sb.append(", action='").append(action).append('\'');
+        sb.append(", actionData='").append(actionData).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -35,4 +35,14 @@ public class Result<T> {
     public void setData(T data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("Result{");
+        sb.append("status=").append(status);
+        sb.append(", message='").append(message).append('\'');
+        sb.append(", data=").append(data);
+        sb.append('}');
+        return sb.toString();
+    }
 }

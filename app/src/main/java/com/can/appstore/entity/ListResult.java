@@ -52,4 +52,14 @@ public class ListResult<T> {
         return CollectionUtil.emptyIfNull(data);
     }
 
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("ListResult{");
+        sb.append("status=").append(status);
+        sb.append(", message='").append(message).append('\'');
+        sb.append(", total=").append(total);
+        sb.append(", data=").append(data);
+        sb.append('}');
+        return sb.toString();
+    }
 }

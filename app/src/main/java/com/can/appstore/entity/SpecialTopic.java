@@ -66,5 +66,15 @@ public class SpecialTopic {
         this.recommend = recommend;
     }
 
-
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("SpecialTopic{");
+        sb.append("id='").append(id).append('\'');
+        sb.append(", title='").append(title).append('\'');
+        sb.append(", icon='").append(icon).append('\'');
+        sb.append(", background='").append(background).append('\'');
+        sb.append(", recommend=").append(recommend);
+        sb.append('}');
+        return sb.toString();
+    }
 }

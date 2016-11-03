@@ -62,4 +62,16 @@ public class Activity {
     public void setExpires(int expires) {
         this.expires = expires;
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("Activity{");
+        sb.append("id='").append(id).append('\'');
+        sb.append(", url='").append(url).append('\'');
+        sb.append(", background='").append(background).append('\'');
+        sb.append(", recommend=").append(recommend);
+        sb.append(", expires=").append(expires);
+        sb.append('}');
+        return sb.toString();
+    }
 }

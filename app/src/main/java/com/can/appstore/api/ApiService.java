@@ -1,5 +1,8 @@
 package com.can.appstore.api;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.can.appstore.entity.Activity;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.AppInfoContainer;
@@ -25,49 +28,51 @@ public interface ApiService {
     /**
      * 专题列表
      */
-    @GET
+    @GET("special/speciallist")
     Call<ListResult<SpecialTopic>> getSpecialTopics();
 
     /**
      * 专题详情
      */
-    // TODO: 添加参数
-    @GET
+    @GET("start/specialcontent")
     Call<Result<SpecialTopic>> getSpecialTopic(@Query("specialId") String specialId);
 
     /**
      * 活动详情
      */
+    @GET("start/activedetail")
     Call<Result<Activity>> getActivityInfo(@Query("activeId") String activeId);
 
     /**
      * 排行榜
      */
-    @GET
+    @GET("start/rank")
     Call<ListResult<Ranking>> getAppsRankingList();
 
     /**
      * 排行榜列表
      */
-    @GET
-    Call<Result<AppInfoContainer>> getAppsRanking(@Query("") String rankingId, @Query("pageNumber") int page, @Query("pageSize") int pageSize);
+    @GET("start/ranklist")
+    Call<Result<AppInfoContainer>> getAppsRanking(@Query("rankId") String rankingId, @Query("pageNumber") int page, @Query("pageSize") int pageSize);
 
     /**
      * 应用列表
      */
-    // TODO: 参数
-    @GET
-    Call<Result<AppInfoContainer>> getAppinfos(@Query("topicId") String topicId, @Query("pageNumber") int page, @Query("pageSize") int pageSize);
+    @GET("topic/topiclist")
+    Call<Result<AppInfoContainer>> getAppinfos(@Query("topicId") String topicId,@Query("typeId") String typeId, @Query("pageNumber") int page, @Query("pageSize") int pageSize);
 
     /**
      * 获取应用详情
      *
      * @param appId 应用的id
      */
-    @GET
-    Call<Result<AppInfo>> getAppInfo(@Query("appid") String appId);
+    @GET("application/appdetail")
+    Call<Result<AppInfo>> getAppInfo(@Query("appId") String appId, @Query("topicId") String topicId);
 
-    // TODO: 搜索页热门推荐,参数
+    /**
+     * 获取搜索页推荐
+     */
+    @GET("start/hotcontent")
     Call<ListResult<AppInfo>> recommend();
 
     /**

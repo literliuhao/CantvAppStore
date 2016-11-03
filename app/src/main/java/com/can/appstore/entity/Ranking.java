@@ -47,4 +47,14 @@ public class Ranking {
     public void setData(List<AppInfo> data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("Ranking{");
+        sb.append("id='").append(id).append('\'');
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", data=").append(data);
+        sb.append('}');
+        return sb.toString();
+    }
 }

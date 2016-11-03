@@ -10,5 +10,5 @@ package com.can.appstore;
  * ================================================
  */
 public class AppConstants {
-    public static final String BASE_URL = "http://localhost/";
+    public static final String BASE_URL = "http://172.16.11.32:8011/api/";
 }

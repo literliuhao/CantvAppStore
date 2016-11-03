@@ -32,4 +32,13 @@ public class PopularWord {
     public void setPinyin(String pinyin) {
         this.pinyin = pinyin;
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("PopularWord{");
+        sb.append("word='").append(word).append('\'');
+        sb.append(", pinyin='").append(pinyin).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

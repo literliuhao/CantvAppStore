@@ -59,4 +59,14 @@ public class AppInfoContainer {
         this.data = data;
     }
 
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("AppInfoContainer{");
+        sb.append("typeName='").append(typeName).append('\'');
+        sb.append(", total=").append(total);
+        sb.append(", topics=").append(topics);
+        sb.append(", data=").append(data);
+        sb.append('}');
+        return sb.toString();
+    }
 }

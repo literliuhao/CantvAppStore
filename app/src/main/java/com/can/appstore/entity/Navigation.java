@@ -47,4 +47,14 @@ public class Navigation {
     public void setLayout(List<Layout> layout) {
         this.layout = layout;
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("Navigation{");
+        sb.append("id='").append(id).append('\'');
+        sb.append(", title='").append(title).append('\'');
+        sb.append(", layout=").append(layout);
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -106,4 +106,20 @@ public class Layout {
     public void setActionData(String actionData) {
         this.actionData = actionData;
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("Layout{");
+        sb.append("id='").append(id).append('\'');
+        sb.append(", title='").append(title).append('\'');
+        sb.append(", action='").append(action).append('\'');
+        sb.append(", width=").append(width);
+        sb.append(", height=").append(height);
+        sb.append(", x=").append(x);
+        sb.append(", y=").append(y);
+        sb.append(", icon='").append(icon).append('\'');
+        sb.append(", actionData='").append(actionData).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

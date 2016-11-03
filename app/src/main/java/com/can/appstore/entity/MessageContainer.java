@@ -33,4 +33,13 @@ public class MessageContainer {
     public void setMessages(List<Message> messages) {
         this.messages = messages;
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("MessageContainer{");
+        sb.append("timestamp=").append(timestamp);
+        sb.append(", messages=").append(messages);
+        sb.append('}');
+        return sb.toString();
+    }
 }

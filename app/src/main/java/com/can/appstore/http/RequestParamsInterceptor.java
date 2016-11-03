@@ -16,11 +16,11 @@ public class RequestParamsInterceptor implements Interceptor {
         // TODO 完善参数
         HttpUrl url = request.url()
                 .newBuilder()
-//                .addQueryParameter("channelId", "")
-//                .addQueryParameter("internalModel", "")
-//                .addQueryParameter("commercialModel", "")
-//                .addQueryParameter("mac", "")
-                .addQueryParameter("versionId", BuildConfig.VERSION_NAME)
+                .addQueryParameter("channelId", "1")
+                .addQueryParameter("internalModel", "neibu")
+                .addQueryParameter("commercialModel", "shangyong")
+                .addQueryParameter("mac", "1:2:3")
+                .addQueryParameter("versionId", "1.0")
                 .build();
         request = request.newBuilder().url(url)
                 .build();

@@ -16,7 +16,7 @@ public class AppInfo {
      * versionCode : 101
      * icon : 图标url
      * sizeStr : 10MB
-     * sise : 1024000
+     * size : 1024000
      * md5 :
      * description : 推荐语
      * downloadCount : 100+
@@ -32,7 +32,7 @@ public class AppInfo {
      */
 
     @SerializedName("id")
-    private int id;
+    private String id;
     @SerializedName("name")
     private String name;
     @SerializedName("packageName")
@@ -45,8 +45,8 @@ public class AppInfo {
     private String icon;
     @SerializedName("sizeStr")
     private String sizeStr;
-    @SerializedName("sise")
-    private int sise;
+    @SerializedName("size")
+    private int size;
     @SerializedName("md5")
     private String md5;
     @SerializedName("description")
@@ -72,11 +72,11 @@ public class AppInfo {
     @SerializedName("recommend")
     private List<AppInfo> recommend;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -128,12 +128,12 @@ public class AppInfo {
         this.sizeStr = sizeStr;
     }
 
-    public int getSise() {
-        return sise;
+    public int getSize() {
+        return size;
     }
 
-    public void setSise(int sise) {
-        this.sise = sise;
+    public void setSize(int size) {
+        this.size = size;
     }
 
     public String getMd5() {
@@ -230,5 +230,32 @@ public class AppInfo {
 
     public void setRecommend(List<AppInfo> recommend) {
         this.recommend = recommend;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("AppInfo{");
+        sb.append("id='").append(id).append('\'');
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", packageName='").append(packageName).append('\'');
+        sb.append(", versionName='").append(versionName).append('\'');
+        sb.append(", versionCode=").append(versionCode);
+        sb.append(", icon='").append(icon).append('\'');
+        sb.append(", sizeStr='").append(sizeStr).append('\'');
+        sb.append(", size=").append(size);
+        sb.append(", md5='").append(md5).append('\'');
+        sb.append(", description='").append(description).append('\'');
+        sb.append(", downloadCount='").append(downloadCount).append('\'');
+        sb.append(", url='").append(url).append('\'');
+        sb.append(", marker='").append(marker).append('\'');
+        sb.append(", updateTime='").append(updateTime).append('\'');
+        sb.append(", about='").append(about).append('\'');
+        sb.append(", updateLog='").append(updateLog).append('\'');
+        sb.append(", developer='").append(developer).append('\'');
+        sb.append(", controls=").append(controls);
+        sb.append(", thumbs=").append(thumbs);
+        sb.append(", recommend=").append(recommend);
+        sb.append('}');
+        return sb.toString();
     }
 }
