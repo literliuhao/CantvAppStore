@@ -134,16 +134,7 @@ public class SystemUtil {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+    public static long getApkInstallDirUsableSpaceSzie(Context context) {
+        return context.getFilesDir().getAbsoluteFile().getUsableSpace();
+    }
 }

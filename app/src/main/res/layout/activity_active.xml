@@ -15,13 +15,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/active_btn"
+        <com.can.appstore.widgets.TextProgressBar
+            android:id="@+id/active_textprogressbar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:progressDrawable="@drawable/layer_list_text_progressbar"
             android:layout_alignParentStart="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/px340"
-            android:layout_marginTop="@dimen/px815"/>
+            android:layout_width="@dimen/px312"
+            android:layout_height="@dimen/px102"
+            android:layout_marginStart="@dimen/px340"
+            android:layout_marginTop="@dimen/px815"
+            android:focusable="true"
+            android:max="100"/>
 
     </RelativeLayout>
 

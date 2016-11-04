@@ -1,4 +1,4 @@
-package com.can.appstore.wights;
+package com.can.appstore.widgets;
 
 import android.app.Dialog;
 import android.content.Context;

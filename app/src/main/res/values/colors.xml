@@ -11,4 +11,6 @@
     <color name="color_E0E0E0">#E0E0E0</color>
     <color name="color_EAEAEA">#EAEAEA</color>
     <color name="color_96989D">#96989D</color>
+    <color name="download_progress_bg">#438b14</color>
+    <color name="two_page_bg">#2D313A</color>
 </resources>
