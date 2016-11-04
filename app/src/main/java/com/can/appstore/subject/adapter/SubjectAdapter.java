@@ -39,11 +39,11 @@ public class SubjectAdapter extends CanRecyclerViewAdapter<SubjectInfo> {
     }
 
     @Override
-    protected void bindContentData(SubjectInfo mDatas, RecyclerView.ViewHolder holder, int position) {
+    protected void bindContentData(SubjectInfo data, RecyclerView.ViewHolder holder, int position) {
         SubjectViewHolder subjectViewHolder=(SubjectViewHolder) holder;
-        subjectViewHolder.titleTv.setText(mDatas.getTitle());
+        subjectViewHolder.titleTv.setText(data.getTitle());
         subjectViewHolder.iconImgvi.setScaleType(ImageView.ScaleType.FIT_XY);
-        ImageLoader.getInstance().load(mContext,subjectViewHolder.iconImgvi,mDatas.getIcon());
+        ImageLoader.getInstance().load(mContext,subjectViewHolder.iconImgvi,data.getIcon());
     }
 
 

@@ -291,6 +291,10 @@ public class DownloadManager {
         if (!NetworkUtils.isNetworkConnected(mContext.getApplicationContext())) {
             return null;
         }
+        /**读取数据库task，不轮询提交任务问题 xingzhaolei 2016-11-4 17:05:13 start*/
+        mHander.removeMessages(MSG_SUBMITTASK);
+        mHander.sendEmptyMessage(MSG_SUBMITTASK);
+        /**读取数据库task，不轮询提交任务问题 xingzhaolei 2016-11-4 17:05:13 end*/
         DownloadTask downloadTask = getCurrentTaskById(taskId);
         if (downloadTask != null) {
             if (downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
@@ -303,6 +307,15 @@ public class DownloadManager {
             downloadTask = getDBTaskById(taskId);
             if (downloadTask != null) {
                 downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
+                /**修复数据库获取task 无法resume 问题  xingzl 2016-11-4 16:51:58 start*/
+                downloadTask.setDownloadDao(mDownloadDao);
+                downloadTask.setHttpClient(mOkHttpClient);
+                try {
+                    mWorkTaskQueue.put(taskId);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                /**修复数据库获取task 无法resume 问题  xingzl 2016-11-4 16:51:58 end*/
                 mCurrentTaskList.put(taskId, downloadTask);
                 Future future = mExecutorService.submit(downloadTask);
 //                mFutureMap.put(downloadTask.getId(), future);
@@ -420,10 +433,39 @@ public class DownloadManager {
             for (DownloadTask task : list) {
                 if (!currentList.contains(task)) {
                     currentList.add(task);
+                    /**从数据库查到的数据直接加入任务队列中，免去下载页每次resume（taskid）时，
+                    需重新更新列表数据问题。会不会引起其他问题待确认。 xingzl start 2016-11-4 16:42:17*/
+                    try {
+                        mWorkTaskQueue.put(task.getId());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    task.setDownloadDao(mDownloadDao);
+                    task.setHttpClient(mOkHttpClient);
+                    currentTaskMap.put(task.getId(),task);
+                    /**从数据库查到的数据直接加入任务队列中 免去下载页每次resume（taskid）时，
+                     需重新更新列表数据问题。xingzl start*/
                 }
             }
         } else {
-            if (list != null) currentList.addAll(list);
+            if (list != null) {
+                currentList.addAll(list);
+                /**从数据库查到的数据直接加入任务队列中，免去下载页每次resume（taskid）时，
+                需重新更新列表数据问题。 xingzl start 2016-11-4 16:42:23*/
+
+                for (DownloadTask task: list) {
+                    try {
+                        mWorkTaskQueue.put(task.getId());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    task.setDownloadDao(mDownloadDao);
+                    task.setHttpClient(mOkHttpClient);
+                    currentTaskMap.put(task.getId(),task);
+                }
+                /**从数据库查到的数据直接加入任务队列中，免去下载页每次resume（taskid）时，
+                需重新更新列表数据问题。 xingzl end*/
+            }
         }
         return currentList;
     }
@@ -468,6 +510,9 @@ public class DownloadManager {
     }
 
     public void release() {
+        /**移除所有消息  xingzhaolei 2016-11-04 17:01:58 start*/
+        mHander.removeCallbacksAndMessages(null);
+        /**移除所有消息  xingzhaolei 2016-11-04 17:01:58 end*/
         for (String key : mCurrentTaskList.keySet()) {
             System.out.println("key= " + key + " and value= " + mCurrentTaskList.get(key));
             mCurrentTaskList.get(key).removeAllDownloadListener();

@@ -3,4 +3,6 @@
     <string name="page_row_template" formatted="false">%d / %d</string>
     <string name="serach">"搜索"</string>
     <string name="special">"专题"</string>
+    <string name="download_pause_all">全部暂停</string>
+    <string name="download_resume_all">全部继续</string>
 </resources>

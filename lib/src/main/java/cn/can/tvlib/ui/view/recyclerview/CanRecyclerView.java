@@ -150,5 +150,16 @@ public class CanRecyclerView extends RecyclerView {
             }
             return view;
         }
+
+        @Override
+        public void onLayoutChildren(Recycler recycler, State state) {
+            try {
+                //notifyitemremove 时报RecyclerView: java.lang.IndexOutOfBoundsException: Inconsistency detected. Invalid item position
+                //未测试会不会引起其他坑
+                super.onLayoutChildren(recycler, state);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

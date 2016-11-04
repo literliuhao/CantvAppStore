@@ -5,6 +5,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -22,11 +27,13 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 
+import static com.can.appstore.R.id.subject_recyclerview;
+
 public class SubjectActivity extends BaseActivity implements SubjectContract.SubjectView{
 
 
     private static final float FOCUS_SCALE=1.1f;
-    public static final int  COLUME_COUNT=4;
+    public static final int  COLUMN_COUNT=4;
 
     private TextView mRowTv;
 
@@ -59,38 +66,44 @@ public class SubjectActivity extends BaseActivity implements SubjectContract.Sub
 
         mRowTv= (TextView) findViewById(R.id.subject_row_tv);
 
-        mLayoutManager=new GridLayoutManager(this,COLUME_COUNT);
-        mRecyclerView= (CanRecyclerView) findViewById(R.id.subject_recyclerview);
+        mLayoutManager=new GridLayoutManager(this,COLUMN_COUNT);
+        mRecyclerView= (CanRecyclerView) findViewById(subject_recyclerview);
+        Log.i(TAG, "initView: recyclerview=  "+mRecyclerView+"  itemdecoration="+itemDecoration);
         mRecyclerView.addItemDecoration(itemDecoration);
         mRecyclerView.setLayoutManager(mLayoutManager);
-
         mFocusMoveRunnable=new Runnable() {
             @Override
             public void run() {
-                mFocusMoveUtils.startMoveFocus(mCurrFocusView,FOCUS_SCALE);
-                mFocusScaleUtils.scaleToLarge(mCurrFocusView);
+                if(mCurrFocusView!=null){
+                    mFocusMoveUtils.startMoveFocus(mCurrFocusView,FOCUS_SCALE);
+                    mFocusScaleUtils.scaleToLarge(mCurrFocusView);
+                }
             }
         };
         mHandler=new Handler();
     }
 
     private void setListener() {
-
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 if(RecyclerView.SCROLL_STATE_IDLE==newState){
-                    ImageLoader.getInstance().resumeTask(SubjectActivity.this);
-                    int lastPos= mLayoutManager.findLastVisibleItemPosition();
-                    mPresenter.loadMore(lastPos);
+                    if(!isDestroyed()){
+                        ImageLoader.getInstance().resumeTask(SubjectActivity.this);
+                        int lastPos= mLayoutManager.findLastVisibleItemPosition();
+                        mPresenter.loadMore(lastPos);
+                    }
                 }else{
                     ImageLoader.getInstance().pauseTask(SubjectActivity.this);
                 }
             }
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if(dx==0&&dy==0){
+                    return;
+                }
                 mHandler.removeCallbacks(mFocusMoveRunnable);
-                mHandler.postDelayed(mFocusMoveRunnable, 30);
+                mHandler.postDelayed(mFocusMoveRunnable, 50);
             }
         });
     }
@@ -104,9 +117,9 @@ public class SubjectActivity extends BaseActivity implements SubjectContract.Sub
     }
 
     @Override
-    public void refreshData(List<SubjectInfo> datas) {
+    public void refreshData(List<SubjectInfo> data) {
       if(mAdapter==null){
-          mAdapter=new SubjectAdapter(datas,this);
+          mAdapter=new SubjectAdapter(data,this);
           mRecyclerView.setAdapter(mAdapter);
           mAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
               @Override
@@ -116,27 +129,42 @@ public class SubjectActivity extends BaseActivity implements SubjectContract.Sub
                       mCurrFocusView=view;
                       mHandler.removeCallbacks(mFocusMoveRunnable);
                       mHandler.postDelayed(mFocusMoveRunnable,30);
-                      mPresenter.onItemFocused(position);
+                      if (mPresenter!=null) {
+                          mPresenter.onItemFocused(position);
+                      }
                   }else{
                       mFocusScaleUtils.scaleToNormal();
                       view.setSelected(false);
                   }
               }
           });
+          findFirstFocus();
       }else{
+          mAdapter.setDatas(data);
           mAdapter.notifyDataSetChanged();
       }
     }
 
     @Override
     public void refreshRowNum(String formatRow) {
-        mRowTv.setText(formatRow);
+        int pos= formatRow.indexOf("/");
+        SpannableString ss=new SpannableString(formatRow);
+        ss.setSpan(new ForegroundColorSpan(Color.parseColor("#EAEAEA")),0,pos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        mRowTv.setText(ss);
+    }
+
+    @Override
+    public void onLoadMore(int startInsertPos,int endInsertPos) {
+        if(mAdapter!=null){
+            mAdapter.notifyItemRangeInserted(startInsertPos,endInsertPos);
+        }
+
     }
 
     @Override
     protected void onDestroy() {
-        mPresenter=null;
         super.onDestroy();
+        mPresenter=null;
     }
 
     @Override
@@ -148,6 +176,31 @@ public class SubjectActivity extends BaseActivity implements SubjectContract.Sub
         super.onStop();
         mHandler.removeCallbacksAndMessages(null);
     }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if(KeyEvent.ACTION_DOWN== event.getAction()&&KeyEvent.KEYCODE_DPAD_DOWN==event.getKeyCode()){
+            if(mPresenter!=null){
+                mPresenter.remindNoData();
+            }
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
+    private void findFirstFocus(){
+        mRecyclerView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    View firstView =mRecyclerView.getChildAt(0);
+                    if(firstView!=null){
+                        firstView.requestFocus();
+                        mFocusMoveUtils.setFocusView(firstView);
+                    }
+                }
+        },500);
+
+    }
+
 
 
 }

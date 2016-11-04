@@ -10,16 +10,12 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
-        </activity>
         <activity android:name=".speciallist.SpecialListActivity">
         </activity>
         <activity android:name=".upgrade.PortalActivity">
@@ -29,7 +25,18 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/AppTheme.Translucent.FadeIn">
+        </activity>
+        <activity
+            android:name=".download.DownloadActivity"
+            android:theme="@style/AppTheme.Translucent.FadeIn"
+            >
+        </activity>
+        <activity android:name=".subject.SubjectActivity"
+            android:theme="@style/AppTheme.Translucent.FadeIn">
+        </activity>
         <activity android:name=".applist.AppListActivity">
         </activity>
 

@@ -78,8 +78,7 @@ public class DownloadTask implements Runnable {
         BufferedInputStream bis = null;
         try {
             mDbEntity = mDownloadDao.load(mId);
-            String path = mSaveDirPath + "/" +mFileName;
-            Log.d("","path:"+path);
+            String path = mSaveDirPath + File.separator+mFileName;
             mRandomAccessFile = new RandomAccessFile(path, "rwd");
             if (mDbEntity != null) {
                 mDownloadedSize = mDbEntity.getDownloadedSize();
