@@ -17,5 +17,16 @@
         <item name="android:includeFontPadding">false</item>
         <item name="android:marqueeRepeatLimit">marquee_forever</item>
     </style>
-
+    <style name="NormalText">
+        <item name="android:textColor">@color/white_opa90</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="upgradeDialogStyle">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
 </resources>

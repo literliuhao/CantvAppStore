@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">CANAppStore</string>
     <string name="page_row_template" formatted="false">%d / %d</string>
+    <string name="serach">"搜索"</string>
+    <string name="special">"专题"</string>
 </resources>

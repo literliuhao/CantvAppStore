@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="scrollbar">
+        <attr name="cursorWidth" format="dimension"/>
+        <attr name="cursorHeight" format="dimension"/>
+        <attr name="roundedCorner" format="dimension"/>
+        <attr name="cursorColor" format="color"/>
+        <attr name="barColor" format="color"/>
+    </declare-styleable>
+    <declare-styleable name="upgradeprogressbar">
+        <attr name="barwidth" format="dimension"/>
+        <attr name="barheight" format="dimension"/>
+        <attr name="barstroke" format="dimension"/>
+        <attr name="barcorner" format="dimension"/>
+        <attr name="barcolor" format="color"/>
+        <attr name="progresscolor" format="color"/>
+    </declare-styleable>
+</resources>
