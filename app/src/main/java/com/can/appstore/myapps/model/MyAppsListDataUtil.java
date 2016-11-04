@@ -44,14 +44,12 @@ public  class MyAppsListDataUtil {
           }
       }else{
           //文件不存在，初次
-          for (int i=0;i<allAppsList.size();i++){
-              if(mShowList.size()<=16){
+          if(allAppsList.size()<=16){
+              mShowList = allAppsList;
+          }else{
+              for (int i=0;i<15;i++){
                   mShowList.add(allAppsList.get(i));
-              }else{
-                  break;
               }
-          }
-          if(mShowList.size()<allAppsList.size()){
               mShowList.add(new AppInfo("添加应用", context.getResources().getDrawable(R.drawable.ic_launcher)));
           }
           saveShowList(mShowList);
@@ -76,12 +74,7 @@ public  class MyAppsListDataUtil {
                 allapps.put(app.packageName,app);
             }
         }
-//        for (AppInfo  app :allAppslist) {
-//            map.put(app.installTime,app);
-//        }
-//        for (int i = 0; i<map.size();i++){
-//            allAppslist.add(map.);
-//        }
+
         return allAppslist;
     }
 

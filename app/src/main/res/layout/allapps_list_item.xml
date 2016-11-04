@@ -17,13 +17,13 @@
             android:layout_height="@dimen/px80"
             android:id="@+id/allapps_iv_icon"
             android:layout_gravity="center_horizontal"
-            android:background="@drawable/ic_launcher"
+            android:layout_marginTop="@dimen/px8"
             />
         <TextView
             android:id="@+id/allapps_tv_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/px20"
+            android:layout_marginTop="@dimen/px12"
             android:text="应用名称"
             android:gravity="center_horizontal"
             android:textSize="@dimen/fontsize_32"
