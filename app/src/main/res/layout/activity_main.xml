@@ -49,5 +49,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="安装包管理" />
+
+        <Button
+            android:id="@+id/bt_custom_viewgroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="自定义ViewGroup"
+            />
     </LinearLayout>
 </LinearLayout>

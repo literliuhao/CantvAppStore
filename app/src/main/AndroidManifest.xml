@@ -37,6 +37,7 @@
         <activity android:name=".update.UpdateManagerActivity"></activity>
         <activity android:name=".installpkg.InstallManagerActivity"></activity>
         <activity android:name=".myapps.ui.SystemAppsActivity"></activity>
+        <activity android:name=".myapps.ui.CustomFolderIconActivity"></activity>
     </application>
 
 </manifest>

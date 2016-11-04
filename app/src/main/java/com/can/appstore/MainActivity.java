@@ -10,10 +10,9 @@ import android.widget.TextView;
 import com.can.appstore.index.Data.JokeData;
 import com.can.appstore.index.IndexActivity;
 import com.can.appstore.installpkg.InstallManagerActivity;
-import com.can.appstore.installpkg.InstallManagerAdapter;
+import com.can.appstore.myapps.ui.CustomFolderIconActivity;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.special_detail.SpecialDetailActivity;
-import com.can.appstore.update.UpdateManagerActivity;
 
 import java.util.Random;
 
@@ -65,6 +64,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, InstallManagerActivity.class));
+            }
+        });
+
+        findViewById(R.id.bt_custom_viewgroup).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,CustomFolderIconActivity.class));
             }
         });
     }
