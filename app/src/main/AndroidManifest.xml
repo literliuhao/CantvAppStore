@@ -18,7 +18,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".speciallist.SpecialListActivity">
         </activity>
-        <activity android:name=".upgrade.PortalActivity">
+        <activity android:name=".PortalActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
