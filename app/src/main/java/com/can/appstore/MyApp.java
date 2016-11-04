@@ -11,9 +11,16 @@ import android.app.Application;
  * 修订历史：
  * ================================================
  */
-public class MyApp extends Application{
+public class MyApp extends Application {
+    private static MyApp INSTANCE;
+
+    public static MyApp getApplication() {
+        return INSTANCE;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        INSTANCE = this;
     }
 }
