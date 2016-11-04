@@ -1,8 +1,5 @@
 package com.can.appstore.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import com.can.appstore.entity.Activity;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.AppInfoContainer;
@@ -86,7 +83,7 @@ public interface ApiService {
      *
      * @param key 搜索关键字
      */
-    @GET
+    @GET("start/search")
     Call<ListResult<AppInfo>> search(@Query("key") String key);
 
     /**
