@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.GET_PACKAGE_SIZE"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -40,6 +42,17 @@
         <activity android:name=".applist.AppListActivity">
         </activity>
         <activity android:name=".download.DownloadLeadAcitivity">
+        </activity>
+
+        <activity android:name=".uninstallmanager.UninstallManagerActivity">
+        </activity>
+
+        <activity android:name=".appdetail.AppDetailActivity">
+        </activity>
+
+        <activity
+            android:name=".appdetail.ImageScaleActivity"
+            android:theme="@style/Image_Scale_Transparent">
         </activity>
 
         <service android:name=".upgrade.UpgradeService">

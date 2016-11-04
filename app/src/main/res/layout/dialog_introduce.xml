@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/ll_one_bg"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center"
+              android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="@dimen/dimen_1056px"
+        android:layout_height="@dimen/dimen_856px"
+        android:background="@drawable/app_introduce_bg"
+        >
+
+        <TextView
+            android:id="@+id/tv_intro_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/dimen_65px"
+            android:includeFontPadding="false"
+            android:text="@string/introduce_detail"
+            android:textColor="@color/app_name_color"
+            android:textSize="@dimen/fontsize_40px"/>
+
+        <ScrollView
+            android:id="@+id/scroll_view"
+            android:layout_width="@dimen/dimen_914px"
+            android:layout_height="@dimen/dimen_536px"
+            android:layout_below="@+id/tv_intro_detail"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/dimen_65px"
+            android:fadeScrollbars="false"
+            android:fillViewport="true"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            android:scrollbarSize="@dimen/dimen_14px"
+            android:scrollbarStyle="insideInset"
+            android:scrollbarThumbVertical="@drawable/scrollbar_vertical_thumb"
+            android:scrollbarTrackVertical="@drawable/scrollbar_vertical_track"
+            android:scrollbars="vertical">
+
+            <LinearLayout
+                android:id="@+id/ll_content"
+                android:layout_width="@dimen/dimen_800px"
+                android:layout_height="@dimen/dimen_536px"
+                android:layout_marginStart="@dimen/dimen_57px"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_app_updatelog"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/dimen_32px"
+                    android:layout_marginStart="@dimen/dimen_32px"
+                    android:layout_marginTop="@dimen/dimen_32px"
+                    android:includeFontPadding="false"
+                    android:lineSpacingExtra="@dimen/dimen_10px"
+                    android:textColor="@color/app_name_color"
+                    android:textSize="@dimen/fontsize_34px"/>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dimen_1px"
+                    android:layout_marginEnd="@dimen/dimen_32px"
+                    android:layout_marginStart="@dimen/dimen_32px"
+                    android:layout_marginTop="@dimen/dimen_33px"
+                    android:background="@color/stroage_line_bg"/>
+
+                <TextView
+                    android:id="@+id/tv_app_about"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/dimen_32px"
+                    android:layout_marginEnd="@dimen/dimen_32px"
+                    android:layout_marginStart="@dimen/dimen_32px"
+                    android:layout_marginTop="@dimen/dimen_32px"
+                    android:includeFontPadding="false"
+                    android:lineSpacingExtra="@dimen/dimen_10px"
+                    android:textColor="@color/app_name_color"
+                    android:textSize="@dimen/fontsize_34px"/>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <LinearLayout
+            android:layout_width="@dimen/dimen_800px"
+            android:layout_height="@dimen/dimen_536px"
+            android:layout_alignTop="@+id/scroll_view"
+            android:layout_marginStart="@dimen/dimen_86px"
+            android:background="@drawable/shape_bg_introduce_three"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

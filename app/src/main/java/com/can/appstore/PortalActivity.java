@@ -11,11 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.applist.AppListActivity;
 import com.can.appstore.download.DownloadLeadAcitivity;
+import com.can.appstore.uninstallmanager.UninstallManagerActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
@@ -47,9 +50,13 @@ public class PortalActivity extends Activity {
             // TODO: 2016/11/4  添加跳转页面名称
             if (i == 0) {
                 list.add("应用列表页面");
-            } else if(i==1){
+            } else if (i == 1) {
                 list.add("下载列表和专题列表");
-            }else {
+            } else if (i == 3) {
+                list.add("应用详情");
+            } else if (i == 4) {
+                list.add("卸载管理");
+            } else {
                 list.add(i + "");
             }
         }
@@ -75,8 +82,15 @@ public class PortalActivity extends Activity {
                     intent.putExtra(AppListActivity.TOPIC_ID, "");
                     intent.putExtra(AppListActivity.TYPE_ID, "");
                     PortalActivity.this.startActivity(intent);
-                }else if(position==1){
-                    Intent intent =new Intent(PortalActivity.this,DownloadLeadAcitivity.class);
+                } else if (position == 1) {
+                    Intent intent = new Intent(PortalActivity.this, DownloadLeadAcitivity.class);
+                    startActivity(intent);
+                } else if (position == 3) {
+                    Intent intent = new Intent(PortalActivity.this, AppDetailActivity.class);
+                    intent.putExtra("Url", "http://app.znds.com/down/20160929/ystjg-2.1.1.1010-dangbei.apk");
+                    startActivity(intent);
+                } else if (position == 4) {
+                    Intent intent = new Intent(PortalActivity.this, UninstallManagerActivity.class);
                     startActivity(intent);
                 }
             }

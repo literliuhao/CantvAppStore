@@ -313,6 +313,9 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         return hasHeader() ? dataCount + 1 : dataCount;
     }
 
+    public int getCurrentSelectMode(){
+        return mSelectMode;
+    }
 
     //----------------------------   支持选择模式   ----------------------------
     public static final int MODE_NORMAL = 0x001;//正常模式
