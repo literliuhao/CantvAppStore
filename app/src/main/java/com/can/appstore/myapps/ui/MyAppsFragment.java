@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import com.can.appstore.R;
 import com.can.appstore.index.interfaces.ICallBack;
 import com.can.appstore.myapps.adapter.MyAppsRvAdapter;
+import com.can.appstore.myapps.addappsview.AddAppsActivity;
 import com.can.appstore.myapps.model.AppInfo;
 import com.can.appstore.myapps.model.MyAppsListDataUtil;
 import com.can.appstore.search.ToastUtil;
@@ -122,11 +123,12 @@ public class MyAppsFragment extends Fragment {
                         needFocus = true;
                         ll_edit = (LinearLayout) item.findViewById(R.id.myapps_ll_edit);
                         ll_edit.setVisibility(View.VISIBLE);
-//                        mMyAppsRvAdapter.setOnFocusChangeListener(null);
+                        mMyAppsRvAdapter.setOnFocusChangeListener(null);
                         int width = ll_edit.getWidth();
                         int height = ll_edit.getHeight();
 //                        ToastUtil.toastShort("ll_edit--宽"+width+"高"+height+"======item--"+item.getWidth()+"高"+item.getHeight());
                         editItem(position,item);
+                    return true;
                 }
                 return false;
             }
@@ -146,6 +148,8 @@ public class MyAppsFragment extends Fragment {
                     startActivity(intent);
                 }else if(position == 1){
                     ToastUtil.toastShort("显示popupwindow");
+                    Intent intent = new Intent(getActivity(),SystemAppsActivity.class);
+                    startActivity(intent);
                 }else{
                     if(mShowList.get(position).packageName == ""){
                         //添加更多

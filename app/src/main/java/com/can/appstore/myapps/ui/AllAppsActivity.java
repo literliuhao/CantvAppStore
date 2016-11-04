@@ -61,7 +61,7 @@ public class AllAppsActivity extends Activity{
     }
     private void initView() {
         mAllAppsRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(this, 5, GridLayoutManager.VERTICAL, false));
-        mAllAppsRecyclerView.addItemDecoration(new CanRecyclerViewDivider(android.R.color.transparent,40,62));
+        mAllAppsRecyclerView.addItemDecoration(new CanRecyclerViewDivider(android.R.color.transparent,40,0));
         mAdapter = new AllAppsRecyclerViewAdapter(allAppList);
         mAllAppsRecyclerView.setAdapter(mAdapter);
 
