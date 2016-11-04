@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.can.appstore.applist.AppListActivity;
+import com.can.appstore.download.DownloadLeadAcitivity;
+
 import java.util.ArrayList;
 import java.util.List;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
@@ -74,7 +76,7 @@ public class PortalActivity extends Activity {
                     intent.putExtra(AppListActivity.TYPE_ID, "");
                     PortalActivity.this.startActivity(intent);
                 }else if(position==1){
-                    Intent intent =new Intent(PortalActivity.this,MainActivity.class);
+                    Intent intent =new Intent(PortalActivity.this,DownloadLeadAcitivity.class);
                     startActivity(intent);
                 }
             }

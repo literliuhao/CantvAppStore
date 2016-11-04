@@ -39,6 +39,8 @@
         </activity>
         <activity android:name=".applist.AppListActivity">
         </activity>
+        <activity android:name=".download.DownloadLeadAcitivity">
+        </activity>
 
         <service android:name=".upgrade.UpgradeService">
             <intent-filter>
