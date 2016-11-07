@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/px1336"
+    android:layout_height="@dimen/px168"
+    android:gravity="left|center_vertical">
+
+    <RelativeLayout
+        android:id="@+id/download_item_content_rlayout"
+        android:layout_width="@dimen/px1120"
+        android:layout_height="@dimen/px168"
+        android:focusable="true"
+        android:clickable="true"
+        >
+
+        <RelativeLayout
+            android:layout_width="@dimen/px860"
+            android:layout_height="@dimen/px168"
+            android:background="@drawable/selector_bg_download_item_left"
+            tools:background="@drawable/selector_bg_download_item_left">
+            <ImageView
+                android:id="@+id/download_item_appicon_imgvi"
+                android:layout_width="@dimen/px120"
+                android:layout_height="@dimen/px120"
+                android:src="@mipmap/ic_launcher"
+                />
+            <TextView
+                android:id="@+id/download_item_title_tv"
+                android:layout_width="@dimen/px360"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/download_item_appicon_imgvi"
+                android:textColor="@color/white_opa80"
+                android:textSize="@dimen/fontsize_34"
+                android:layout_marginTop="@dimen/px20"
+                android:text="银河奇异果"
+                android:gravity="center_vertical"
+                style="@style/commen_textview"/>
+            <TextView
+                android:id="@+id/download_item_size_tv"
+                android:layout_width="@dimen/px300"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/fontsize_30"
+                android:text="15.1MB/20MB"
+                android:textColor="@color/white_opa50"
+                android:layout_marginTop="@dimen/px20"
+                android:gravity="center_vertical|end"
+                android:layout_alignParentEnd="true"
+                />
+
+            <ProgressBar
+                style="@style/progress_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/px20"
+                android:id="@+id/download_item_progress"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="@dimen/px24"
+                android:max="100"
+                android:layout_toEndOf="@+id/download_item_appicon_imgvi"
+                android:layout_below="@+id/download_item_title_tv" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_alignParentEnd="true"
+            android:layout_width="@dimen/px260"
+            android:layout_height="@dimen/px168"
+            android:gravity="center|left"
+            android:background="@drawable/selector_bg_download_item_right"
+            >
+            <ImageView
+                android:id="@+id/download_item_status_imgvi"
+                android:layout_width="@dimen/px40"
+                android:layout_height="@dimen/px40"
+                tools:src="@mipmap/icon_downloading"
+                />
+            <TextView
+                android:id="@+id/download_item_status_tv"
+                android:layout_toRightOf="@+id/download_item_status_imgvi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:textSize="@dimen/px32"
+                android:layout_marginLeft="@dimen/px8"
+                android:textColor="@color/white_opa80"
+                android:text="下载中"
+                />
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/download_item_control_rlayout"
+        android:layout_width="@dimen/px200"
+        android:layout_height="@dimen/px168"
+        android:layout_marginStart="@dimen/px16"
+        android:layout_toRightOf="@id/download_item_content_rlayout"
+        android:visibility="gone"
+        >
+
+        <Button
+            android:id="@+id/download_item_control_btn"
+            android:layout_width="@dimen/px200"
+            android:layout_height="@dimen/px75"
+            android:background="@drawable/bg_btn_download"
+            android:text="暂停"
+            android:textSize="@dimen/px34"
+            android:textColor="@color/white_opa80"
+            android:includeFontPadding="false"
+            android:layout_below="@+id/subject_title_tv"
+            android:layout_alignParentStart="true" />
+
+        <Button
+            android:id="@+id/download_item_delete_btn"
+            android:layout_below="@+id/download_item_control_btn"
+            android:layout_marginTop="@dimen/px16"
+            android:layout_width="@dimen/px200"
+            android:layout_height="@dimen/px75"
+            android:background="@drawable/bg_btn_download"
+            android:text="删除"
+            android:textSize="@dimen/px34"
+            android:textColor="@color/white_opa80"
+            android:includeFontPadding="false"
+            />
+    </RelativeLayout>
+
+
+</RelativeLayout>

@@ -313,6 +313,9 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         return hasHeader() ? dataCount + 1 : dataCount;
     }
 
+    public int getCurrentSelectMode(){
+        return mSelectMode;
+    }
 
     //----------------------------   支持选择模式   ----------------------------
     public static final int MODE_NORMAL = 0x001;//正常模式
@@ -705,8 +708,14 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         boolean onItemKeyEvent(int position, View v, int keyCode, KeyEvent event);
     }
 
+
     public abstract static class OnFocusChangeListener {
-        public boolean onFocusMoveOutside(int currFocus, int direction) {
+        /**
+         * @param currFocus 焦点失去的时候的最后一个获取焦点的位置
+         * @param direction 焦点移动的方向  如左边 View.FOCUS_RIGHT
+         * @return
+         */
+        public boolean onFocusMoveOutside(int currFocus, int direction){
             return false;
         }
 

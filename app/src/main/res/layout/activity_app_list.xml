@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="#2d313a"
+    >
+
+    <ImageView
+        android:id="@+id/iv_app_list_icon"
+        android:layout_width="6px"
+        android:layout_height="35px"
+        android:background="#efd624"
+        android:layout_marginLeft="424px"
+        android:layout_marginTop="80px"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="动作冒险"
+        android:textSize="38px"
+        style="@style/NormalText"
+        android:layout_toRightOf="@id/iv_app_list_icon"
+        android:layout_marginTop="70px"
+        android:layout_marginLeft="20px"
+        android:id="@+id/textView"/>
+
+    <TextView
+        android:id="@+id/tv_app_list_line"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:gravity="center"
+        android:visibility="gone"
+        android:textSize="38px"
+        android:layout_marginTop="70px"
+        android:layout_marginRight="160px"
+        android:textColor="@color/white_opa50"
+        />
+
+    <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
+        android:id="@+id/rv_app_menu"
+        android:layout_height="match_parent"
+        android:layout_width="240px"
+        android:layout_marginTop="130px"
+        android:layout_marginLeft="140px"
+        android:focusable="false"
+        >
+
+    </cn.can.tvlib.ui.view.recyclerview.CanRecyclerView>
+
+
+    <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
+        android:id="@+id/rv_app_list"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="24px"
+        android:layout_marginRight="123px"
+        android:layout_marginTop="130px"
+        android:paddingBottom="@dimen/px58"
+        android:paddingTop="@dimen/px10"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:focusable="false"
+        android:visibility="gone"
+        android:layout_toRightOf="@id/rv_app_menu"
+        android:layout_alignParentTop="true">
+    </cn.can.tvlib.ui.view.recyclerview.CanRecyclerView>
+
+    <LinearLayout
+        android:id="@+id/ll_app_list_load_fail"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_marginLeft="24px"
+        android:layout_marginRight="123px"
+        android:layout_marginTop="130px"
+        android:layout_marginBottom="100px"
+        android:paddingBottom="@dimen/px58"
+        android:paddingTop="@dimen/px10"
+        android:focusable="false"
+        android:gravity="center"
+        android:visibility="gone"
+        android:layout_toRightOf="@id/rv_app_menu"
+        android:layout_alignParentTop="true">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/NormalText"
+            android:text="网络访问错误"
+            android:textSize="34px"
+            android:textColor="@color/white_opa80"
+            android:focusable="false"
+            />
+        <TextView
+            android:id="@+id/tv_load_retry"
+            android:layout_width="300px"
+            android:layout_height="100px"
+            style="@style/NormalText"
+            android:text="点击重试"
+            android:textSize="34px"
+            android:textColor="@color/white_opa80"
+            android:background="@drawable/shap_app_list"
+            android:layout_marginTop="40px"
+            android:focusable="true"
+            />
+
+    </LinearLayout>
+
+</RelativeLayout>

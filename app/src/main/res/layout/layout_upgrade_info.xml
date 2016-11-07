@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:scrollbar="http://schemas.android.com/apk/res-auto"
+                android:layout_width="1056px"
+                android:layout_height="856px"
+                android:layout_gravity="center"
+                android:layout_margin="26px"
+                android:background="#2d313a"
+    >
+
+    <TextView
+        android:id="@+id/tv_upgrade_title"
+        style="@style/NormalText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="88px"
+        android:gravity="center"
+        android:includeFontPadding="true"
+        android:textColor="@color/white_opa80"
+        android:textSize="40px"
+        />
+
+    <com.can.appstore.upgrade.UpgradeInfoScrollView
+        android:id="@+id/sv_upgrade_info"
+        android:layout_width="800px"
+        android:layout_height="430px"
+        android:layout_marginLeft="100px"
+        android:layout_marginRight="100px"
+        android:layout_marginTop="185px"
+        android:background="@color/black_opa10"
+        android:orientation="horizontal"
+        android:padding="32px"
+        android:scrollbars="none"
+        android:onClick="onClick"
+        android:clickable="true"
+        android:focusable="true"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="left"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/tv_upgrade_info_version"
+                style="@style/NormalText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:includeFontPadding="true"
+                android:textSize="34px"
+                />
+
+            <TextView
+                android:id="@+id/tv_upgrade_info_subtitle"
+                style="@style/NormalText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30px"
+                android:gravity="left"
+                android:includeFontPadding="true"
+                android:text="版本描述："
+                android:textSize="34px"
+                />
+
+            <TextView
+                android:id="@+id/tv_upgrade_info_content"
+                style="@style/NormalText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18px"
+                android:gravity="left"
+                android:includeFontPadding="true"
+                android:lineSpacingExtra="18px"
+                android:textSize="34px"
+                />
+        </LinearLayout>
+    </com.can.appstore.upgrade.UpgradeInfoScrollView>
+
+    <com.can.appstore.upgrade.UpgradeInfoNoticeCursor
+        android:id="@+id/user_notice_cursor"
+        android:layout_width="6dp"
+        android:layout_height="430px"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="center"
+        android:layout_marginRight="76px"
+        android:layout_marginTop="185px"
+        android:gravity="center_horizontal|top"
+        scrollbar:cursorWidth="6dp"
+        scrollbar:cursorHeight="30dp"
+        scrollbar:roundedCorner="3dp"
+        scrollbar:cursorColor="#ccffffff"
+        scrollbar:barColor="#88ffffff"
+        >
+    </com.can.appstore.upgrade.UpgradeInfoNoticeCursor>
+
+
+    <TextView
+        android:id="@+id/tv_upgrade_install"
+        style="@style/NormalText"
+        android:layout_width="800px"
+        android:layout_height="80px"
+        android:layout_below="@id/sv_upgrade_info"
+        android:layout_marginLeft="100px"
+        android:layout_marginTop="60px"
+        android:gravity="center"
+        android:includeFontPadding="true"
+        android:text="安装"
+        android:textColor="@color/white_opa80"
+        android:textSize="34px"
+        />
+
+</RelativeLayout>

@@ -11,11 +11,52 @@
         <item name="android:windowAnimationStyle">@style/anim_fade_in</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
+
     <style name="commen_textview">
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">marquee</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:marqueeRepeatLimit">marquee_forever</item>
     </style>
+    <style name="NormalText">
+        <item name="android:textColor">@color/white_opa90</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="upgradeDialogStyle">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+    <style name="progress_horizontal">
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:progressDrawable">@drawable/progress_horizontal</item>
+        <item name="android:indeterminateDrawable">@android:drawable/progress_indeterminate_horizontal</item>
+        <item name="android:minHeight">20dip</item>
+        <item name="android:maxHeight">20dip</item>
+    </style>
 
+    <style name="Iintroduce_Dialog_Transparent">
+        <item name="android:windowBackground">@color/introduce_one_bg</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+    </style>
+
+    <style name="Image_Scale_Transparent">
+        <item name="android:windowBackground">@color/image_scale_bg</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+    </style>
+
+    <style name="App_Detail_Text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textColor">@color/app_size_color</item>
+        <item name="android:textSize">@dimen/dimen_32px</item>
+    </style>
 </resources>

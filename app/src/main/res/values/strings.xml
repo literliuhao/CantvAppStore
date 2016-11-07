@@ -11,4 +11,42 @@
     <string name="search_null">搜不到相关应用</string>
 
     <string name="page_row_template" formatted="false">%d / %d</string>
+    <string name="serach">"搜索"</string>
+    <string name="special">"专题"</string>
+    <string name="download_pause_all">全部暂停</string>
+    <string name="download_resume_all">全部继续</string>
+
+    <!--卸载管理-->
+    <string name="bt_batch_uninstall">批量卸载</string>
+    <string name="tv_uninstall_manager">卸载管理</string>
+    <string name="uninsatll_manager_free_storage">可用内存&#160;:&#160;</string>
+    <string name="downloaded">下载</string>
+    <string name="select_app_count">已选择应用数</string>
+    <string name="loading">加载中,请稍后</string>
+    <string name="rows_str">/%d行</string>
+
+    <!--应用详情页-->
+    <string name="detail_app_size">大小&#160;:&#160;%s</string>
+    <string name="detail_app_update_date">更新&#160;:&#160;%s</string>
+    <string name="detail_app_downlaod_count">下载&#160;:&#160;%s</string>
+    <string name="detail_app_free_stroage">可用空间&#160;:&#160;%s</string>
+    <string name="detail_app_operating_equipment">操作设备&#160;:</string>
+    <string name="detail_app_download">下载</string>
+    <string name="detail_app_run">运行</string>
+    <string name="detail_app_update">更新</string>
+    <string name="detail_app_Introduction">简介</string>
+    <string name="detail_app_recommend">推荐</string>
+    <string name="detail_app_download_wait">等待中</string>
+    <string name="detail_app_installing">安装中</string>
+    <string name="detail_app_click_pause">点击暂停下载</string>
+    <string name="detail_app_click_continue">点击继续下载</string>
+    <string name="download_faild_memory_lack">内存不足%s下载失败</string>
+    <string name="install_faild_memory_lack">内存不足%s安装失败</string>
+    <string name="network_connection_error">网络连接异常</string>
+    <string name="unkonw_error">发生未知错误</string>
+    <string name="network_connection_disconnect">网络连接已断开</string>
+    <string name="downlaod_error">下载异常</string>
+    <string name="downlaod_restart">重试</string>
+    <string name="introduce_detail">简介详情</string>
+    <string name="load_data_faild">加载数据失败,请稍后再试...</string>
 </resources>

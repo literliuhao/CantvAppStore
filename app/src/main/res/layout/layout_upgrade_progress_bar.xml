@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:upgradeprogressbar="http://schemas.android.com/apk/res-auto"
+              android:layout_width="1000px"
+              android:layout_height="640px"
+              android:orientation="vertical"
+              android:layout_gravity="center"
+              android:layout_margin="26px"
+              android:background="#2d313a"
+              android:gravity="center_horizontal"
+    >
+    <TextView
+        android:id="@+id/tv_upgrade_title"
+        style="@style/NormalText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="88px"
+        android:gravity="center"
+        android:includeFontPadding="true"
+        android:text="检测到新版本"
+        android:textColor="@color/white_opa80"
+        android:textSize="40px"
+        />
+    <com.can.appstore.upgrade.UpgradeProgressBar
+        android:id="@+id/pb_upgrade"
+        android:layout_width="722px"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="215px"
+        upgradeprogressbar:barwidth = "720px"
+        upgradeprogressbar:barheight = "16px"
+        upgradeprogressbar:barstroke = "2px"
+        upgradeprogressbar:barcorner = "8px"
+        upgradeprogressbar:barcolor = "#ccffffff"
+        upgradeprogressbar:progresscolor ="#cc088dbd"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40px"
+        style="@style/NormalText"
+        android:text="正在安装中，请稍后.."
+        android:textColor="@color/white_opa80"
+        android:textSize="32px"
+        />
+</LinearLayout>

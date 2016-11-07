@@ -37,7 +37,7 @@ public class DownloadTask implements Runnable {
     private long mTotalSize;
     private long mDownloadedSize;
     private String mUrl;
-    private String mSaveDirPath = Environment.getDownloadCacheDirectory().getPath();
+    private String mSaveDirPath = Environment.getExternalStorageDirectory().getAbsolutePath();
     private RandomAccessFile mRandomAccessFile;
     private int UPDATE_SIZE = 512 * 1024;    // 512k存储一次
     private int mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_INIT;
@@ -78,7 +78,8 @@ public class DownloadTask implements Runnable {
         BufferedInputStream bis = null;
         try {
             mDbEntity = mDownloadDao.load(mId);
-            mRandomAccessFile = new RandomAccessFile(mSaveDirPath + mFileName, "rwd");
+            String path = mSaveDirPath + File.separator+mFileName;
+            mRandomAccessFile = new RandomAccessFile(path, "rwd");
             if (mDbEntity != null) {
                 mDownloadedSize = mDbEntity.getDownloadedSize();
                 mTotalSize = mDbEntity.getTotalSize();

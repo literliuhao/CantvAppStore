@@ -16,11 +16,13 @@ public interface SubjectContract {
         void startLoad();
         void loadMore(int lastVisiablePos);
         void onItemFocused(int position);
+        void remindNoData();
     }
 
     public static interface SubjectView extends BaseView<SubjectPresenter>{
         void refreshData(List<SubjectInfo> datas);
         void refreshRowNum(String formatRow);
+        void onLoadMore(int startInsertPos,int endInsertPos);
     }
 
 
