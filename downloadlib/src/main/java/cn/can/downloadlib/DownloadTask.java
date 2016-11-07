@@ -351,7 +351,7 @@ public class DownloadTask implements Runnable {
         for (DownloadTaskListener listener : mDownloadlisteners) {
             listener.onError(this, errorCode);
             if (DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR == errorCode) {
-                DownloadManager.mErrorTaskQueue.add(this.getId()); // 处理任务异常时，获取异常任务taskId
+                TaskManager.mErrorTaskQueue.add(this.getId()); // 处理任务异常时，获取异常任务taskId
             }
         }
     }

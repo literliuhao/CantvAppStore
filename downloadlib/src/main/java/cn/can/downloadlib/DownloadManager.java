@@ -16,14 +16,11 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -47,20 +44,17 @@ public class DownloadManager {
     private static final int READ_TIMEOUT = 5;
     private static final int WRITE_TIMEOUT = 2;
     private static final int CONNECT_TIMEOUT = 5;
-
-    private static final int MSG_SUBMITTASK = 1000;
-    private static final int MSG_RESUME = 1001;
+    private static final int DELAY_TIME = 1000;
+    private static final int MSG_SUBMIT_TASK = 1000;
 
     private static DownloadManager mInstance;
     private static DownloadDao mDownloadDao;
     private Context mContext;
     private int mPoolSize = 2;//Runtime.getRuntime().availableProcessors();
     private ExecutorService mExecutorService;
-//    private Map<String, Future> mFutureMap;
     private OkHttpClient mOkHttpClient;
-    private Map<String, DownloadTask> mCurrentTaskList = new HashMap<String, DownloadTask>();
-    private BlockingQueue<String> mWorkTaskQueue = new LinkedBlockingQueue<>();
-    public static BlockingQueue<String> mErrorTaskQueue = new LinkedBlockingQueue<>();
+
+    private TaskManager mTaskManager = new TaskManager();
 
     private HandlerThread mHandlerThread;
     private Handler mHander;
@@ -68,29 +62,13 @@ public class DownloadManager {
         @Override
         public boolean handleMessage(Message msg) {
             switch (msg.what) {
-                case MSG_SUBMITTASK:
+                case MSG_SUBMIT_TASK:
                     if (NetworkUtils.isNetworkConnected(mContext.getApplicationContext())) {
                         if (((ThreadPoolExecutor)mExecutorService).getActiveCount() < mPoolSize) {
-                            try {
-                                String taskId = mErrorTaskQueue.poll();
-                                if (taskId == null) {
-                                    taskId = mWorkTaskQueue.poll(1, TimeUnit.SECONDS);
-                                }
-                                if (taskId != null) {
-                                    Future future = mExecutorService.submit(mCurrentTaskList.get(taskId));
-                                }
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+                            mExecutorService.submit(mTaskManager.poll());
                         }
                     }
-                    mHander.sendEmptyMessageDelayed(MSG_SUBMITTASK, 1000);
-                    break;
-                case MSG_RESUME:
-                    break;
-                case 3:
-                    break;
-                case 4:
+                    mHander.sendEmptyMessageDelayed(MSG_SUBMIT_TASK, DELAY_TIME);
                     break;
             }
             return false;
@@ -196,8 +174,10 @@ public class DownloadManager {
      * @return
      */
     public Map<String, DownloadTask> getCurrentTaskList() {
-        return mCurrentTaskList;
+//        return mCurrentTaskList;
+        return mTaskManager.getCurrentTaskList();
     }
+
 
     /**
      * 设置线程池数量
@@ -220,7 +200,6 @@ public class DownloadManager {
         mHander = new Handler(mHandlerThread.getLooper(), mCallback);
 
         mExecutorService = Executors.newFixedThreadPool(mPoolSize);
-//        mFutureMap = new HashMap<String, Future>();
         DaoMaster.OpenHelper openHelper = new DaoMaster.DevOpenHelper(mContext, "downloadDB", null);
         DaoMaster daoMaster = new DaoMaster(openHelper.getWritableDatabase());
         mDownloadDao = daoMaster.newSession().getDownloadDao();
@@ -252,19 +231,13 @@ public class DownloadManager {
         if (!NetworkUtils.isNetworkConnected(mContext.getApplicationContext())) {
             return false;
         }
-        DownloadTask downloadTask = mCurrentTaskList.get(task.getId());
+        DownloadTask downloadTask = mTaskManager.get(task.getId());
         if (null != downloadTask && downloadTask.getDownloadStatus() != DownloadStatus
                 .DOWNLOAD_STATUS_CANCEL) {
             Log.d(TAG, "task already exist");
             return false;
         }
-        mCurrentTaskList.put(task.getId(), task);
-        try {
-            mWorkTaskQueue.put(task.getId());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return false;
-        }
+        mTaskManager.put(task);
         task.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_PREPARE);
         task.setDownloadDao(mDownloadDao);
         task.setHttpClient(mOkHttpClient);
@@ -275,9 +248,7 @@ public class DownloadManager {
                     .getFileName(), task.getDownloadStatus());
             mDownloadDao.insertOrReplace(dbEntity);
         }
-//        Future future = mExecutorService.submit(task);
-//        mFutureMap.put(task.getId(), future);
-        mHander.sendEmptyMessage(MSG_SUBMITTASK);
+        mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
         return true;
     }
 
@@ -292,17 +263,15 @@ public class DownloadManager {
             return null;
         }
         /**读取数据库task，不轮询提交任务问题 xingzhaolei 2016-11-4 17:05:13 start*/
-        mHander.removeMessages(MSG_SUBMITTASK);
-        mHander.sendEmptyMessage(MSG_SUBMITTASK);
+        mHander.removeMessages(MSG_SUBMIT_TASK);
+        mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
         /**读取数据库task，不轮询提交任务问题 xingzhaolei 2016-11-4 17:05:13 end*/
         DownloadTask downloadTask = getCurrentTaskById(taskId);
         if (downloadTask != null) {
             if (downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
                 downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
                 Future future = mExecutorService.submit(downloadTask);
-//                mFutureMap.put(downloadTask.getId(), future);
             }
-
         } else {
             downloadTask = getDBTaskById(taskId);
             if (downloadTask != null) {
@@ -310,15 +279,11 @@ public class DownloadManager {
                 /**修复数据库获取task 无法resume 问题  xingzl 2016-11-4 16:51:58 start*/
                 downloadTask.setDownloadDao(mDownloadDao);
                 downloadTask.setHttpClient(mOkHttpClient);
-                try {
-                    mWorkTaskQueue.put(taskId);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                /**修复数据库获取task 无法resume 问题  xingzl 2016-11-4 16:51:58 end*/
-                mCurrentTaskList.put(taskId, downloadTask);
+                mTaskManager.put(downloadTask);
+//                mWorkTaskQueue.offer(taskId);
+//                /**修复数据库获取task 无法resume 问题  xingzl 2016-11-4 16:51:58 end*/
+//                mCurrentTaskList.put(taskId, downloadTask);
                 Future future = mExecutorService.submit(downloadTask);
-//                mFutureMap.put(downloadTask.getId(), future);
             }
         }
         return downloadTask;
@@ -350,12 +315,10 @@ public class DownloadManager {
      * @param task
      */
     public void cancel(DownloadTask task) {
-        task.cancel();
-        mCurrentTaskList.remove(task.getId());
-        mWorkTaskQueue.remove(task.getId());
-//        mFutureMap.remove(task.getId());
         task.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
         mDownloadDao.deleteByKey(task.getId());
+        task.cancel();
+        mTaskManager.remove(task.getId());
     }
 
     /**
@@ -433,41 +396,61 @@ public class DownloadManager {
             for (DownloadTask task : list) {
                 if (!currentList.contains(task)) {
                     currentList.add(task);
-                    /**从数据库查到的数据直接加入任务队列中，免去下载页每次resume（taskid）时，
-                    需重新更新列表数据问题。会不会引起其他问题待确认。 xingzl start 2016-11-4 16:42:17*/
-                    try {
-                        mWorkTaskQueue.put(task.getId());
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    task.setDownloadDao(mDownloadDao);
-                    task.setHttpClient(mOkHttpClient);
-                    currentTaskMap.put(task.getId(),task);
-                    /**从数据库查到的数据直接加入任务队列中 免去下载页每次resume（taskid）时，
-                     需重新更新列表数据问题。xingzl start*/
                 }
             }
         } else {
             if (list != null) {
                 currentList.addAll(list);
-                /**从数据库查到的数据直接加入任务队列中，免去下载页每次resume（taskid）时，
-                需重新更新列表数据问题。 xingzl start 2016-11-4 16:42:23*/
-
-                for (DownloadTask task: list) {
-                    try {
-                        mWorkTaskQueue.put(task.getId());
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    task.setDownloadDao(mDownloadDao);
-                    task.setHttpClient(mOkHttpClient);
-                    currentTaskMap.put(task.getId(),task);
-                }
-                /**从数据库查到的数据直接加入任务队列中，免去下载页每次resume（taskid）时，
-                需重新更新列表数据问题。 xingzl end*/
             }
         }
         return currentList;
+    }
+
+    /**
+     * 恢复所有任务
+     *
+     * @return
+     */
+    public void resumeAllTasks() {
+        /*********************是否需要考虑内存中的任务队列******************************/
+//        List<DownloadTask> list = loadAllDownloadTaskFromDB();
+//        Map<String, DownloadTask> currentTaskMap = getCurrentTaskList();
+//        List<DownloadTask> currentList = new ArrayList<DownloadTask>();
+//        if (currentTaskMap != null) {
+//            currentList.addAll(currentTaskMap.values());
+//        }
+//        if (!currentList.isEmpty() && list != null) {
+//            for (DownloadTask task : list) {
+//                if (!currentList.contains(task)) {
+//                    currentList.add(task);
+//                    task.setDownloadDao(mDownloadDao);
+//                    task.setHttpClient(mOkHttpClient);
+//                    currentTaskMap.put(task.getId(),task);
+//                    mTaskManager.put(task);
+//                    /**从数据库查到的数据直接加入任务队列中 免去下载页每次resume（taskid）时，
+//                     需重新更新列表数据问题。xingzl start*/
+//                }
+//            }
+//        } else {
+//            if (list != null) {
+//                currentList.addAll(list);
+//                for (DownloadTask task: list) {
+//                    mTaskManager.put(task);
+//                    task.setDownloadDao(mDownloadDao);
+//                    task.setHttpClient(mOkHttpClient);
+//                    currentTaskMap.put(task.getId(),task);
+//                }
+//            }
+//        }
+        /***************************************************/
+        List<DownloadTask> list = loadAllDownloadTaskFromDB();
+        if (list != null) {
+            for (DownloadTask task : list) {
+                task.setDownloadDao(mDownloadDao);
+                task.setHttpClient(mOkHttpClient);
+                mTaskManager.put(task);
+            }
+        }
     }
 
     /**
@@ -477,8 +460,9 @@ public class DownloadManager {
      * @return
      */
     public DownloadTask getCurrentTaskById(String taskId) {
-        return mCurrentTaskList.get(taskId);
+        return mTaskManager.get(taskId);
     }
+
 
     /**
      * 通过taskId获取任务
@@ -513,20 +497,8 @@ public class DownloadManager {
         /**移除所有消息  xingzhaolei 2016-11-04 17:01:58 start*/
         mHander.removeCallbacksAndMessages(null);
         /**移除所有消息  xingzhaolei 2016-11-04 17:01:58 end*/
-        for (String key : mCurrentTaskList.keySet()) {
-            System.out.println("key= " + key + " and value= " + mCurrentTaskList.get(key));
-            mCurrentTaskList.get(key).removeAllDownloadListener();
-            mCurrentTaskList.get(key).pause();
-        }
-        mCurrentTaskList.clear();
-        mCurrentTaskList = null;
 
-//        for (String key : mFutureMap.keySet()) {
-//            System.out.println("key= " + key + " and value= " + mFutureMap.get(key));
-//            mFutureMap.get(key).cancel(true);
-//        }
-//        mFutureMap.clear();
-//        mFutureMap = null;
+        mTaskManager.release();
 
         mExecutorService.shutdownNow();
         mExecutorService = null;
