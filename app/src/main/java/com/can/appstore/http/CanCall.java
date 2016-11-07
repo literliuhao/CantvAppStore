@@ -26,12 +26,12 @@ public class CanCall<T> {
             public void onResponse(Call<T> call, Response<T> response) {
                 if (response.isSuccessful()) {
                     try {
-                        canCallback.onResponse(call, response);
+                        canCallback.onResponse(CanCall.this, response);
                     } catch (Exception e) {
-                        canCallback.onFailure(call, CanErrorWrapper.newInstance(e, true));
+                        canCallback.onFailure(CanCall.this, CanErrorWrapper.newInstance(e, true));
                     }
                 } else {
-                    canCallback.onFailure(call, CanErrorWrapper.newInstance(response.code()));
+                    canCallback.onFailure(CanCall.this, CanErrorWrapper.newInstance(response.code()));
                 }
             }
 
