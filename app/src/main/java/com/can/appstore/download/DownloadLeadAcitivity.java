@@ -79,7 +79,7 @@ public class DownloadLeadAcitivity extends AppCompatActivity {
 
 
     private void initTest() {
-        String url1="http://app.znds.com/down/20160909/dsj2.0-2.9.1-dangbei.jpg";
+        String url1="http://app.znds.com/down/20160909/dsj2.0-2.9.1-dangbei.apk";
         String url2="http://img-download.pchome.net/download/1k0/sc/3n/ob5ypk-1he9.jpg";
         String url3="http://img-download.pchome.net/download/1k0/sc/3n/ob5ypk-os5.jpg";
         String url4="http://img-download.pchome.net/download/1k0/mp/36/o7vbrz-hsf.jpg";
