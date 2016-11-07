@@ -10,6 +10,7 @@ import com.can.appstore.entity.PopularWord;
 import com.can.appstore.entity.Ranking;
 import com.can.appstore.entity.Result;
 import com.can.appstore.entity.SpecialTopic;
+import com.can.appstore.http.CanCall;
 
 import java.util.List;
 
@@ -26,37 +27,37 @@ public interface ApiService {
      * 专题列表
      */
     @GET("special/speciallist")
-    Call<ListResult<SpecialTopic>> getSpecialTopics();
+    CanCall<ListResult<SpecialTopic>> getSpecialTopics();
 
     /**
      * 专题详情
      */
     @GET("start/specialcontent")
-    Call<Result<SpecialTopic>> getSpecialTopic(@Query("specialId") String specialId);
+    CanCall<Result<SpecialTopic>> getSpecialTopic(@Query("specialId") String specialId);
 
     /**
      * 活动详情
      */
     @GET("start/activedetail")
-    Call<Result<Activity>> getActivityInfo(@Query("activeId") String activeId);
+    CanCall<Result<Activity>> getActivityInfo(@Query("activeId") String activeId);
 
     /**
      * 排行榜
      */
     @GET("start/rank")
-    Call<ListResult<Ranking>> getAppsRankingList();
+    CanCall<ListResult<Ranking>> getAppsRankingList();
 
     /**
      * 排行榜列表
      */
     @GET("start/ranklist")
-    Call<Result<AppInfoContainer>> getAppsRanking(@Query("rankId") String rankingId, @Query("pageNumber") int page, @Query("pageSize") int pageSize);
+    CanCall<Result<AppInfoContainer>> getAppsRanking(@Query("rankId") String rankingId, @Query("pageNumber") int page, @Query("pageSize") int pageSize);
 
     /**
      * 应用列表
      */
     @GET("topic/topiclist")
-    Call<Result<AppInfoContainer>> getAppinfos(@Query("topicId") String topicId,@Query("typeId") String typeId, @Query("pageNumber") int page, @Query("pageSize") int pageSize);
+    CanCall<Result<AppInfoContainer>> getAppinfos(@Query("topicId") String topicId,@Query("typeId") String typeId, @Query("pageNumber") int page, @Query("pageSize") int pageSize);
 
     /**
      * 获取应用详情
@@ -64,19 +65,19 @@ public interface ApiService {
      * @param appId 应用的id
      */
     @GET("application/appdetail")
-    Call<Result<AppInfo>> getAppInfo(@Query("appId") String appId, @Query("topicId") String topicId);
+    CanCall<Result<AppInfo>> getAppInfo(@Query("appId") String appId, @Query("topicId") String topicId);
 
     /**
      * 获取搜索页推荐
      */
     @GET("start/hotcontent")
-    Call<ListResult<AppInfo>> recommend();
+    CanCall<ListResult<AppInfo>> recommend();
 
     /**
      * 获取搜索页热词
      */
     @GET
-    Call<ListResult<PopularWord>> getHotKeywords();
+    CanCall<ListResult<PopularWord>> getHotKeywords();
 
     /**
      * 搜索接口
@@ -84,13 +85,13 @@ public interface ApiService {
      * @param key 搜索关键字
      */
     @GET("start/search")
-    Call<ListResult<AppInfo>> search(@Query("key") String key);
+    CanCall<ListResult<AppInfo>> search(@Query("key") String key);
 
     /**
      * 获取隐藏应用列表
      */
     @GET
-    Call<ListResult<String>> getHiddenApps();
+    CanCall<ListResult<String>> getHiddenApps();
 
     /**
      * 检查更新
@@ -98,23 +99,23 @@ public interface ApiService {
      * @param apps 待检测APP列表
      */
     @POST
-    Call<ListResult<AppInfo>> checkUpdate(@Body List<AppInfo> apps);
+    CanCall<ListResult<AppInfo>> checkUpdate(@Body List<AppInfo> apps);
 
     /**
      * 自升级检查
      */
     @GET
-    Call<Result<AppInfo>> checkUpdateSelf();
+    CanCall<Result<AppInfo>> checkUpdateSelf();
 
     /**
      * 首页导航
      */
-    @GET
-    Call<Result<Navigation>> getNavigations();
+    @GET("homepage/homepage")
+    CanCall<Result<Navigation>> getNavigations();
 
     /**
      * 获取消息
      */
     @GET
-    Call<Result<MessageContainer>> getMessages();
+    CanCall<Result<MessageContainer>> getMessages();
 }
