@@ -37,7 +37,7 @@ public class CanCall<T> {
 
             @Override
             public void onFailure(Call<T> call, Throwable t) {
-
+                canCallback.onFailure(CanCall.this, CanErrorWrapper.newInstance(t, false));
             }
         });
     }
