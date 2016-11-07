@@ -6,23 +6,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.util.SparseArray;
-import android.widget.CheckBox;
 
 import com.can.appstore.R;
-import com.can.appstore.appdetail.AppInfo;
 import com.can.appstore.appdetail.AppUtils;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
 
 import cn.can.tvlib.ui.widgets.LoadingDialog;
+import cn.can.tvlib.utils.PackageUtil;
+import cn.can.tvlib.utils.StringUtils;
+import cn.can.tvlib.utils.SystemUtil;
 
 /**
  * Created by JasonF on 2016/10/17.
@@ -32,7 +26,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     private static final String TAG = "UninstallManagerPresen";
     private UninstallManagerContract.View mView;
     private Context mContext;
-    private static List<AppInfo> mAppInfoList;
+    private static List<PackageUtil.AppInfo> mAppInfoList;
     private AppInstallReceiver mInstalledReceiver;
     private LoadingDialog mLoadingDialog;
     private BroadcastReceiver mHomeReceivcer;
@@ -56,7 +50,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
                 if (mAppInfoList != null) {
                     mAppInfoList.clear();
                 }
-                mAppInfoList = AppUtils.findAllInstallApkInfo(mContext);
+                mAppInfoList = PackageUtil.findAllThirdPartyApps(mContext, null);
                 return null;
             }
 
@@ -109,11 +103,11 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
      * @return
      */
     public void calculateCurStoragePropgress() {
-        long freeSize = AppUtils.getSDAvaliableSize();
-        long totalSize = AppUtils.getSDTotalSize();
+        long freeSize = SystemUtil.getSDCardAvailableSpace();
+        long totalSize = SystemUtil.getSDCardTotalSpace();
         int progress = (int) ((freeSize * 100) / totalSize);
         Log.d(TAG, "freeSize : " + freeSize + "  totalSize : " + totalSize + "  progress : " + progress);
-        String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + AppUtils.FormetFileSize(freeSize);
+        String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + StringUtils.formatFileSize(freeSize, false);
         mView.showCurStorageProgress(progress, freeStorage);
     }
 
@@ -184,7 +178,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
 
     private void refreshItemInListPosition(String packageName) {
         for (int j = 0; j < mAppInfoList.size(); j++) {
-            if (packageName.equals(mAppInfoList.get(j).getPackageName())) {
+            if (packageName.equals(mAppInfoList.get(j).packageName)) {
                 mAppInfoList.remove(j);
                 mView.loadAllAppInfoSuccess(mAppInfoList);
             }

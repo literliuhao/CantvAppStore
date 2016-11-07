@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
-import com.can.appstore.appdetail.AppInfo;
 import com.can.appstore.appdetail.AppUtils;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.uninstallmanager.adapter.UninstallManagerAdapter;
@@ -25,8 +24,7 @@ import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
-
-import static com.can.appstore.R.drawable.shape_bg_batch_uninstall_bt;
+import cn.can.tvlib.utils.PackageUtil;
 
 /**
  * 本地卸载管理页面
@@ -40,7 +38,6 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
     private CanRecyclerView.LayoutManager mLayoutManager;
     private FocusMoveUtil mFocusMoveUtil;
     private FocusScaleUtil mScaleUtil;
-    //    private List<AppInfo> mInfoList = new ArrayList<AppInfo>();
     private UninstallManagerAdapter mUninstallManagerAdapter;
     private boolean focusSearchFailed;
     private View mFocusedListChild;
@@ -197,7 +194,7 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
     }
 
     @Override
-    public void loadAllAppInfoSuccess(List<AppInfo> infoList) {
+    public void loadAllAppInfoSuccess(List<PackageUtil.AppInfo> infoList) {
         if (mUninstallManagerAdapter == null) {
             mUninstallManagerAdapter = new UninstallManagerAdapter(UninstallManagerActivity.this, infoList);
             addRecyclerViewListener();
@@ -282,15 +279,15 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
             @Override
             public void onSelectChanged(int position, boolean selected, Object data) {
                 Log.d(TAG, "onSelectChanged = " + position + ",    " + selected);
-                AppInfo info = (AppInfo) data;
+                PackageUtil.AppInfo info = (PackageUtil.AppInfo) data;
                 if (mSelectPackageName == null) {
                     mSelectPackageName = new ArrayList<String>();
                 }
                 if (selected) {
-                    mSelectPackageName.add(info.getPackageName());
+                    mSelectPackageName.add(info.packageName);
                 } else {
                     for (int i = 0; i < mSelectPackageName.size(); i++) {
-                        if (mSelectPackageName.get(i).equals(info.getPackageName())) {
+                        if (mSelectPackageName.get(i).equals(info.packageName)) {
                             mSelectPackageName.remove(i);
                         }
                     }
@@ -303,9 +300,9 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
             @Override
             public void onClick(View view, int position, Object data) {
                 //进入普通点击事件  点击弹出卸载对话框
-                AppInfo info = (AppInfo) data;
-                Log.d(TAG, "onSelectChanged = " + position + "packageName" + info.getPackageName());
-                AppUtils.uninstallpkg(UninstallManagerActivity.this, info.getPackageName());
+                PackageUtil.AppInfo info = (PackageUtil.AppInfo) data;
+                Log.d(TAG, "onSelectChanged = " + position + "packageName" + info.packageName);
+                AppUtils.uninstallpkg(UninstallManagerActivity.this, info.packageName);
             }
         });
 

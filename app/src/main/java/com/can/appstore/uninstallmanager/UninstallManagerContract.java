@@ -1,8 +1,8 @@
 package com.can.appstore.uninstallmanager;
 
-import com.can.appstore.appdetail.AppInfo;
-
 import java.util.List;
+
+import cn.can.tvlib.utils.PackageUtil;
 
 /**
  * Created by JasonF on 2016/10/17.
@@ -25,7 +25,7 @@ public interface UninstallManagerContract {
 
         void onClickHomeKey();
 
-        void loadAllAppInfoSuccess(List<AppInfo> infoList);
+        void loadAllAppInfoSuccess(List<PackageUtil.AppInfo> infoList);
 
         void showCurStorageProgress(int progress, String storage);
 

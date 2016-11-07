@@ -92,7 +92,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     private void initDownloadButtonStatus() {
         DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(Url));
-        if (AppUtils.isAppInstalled(mContext, "com.dangbeimarket")) {
+        if (ApkUtils.isAvailable(mContext, "com.dangbeimarket")) {
             mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_RUN, DOWNLOAD_INIT_PROGRESS);
             return;
         }

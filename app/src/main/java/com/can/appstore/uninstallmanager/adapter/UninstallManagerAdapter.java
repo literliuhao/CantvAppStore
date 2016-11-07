@@ -9,24 +9,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.can.appstore.R;
-import com.can.appstore.appdetail.AppInfo;
-import com.can.appstore.appdetail.AppUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
+import cn.can.tvlib.utils.PackageUtil;
+import cn.can.tvlib.utils.StringUtils;
 
 /**
  * Created by JasonF on 2016/10/13.
  */
 
-public class UninstallManagerAdapter extends CanRecyclerViewAdapter<AppInfo> {
-    private List<AppInfo> mInfos = new ArrayList<AppInfo>();
+public class UninstallManagerAdapter extends CanRecyclerViewAdapter<PackageUtil.AppInfo> {
+    private List<PackageUtil.AppInfo> mInfos = new ArrayList<PackageUtil.AppInfo>();
     private Context mContext;
     private LayoutInflater mInflater;
 
-    public UninstallManagerAdapter(Context context, List<AppInfo> datas) {
+    public UninstallManagerAdapter(Context context, List<PackageUtil.AppInfo> datas) {
         super(datas);
         mContext = context;
         mInfos = datas;
@@ -41,12 +41,12 @@ public class UninstallManagerAdapter extends CanRecyclerViewAdapter<AppInfo> {
     }
 
     @Override
-    protected void bindContentData(AppInfo mDatas, RecyclerView.ViewHolder holder, int position) {
-        AppInfo appInfo = mInfos.get(position);
-        ((UninstallViewHolder) holder).imgIcon.setImageDrawable(appInfo.getAppIcon());
-        ((UninstallViewHolder) holder).tvName.setText(appInfo.getAppName());
-        ((UninstallViewHolder) holder).tvSize.setText(AppUtils.FormetFileSize(appInfo.getSize()));
-        ((UninstallViewHolder) holder).tvVersion.setText(appInfo.getVersionName());
+    protected void bindContentData(PackageUtil.AppInfo mDatas, RecyclerView.ViewHolder holder, int position) {
+        PackageUtil.AppInfo appInfo = mInfos.get(position);
+        ((UninstallViewHolder) holder).imgIcon.setImageDrawable(appInfo.appIcon);
+        ((UninstallViewHolder) holder).tvName.setText(appInfo.appName);
+        ((UninstallViewHolder) holder).tvSize.setText(StringUtils.formatFileSize(appInfo.size, false));
+        ((UninstallViewHolder) holder).tvVersion.setText(appInfo.versionName);
     }
 
     class UninstallViewHolder extends TagViewHolder {

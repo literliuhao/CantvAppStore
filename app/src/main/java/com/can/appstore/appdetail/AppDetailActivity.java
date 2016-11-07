@@ -34,6 +34,8 @@ import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
+import cn.can.tvlib.utils.StringUtils;
+import cn.can.tvlib.utils.SystemUtil;
 
 /**
  * Created by JasonF on 2016/10/13.
@@ -507,7 +509,7 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
         mAppSize.setText(String.format(getResources().getString(R.string.detail_app_size), "17.89M"));
         mAppUodateDate.setText(String.format(getResources().getString(R.string.detail_app_update_date), "2012-12-12"));
         mAppDownloadCount.setText(String.format(getResources().getString(R.string.detail_app_downlaod_count), "10000+"));
-        mAppFreeStroage.setText(String.format(getResources().getString(R.string.detail_app_free_stroage), AppUtils.FormetFileSize(AppUtils.getSDAvaliableSize())));
+        mAppFreeStroage.setText(String.format(getResources().getString(R.string.detail_app_free_stroage), StringUtils.formatFileSize(SystemUtil.getSDCardAvailableSpace(), false)));
         mTvAppIntroduc.setText("应用简介 : 在外面吃饭，老公和朋友喝酒喝的热火朝天的，看着满头大汗的他，顿时心疼的给他擦了擦脸上的汗渍，就在大家都说某某你老婆对你真好的时候，由于我的指甲太长，不小心把老公眼角那儿抠掉了一块皮");
         mTvAddFuntion.setText("新加功能 : 为什么秀恩爱通常要选择在中午？ 回复：因为早晚都会遭到报应的！");
     }
@@ -831,6 +833,7 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
     protected void onDestroy() {
         super.onDestroy();
         mFocusMoveUtil.release();
+        mAppDetailPresenter.release();
         mIvTabLine.clearAnimation();
         dismissIntroduceDialog();
         isUpdateButtonShow = false;
