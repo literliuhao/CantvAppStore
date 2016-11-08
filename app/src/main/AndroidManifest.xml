@@ -36,7 +36,7 @@
             android:theme="@style/AppTheme.Translucent.FadeIn"
             >
         </activity>
-        <activity android:name=".subject.SubjectActivity"
+        <activity android:name=".specialtopic.SpecialActivity"
             android:theme="@style/AppTheme.Translucent.FadeIn">
         </activity>
         <activity android:name=".applist.AppListActivity">

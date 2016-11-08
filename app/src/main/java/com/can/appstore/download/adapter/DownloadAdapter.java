@@ -62,52 +62,9 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
         viewHolder.appContentLayout.setTag(viewHolder);
         viewHolder.appControlBtn.setTag(viewHolder);
         viewHolder.appDeleteBtn.setTag(viewHolder);
-        refreshDownloadStatus(task.getDownloadStatus(),viewHolder.appDownloadStatusImgVi,viewHolder.appDownloadStatusTv);
-        refreshControlStatus(task.getDownloadStatus(),viewHolder.appControlBtn);
-    }
-    private static void refreshControlStatus(int downloadStatus,Button controlButton){
-        switch (downloadStatus){
-            case DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING:
-            case DownloadStatus.DOWNLOAD_STATUS_INIT:
-            case DownloadStatus.DOWNLOAD_STATUS_PREPARE:
-            case DownloadStatus.DOWNLOAD_STATUS_START:
-                controlButton.setText("暂停");
-                break;
-            case DownloadStatus.DOWNLOAD_STATUS_PAUSE:
-                controlButton.setText("继续");
-                break;
-            case DownloadStatus.DOWNLOAD_STATUS_ERROR:
-                controlButton.setText("重试");
-                break;
-        }
+        viewHolder.refreshStatus();
     }
 
-    private static void refreshDownloadStatus(int downloadStatus, ImageView statusImgvi, TextView statusText){
-        switch (downloadStatus){
-            case DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING:
-                statusImgvi.setImageResource(R.mipmap.icon_downloading);
-                statusText.setText("下载中");
-                break;
-            case DownloadStatus.DOWNLOAD_STATUS_PAUSE:
-                statusImgvi.setImageResource(R.mipmap.icon_download_pause);
-                statusText.setText("已暂停");
-                break;
-            case DownloadStatus.DOWNLOAD_STATUS_INIT:
-            case DownloadStatus.DOWNLOAD_STATUS_PREPARE:
-            case DownloadStatus.DOWNLOAD_STATUS_START:
-                statusImgvi.setImageResource(R.mipmap.icon_download_wait);
-                statusText.setText("等待中");
-                break;
-            case DownloadStatus.DOWNLOAD_STATUS_ERROR:
-                statusImgvi.setImageResource(R.mipmap.icon_download_fail);
-                statusText.setText("失败");
-                break;
-            case DownloadStatus.DOWNLOAD_STATUS_COMPLETED:
-                statusImgvi.setImageResource(R.mipmap.icon_download_finish);
-                statusText.setText("下载成功");
-                break;
-        }
-    }
 
 
     /**
@@ -122,15 +79,106 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
 
         DownloadTask downloadTask;
         ItemEventListener eventListener;
-        int position=-1;
         private DownloadListener downloadListener;
+        private Runnable showControlViewRunnable,refreshStatusRunnable;
+
+        int position=-1;
 
         public DownloadViewHolder(View itemView) {
             super(itemView);
             initView();
+            initRunnable();
             downloadListener=new DownloadListener();
             Log.i(TAG, "DownloadViewHolder: structor");
         }
+        private void initRunnable(){
+
+            showControlViewRunnable=new Runnable() {
+                @Override
+                public void run() {
+                    appControlLayout.setVisibility(View.VISIBLE);
+                }
+            };
+
+            refreshStatusRunnable=new Runnable() {
+                @Override
+                public void run() {
+                    refreshControlButtonStatus();
+                    refreshDownloadStatus();
+                }
+            };
+        }
+        private void showControlViewDelay(){
+            itemView.postDelayed(showControlViewRunnable,50);
+        }
+        public void hidecotrolView(){
+            itemView.removeCallbacks(showControlViewRunnable);
+            appControlLayout.setVisibility(View.GONE);
+        }
+        /**
+         * 更新控制按钮状态
+         */
+        private void refreshControlButtonStatus(){
+            if(downloadTask==null){
+                return;
+            }
+            switch (downloadTask.getDownloadStatus()){
+                case DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING:
+                case DownloadStatus.DOWNLOAD_STATUS_INIT:
+                case DownloadStatus.DOWNLOAD_STATUS_PREPARE:
+                case DownloadStatus.DOWNLOAD_STATUS_START:
+                    appControlBtn.setText("暂停");
+                    break;
+                case DownloadStatus.DOWNLOAD_STATUS_PAUSE:
+                    appControlBtn.setText("继续");
+                    break;
+                case DownloadStatus.DOWNLOAD_STATUS_ERROR:
+                    appControlBtn.setText("重试");
+                    break;
+                case DownloadStatus.DOWNLOAD_STATUS_COMPLETED:
+                    appControlBtn.setText("安装");
+                    break;
+            }
+        }
+        /**
+         * 更新状态图标 进度 。。。。
+         */
+        private void refreshDownloadStatus(){
+            if(downloadTask==null){
+                return;
+            }
+            switch (downloadTask.getDownloadStatus()){
+                case DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING:
+                    appDownloadStatusImgVi.setImageResource(R.mipmap.icon_downloading);
+                    appDownloadStatusTv.setText("下载中");
+                    break;
+                case DownloadStatus.DOWNLOAD_STATUS_PAUSE:
+                    appDownloadStatusImgVi.setImageResource(R.mipmap.icon_download_pause);
+                    appDownloadStatusTv.setText("已暂停");
+                    break;
+                case DownloadStatus.DOWNLOAD_STATUS_INIT:
+                case DownloadStatus.DOWNLOAD_STATUS_PREPARE:
+                case DownloadStatus.DOWNLOAD_STATUS_START:
+                    appDownloadStatusImgVi.setImageResource(R.mipmap.icon_download_wait);
+                    appDownloadStatusTv.setText("等待中");
+                    break;
+                case DownloadStatus.DOWNLOAD_STATUS_ERROR:
+                    appDownloadStatusImgVi.setImageResource(R.mipmap.icon_download_fail);
+                    appDownloadStatusTv.setText("失败");
+                    break;
+                case DownloadStatus.DOWNLOAD_STATUS_COMPLETED:
+                    appDownloadStatusImgVi.setImageResource(R.mipmap.icon_download_finish);
+                    appDownloadStatusTv.setText("下载成功");
+                    break;
+            }
+            appDownloadProgressBar.setProgress((int)downloadTask.getPercent());
+            appSizeTv.setText(StringUtils.formatFileSize(downloadTask.getCompletedSize(),false)+
+                    "/"+StringUtils.formatFileSize(downloadTask.getTotalSize(),false));
+        }
+        public void refreshStatus(){
+            itemView.post(refreshStatusRunnable);
+        }
+
         private void initView() {
             appNameTv= (TextView) itemView.findViewById(R.id.download_item_title_tv);
             appSizeTv= (TextView) itemView.findViewById(R.id.download_item_size_tv);
@@ -153,6 +201,8 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
                 public void onViewDetachedFromWindow(View v) {
                     Log.i(TAG, "onViewDetachedFromWindow: ");
                     downloadTask.removeDownloadListener(downloadListener);
+                    v.removeCallbacks(showControlViewRunnable);
+                    v.removeCallbacks(refreshStatusRunnable);
                 }
             });
         }
@@ -163,60 +213,45 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
                 downloadTask.addDownloadListener(downloadListener);
             }
         }
-
-        private class DownloadListener implements DownloadTaskListener{
-
+        private class DownloadListener implements DownloadTaskListener {
             @Override
             public void onPrepare(DownloadTask downloadTask) {
                 Log.i(TAG, "onPrepare: id="+downloadTask.getId());
-                refreshStatus(downloadTask);
-
+                refreshStatus();
             }
 
             @Override
             public void onStart(DownloadTask downloadTask) {
                 Log.i(TAG, "onPrepare: compliteSize="+downloadTask.getCompletedSize());
-                refreshStatus(downloadTask);
+                refreshStatus();
             }
 
             @Override
             public void onDownloading(DownloadTask downloadTask) {
                 Log.i(TAG, "onDownloading: downloadTastSize= "+downloadTask.getCompletedSize());
-                refreshStatus(downloadTask);
+                refreshStatus();
             }
             @Override
             public void onPause(DownloadTask downloadTask) {
                 Log.i(TAG, "onPause: ");
-                refreshStatus(downloadTask);
+                refreshStatus();
             }
             @Override
             public void onCancel(DownloadTask downloadTask) {
+                refreshStatus();
                 Log.i(TAG, "onCancel: ");
             }
 
             @Override
             public void onCompleted(DownloadTask downloadTask) {
                 Log.i(TAG, "onCompleted: ");
-                refreshStatus(downloadTask);
+                refreshStatus();
             }
 
             @Override
             public void onError(DownloadTask downloadTask, int errorCode) {
                 Log.i(TAG, "onError: ");
-                refreshStatus(downloadTask);
-            }
-
-            private void refreshStatus(final DownloadTask task){
-                itemView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshDownloadStatus(task.getDownloadStatus(),appDownloadStatusImgVi,appDownloadStatusTv);
-                        appDownloadProgressBar.setProgress((int)downloadTask.getPercent());
-                        appSizeTv.setText(StringUtils.formatFileSize(downloadTask.getCompletedSize(),false)+
-                                "/"+StringUtils.formatFileSize(downloadTask.getTotalSize(),false));
-                        refreshControlStatus(task.getDownloadStatus(),appControlBtn);
-                    }
-                });
+                refreshStatus();
             }
         }
     }
@@ -238,6 +273,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
      * item  View.OnFocusChangeListener,View.OnClickListener的实现类
      */
     public class ItemEventListener implements View.OnFocusChangeListener,View.OnClickListener{
+
         @Override
         public void onClick(View v) {
             DownloadViewHolder holder= (DownloadViewHolder) v.getTag();
@@ -252,7 +288,6 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
             }else if(v.getId()==holder.appControlBtn.getId()){
 
                 switch (holder.downloadTask.getDownloadStatus()){
-
                     case DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING:
                     case DownloadStatus.DOWNLOAD_STATUS_INIT:
                     case DownloadStatus.DOWNLOAD_STATUS_PREPARE:
@@ -282,8 +317,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
                         break;
                 }
                 //考虑到未执行的任务从init状态调pause状态时不会回掉，故此时手动刷新一次UI
-                refreshControlStatus(holder.downloadTask.getDownloadStatus(),holder.appControlBtn);
-                refreshDownloadStatus(holder.downloadTask.getDownloadStatus(),holder.appDownloadStatusImgVi,holder.appDownloadStatusTv);
+                holder.refreshStatus();
                 if(mOnItemEventListener!=null){
                     mOnItemEventListener.onControlButtonClick(v,holder.position,holder.downloadTask);
                 }
@@ -305,11 +339,11 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
             if(!holder.appContentLayout.hasFocus()
                     &&!holder.appDeleteBtn.hasFocus()
                     &&!holder.appControlBtn.hasFocus()){
-                holder.appControlLayout.setVisibility(View.GONE);
+                holder.hidecotrolView();
             }
             if(v.getId()==holder.appContentLayout.getId()){
                 if(hasFocus){
-                    holder.appControlLayout.setVisibility(View.VISIBLE);
+                    holder.showControlViewDelay();
                     holder.appContentLayout.setSelected(true);
                 }else{
                     holder.appContentLayout.setSelected(false);

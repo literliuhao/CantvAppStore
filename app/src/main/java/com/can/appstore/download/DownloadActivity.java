@@ -95,7 +95,6 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
         });
 
     }
-
     private void initData() {
         pauseAllTaskString=getString(R.string.download_pause_all);
         resumeAllTaskString=getString(R.string.download_resume_all);

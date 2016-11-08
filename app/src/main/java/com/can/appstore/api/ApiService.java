@@ -14,7 +14,6 @@ import com.can.appstore.http.CanCall;
 
 import java.util.List;
 
-import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
@@ -27,7 +26,7 @@ public interface ApiService {
      * 专题列表
      */
     @GET("special/speciallist")
-    CanCall<ListResult<SpecialTopic>> getSpecialTopics();
+    CanCall<ListResult<SpecialTopic>> getSpecialTopics(@Query("pageNumber") int page, @Query("pageSize") int pageSize);
 
     /**
      * 专题详情

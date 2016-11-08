@@ -2,7 +2,13 @@
     <string name="app_name">CANAppStore</string>
     <string name="page_row_template" formatted="false">%d / %d</string>
     <string name="serach">"搜索"</string>
+    <string name="click_retry">点击重试</string>
+    <string name="network_error">网络访问错误</string>
+    <string name="no_data">没有数据!亲！</string>
+
+    <!--专题-->
     <string name="special">"专题"</string>
+    <!--下载页-->
     <string name="download_pause_all">全部暂停</string>
     <string name="download_resume_all">全部继续</string>
 
