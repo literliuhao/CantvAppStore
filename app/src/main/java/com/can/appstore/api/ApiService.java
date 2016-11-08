@@ -98,7 +98,7 @@ public interface ApiService {
      *
      * @param apps 待检测APP列表
      */
-    @POST
+    @POST("application/updateapp")
     CanCall<ListResult<AppInfo>> checkUpdate(@Body List<AppInfo> apps);
 
     /**

@@ -63,17 +63,20 @@ public class CanErrorWrapper {
         if (o != null) {
             if (o instanceof Result) {
                 Result result = (Result) o;
-                if (result.getStatus() != 0) {
-                    CanErrorWrapper canErrorWrapper = new CanErrorWrapper();
-                    canErrorWrapper.reason = result.getMessage();
-                    return canErrorWrapper;
-                }
+                return checkStatus(result.getStatus(), result.getMessage());
             } else if (o instanceof ListResult) {
                 ListResult listResult = (ListResult) o;
-                CanErrorWrapper canErrorWrapper = new CanErrorWrapper();
-                canErrorWrapper.reason = listResult.getMessage();
-                return canErrorWrapper;
+                return checkStatus(listResult.getStatus(), listResult.getMessage());
             }
+        }
+        return null;
+    }
+
+    static CanErrorWrapper checkStatus(int status, String message) {
+        if (status != 0) {
+            CanErrorWrapper canErrorWrapper = new CanErrorWrapper();
+            canErrorWrapper.reason = message;
+            return canErrorWrapper;
         }
         return null;
     }
