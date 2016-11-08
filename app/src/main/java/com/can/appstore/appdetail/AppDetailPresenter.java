@@ -22,7 +22,6 @@ import cn.can.tvlib.utils.ToastUtils;
 /**
  * Created by JasonF on 2016/10/25.
  */
-
 public class AppDetailPresenter implements AppDetailContract.Presenter, DownloadTaskListener {
     public final static String TAG = "AppDetailPresenter";
     public final static int DOWNLOAD_BUTTON_STATUS_PREPARE = 1;//下载
@@ -39,8 +38,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     private AppDetailContract.View mView;
     private DownloadManager mDownloadManager;
     private BroadcastReceiver mHomeReceivcer;
-    private AppInstallReceiver mInstalledReceiver;
-    public static String Url = "http://app.znds.com/down/20160909/dsj2.0-2.9.1-dangbei.apk";
+    private AppDetailPresenter.AppInstallReceiver mInstalledReceiver;
+    public static String Url = "http://ams.ott.cibntv.net/can/20160506/laizi_tv_tjmj.apk";
     private boolean isShowUpdateButton = false;
     private LoadingDialog mLoadingDialog;
     private String mAppId = "";
@@ -84,10 +83,10 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {
                 mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
             }
+            addDownlaodListener();
         } else {
             mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, DOWNLOAD_INIT_PROGRESS);
         }
-        addDownlaodListener();
     }
 
     private void initDownloadButtonStatus() {
@@ -115,10 +114,10 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {
                 mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
             }
+            addDownlaodListener();
         } else {
             mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, DOWNLOAD_INIT_PROGRESS);
         }
-        addDownlaodListener();
     }
 
     /**
@@ -183,7 +182,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             //                }
             //            }
         }
-
         if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_INIT || downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PREPARE) {
             //            DownloadTask Task = new DownloadTask(Url);
             //            Tsk.addDownloadTask(mDownloadTask, AppDetailPresenter.this);
@@ -201,7 +199,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             clickRefreshButtonStatus(isUpdateButton, per);
             mDownloadManager.resume(MD5.MD5(Url));
         } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {
-            if (downlaodErrorCode == DownloadTaskListener.DOWNLOAD_ERROR_FILE_NOT_FOUND) {//重试
+            if (downlaodErrorCode != DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR) {//重试
                 clickRefreshButtonStatus(isUpdateButton, per);
                 mDownloadManager.resume(MD5.MD5(Url));
             }
@@ -280,7 +278,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     @Override
     public void onDownloading(DownloadTask downloadTask) {
-        //        Log.d(TAG, "onDownloading CompletedSize: " + downloadTask.getCompletedSize() + " TotalSize" + downloadTask.getTotalSize());
+        Log.d(TAG, "onDownloading CompletedSize: " + downloadTask.getCompletedSize() + " TotalSize" + downloadTask.getTotalSize());
         float per = calculatorPercent(downloadTask.getCompletedSize(), downloadTask.getTotalSize());
         mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_DOWNLAODING, per);
         if (isShowUpdateButton) {
@@ -300,7 +298,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     @Override
     public void onCancel(DownloadTask downloadTask) {
-
     }
 
     @Override
@@ -328,12 +325,14 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             showToast(mContext.getResources().getString(R.string.downlaod_error));
             errorRefreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
         } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_IO_ERROR) {
-            showToast(mContext.getResources().getString(R.string.network_connection_error));
+            showToast(mContext.getResources().getString(R.string.downlaod_error));
+            errorRefreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
         } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR) {
             showToast(mContext.getResources().getString(R.string.network_connection_error));
             errorRefreshButtonStatus(DOWNLOAD_BUTTON_STATUS_PAUSE, per);
         } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_UNKONW_ERROR) {
             showToast(mContext.getResources().getString(R.string.unkonw_error));
+            errorRefreshButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, per);
         }
     }
 
@@ -346,7 +345,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     }
 
     class AppInstallReceiver extends BroadcastReceiver {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             // 接收广播：设备上新安装了一个应用程序包后自动启动新安装应用程序。

@@ -119,8 +119,6 @@ public class ImageScaleActivity extends Activity {
         mViewPager.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(ImageScaleActivity.this
-                        , "点击的位置" + mCurSelectPositon, Toast.LENGTH_SHORT).show();
                 finish();
             }
         });

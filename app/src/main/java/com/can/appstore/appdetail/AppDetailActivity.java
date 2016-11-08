@@ -40,16 +40,14 @@ import cn.can.tvlib.utils.SystemUtil;
 /**
  * Created by JasonF on 2016/10/13.
  */
-
 public class AppDetailActivity extends Activity implements AppDetailContract.View, View.OnFocusChangeListener, View.OnClickListener {
-
     private static final String TAG = "AppDetailActivity";
     private static final int TO_MOVE_RIGHT = 0;
     private static final int TO_MOVE_LEFT = 1;
     private static final int MESSAGE_TYPE_DOWNLAOD = 2;
     private static final int MESSAGE_TYPE_UPDATE = 3;
     private View mFocusedListChild;
-    private ListFocusMoveRunnable mListFocusMoveRunnable;
+    private AppDetailActivity.ListFocusMoveRunnable mListFocusMoveRunnable;
     private FocusMoveUtil mFocusMoveUtil;
     private FocusScaleUtil mScaleUtil;
     private boolean focusSearchFailed;
@@ -95,7 +93,7 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
         initView();
         mFocusMoveUtil = new FocusMoveUtil(AppDetailActivity.this, getWindow().getDecorView(), R.mipmap.btn_focus);
         mScaleUtil = new FocusScaleUtil();
-        mListFocusMoveRunnable = new ListFocusMoveRunnable();
+        mListFocusMoveRunnable = new AppDetailActivity.ListFocusMoveRunnable();
         mAppDetailPresenter = new AppDetailPresenter(this, AppDetailActivity.this, getIntent());
         setOperaPic("1,2,3,4");
     }
@@ -173,7 +171,6 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
         mBtRecommend.setOnClickListener(this);
         mLayoutIntroduceText.setOnClickListener(this);
     }
-
 
     @Override
     public void onClick(View view) {//按钮点击事件
@@ -285,30 +282,17 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
      * @param moveDirection
      */
     public void startTabLineAnimation(int moveDirection) {
+        mIvTabLine.clearAnimation();
         TranslateAnimation translateAnimation = null;
         if (moveDirection == TO_MOVE_RIGHT) {
             translateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 1.25f, Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f);
-            translateAnimation.setDuration(50);
             isTabLineMoveToRecommend = true;
         } else if (moveDirection == TO_MOVE_LEFT) {
-            translateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f);
-            translateAnimation.setDuration(550);
+            translateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 1.25f, Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f);
             isTabLineMoveToRecommend = false;
         }
+        translateAnimation.setDuration(100);
         translateAnimation.setFillAfter(true);
-        //        translateAnimation.setAnimationListener(new Animation.AnimationListener() {
-        //            @Override
-        //            public void onAnimationStart(Animation animation) {
-        //            }
-        //
-        //            @Override
-        //            public void onAnimationEnd(Animation animation) {
-        //            }
-        //
-        //            @Override
-        //            public void onAnimationRepeat(Animation animation) {
-        //            }
-        //        });
         mIvTabLine.startAnimation(translateAnimation);
     }
 
@@ -504,7 +488,6 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
 
     private void setData() {//TODO   修改设置数据
         //        mImageViewIcon = (ImageView) findViewById(R.id.iv_icon);
-
         mAppName.setText("斗地主");
         mAppSize.setText(String.format(getResources().getString(R.string.detail_app_size), "17.89M"));
         mAppUodateDate.setText(String.format(getResources().getString(R.string.detail_app_update_date), "2012-12-12"));
@@ -513,7 +496,6 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
         mTvAppIntroduc.setText("应用简介 : 在外面吃饭，老公和朋友喝酒喝的热火朝天的，看着满头大汗的他，顿时心疼的给他擦了擦脸上的汗渍，就在大家都说某某你老婆对你真好的时候，由于我的指甲太长，不小心把老公眼角那儿抠掉了一块皮");
         mTvAddFuntion.setText("新加功能 : 为什么秀恩爱通常要选择在中午？ 回复：因为早晚都会遭到报应的！");
     }
-
 
     /**
      * 设置操作类型的图标
@@ -650,7 +632,6 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
                 }
             }
         });
-
         mIntroducGridAdapter.setItemKeyEventListener(new CanRecyclerViewAdapter.OnItemKeyEventListener() {
             @Override
             public boolean onItemKeyEvent(int position, View v, int keyCode, KeyEvent event) {
@@ -670,7 +651,6 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
                 return false;
             }
         });
-
         mIntroducGridAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, int position, Object data) {
@@ -678,7 +658,6 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
                 enterImageScaleActivity(position);
             }
         });
-
         mIntroducGrid.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -723,7 +702,6 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
                 }
             }
         });
-
         mRecommedGridAdapter.setItemKeyEventListener(new CanRecyclerViewAdapter.OnItemKeyEventListener() {
             @Override
             public boolean onItemKeyEvent(int position, View v, int keyCode, KeyEvent event) {
@@ -752,7 +730,6 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
                 return false;
             }
         });
-
         mRecommedGridAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, int position, Object data) {
@@ -765,7 +742,6 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
                 }
             }
         });
-
         mRecommendGrid.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -841,7 +817,6 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
     }
 
     private class ListFocusMoveRunnable implements Runnable {
-
         @Override
         public void run() {
             if (mFocusedListChild != null) {
