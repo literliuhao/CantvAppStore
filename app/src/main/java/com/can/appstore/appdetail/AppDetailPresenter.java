@@ -39,7 +39,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     private DownloadManager mDownloadManager;
     private BroadcastReceiver mHomeReceivcer;
     private AppDetailPresenter.AppInstallReceiver mInstalledReceiver;
-    public static String Url = "http://ams.ott.cibntv.net/can/20160506/laizi_tv_tjmj.apk";
+    public static String Url = "http://172.16.11.65:8080/download/20161018/F1_Launcher_V532_20161018192912.apk";
     private boolean isShowUpdateButton = false;
     private LoadingDialog mLoadingDialog;
     private String mAppId = "";
