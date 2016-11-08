@@ -249,25 +249,26 @@ public class FocusMoveUtil {
 
         int[] location = new int[2];
         newView.getLocationInWindow(location);
+
+        int viewW = newView.getWidth();
+        int viewH = newView.getHeight();
+
+        float currScaleX = newView.getScaleX();
+        float currScaleY = newView.getScaleY();
+
         if (scaleX == 1 && scaleY == 1) {
-            rectF.set(location[0], location[1], location[0] + newView.getWidth(), location[1] + newView.getHeight());
-
-        } else if (scaleX == 1) {
-            float offsetFactor = (scaleY - 1) / 2;
-            float vertOffset = newView.getHeight() * offsetFactor;
-            rectF.set(location[0], location[1] - vertOffset, location[0] + newView.getWidth(), location[1] + newView.getHeight() + vertOffset);
-
-        } else if (scaleY == 1) {
-            float offsetFactor = (scaleX - 1) / 2;
-            float horiOffset = newView.getWidth() * offsetFactor;
-            rectF.set(location[0] - horiOffset, location[1], location[0] + newView.getWidth() + horiOffset, location[1] + newView.getHeight());
+            int left = (int) (location[0] + viewW * (currScaleX - 1) / 2 + 0.5f);
+            int top = (int) (location[1] + viewH * (currScaleY - 1) / 2 + 0.5f);
+            int right = left + viewW;
+            int bottom = top + viewH;
+            rectF.set(left, top, right, bottom);
 
         } else {
-            float offsetFactorX = (scaleX - 1) / 2;
-            float offsetFactorY = (scaleY - 1) / 2;
-            float xOffsetX = newView.getWidth() * offsetFactorX;
-            float yOffsetY = newView.getHeight() * offsetFactorY;
-            rectF.set(location[0] - xOffsetX, location[1] - yOffsetY, location[0] + newView.getWidth() + xOffsetX, location[1] + newView.getHeight() + yOffsetY);
+            int left = (int) (location[0] + viewW * (currScaleX - scaleX) / 2 + 0.5f);
+            int top = (int) (location[1] + viewH * (currScaleY - scaleY) / 2 + 0.5f);
+            int right = (int) (left + viewW * scaleX + 0.5f);
+            int bottom = (int) (top + viewH * scaleY + 0.5f);
+            rectF.set(left, top, right, bottom);
         }
         if (offsetX != 0) {
             rectF.left += offsetX;

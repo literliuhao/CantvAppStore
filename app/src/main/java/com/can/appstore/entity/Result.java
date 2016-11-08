@@ -1,5 +1,7 @@
 package com.can.appstore.entity;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Result<T> {
 
     /**
@@ -7,9 +9,11 @@ public class Result<T> {
      * message : 成功
      * data : {}
      */
-
+    @SerializedName("status")
     private int status;
+    @SerializedName("message")
     private String message;
+    @SerializedName("data")
     private T data;
 
     public int getStatus() {
