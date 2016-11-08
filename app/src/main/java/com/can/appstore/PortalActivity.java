@@ -52,10 +52,14 @@ public class PortalActivity extends Activity {
                 list.add("应用列表页面");
             } else if (i == 1) {
                 list.add("下载列表和专题列表");
+            } else if (i == 2) {
+                list.add("应用详情1");
             } else if (i == 3) {
-                list.add("应用详情");
+                list.add("应用详情2");
             } else if (i == 4) {
                 list.add("卸载管理");
+            } else if (i == 5) {
+                list.add("应用详情3");
             } else {
                 list.add(i + "");
             }
@@ -85,12 +89,20 @@ public class PortalActivity extends Activity {
                 } else if (position == 1) {
                     Intent intent = new Intent(PortalActivity.this, DownloadLeadAcitivity.class);
                     startActivity(intent);
+                } else if (position == 2) {
+                    Intent intent = new Intent(PortalActivity.this, AppDetailActivity.class);
+                    intent.putExtra("Url", "http://172.16.11.65:8080/download/20161018/F1_Launcher_V532_20161018192912.apk");
+                    startActivity(intent);
                 } else if (position == 3) {
                     Intent intent = new Intent(PortalActivity.this, AppDetailActivity.class);
-                    intent.putExtra("Url", "http://app.znds.com/down/20160929/ystjg-2.1.1.1010-dangbei.apk");
+                    intent.putExtra("Url", "http://172.16.11.65:8080/download/20161018/F2_Launcher_V532_20161018192912.apk");
                     startActivity(intent);
                 } else if (position == 4) {
                     Intent intent = new Intent(PortalActivity.this, UninstallManagerActivity.class);
+                    startActivity(intent);
+                } else if (position == 5) {
+                    Intent intent = new Intent(PortalActivity.this, AppDetailActivity.class);
+                    intent.putExtra("Url", "http://172.16.11.65:8080/download/20161018/F2_Launcher_V536_20161018191036.apk");
                     startActivity(intent);
                 }
             }

@@ -65,7 +65,10 @@ public class DownloadManager {
                 case MSG_SUBMIT_TASK:
                     if (NetworkUtils.isNetworkConnected(mContext.getApplicationContext())) {
                         if (((ThreadPoolExecutor)mExecutorService).getActiveCount() < mPoolSize) {
-                            mExecutorService.submit(mTaskManager.poll());
+                            DownloadTask task = mTaskManager.poll();
+                            if (task != null) {
+                                mExecutorService.submit(task);
+                            }
                         }
                     }
                     mHander.sendEmptyMessageDelayed(MSG_SUBMIT_TASK, DELAY_TIME);

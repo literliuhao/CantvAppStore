@@ -59,6 +59,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public void getData(Intent intent) {
         if (intent != null) {
             mAppId = intent.getStringExtra("应用id");
+            Url = intent.getStringExtra("Url");
         }
     }
 
