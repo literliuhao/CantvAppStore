@@ -41,4 +41,7 @@
     <color name="download_progress_bg">#438b14</color>
     <color name="introduce_one_bg">#B2000000</color>
     <color name="image_scale_bg">#E5000000</color>
+    <color name="color_TRANSPARENT">#00000000</color>
+    <color name="colorYellow">#efd624</color>
+    <color name="color_CC088DBD">#cc088dbd</color>
 </resources>

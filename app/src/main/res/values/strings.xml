@@ -45,4 +45,9 @@
     <string name="downlaod_restart">重试</string>
     <string name="introduce_detail">简介详情</string>
     <string name="load_data_faild">加载数据失败,请稍后再试...</string>
+    <string name="retry">"点击重试"</string>
+    <string name="load_fail">"网络访问错误"</string>
+    <string name="version_describe">"版本描述："</string>
+    <string name="installing">"正在安装中，请稍后..."</string>
+    <string name="back">"返回"</string>
 </resources>

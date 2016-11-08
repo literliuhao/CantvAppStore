@@ -53,9 +53,7 @@ public class AppListPresenter implements AppListContract.Presenter {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 if (msg.what == REFRESH_APP_LIST && mMenuDataPosition != msg.arg1) {
-                    if (DEFAULT_TOPIC.equals(mMenuData.get(msg.arg1).getId())) {
-                        return;
-                    }else if(msg.arg1 == 3){
+                   if(msg.arg1 == 3){
                         mMenuDataPosition = msg.arg1;
                         mView.onLoadFail();
                         return;
@@ -83,12 +81,12 @@ public class AppListPresenter implements AppListContract.Presenter {
         }else{
             mAppListData.clear();
         }
-        if (mFromType == AppListActivity.APPLICATION) {
-            AppListMenuInfo info = new AppListMenuInfo();
-            info.setId(DEFAULT_TOPIC);
-            info.setName(mContext.getResources().getString(R.string.serach));
-            mMenuData.add(info);
-        }
+//        if (mFromType == AppListActivity.APPLICATION) {
+//            AppListMenuInfo info = new AppListMenuInfo();
+//            info.setId(DEFAULT_TOPIC);
+//            info.setName(mContext.getResources().getString(R.string.serach));
+//            mMenuData.add(info);
+//        }
 
         //** 假数据  start**
         mView.showLoadingDialog();
@@ -107,15 +105,10 @@ public class AppListPresenter implements AppListContract.Presenter {
             if (i == 2) {
                 info.setId(i);
                 info.setAppName("蓝牙共享");
-                info.setIcon("");
+                info.setIcon("http://cdn.can.cibntv.net/02/mam/Public/Picture/moviepost/16-11/01/01/fuji.jpg");
                 info.setSize("15Mb");
                 info.setDownloadVolume("1000+");
                 info.setPackageName("com.android.bluetooth");
-                if (i % 2 == 0) {
-                    info.setRecommend("参与游戏活动，赢好礼");
-                } else {
-                    info.setRecommend("");
-                }
                 info.setVersionCode(19);
                 if (i % 5 == 0) {
                     info.setNew(true);
@@ -125,7 +118,7 @@ public class AppListPresenter implements AppListContract.Presenter {
             }else {
                 info.setId(i);
                 info.setAppName(mMenuDataPosition + "三国杀传奇" + i);
-                info.setIcon("");
+                info.setIcon("http://cdn.can.cibntv.net/02/mam/Public/Picture/moviepost/16-11/01/01/fuji.jpg");
                 info.setSize("15Mb");
                 info.setDownloadVolume("1000+");
                 info.setPackageName("");
@@ -175,7 +168,7 @@ public class AppListPresenter implements AppListContract.Presenter {
             if (i == 2) {
                 info.setId(i);
                 info.setAppName("蓝牙共享");
-                info.setIcon("");
+                info.setIcon("http://cdn.can.cibntv.net/02/mam/Public/Picture/moviepost/16-11/01/01/fuji.jpg");
                 info.setSize("15Mb");
                 info.setDownloadVolume("1000+");
                 info.setPackageName("com.android.bluetooth");
@@ -193,7 +186,7 @@ public class AppListPresenter implements AppListContract.Presenter {
             } else {
                 info.setId(i);
                 info.setAppName(mMenuDataPosition + "三国杀传奇" + i);
-                info.setIcon("");
+                info.setIcon("http://cdn.can.cibntv.net/02/mam/Public/Picture/moviepost/16-11/01/01/fuji.jpg");
                 info.setSize("15Mb");
                 info.setDownloadVolume("1000+");
                 info.setPackageName("");
@@ -229,7 +222,7 @@ public class AppListPresenter implements AppListContract.Presenter {
             if (i == 2) {
                 info.setId(i);
                 info.setAppName("蓝牙共享");
-                info.setIcon("");
+                info.setIcon("http://cdn.can.cibntv.net/02/mam/Public/Picture/moviepost/16-11/01/01/fuji.jpg");
                 info.setSize("15Mb");
                 info.setDownloadVolume("1000+");
                 info.setPackageName("com.android.bluetooth");
@@ -247,7 +240,7 @@ public class AppListPresenter implements AppListContract.Presenter {
             } else {
                 info.setId(i);
                 info.setAppName(mMenuDataPosition + "三国杀传奇" + i);
-                info.setIcon("");
+                info.setIcon("http://cdn.can.cibntv.net/02/mam/Public/Picture/moviepost/16-11/01/01/fuji.jpg");
                 info.setSize("15Mb");
                 info.setDownloadVolume("1000+");
                 info.setPackageName("");
@@ -299,19 +292,19 @@ public class AppListPresenter implements AppListContract.Presenter {
      * @return position
      */
     private int findMenuFocusPosition() {
-        if (mTopicId == null || "".equals(mTopicId)) {
-            if (mFromType == AppListActivity.APPLICATION) {
-                return 1;
-            } else {
-                return 0;
-            }
-        }
-
-        for (int i = 0; i < mMenuData.size(); i++) {
-            if (mTopicId.equals(mMenuData.get(i).getId())) {
-                return i;
-            }
-        }
+//        if (mTopicId == null || "".equals(mTopicId)) {
+//            if (mFromType == AppListActivity.APPLICATION) {
+//                return 1;
+//            } else {
+//                return 0;
+//            }
+//        }
+//
+//        for (int i = 0; i < mMenuData.size(); i++) {
+//            if (mTopicId.equals(mMenuData.get(i).getId())) {
+//                return i;
+//            }
+//        }
         return 0;
     }
 

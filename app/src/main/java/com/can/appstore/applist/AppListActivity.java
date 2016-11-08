@@ -11,17 +11,20 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.util.LogTime;
 import com.can.appstore.R;
 import com.can.appstore.upgrade.UpgradeService;
 
 import java.util.List;
 
+import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
@@ -38,11 +41,12 @@ import cn.can.tvlib.utils.ToastUtils;
 public class AppListActivity extends Activity implements AppListContract.View {
     public static final int APPLICATION = 0;
     public static final int RANKING = 1;
-    public static final int RECYCLERVIEW_DIVIDER = 1; //列表行距
+    public static final int MENU_RECYCLERVIEW_DIVIDER = 20; //列表行距
+    public static final int APPLICATION_RECYCLERVIEW_DIVIDER = 32; //列表行距
     public static final int SPAN_COUNT = 3;     //应用列表每行app个数
-    public static int REFRESH_APP_DELAY_TIME = 500;   //刷新应用列表信息延迟时间
-    public static float MENU_FOCUS_SCALE = 1.1f;  //菜单焦点放大倍数
-    public static float LIST_FOCUS_SCALE = 1.1f;   //应用列表焦点放大倍数；
+    public static int REFRESH_APP_DELAY_TIME = 1000;   //刷新应用列表信息延迟时间
+    public static float MENU_FOCUS_SCALE = 1.0f;  //菜单焦点放大倍数
+    public static float LIST_FOCUS_SCALE = 1.0f;   //应用列表焦点放大倍数；
     public static final String FROM_TYPE = "fromType";
     public static final String TYPE_ID = "typeId";
     public static final String TOPIC_ID = "topicId";
@@ -58,13 +62,14 @@ public class AppListActivity extends Activity implements AppListContract.View {
     private AppListContract.Presenter mPresenter;
     private LinearLayoutManager mLinearLayoutManager;
     private TextView mTvAppListLine;
+    private TextView mTvSearch;
     private GridLayoutManager mGridLayoutManager;
     private View mAppListSelectItem;
     private View mMenuSelectItem;
     private Runnable mRunnable;
     private Handler mHandler;
-    private Dialog mDialog;
-    private boolean isAppListLoading;
+    private Dialog mLoadDialog;
+    private boolean isComeFromSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,12 +87,14 @@ public class AppListActivity extends Activity implements AppListContract.View {
         initListener();
         AppListPresenter appListPresenter = new AppListPresenter(this, this, mFromType, typId, topicId);
         appListPresenter.startLoadData();
+
     }
 
     private void initView() {
         mMenuRecyclerView = (CanRecyclerView) findViewById(R.id.rv_app_menu);
         mAppListRecyclerView = (CanRecyclerView) findViewById(R.id.rv_app_list);
         mTvAppListLine = (TextView) findViewById(R.id.tv_app_list_line);
+        mTvSearch = (TextView) findViewById(R.id.tv_app_list_search);
 
         mLoadFaliView = (LinearLayout) findViewById(R.id.ll_app_list_load_fail);
         mLoadRetryView = (TextView) findViewById(R.id.tv_load_retry);
@@ -98,7 +105,7 @@ public class AppListActivity extends Activity implements AppListContract.View {
         mLinearLayoutManager = new LinearLayoutManager(this);
         mMenuRecyclerView.setLayoutManager(mLinearLayoutManager);
         // 设置item分
-        mMenuRecyclerView.addItemDecoration(new CanRecyclerViewDivider(RECYCLERVIEW_DIVIDER));
+        mMenuRecyclerView.addItemDecoration(new CanRecyclerViewDivider(MENU_RECYCLERVIEW_DIVIDER));
         // 设置item动画
         mMenuRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
@@ -106,7 +113,7 @@ public class AppListActivity extends Activity implements AppListContract.View {
         mGridLayoutManager = new GridLayoutManager(this, SPAN_COUNT);
         mAppListRecyclerView.setLayoutManager(mGridLayoutManager);
         // 设置item分
-        mAppListRecyclerView.addItemDecoration(new CanRecyclerViewDivider(RECYCLERVIEW_DIVIDER));
+        mAppListRecyclerView.addItemDecoration(new CanRecyclerViewDivider(APPLICATION_RECYCLERVIEW_DIVIDER));
         // 设置item动画
         mAppListRecyclerView.setItemAnimator(new DefaultItemAnimator());
     }
@@ -117,7 +124,7 @@ public class AppListActivity extends Activity implements AppListContract.View {
             public void run() {
                 if (mAppListSelectItem != null) {
                     mFocusMoveUtil.startMoveFocus(mAppListSelectItem, LIST_FOCUS_SCALE);
-                    mFocusScaleUtil.scaleToLarge(mAppListSelectItem, LIST_FOCUS_SCALE, LIST_FOCUS_SCALE);
+                    // mFocusScaleUtil.scaleToLarge(mAppListSelectItem, LIST_FOCUS_SCALE, LIST_FOCUS_SCALE);
                 }
             }
         };
@@ -132,7 +139,7 @@ public class AppListActivity extends Activity implements AppListContract.View {
     }
 
     /**
-     * 初始化部分监听，adpter相关监听在adpter初始化后添加
+     * 初始化部分监听，adapter相关监听在adapter初始化后添加
      */
     private void initListener() {
         mAppListRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -140,6 +147,7 @@ public class AppListActivity extends Activity implements AppListContract.View {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    ImageLoader.getInstance().resumeAllTask(AppListActivity.this);//恢复所有加载
                     mMenuRecyclerView.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
                     //获取最后一个显示的item和item总数
                     int lastPosition = mGridLayoutManager.findLastVisibleItemPosition();
@@ -154,6 +162,7 @@ public class AppListActivity extends Activity implements AppListContract.View {
                         }
                     }
                 } else {
+                    ImageLoader.getInstance().pauseAllTask(AppListActivity.this);//暂停所有加载
                     mMenuRecyclerView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
                 }
             }
@@ -161,25 +170,54 @@ public class AppListActivity extends Activity implements AppListContract.View {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                //                if(dx == 0 && dy == 0){
-                //                    return;
-                //                }
+                if (dx == 0 && dy == 0) {
+                    return;
+                }
                 mHandler.removeCallbacks(mRunnable);
-                mHandler.postDelayed(mRunnable, 50);
+                mHandler.postDelayed(mRunnable, 30);
             }
         });
+
+        mTvSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: 2016/11/8  跳转到搜索页面
+                ToastUtils.showMessage(AppListActivity.this,"跳转搜索页面！");
+            }
+        });
+
+        mTvSearch.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if(hasFocus){
+                    mFocusMoveUtil.startMoveFocus(view, MENU_FOCUS_SCALE);
+                    isComeFromSearch = true;
+                }
+            }
+        });
+
         mLoadRetryView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ToastUtils.showMessage(AppListActivity.this, "重新加载数据");
                 mPresenter.loadAppListData();
+            }
+        });
+        mLoadRetryView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus && mMenuSelectItem != null) {
+                    mMenuSelectItem.setBackgroundResource(R.drawable.shap_app_list_menu);
+                } else if (mMenuSelectItem != null) {
+                    mMenuSelectItem.setBackgroundColor(Color.TRANSPARENT);
+                }
             }
         });
 
         mLoadRetryView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT && mMenuSelectItem != null) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT &&
+                        mMenuSelectItem != null) {
                     mMenuSelectItem.requestFocus();
                     return true;
                 }
@@ -202,10 +240,19 @@ public class AppListActivity extends Activity implements AppListContract.View {
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
                 if (hasFocus) {
-                    if (position != 0 || mFromType != APPLICATION) {
-                        mMenuSelectItem = view;
+                    if(isComeFromSearch){
+                        isComeFromSearch = false;
+                        if(mMenuSelectItem != null){
+                            mMenuSelectItem.setBackgroundColor(Color.TRANSPARENT);
+                        }
+                    }
+                    if (mMenuSelectItem != view) {
+                        showLoadingDialog();
+                        mAppListRecyclerView.setVisibility(View.INVISIBLE);
+                        mLoadFaliView.setVisibility(View.GONE);
                     }
                     mPresenter.onMenuItemSelect(position);
+                    mMenuSelectItem = view;
                     mFocusMoveUtil.startMoveFocus(view, MENU_FOCUS_SCALE);
                     mFocusScaleUtil.scaleToLarge(view, MENU_FOCUS_SCALE, MENU_FOCUS_SCALE);
                 } else {
@@ -222,23 +269,20 @@ public class AppListActivity extends Activity implements AppListContract.View {
                         } else {
                             mAppListSelectItem.requestFocus();
                         }
-                        if (mMenuSelectItem != null) {
-                            mMenuSelectItem.setBackgroundResource(R.drawable.shap_app_list_menu);
-                        }
                     } else {
                         mLoadRetryView.requestFocus();
                         mFocusMoveUtil.startMoveFocus(mLoadRetryView, 1.0f);
                     }
+                //}else if(direction == View.FOCUS_UP){
+                }else if(direction == 33){
+                    mTvSearch.requestFocus();
                 }
+
+                if(mMenuSelectItem != null && (direction == View.FOCUS_RIGHT || direction == 33)){
+                    mMenuSelectItem.setBackgroundResource(R.drawable.shap_app_list_menu);
+                }
+
                 return true;
-            }
-        });
-        menuAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
-            @Override
-            public void onClick(View view, int position, Object data) {
-                if (position == 0 && mFromType == APPLICATION) {
-                    ToastUtils.showMessage(AppListActivity.this, "跳转搜索页面");
-                }
             }
         });
         mMenuRecyclerView.postDelayed(new Runnable() {
@@ -252,11 +296,6 @@ public class AppListActivity extends Activity implements AppListContract.View {
     @Override
     public void refreshAppList(List<AppListInfo> appListData, int insertPosition) {
 
-        if (mAppListRecyclerView.getVisibility() != View.VISIBLE) {
-            mAppListRecyclerView.setVisibility(View.VISIBLE);
-            mTvAppListLine.setVisibility(View.VISIBLE);
-            mLoadFaliView.setVisibility(View.GONE);
-        }
         if (mAppListAdapter == null) {
             mAppListAdapter = new AppListInfoAdapter(this, appListData);
             mAppListRecyclerView.setAdapter(mAppListAdapter);
@@ -265,13 +304,10 @@ public class AppListActivity extends Activity implements AppListContract.View {
                 public void onItemFocusChanged(View view, int position, boolean hasFocus) {
                     if (hasFocus) {
                         mAppListSelectItem = view;
-                        view.setBackgroundColor(Color.TRANSPARENT);
                         mPresenter.onAppListItemSelectChanged(position);
-                        //if(!isAppListLoading){
-                        mHandler.postDelayed(mRunnable, 50);
-                        // }
+                        mHandler.removeCallbacks(mRunnable);
+                        mHandler.postDelayed(mRunnable, 30);
                     } else {
-                        view.setBackgroundResource(R.drawable.shap_app_list);
                         mFocusScaleUtil.scaleToNormal(view);
                     }
                 }
@@ -279,8 +315,15 @@ public class AppListActivity extends Activity implements AppListContract.View {
                 @Override
                 public boolean onFocusMoveOutside(int currFocus, int direction) {
                     if (direction == View.FOCUS_LEFT) {
+                        if(isComeFromSearch){
+                            mTvSearch.requestFocus();
+                            return true;
+                        }
                         mMenuSelectItem.requestFocus();
-                        mMenuSelectItem.setBackgroundColor(Color.parseColor("#00FFFFFF"));
+                        mMenuSelectItem.setBackgroundColor(Color.TRANSPARENT);
+                        return true;
+                    }
+                    if (mAppListRecyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
                         return true;
                     }
                     return false;
@@ -291,43 +334,42 @@ public class AppListActivity extends Activity implements AppListContract.View {
                 public void onClick(View view, int position, Object data) {
                     Intent intent = new Intent(AppListActivity.this, UpgradeService.class);
                     AppListActivity.this.startService(intent);
-                    //                    Intent intent = new Intent( AppListActivity.this, PortalActivity.class);
-                    //                    AppListActivity.this.startActivity(intent);
                 }
             });
         } else if (insertPosition == AppListPresenter.REFRESH_APP) {
-            //            isAppListLoading = true;
-            mMenuSelectItem.requestFocus();
-            mMenuSelectItem.setBackgroundColor(Color.parseColor("#00FFFFFF"));
+            mAppListSelectItem = null;
             mAppListAdapter.setDatas(appListData);
             mAppListAdapter.notifyDataSetChanged();
             /**
              * 防止刷新应用列表的时候丢失焦点的问题
              */
-            mAppListSelectItem = null;
             mMenuRecyclerView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mAppListRecyclerView.scrollToPosition(0);
                 }
             }, 20);
-
-            //            if(true){
-            //                mMenuRecyclerView.postDelayed(new Runnable() {
-            //                    @Override
-            //                    public void run() {
-            //                        isAppListLoading = false;
-            //                        mAppListRecyclerView.getChildAt(mLinearLayoutManager
-            // .findFirstVisibleItemPosition()).requestFocus();
-            //                    }
-            //                },500);
-            //            }else{
-            //                isAppListLoading = false;
-            //            }
-        } else {
+        }else{
             mAppListAdapter.setDatas(appListData);
             mAppListAdapter.notifyItemInserted(insertPosition);
         }
+
+        if(mLoadFaliView.getVisibility() == View.VISIBLE && mMenuSelectItem != null){
+            mMenuSelectItem.requestFocus();
+            mMenuSelectItem.setBackgroundColor(Color.TRANSPARENT);
+        }
+
+        if (mAppListRecyclerView.getVisibility() != View.VISIBLE) {
+            mAppListRecyclerView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mAppListRecyclerView.setVisibility(View.VISIBLE);
+                    mTvAppListLine.setVisibility(View.VISIBLE);
+                    mLoadFaliView.setVisibility(View.GONE);
+                }
+            }, 1000);
+        }
+
     }
 
     @Override
@@ -337,26 +379,33 @@ public class AppListActivity extends Activity implements AppListContract.View {
 
     @Override
     public void onLoadFail() {
-        mAppListRecyclerView.setVisibility(View.GONE);
-        mLoadFaliView.setVisibility(View.VISIBLE);
-        mTvAppListLine.setVisibility(View.GONE);
+        hideLoadingDialog();
+        mAppListRecyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mAppListRecyclerView.setVisibility(View.INVISIBLE);
+                mLoadFaliView.setVisibility(View.VISIBLE);
+                mTvAppListLine.setVisibility(View.GONE);
+            }
+        }, 1000);
+
     }
 
     @Override
     public void showLoadingDialog() {
-        if (mDialog == null) {
-            mDialog = PromptUtils.showLoadingDialog(this);
+        if (mLoadDialog == null) {
+            mLoadDialog = PromptUtils.showLoadingDialog(this);
         }
-        mDialog.show();
+        mLoadDialog.show();
     }
 
     @Override
     public void hideLoadingDialog() {
-        if (mDialog != null && mDialog.isShowing()) {
+        if (mLoadDialog != null && mLoadDialog.isShowing()) {
             mAppListRecyclerView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mDialog.dismiss();
+                    mLoadDialog.dismiss();
                 }
             }, REFRESH_APP_DELAY_TIME);
         }
@@ -365,11 +414,19 @@ public class AppListActivity extends Activity implements AppListContract.View {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mDialog != null) {
-            mDialog.dismiss();
+        if (mLoadDialog != null) {
+            mLoadDialog.dismiss();
         }
         if (mFocusMoveUtil != null) {
             mFocusMoveUtil.release();
         }
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT && mLoadDialog.isShowing()) {
+            return true;
+        }
+        return super.dispatchKeyEvent(event);
     }
 }

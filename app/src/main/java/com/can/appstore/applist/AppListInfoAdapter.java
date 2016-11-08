@@ -11,10 +11,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.can.appstore.R;
 
 import java.util.List;
 
+import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 /**
@@ -43,7 +45,9 @@ public class AppListInfoAdapter extends CanRecyclerViewAdapter {
     protected void bindContentData(Object mDatas, RecyclerView.ViewHolder holder, int position) {
         AppListInfoAdapter.AppItemViewHolder itemViewHolder = (AppListInfoAdapter.AppItemViewHolder) holder;
         AppListInfo appInfo = (AppListInfo) mDatas;
-        itemViewHolder.iv_app_list_item.setBackgroundResource(R.mipmap.touxiang);
+        ImageLoader.getInstance().load(mContext, itemViewHolder.iv_app_list_item,appInfo.getIcon());
+        // TODO: 2016/11/7 本地图片，测试使用，正式版本删除
+        //itemViewHolder.iv_app_list_item.setBackgroundResource(R.mipmap.touxiang);
         itemViewHolder.iv_app_list_name.setText(appInfo.getAppName());
         itemViewHolder.tv_app_list_size.setText(appInfo.getSize());
         itemViewHolder.tv_app_list_volume.setText(appInfo.getDownloadVolume());

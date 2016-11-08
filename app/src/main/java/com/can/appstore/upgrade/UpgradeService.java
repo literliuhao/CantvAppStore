@@ -159,6 +159,7 @@ public class UpgradeService extends IntentService {
     private void downLoadApk(String url) {
         DownloadManager manager = DownloadManager.getInstance(this);
         DownloadTask task = new DownloadTask(url);
+        // TODO: 2016/11/7  名称修改为mVersion+.apk
         task.setFileName("2.apk");
         task.setSaveDirPath(mUpdatePath);
         manager.singleTask(task, new DownloadTaskListener() {
