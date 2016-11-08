@@ -32,7 +32,6 @@
                 android:textColor="@color/white_opa80"
                 android:textSize="@dimen/fontsize_34"
                 android:layout_marginTop="@dimen/px20"
-                android:text="银河奇异果"
                 android:gravity="center_vertical"
                 style="@style/commen_textview"/>
             <TextView
@@ -81,7 +80,7 @@
                 android:textSize="@dimen/px32"
                 android:layout_marginLeft="@dimen/px8"
                 android:textColor="@color/white_opa80"
-                android:text="下载中"
+                tools:text="下载中"
                 />
         </RelativeLayout>
 
@@ -97,19 +96,22 @@
         android:visibility="gone"
         >
 
-        <Button
+        <TextView
             android:id="@+id/download_item_control_btn"
             android:layout_width="@dimen/px200"
             android:layout_height="@dimen/px75"
             android:background="@drawable/bg_btn_download"
             android:text="暂停"
+            android:clickable="true"
+            android:focusable="true"
             android:textSize="@dimen/px34"
+            android:gravity="center"
             android:textColor="@color/white_opa80"
             android:includeFontPadding="false"
             android:layout_below="@+id/special_title_tv"
             android:layout_alignParentStart="true" />
 
-        <Button
+        <TextView
             android:id="@+id/download_item_delete_btn"
             android:layout_below="@+id/download_item_control_btn"
             android:layout_marginTop="@dimen/px16"
@@ -117,6 +119,9 @@
             android:layout_height="@dimen/px75"
             android:background="@drawable/bg_btn_download"
             android:text="删除"
+            android:gravity="center"
+            android:focusable="true"
+            android:clickable="true"
             android:textSize="@dimen/px34"
             android:textColor="@color/white_opa80"
             android:includeFontPadding="false"

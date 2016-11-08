@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.can.appstore.R;
@@ -20,8 +19,7 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 
 public class DownloadActivity extends BaseActivity implements DownloadContract.DownloadView {
 
-    private TextView mRowTv, mNoDataTv;
-    private Button mPauseAllBtn,mDeleteAllBtn;
+    private TextView mRowTv, mNoDataTv,mPauseAllBtn,mDeleteAllBtn;
     private CanRecyclerView mCanRecyclerView;
 
     private DownloadContract.DownloadPresenter mPresenter;
@@ -105,11 +103,11 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
     private void initView() {
         CanRecyclerViewDivider itemDecoration=new CanRecyclerViewDivider(40);
         mFocusMoveUtil=new FocusMoveUtil(this,getWindow().getDecorView().findViewById(android.R.id.content),
-                R.mipmap.image_focus);
+                R.mipmap.btn_focus);
         mNoDataTv= (TextView) findViewById(R.id.download_no_data_tv);
         mRowTv= (TextView) findViewById(R.id.download_row_tv);
-        mPauseAllBtn= (Button) findViewById(R.id.download_pause_all_btn);
-        mDeleteAllBtn= (Button) findViewById(R.id.download_delete_all_btn);
+        mPauseAllBtn= (TextView) findViewById(R.id.download_pause_all_btn);
+        mDeleteAllBtn= (TextView) findViewById(R.id.download_delete_all_btn);
         mCanRecyclerView= (CanRecyclerView) findViewById(R.id.download_recyclerview);
         mCanRecyclerView.addItemDecoration(itemDecoration);
 

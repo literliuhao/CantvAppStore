@@ -77,8 +77,7 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
     @Override
     public void pauseAllTasks() {
         DownloadManager downloadManager=DownloadManager.getInstance(mView.getContext().getApplicationContext());
-        List<DownloadTask> tasks=downloadManager.loadAllTask();
-        for (DownloadTask task: tasks) {
+        for (DownloadTask task: mTasks) {
             if(DownloadStatus.DOWNLOAD_STATUS_COMPLETED==task.getDownloadStatus()){
                 continue;
             }
@@ -89,14 +88,13 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
     @Override
     public void resumeAllTasks() {
         DownloadManager downloadManager=DownloadManager.getInstance(mView.getContext().getApplicationContext());
-        List<DownloadTask> tasks=downloadManager.loadAllTask();
-        for (int i=0;i<tasks.size();i++){
-            if(DownloadStatus.DOWNLOAD_STATUS_COMPLETED==tasks.get(i).getDownloadStatus()){
+        for (int i=0;i<mTasks.size();i++){
+            if(DownloadStatus.DOWNLOAD_STATUS_COMPLETED==mTasks.get(i).getDownloadStatus()){
                continue;
             }
-            downloadManager.resume(tasks.get(i).getId());
+            downloadManager.resume(mTasks.get(i).getId());
         }
-        mView.onDataLoaded(tasks);
+        mView.onDataLoaded(mTasks);
     }
 
 }

@@ -34,7 +34,7 @@ import static com.can.appstore.R.id.special_recyclerview;
 public class SpecialActivity extends BaseActivity implements SpecialContract.SubjectView {
 
 
-    private static final float FOCUS_SCALE = 1.1f;
+    private static final float FOCUS_SCALE = 1.0f;
     public static final int COLUMN_COUNT = 4;
 
     private TextView mRowTv, mRemindTv;
@@ -88,7 +88,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
             public void run() {
                 if (mCurrFocusView != null) {
                     mFocusMoveUtils.startMoveFocus(mCurrFocusView, FOCUS_SCALE);
-                    mFocusScaleUtils.scaleToLarge(mCurrFocusView);
+                   // mFocusScaleUtils.scaleToLarge(mCurrFocusView);
                 }
             }
         };

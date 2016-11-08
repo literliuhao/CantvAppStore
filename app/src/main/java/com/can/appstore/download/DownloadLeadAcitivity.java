@@ -27,7 +27,7 @@ import cn.can.tvlib.utils.FileUtils;
  */
 public class DownloadLeadAcitivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "DownloadLeadAcitivity";
     private DownloadTaskListener mListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,43 +38,7 @@ public class DownloadLeadAcitivity extends AppCompatActivity {
     }
 
     private void initListener() {
-        mListener=new DownloadTaskListener() {
-            @Override
-            public void onPrepare(DownloadTask downloadTask) {
-                Log.i(TAG, "onPrepare: taskid="+downloadTask.getId());
-            }
-
-            @Override
-            public void onStart(DownloadTask downloadTask) {
-                Log.i(TAG, "onStart: taskTotalSize= "+downloadTask.getTotalSize());
-            }
-
-            @Override
-            public void onDownloading(DownloadTask downloadTask) {
-                Log.i(TAG, "onDownloading: taskName="+downloadTask.getFileName()+
-                        "  taskCompelteSize="+downloadTask.getCompletedSize());
-            }
-
-            @Override
-            public void onPause(DownloadTask downloadTask) {
-                Log.i(TAG, "onPause: taskName="+downloadTask.getFileName());
-            }
-
-            @Override
-            public void onCancel(DownloadTask downloadTask) {
-                Log.i(TAG, "onCancel: taskName="+downloadTask.getFileName());
-            }
-
-            @Override
-            public void onCompleted(DownloadTask downloadTask) {
-                Log.i(TAG, "onCompleted: taskName="+downloadTask.getFileName());
-            }
-
-            @Override
-            public void onError(DownloadTask downloadTask, int errorCode) {
-                Log.i(TAG, "onError:taskName="+downloadTask.getFileName()+" errorCode="+errorCode);
-            }
-        };
+        mListener=new DownloadListener();
     }
 
     private void initTest() {
@@ -96,7 +60,6 @@ public class DownloadLeadAcitivity extends AppCompatActivity {
         String url16="http://172.16.11.65:8080/download/20160929/CanTV_Launcher-lowMem_V111_1475149093617.apk";
         String url17="http://172.16.11.65:8080/download/20160929/CanTV_Launcher_Voice_V567_1475116447336.apk";
         String url18="http://172.16.11.65:8080/download/20160929/F1_Launcher_V530_1475119800127.apk";
-
         final DownloadManager mDownLoadManager=DownloadManager.getInstance(this.getApplicationContext());
         mDownLoadManager.setPoolSize(3);
         final DownloadTask downloadTask1=new DownloadTask(url1);
@@ -285,5 +248,43 @@ public class DownloadLeadAcitivity extends AppCompatActivity {
         });
 
 
+    }
+
+    public static class DownloadListener implements DownloadTaskListener{
+        @Override
+        public void onPrepare(DownloadTask downloadTask) {
+            Log.i(TAG, "onPrepare: taskid="+downloadTask.getId());
+        }
+
+        @Override
+        public void onStart(DownloadTask downloadTask) {
+            Log.i(TAG, "onStart: taskTotalSize= "+downloadTask.getTotalSize());
+        }
+
+        @Override
+        public void onDownloading(DownloadTask downloadTask) {
+            Log.i(TAG, "onDownloading: taskName="+downloadTask.getFileName()+
+                    "  taskCompelteSize="+downloadTask.getCompletedSize());
+        }
+
+        @Override
+        public void onPause(DownloadTask downloadTask) {
+            Log.i(TAG, "onPause: taskName="+downloadTask.getFileName());
+        }
+
+        @Override
+        public void onCancel(DownloadTask downloadTask) {
+            Log.i(TAG, "onCancel: taskName="+downloadTask.getFileName());
+        }
+
+        @Override
+        public void onCompleted(DownloadTask downloadTask) {
+            Log.i(TAG, "onCompleted: taskName="+downloadTask.getFileName());
+        }
+
+        @Override
+        public void onError(DownloadTask downloadTask, int errorCode) {
+            Log.i(TAG, "onError:taskName="+downloadTask.getFileName()+" errorCode="+errorCode);
+        }
     }
 }
