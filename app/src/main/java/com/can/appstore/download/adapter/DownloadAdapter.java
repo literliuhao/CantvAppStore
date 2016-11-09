@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -37,7 +36,6 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
     }
     @Override
     protected RecyclerView.ViewHolder generateViewHolder(ViewGroup parent, int viewType) {
-        Log.i(TAG, "generateViewHolder: ");
         View itemView= LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_download_item,parent,false);
         DownloadViewHolder holder=new DownloadViewHolder(itemView);
         holder.eventListener=new ItemEventListener();
@@ -46,11 +44,8 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
 
     @Override
     protected void bindContentData(DownloadTask task, RecyclerView.ViewHolder holder, int position) {
-        Log.i(TAG, "bindContentData: ");
         DownloadViewHolder viewHolder= (DownloadViewHolder) holder;
         viewHolder.appNameTv.setText(task.getFileName());
-        viewHolder.appSizeTv.setText(StringUtils.formatFileSize(task.getCompletedSize(),false)+"/"+StringUtils.formatFileSize(task.getTotalSize(),false));
-        viewHolder.appDownloadProgressBar.setProgress((int)task.getPercent());
         viewHolder.position=position;
         viewHolder.downloadTask=task;
         viewHolder.appContentLayout.setOnFocusChangeListener(viewHolder.eventListener);
@@ -75,7 +70,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
         ImageView appIconImgVi,appDownloadStatusImgVi;
         ProgressBar appDownloadProgressBar;
         RelativeLayout appControlLayout ,appContentLayout;
-        Button appDeleteBtn,appControlBtn;
+        TextView appDeleteBtn,appControlBtn;
 
         DownloadTask downloadTask;
         ItemEventListener eventListener;
@@ -89,7 +84,6 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
             initView();
             initRunnable();
             downloadListener=new DownloadListener();
-            Log.i(TAG, "DownloadViewHolder: structor");
         }
         private void initRunnable(){
 
@@ -188,21 +182,18 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
             appDownloadStatusTv= (TextView) itemView.findViewById(R.id.download_item_status_tv);
             appControlLayout= (RelativeLayout) itemView.findViewById(R.id.download_item_control_rlayout);
             appContentLayout= (RelativeLayout) itemView.findViewById(R.id.download_item_content_rlayout);
-            appDeleteBtn= (Button) itemView.findViewById(R.id.download_item_delete_btn);
-            appControlBtn= (Button) itemView.findViewById(R.id.download_item_control_btn);
+            appDeleteBtn= (TextView) itemView.findViewById(R.id.download_item_delete_btn);
+            appControlBtn= (TextView) itemView.findViewById(R.id.download_item_control_btn);
             itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
                 @Override
                 public void onViewAttachedToWindow(View v) {
-                    Log.i(TAG, "onViewAttachedToWindow: ");
                     initDownloadListener();
                 }
 
                 @Override
                 public void onViewDetachedFromWindow(View v) {
-                    Log.i(TAG, "onViewDetachedFromWindow: ");
                     downloadTask.removeDownloadListener(downloadListener);
                     v.removeCallbacks(showControlViewRunnable);
-                    v.removeCallbacks(refreshStatusRunnable);
                 }
             });
         }
