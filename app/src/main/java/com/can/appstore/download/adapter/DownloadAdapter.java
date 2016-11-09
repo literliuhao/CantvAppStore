@@ -11,6 +11,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.download.DownloadPresenterImpl;
+import com.can.appstore.eventbus.event.DownloadEvent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -75,16 +81,63 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
         DownloadTask downloadTask;
         ItemEventListener eventListener;
         private DownloadListener downloadListener;
-        private Runnable showControlViewRunnable,refreshStatusRunnable;
+        private Runnable showControlViewRunnable,refreshStatusRunnable,selectedViewRunnable;
+
 
         int position=-1;
 
+        private EventBus eventBus;
+
         public DownloadViewHolder(View itemView) {
             super(itemView);
+            init();
+        }
+        private void init(){
+            eventBus=EventBus.getDefault();
+            downloadListener=new DownloadListener();
             initView();
             initRunnable();
-            downloadListener=new DownloadListener();
         }
+
+
+
+        private void initView() {
+            appNameTv= (TextView) itemView.findViewById(R.id.download_item_title_tv);
+            appSizeTv= (TextView) itemView.findViewById(R.id.download_item_size_tv);
+            appIconImgVi= (ImageView) itemView.findViewById(R.id.download_item_appicon_imgvi);
+            appDownloadProgressBar= (ProgressBar) itemView.findViewById(R.id.download_item_progress);
+            appDownloadStatusImgVi= (ImageView) itemView.findViewById(R.id.download_item_status_imgvi);
+            appDownloadStatusTv= (TextView) itemView.findViewById(R.id.download_item_status_tv);
+            appControlLayout= (RelativeLayout) itemView.findViewById(R.id.download_item_control_rlayout);
+            appContentLayout= (RelativeLayout) itemView.findViewById(R.id.download_item_content_rlayout);
+            appDeleteBtn= (TextView) itemView.findViewById(R.id.download_item_delete_btn);
+            appControlBtn= (TextView) itemView.findViewById(R.id.download_item_control_btn);
+            itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View v) {
+                    initDownloadListener();
+                    eventBus.register(DownloadViewHolder.this);
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+                    downloadTask.removeDownloadListener(downloadListener);
+                    v.removeCallbacks(showControlViewRunnable);
+                    v.removeCallbacks(selectedViewRunnable);
+                    eventBus.unregister(DownloadViewHolder.this);
+
+                }
+            });
+        }
+
+        public void  initDownloadListener(){
+            if(downloadTask!=null){
+                downloadTask.removeDownloadListener(downloadListener);
+                downloadTask.addDownloadListener(downloadListener);
+            }
+        }
+
+
         private void initRunnable(){
 
             showControlViewRunnable=new Runnable() {
@@ -101,13 +154,47 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
                     refreshDownloadStatus();
                 }
             };
+
+            selectedViewRunnable=new Runnable() {
+                @Override
+                public void run() {
+                    appContentLayout.setSelected(true);
+                }
+            };
         }
+
+        /**
+         * item显示右侧controlview
+         */
         private void showControlViewDelay(){
             itemView.postDelayed(showControlViewRunnable,50);
         }
+
+        /**
+         * item隐藏右侧controlview
+         */
         public void hidecotrolView(){
             itemView.removeCallbacks(showControlViewRunnable);
             appControlLayout.setVisibility(View.GONE);
+        }
+
+        /**
+         * 设置item左侧selected选中状态
+         */
+        public void setContentLayoutSelected(){
+            itemView.postDelayed(selectedViewRunnable,50);
+        }
+
+        /**
+         * 设置item左侧Unselected选中状态
+         */
+        public void setContentLayoutUnselected(){
+            itemView.removeCallbacks(selectedViewRunnable);
+            appContentLayout.setSelected(false);
+        }
+
+        public void refreshStatus(){
+            itemView.post(refreshStatusRunnable);
         }
         /**
          * 更新控制按钮状态
@@ -169,41 +256,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
             appSizeTv.setText(StringUtils.formatFileSize(downloadTask.getCompletedSize(),false)+
                     "/"+StringUtils.formatFileSize(downloadTask.getTotalSize(),false));
         }
-        public void refreshStatus(){
-            itemView.post(refreshStatusRunnable);
-        }
 
-        private void initView() {
-            appNameTv= (TextView) itemView.findViewById(R.id.download_item_title_tv);
-            appSizeTv= (TextView) itemView.findViewById(R.id.download_item_size_tv);
-            appIconImgVi= (ImageView) itemView.findViewById(R.id.download_item_appicon_imgvi);
-            appDownloadProgressBar= (ProgressBar) itemView.findViewById(R.id.download_item_progress);
-            appDownloadStatusImgVi= (ImageView) itemView.findViewById(R.id.download_item_status_imgvi);
-            appDownloadStatusTv= (TextView) itemView.findViewById(R.id.download_item_status_tv);
-            appControlLayout= (RelativeLayout) itemView.findViewById(R.id.download_item_control_rlayout);
-            appContentLayout= (RelativeLayout) itemView.findViewById(R.id.download_item_content_rlayout);
-            appDeleteBtn= (TextView) itemView.findViewById(R.id.download_item_delete_btn);
-            appControlBtn= (TextView) itemView.findViewById(R.id.download_item_control_btn);
-            itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
-                @Override
-                public void onViewAttachedToWindow(View v) {
-                    initDownloadListener();
-                }
-
-                @Override
-                public void onViewDetachedFromWindow(View v) {
-                    downloadTask.removeDownloadListener(downloadListener);
-                    v.removeCallbacks(showControlViewRunnable);
-                }
-            });
-        }
-
-        public void  initDownloadListener(){
-            if(downloadTask!=null){
-                downloadTask.removeDownloadListener(downloadListener);
-                downloadTask.addDownloadListener(downloadListener);
-            }
-        }
         private class DownloadListener implements DownloadTaskListener {
             @Override
             public void onPrepare(DownloadTask downloadTask) {
@@ -242,6 +295,14 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
             @Override
             public void onError(DownloadTask downloadTask, int errorCode) {
                 Log.i(TAG, "onError: ");
+                refreshStatus();
+            }
+        }
+        @Subscribe(threadMode = ThreadMode.MAIN)
+        public void onDownloadEvent(DownloadEvent event){
+            Log.i(TAG, "onDownloadEvent: DownloadEvent="+event.toString());
+            if(DownloadPresenterImpl.TAG_DOWNLOAD_UPDATA_STATUS.equals(event.getTag())
+                    &&DownloadEvent.DOWNLOADEVENT_UPDATE_LIST_STATUS==event.getEventType()){
                 refreshStatus();
             }
         }
@@ -290,21 +351,6 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
                     case DownloadStatus.DOWNLOAD_STATUS_ERROR:
                         DownloadManager.getInstance(v.getContext().
                                 getApplicationContext()).resume(holder.downloadTask.getId());
-//                        holder.downloadTask= DownloadManager.getInstance(v.getContext().
-//                                getApplicationContext()).resume(holder.downloadTask.getId());
-//                        holder.initDownloadListener();
-
-//                        //因为resume时，如果是从数据库读取的话，返回重新创建的对象
-//                        try {
-//                            for (int i=0;i<data.size();i++){
-//                                if(holder.downloadTask.getId()==data.get(i).getId()){
-//                                    data.add(i,holder.downloadTask);
-//                                    break;
-//                                }
-//                            }
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
                         break;
                 }
                 //考虑到未执行的任务从init状态调pause状态时不会回掉，故此时手动刷新一次UI
@@ -335,9 +381,9 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask>{
             if(v.getId()==holder.appContentLayout.getId()){
                 if(hasFocus){
                     holder.showControlViewDelay();
-                    holder.appContentLayout.setSelected(true);
+                    holder.setContentLayoutSelected();
                 }else{
-                    holder.appContentLayout.setSelected(false);
+                    holder.setContentLayoutUnselected();
                 }
                 if(mOnItemEventListener!=null){
                     mOnItemEventListener.onItemContentFocusChanged(v,hasFocus,holder.position);

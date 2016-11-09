@@ -5,19 +5,22 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 
-import java.io.File;
+import com.can.appstore.eventbus.dispatcher.DownloadDispatcher;
+
 import java.util.List;
 
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
-import cn.can.tvlib.utils.FileUtils;
 
 /**
  * Created by laiforg on 2016/10/31.
  */
 
 public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter {
+
+
+    public static final String TAG_DOWNLOAD_UPDATA_STATUS="download_update_status";
 
     private DownloadContract.DownloadView mView;
 
@@ -63,14 +66,6 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
         for (DownloadTask task: mTasks) {
             downloadManager.cancel(task);
         }
-        new Thread(){
-            @Override
-            public void run() {
-                for (DownloadTask task: mTasks) {
-                    FileUtils.deleteFile(task.getSaveDirPath()+ File.separator+task.getFileName());
-                }
-            }
-        }.start();
         mView.showNoDataView();
     }
 
@@ -83,6 +78,7 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
             }
             downloadManager.pause(task);
         }
+        DownloadDispatcher.getInstance().postUpdateStatusEvent(TAG,TAG_DOWNLOAD_UPDATA_STATUS);
     }
 
     @Override

@@ -300,7 +300,7 @@ public class DownloadTask implements Runnable {
      */
     public void cancel() {
         setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
-        File temp = new File(mSaveDirPath + mFileName);
+        File temp = new File(mSaveDirPath +File.separator+ mFileName);
         if (temp.exists()) {
             temp.delete();
         }
