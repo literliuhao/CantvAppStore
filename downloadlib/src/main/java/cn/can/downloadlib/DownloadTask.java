@@ -116,11 +116,11 @@ public class DownloadTask implements Runnable {
                     }
                     if (TextUtils.isEmpty(response.header("Content-Range"))) {
                         //返回的没有Content-Range 不支持断点下载 需要重新下载
-                        File alreadyDownloadedFile = new File(mSaveDirPath + mFileName);
+                        File alreadyDownloadedFile = new File(path);
                         if (alreadyDownloadedFile.exists()) {
                             alreadyDownloadedFile.delete();
                         }
-                        mRandomAccessFile = new RandomAccessFile(mSaveDirPath + mFileName, "rwd");
+                        mRandomAccessFile = new RandomAccessFile(path, "rwd");
                         mDownloadedSize = 0;
                     }
                     mRandomAccessFile.seek(mDownloadedSize);
@@ -300,7 +300,7 @@ public class DownloadTask implements Runnable {
      */
     public void cancel() {
         setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
-        File temp = new File(mSaveDirPath + mFileName);
+        File temp = new File(mSaveDirPath +File.separator+ mFileName);
         if (temp.exists()) {
             temp.delete();
         }

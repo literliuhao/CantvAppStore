@@ -12,6 +12,7 @@ import com.can.appstore.download.adapter.DownloadAdapter;
 
 import java.util.List;
 
+import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
@@ -44,6 +45,22 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
         initHandler();
         setListener();
     }
+
+    private void initView() {
+        CanRecyclerViewDivider itemDecoration=new CanRecyclerViewDivider(40);
+        mFocusMoveUtil=new FocusMoveUtil(this,getWindow().getDecorView().findViewById(android.R.id.content),
+                R.mipmap.btn_focus);
+        mNoDataTv= (TextView) findViewById(R.id.download_no_data_tv);
+        mRowTv= (TextView) findViewById(R.id.download_row_tv);
+        mPauseAllBtn= (TextView) findViewById(R.id.download_pause_all_btn);
+        mDeleteAllBtn= (TextView) findViewById(R.id.download_delete_all_btn);
+        mCanRecyclerView= (CanRecyclerView) findViewById(R.id.download_recyclerview);
+        mCanRecyclerView.addItemDecoration(itemDecoration);
+
+        mLayoutManager=new CanRecyclerView.CanLinearLayoutManager(this);
+        mCanRecyclerView.setLayoutManager(mLayoutManager);
+    }
+
     private void initHandler() {
         hanlder=new Handler();
         mFocusMoveRunnable=new Runnable() {
@@ -100,26 +117,11 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
         downloadPresenter.loadData();
     }
 
-    private void initView() {
-        CanRecyclerViewDivider itemDecoration=new CanRecyclerViewDivider(40);
-        mFocusMoveUtil=new FocusMoveUtil(this,getWindow().getDecorView().findViewById(android.R.id.content),
-                R.mipmap.btn_focus);
-        mNoDataTv= (TextView) findViewById(R.id.download_no_data_tv);
-        mRowTv= (TextView) findViewById(R.id.download_row_tv);
-        mPauseAllBtn= (TextView) findViewById(R.id.download_pause_all_btn);
-        mDeleteAllBtn= (TextView) findViewById(R.id.download_delete_all_btn);
-        mCanRecyclerView= (CanRecyclerView) findViewById(R.id.download_recyclerview);
-        mCanRecyclerView.addItemDecoration(itemDecoration);
 
-        mLayoutManager=new CanRecyclerView.CanLinearLayoutManager(this);
-        mCanRecyclerView.setLayoutManager(mLayoutManager);
-    }
 
     @Override
     public void onDataLoaded(List<DownloadTask> tasks) {
-        //FIXME 删除 只是为了增加条目，测试Item多的情况 start
-        //tasks.addAll(tasks);
-        //FIXME 删除 只是为了增加条目，测试Item多的情况 end
+        refreshControlAllBtn(tasks);
         if(mAdapter==null){
             mPresenter.onItemFocused(0);
             mAdapter=new DownloadAdapter(tasks);
@@ -187,6 +189,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
     public void refreshRowNumber(String formatRow) {
         mRowTv.setText(formatRow);
     }
+
     private void focusMoveDelay(){
         if(mFocusMoveUtil!=null){
             hanlder.removeCallbacks(mFocusMoveRunnable);
@@ -217,5 +220,23 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
         if(mCanRecyclerView!=null){
             mCanRecyclerView.setVisibility(View.VISIBLE);
         }
+    }
+
+    //只有有一个未完成的不是pause状态，则按钮为全部暂停
+    private void refreshControlAllBtn(List<DownloadTask> list ){
+        String text=pauseAllTaskString;
+        for (DownloadTask task: list) {
+            if(DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING==task.getDownloadStatus()
+                    ||DownloadStatus.DOWNLOAD_STATUS_INIT==task.getDownloadStatus()
+                    ||DownloadStatus.DOWNLOAD_STATUS_PREPARE==task.getDownloadStatus()
+                    ||DownloadStatus.DOWNLOAD_STATUS_START==task.getDownloadStatus()){
+                text=pauseAllTaskString;
+                break;
+            }else{
+                text=resumeAllTaskString;
+            }
+        }
+        mPauseAllBtn.setText(text);
+
     }
 }
