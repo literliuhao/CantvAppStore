@@ -20,8 +20,8 @@
         android:text="下载"/>
     <TextView
         android:id="@+id/download_row_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/px120"
+        android:layout_height="@dimen/px30"
         android:layout_alignParentRight="true"
         android:layout_marginEnd="@dimen/px160"
         android:layout_marginTop="@dimen/px80"
@@ -73,7 +73,7 @@
         android:paddingTop="@dimen/px30"
         android:paddingStart="@dimen/px64"
         android:paddingEnd="@dimen/px160"
-        android:paddingBottom="@dimen/px140"
+        android:paddingBottom="@dimen/px130"
         android:clipChildren="false"
         android:clipToPadding="false"
         tools:background="@android:color/holo_purple"
@@ -85,7 +85,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/white_opa80"
         android:textSize="@dimen/fontsize_40"
-        android:text="暂时没有下载任务！亲！"
+        android:text="当前暂无下载任务！"
         android:layout_marginStart="@dimen/px800"
         android:layout_marginTop="@dimen/px500"
         android:visibility="gone"

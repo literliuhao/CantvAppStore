@@ -8,11 +8,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.target.Target;
 import com.can.appstore.R;
 import com.can.appstore.entity.SpecialTopic;
 
 import java.util.List;
 
+import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
@@ -40,10 +43,17 @@ public class SpecialAdapter extends CanRecyclerViewAdapter<SpecialTopic> {
 
     @Override
     protected void bindContentData(SpecialTopic data, RecyclerView.ViewHolder holder, int position) {
-        SubjectViewHolder subjectViewHolder=(SubjectViewHolder) holder;
+        final SubjectViewHolder subjectViewHolder=(SubjectViewHolder) holder;
         subjectViewHolder.titleTv.setText(data.getTitle());
-        subjectViewHolder.iconImgvi.setScaleType(ImageView.ScaleType.FIT_XY);
-        ImageLoader.getInstance().load(mContext,subjectViewHolder.iconImgvi,data.getIcon());
+        subjectViewHolder.iconImgvi.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        ImageLoader.getInstance().load(mContext, subjectViewHolder.iconImgvi, data.getIcon(),R.mipmap.icon_load_default,R.mipmap.icon_loading_fail, new GlideLoadTask.SuccessCallback() {
+            @Override
+            public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                subjectViewHolder.iconImgvi.setScaleType(ImageView.ScaleType.FIT_XY);
+                subjectViewHolder.iconImgvi.setImageDrawable(resource);
+                return true;
+            }
+        }, null);
     }
     public static class  SubjectViewHolder extends RecyclerView.ViewHolder{
         private RoundCornerImageView iconImgvi;

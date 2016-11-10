@@ -18,8 +18,8 @@ public interface DownloadContract {
         void loadData();
         void onItemFocused(int focusedPos);
         void deleteAllTasks();
-        void pauseAllTasks();
-        void resumeAllTasks();
+        boolean pauseAllTasks();
+        boolean resumeAllTasks();
     }
 
     public static interface DownloadView extends BaseView<DownloadPresenter>{

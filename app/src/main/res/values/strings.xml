@@ -11,6 +11,7 @@
     <!--下载页-->
     <string name="download_pause_all">全部暂停</string>
     <string name="download_resume_all">全部继续</string>
+    <string name="download_no_task">当前暂无下载任务！</string>
 
     <!--卸载管理-->
     <string name="bt_batch_uninstall">批量卸载</string>

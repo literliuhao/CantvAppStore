@@ -5,6 +5,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 
+import com.can.appstore.R;
 import com.can.appstore.eventbus.dispatcher.DownloadDispatcher;
 
 import java.util.List;
@@ -62,35 +63,60 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
 
     @Override
     public void deleteAllTasks() {
+        if(mTasks==null||mTasks.size()==0){
+           mView.showToast(R.string.download_no_task);
+        }
         DownloadManager downloadManager=DownloadManager.getInstance(mView.getContext().getApplicationContext());
         for (DownloadTask task: mTasks) {
             downloadManager.cancel(task);
         }
+        mTasks.clear();
         mView.showNoDataView();
     }
 
     @Override
-    public void pauseAllTasks() {
+    public boolean pauseAllTasks() {
+        if(mTasks==null||mTasks.size()==0){
+            mView.showToast(R.string.download_no_task);
+            return false;
+        }
         DownloadManager downloadManager=DownloadManager.getInstance(mView.getContext().getApplicationContext());
+        int pauseSize=0;
         for (DownloadTask task: mTasks) {
             if(DownloadStatus.DOWNLOAD_STATUS_COMPLETED==task.getDownloadStatus()){
                 continue;
             }
+            pauseSize++;
             downloadManager.pause(task);
         }
-        DownloadDispatcher.getInstance().postUpdateStatusEvent(TAG,TAG_DOWNLOAD_UPDATA_STATUS);
+
+        if(pauseSize>0){
+            DownloadDispatcher.getInstance().postUpdateStatusEvent(TAG,TAG_DOWNLOAD_UPDATA_STATUS);
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public void resumeAllTasks() {
+    public boolean resumeAllTasks() {
+        if(mTasks==null||mTasks.size()==0){
+            mView.showToast(R.string.download_no_task);
+            return false;
+        }
+        int pauseSize=0;
         DownloadManager downloadManager=DownloadManager.getInstance(mView.getContext().getApplicationContext());
         for (int i=0;i<mTasks.size();i++){
             if(DownloadStatus.DOWNLOAD_STATUS_COMPLETED==mTasks.get(i).getDownloadStatus()){
                continue;
             }
             downloadManager.resume(mTasks.get(i).getId());
+            pauseSize++;
         }
-        mView.onDataLoaded(mTasks);
+        if(pauseSize>0){
+            DownloadDispatcher.getInstance().postUpdateStatusEvent(TAG,TAG_DOWNLOAD_UPDATA_STATUS);
+            return true;
+        }
+        return false;
     }
 
 }
