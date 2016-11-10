@@ -13,6 +13,7 @@ import com.can.appstore.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.StringUtils;
@@ -50,14 +51,14 @@ public class UninstallManagerAdapter extends CanRecyclerViewAdapter<PackageUtil.
     }
 
     class UninstallViewHolder extends TagViewHolder {
-        ImageView imgIcon;
+        RoundCornerImageView imgIcon;
         TextView tvName;
         TextView tvSize;
         TextView tvVersion;
 
         public UninstallViewHolder(View itemView) {
             super(itemView);
-            imgIcon = (ImageView) itemView.findViewById(R.id.iv_icon);
+            imgIcon = (RoundCornerImageView) itemView.findViewById(R.id.iv_icon);
             tvName = (TextView) itemView.findViewById(R.id.tv_name);
             tvSize = (TextView) itemView.findViewById(R.id.tv_size);
             tvVersion = (TextView) itemView.findViewById(R.id.tv_version);

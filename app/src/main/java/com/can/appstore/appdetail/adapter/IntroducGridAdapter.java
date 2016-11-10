@@ -2,18 +2,15 @@ package com.can.appstore.appdetail.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.can.appstore.R;
 
 import java.util.List;
 
-import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
@@ -23,14 +20,14 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 public class IntroducGridAdapter extends CanRecyclerViewAdapter {
     private Context mContext;
-    private List mRecommedPic;
+    private List<String> mIntroduceList;
     private LayoutInflater mInflater;
     int[] imgRes = {R.drawable.a, R.drawable.b, R.drawable.c, R.drawable.d, R.drawable.e};
 
     public IntroducGridAdapter(Context context, List<String> datas) {
         super(datas);
         this.mContext = context;
-        this.mRecommedPic = datas;
+        this.mIntroduceList = datas;
         mInflater = LayoutInflater.from(mContext);
     }
 
@@ -45,6 +42,7 @@ public class IntroducGridAdapter extends CanRecyclerViewAdapter {
     @Override
     protected void bindContentData(Object mDatas, RecyclerView.ViewHolder holder, int position) {
         ((IntroducGridViewHolder) holder).introducItem.setImageResource(imgRes[position]);
+        // TODO 加载图片
     }
 
     class IntroducGridViewHolder extends CanRecyclerView.ViewHolder {

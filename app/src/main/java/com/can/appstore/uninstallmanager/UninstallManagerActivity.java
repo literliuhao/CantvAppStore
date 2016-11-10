@@ -26,6 +26,8 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PackageUtil;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
+
 /**
  * 本地卸载管理页面
  * Created by JasonF on 2016/10/13.
@@ -50,6 +52,7 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
     private TextView mTvItemTotalRows;
     private TextProgressBar mProgressStorage;
     private TextView mSelectCount;
+    private TextView mNotUninstallApp;
     private LinearLayout mLinearLayoutSelectApp;
     private int mCurSelectPosition;
 
@@ -61,8 +64,8 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
         mScaleUtil = new FocusScaleUtil();
         mListFocusMoveRunnable = new ListFocusMoveRunnable();
         mPresenter = new UninstallManagerPresenter(this, UninstallManagerActivity.this);
-        mPresenter.startLoad();
         initView();
+        mPresenter.startLoad();
     }
 
     @Override
@@ -92,6 +95,7 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
         mTvItemTotalRows = (TextView) findViewById(R.id.tv_total_rows);
         mProgressStorage = (TextProgressBar) findViewById(R.id.progress_stroage);
         mSelectCount = (TextView) findViewById(R.id.tv_select_count);
+        mNotUninstallApp = (TextView) findViewById(R.id.tv_no_data);
         mLinearLayoutSelectApp = (LinearLayout) findViewById(R.id.ll_select_app);
         mCanRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(UninstallManagerActivity.this, 3, CanRecyclerView.CanGridLayoutManager.VERTICAL, false), new CanRecyclerView.OnFocusSearchCallback() {
             @Override
@@ -195,6 +199,10 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
 
     @Override
     public void loadAllAppInfoSuccess(List<PackageUtil.AppInfo> infoList) {
+        if (infoList.size() == 0) {
+            mNotUninstallApp.setVisibility(View.VISIBLE);
+            return;
+        }
         if (mUninstallManagerAdapter == null) {
             mUninstallManagerAdapter = new UninstallManagerAdapter(UninstallManagerActivity.this, infoList);
             addRecyclerViewListener();

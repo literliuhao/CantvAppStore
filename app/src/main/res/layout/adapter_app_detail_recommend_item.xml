@@ -31,10 +31,10 @@
             android:id="@+id/tv_recommend_item_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/dimen_14px"
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:singleLine="true"
-            android:text="名称"
             android:textColor="@color/uninstall_app_name_color"
             android:textSize="@dimen/fontsize_34px"/>
 
@@ -46,7 +46,6 @@
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:singleLine="true"
-            android:text="83M | 1万+"
             android:textColor="@color/tv_app_version_color"
             android:textSize="@dimen/fontsize_26px"/>
 
