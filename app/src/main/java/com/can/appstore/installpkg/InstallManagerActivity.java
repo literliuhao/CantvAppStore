@@ -41,10 +41,9 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
  * Created by shenpx on 2016/10/12 0012.
  */
 
-public class InstallManagerActivity extends Activity {
+public class InstallManagerActivity extends Activity implements InstallContract.View {
 
     private CanRecyclerView mRecyclerView;
-    private List<AppInfoBean> mDatas;//安装包集合
     private InstallManagerAdapter mRecyclerAdapter;
     private TextView mReminder;
     private Button mDeleteButton;
@@ -54,14 +53,9 @@ public class InstallManagerActivity extends Activity {
     private int mCurrentPositon;
     private RelativeLayout deleteLayout;
     private TextView mRoomSize;
-    private String path;
     private TextView mTotalnum;
     private TextView mCurrentnum;
     private ProgressBar mProgressBar;
-    private int mSdTotalSize;
-    private int mSdSurplusSize;
-    private int mUsedSdSize;
-    private String mSdAvaliableSize;
     private BroadcastReceiver mInstallApkReceiver;
     private IntentFilter intentFilter;
     private List<AppInfoBean> mInstallDatas;//安装中集合
@@ -73,14 +67,14 @@ public class InstallManagerActivity extends Activity {
     private MyFocusRunnable myFocusRunnable;
     private String mCurPackageName = "";//当前包名
     private String mCurVersionCode = "";//当前版本号
+    private InstallPresenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_installmanager);
-        mDatas = new ArrayList<AppInfoBean>();
         mInstallDatas = new ArrayList<AppInfoBean>();
-
+        mPresenter = new InstallPresenter(this,InstallManagerActivity.this);
         initView();
         initData();
         initFocusChange();
@@ -113,25 +107,9 @@ public class InstallManagerActivity extends Activity {
                 public void onReceive(Context context, Intent intent) {
                     if (intent.getAction().equals("android.intent.action.PACKAGE_ADDED") || intent.getAction().equals("android.intent.action.PACKAGE_REPLACED")) {
                         String packageName = intent.getDataString().substring(8);
-                        /*for (int i = mInstallDatas.size() - 1; i >= 0; i--) {
-                            AppInfoBean bean = mInstallDatas.get(i);
-                            if (bean.getPackageName().equals(packageName)) {
-                                bean.setInstall(true);
-                            }
-                        }*/
                         //刷新图标（可能多重版本）通过广播获取安装完成刷新ui  +&& bean.getVersionCode().equals(String.valueOf(versonCode))
                         int versonCode = UpdateUtils.getVersonCode(MyApp.mContext, packageName);
-                        for (int i = mDatas.size() - 1; i >= 0; i--) {
-                            AppInfoBean bean = mDatas.get(i);
-                            if (bean.getPackageName().equals(packageName) && bean.getVersionCode().equals(String.valueOf(versonCode)))
-                            {
-                                if (bean.getInstall()) {
-                                    //bean.setInstall(true);
-                                    mRecyclerAdapter.notifyItemChanged(i);
-                                    Toast.makeText(MyApp.mContext, packageName + "111111", Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        }
+                        mPresenter.isInstalled(packageName,versonCode);
                         Toast.makeText(MyApp.mContext, packageName + "安装成功", Toast.LENGTH_LONG).show();
                     } else if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
                         Toast.makeText(MyApp.mContext, "安装失败", Toast.LENGTH_LONG).show();
@@ -168,6 +146,7 @@ public class InstallManagerActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mInstallApkReceiver);
+        mPresenter.release();
     }
 
     private void initFocusChange() {
@@ -214,7 +193,7 @@ public class InstallManagerActivity extends Activity {
                 if (hasFocus) {
                     mFocusedListChild = view;
                     mRecyclerView.postDelayed(myFocusRunnable, 50);
-                    setNum(position);
+                    mPresenter.setNum(position);
                     mCurrentPositon = position;
 
                 } else {
@@ -230,22 +209,22 @@ public class InstallManagerActivity extends Activity {
         mDeleteAllButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                removeAllData();
+                mPresenter.deleteAll();
             }
         });
 
         mDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                removeSelectData();
+                mPresenter.deleteInstall();
             }
         });
 
         mRecyclerAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, int position, Object data) {
-                Toast.makeText(InstallManagerActivity.this, position + 1 + "/" + mDatas.size(),
-                        Toast.LENGTH_SHORT).show();
+                /*Toast.makeText(InstallManagerActivity.this, position + 1 + "/" + mDatas.size(),
+                        Toast.LENGTH_SHORT).show();*/
                 //mCurrentPositon = position;
                 showMenu(view, position);
             }
@@ -253,25 +232,9 @@ public class InstallManagerActivity extends Activity {
     }
 
     protected void initData() {
-        mSdTotalSize = UpdateUtils.getSDTotalSize();
-        mSdSurplusSize = UpdateUtils.getSDSurplusSize();
-        mSdAvaliableSize = UpdateUtils.getSDAvaliableSize();
-//        mUsedSdSize = mSdTotalSize - mSdSurplusSize;
-        mProgressBar.setMax(mSdTotalSize);
-        mProgressBar.setProgress(mSdSurplusSize);
-        mRoomSize.setText(getString(R.string.install_sdavaliable_size) + mSdAvaliableSize);
-        InstallPkgUtils.myFiles.clear();
-        path = Environment.getExternalStorageDirectory().getPath().toString() + File.separator + "Movies";
-        List appList = InstallPkgUtils.FindAllAPKFile(path);
-        mDatas.clear();
-        if (appList.size() < 1) {
-            mReminder.setVisibility(View.INVISIBLE);
-        } else {
-            //closeDialog();
-            mDatas.addAll(appList);
-            setNum(0);
-            mRecyclerAdapter.notifyDataSetChanged();
-        }
+        mPresenter.getSDInfo();
+        mPresenter.getInstallPkgList();
+        mPresenter.setNum(0);
     }
 
     private void initView() {
@@ -287,12 +250,68 @@ public class InstallManagerActivity extends Activity {
         mFocusMoveUtil = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
         mFocusScaleUtil = new FocusScaleUtil();
         myFocusRunnable = new MyFocusRunnable();
-        mRecyclerAdapter = new InstallManagerAdapter(mDatas);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
-        mRecyclerView.setAdapter(mRecyclerAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setSelected(true);
 
+    }
+
+    @Override
+    public void showLoadingDialog() {
+        if (mLoadingDialog == null) {
+            mLoadingDialog = LoadingDialog.createLoadingDialog(this, getString(R.string.install_search_updateinfo));
+            mLoadingDialog.show();
+        }
+    }
+
+    @Override
+    public void hideLoadingDialog() {
+        if (mLoadingDialog != null) {
+            mLoadingDialog.dismiss();
+            mLoadingDialog = null;
+        }
+    }
+
+    @Override
+    public void showNoData() {
+        mReminder.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideNoData() {
+        mReminder.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void showSDProgressbar(int currentsize, int total, String sdinfo) {
+        mProgressBar.setMax(total);
+        mProgressBar.setProgress(currentsize);
+        mRoomSize.setText(getString(R.string.install_sdavaliable_size) + sdinfo);
+    }
+
+    @Override
+    public void refreshItem(int position) {
+        mRecyclerAdapter.notifyItemRemoved(position);//自带动画
+    }
+
+    @Override
+    public void refreshAll() {
+        mRecyclerAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void showCurrentNum(int current, int total) {
+        mCurrentnum.setText(current+"");
+        mTotalnum.setText("/" + total + "行");
+    }
+
+    @Override
+    public void showInstallPkgList(List<AppInfoBean> mDatas) {
+        if (mRecyclerAdapter == null) {
+            mRecyclerAdapter = new InstallManagerAdapter(mDatas);
+        }
+        mRecyclerView.setAdapter(mRecyclerAdapter);
+        mRecyclerAdapter.notifyDataSetChanged();
     }
 
     private class MyFocusRunnable implements Runnable {
@@ -306,21 +325,6 @@ public class InstallManagerActivity extends Activity {
     }
 
     /**
-     * 删除部分
-     */
-    private void removeSelectData() {
-        for (int i = mDatas.size() - 1; i >= 0; i--) {
-            AppInfoBean bean = mDatas.get(i);
-            if (bean.getInstall()) {
-                mDatas.remove(i);
-//                InstallPkgUtils.deleteApkPkg(mDatas.get(i).getFliePath());//可以删除安装包
-                mRecyclerAdapter.notifyItemRemoved(i);//自带动画
-            }
-        }
-
-    }
-
-    /**
      * 添加item
      *
      * @param
@@ -329,29 +333,6 @@ public class InstallManagerActivity extends Activity {
         initData();
         mRecyclerAdapter.notifyDataSetChanged();
         mReminder.setVisibility(View.INVISIBLE);
-    }
-
-    /**
-     * 删除item
-     *
-     * @param position
-     */
-    public void removeData(int position) {
-        mDatas.remove(position);
-//        InstallPkgUtils.deleteApkPkg(mDatas.get(position).getFliePath());//可以删除安装包
-        //mRecyclerAdapter.notifyItemRemoved(position);//自带动画
-        mRecyclerAdapter.notifyDataSetChanged();//无自带动画
-    }
-
-    /**
-     * 删除全部
-     *
-     * @param
-     */
-    public void removeAllData() {
-        mDatas.clear();
-        mRecyclerAdapter.notifyDataSetChanged();
-        mReminder.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -412,7 +393,7 @@ public class InstallManagerActivity extends Activity {
             public void onClick(View v) {
                 deleteLayout.setVisibility(View.INVISIBLE);
                 //删除键
-                removeData(mCurrentPositon);
+                mPresenter.deleteOne(mCurrentPositon);
                 isVisibility = false;
             }
         });
@@ -422,14 +403,8 @@ public class InstallManagerActivity extends Activity {
                 deleteLayout.setVisibility(View.INVISIBLE);
                 //开始安装应用，安装键
                 mInstalling.setVisibility(View.VISIBLE);
-                //mCurPackageName = mDatas.get(position).getPackageName();
-                //mCurVersionCode = mDatas.get(position).getVersionCode();
-                mDatas.get(position).setInstalling(true);//开始安装
-                //mInstallDatas.add(mDatas.get(position));//加入安装中集合
-                mDatas.get(position).setInstall(true);//positon传递
                 isVisibility = false;
-                InstallPkgUtils.installApkFromF(MyApp.mContext,
-                        new File(mDatas.get(position).getFliePath()), true, mDatas.get(position).getPackageName());
+                mPresenter.installApk(position);
             }
         });
 
@@ -458,26 +433,6 @@ public class InstallManagerActivity extends Activity {
     }
 
     /**
-     * 显示Dialog
-     */
-    private void showDialog() {
-        if (mLoadingDialog == null) {
-            mLoadingDialog = LoadingDialog.createLoadingDialog(this, getString(R.string.install_search_updateinfo));
-            mLoadingDialog.show();
-        }
-    }
-
-    /**
-     * 关闭Dialog
-     */
-    private void closeDialog() {
-        if (mLoadingDialog != null) {
-            mLoadingDialog.dismiss();
-            mLoadingDialog = null;
-        }
-    }
-
-    /**
      * 打开更新管理界面
      *
      * @param v
@@ -486,21 +441,4 @@ public class InstallManagerActivity extends Activity {
         startActivity(new Intent(this, UpdateManagerActivity.class));
     }
 
-    /**
-     * 行数提示
-     *
-     * @param position
-     */
-    private void setNum(int position) {
-        int total = mDatas.size() / 3;
-        if (mDatas.size() % 3 != 0) {
-            total += 1;
-        }
-        int cur = position / 3 + 1;
-        if (total == 0) {
-            cur = 0;
-        }
-        mCurrentnum.setText(cur + "/");
-        mTotalnum.setText(total + "行");
-    }
 }

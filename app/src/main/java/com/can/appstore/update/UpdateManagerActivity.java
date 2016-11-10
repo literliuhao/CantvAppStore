@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
+import com.can.appstore.installpkg.InstallManagerAdapter;
 import com.can.appstore.installpkg.view.LoadingDialog;
 import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.update.utils.UpdateUtils;
@@ -38,10 +39,9 @@ import cn.can.tvlib.utils.PreferencesUtils;
  * Created by shenpx on 2016/10/12 0012.
  */
 
-public class UpdateManagerActivity extends Activity {
+public class UpdateManagerActivity extends Activity implements UpdateContract.View {
 
     private CanRecyclerView mRecyclerView;
-    private List<AppInfoBean> mDatas;
     private UpdateManagerAdapter mRecyclerAdapter;
     private Button mDetectionButton;
     private Button mAutoButton;
@@ -52,9 +52,6 @@ public class UpdateManagerActivity extends Activity {
     private TextView mTotalnum;
     private TextView mCurrentnum;
     private ProgressBar mSizeProgressBar;
-    private int mSdTotalSize;
-    private int mSdSurplusSize;
-    private String mSdAvaliableSize;
     private int i;
     private ProgressBar mUpdateProgressBar;
     private Dialog mLoadingDialog;
@@ -64,16 +61,14 @@ public class UpdateManagerActivity extends Activity {
     private MyFocusRunnable myFocusRunnable;
     private CanDialog canDialog;
     private cn.can.downloadlib.DownloadManager manager;
+    private UpdatePresenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_updatemanager);
-        mDatas = new ArrayList<AppInfoBean>();
+        mPresenter = new UpdatePresenter(this, UpdateManagerActivity.this);
         mAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
-        if (!mAutoUpdate) {
-            showDialog();
-        }
         initView();
         initData();
         initFocusChange();
@@ -104,6 +99,7 @@ public class UpdateManagerActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mPresenter.release();
     }
 
     private void initFocusChange() {
@@ -138,7 +134,7 @@ public class UpdateManagerActivity extends Activity {
                 if (hasFocus) {
                     mFocusedListChild = view;
                     mRecyclerView.postDelayed(myFocusRunnable, 50);
-                    setNum(position);
+                    mPresenter.setNum(position);
 
                 } else {
                     mFocusScaleUtil.scaleToNormal();
@@ -153,26 +149,17 @@ public class UpdateManagerActivity extends Activity {
         mDetectionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(UpdateManagerActivity.this, "点击检测更新,item总数：" + mDatas.size(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(UpdateManagerActivity.this, "点击检测更新,item总数：" + mDatas.size(), Toast.LENGTH_SHORT).show();
                 mAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
                 if (mAutoUpdate) {
-                    mDatas.clear();
-                    mRecyclerAdapter.notifyDataSetChanged();
+                    mPresenter.clearList();
+                    mPresenter.setNum(0);
                     mReminder.setVisibility(View.VISIBLE);
                     mReminder.setText(R.string.update_start_autoupdate);
                     Toast.makeText(MyApp.mContext, R.string.update_start_autoupdate, Toast.LENGTH_LONG).show();
                     return;
                 } else {
-                    mDatas.clear();
-                    mRecyclerAdapter.notifyDataSetChanged();
-                    showDialog();
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            addData();
-                        }
-                    }, 2000);
-                    //addData();
+                    mPresenter.getInstallPkgList(mAutoUpdate);
                 }
             }
         });
@@ -190,10 +177,7 @@ public class UpdateManagerActivity extends Activity {
                     PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", true);
                     mAutoUpdate = true;
                     //initDialog("未开启");
-                    if (mDatas.size() < 1) {
-                        mReminder.setVisibility(View.VISIBLE);
-                        mReminder.setText(R.string.update_start_autoupdate);
-                    }
+                    mPresenter.getListSize();
                     Toast.makeText(UpdateManagerActivity.this, R.string.update_start_autoupdate, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -202,8 +186,8 @@ public class UpdateManagerActivity extends Activity {
         mRecyclerAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, int position, Object data) {
-                Toast.makeText(UpdateManagerActivity.this, position + 1 + "/" + mDatas.size(),
-                        Toast.LENGTH_SHORT).show();
+               /* Toast.makeText(UpdateManagerActivity.this, position + 1 + "/" + mDatas.size(),
+                        Toast.LENGTH_SHORT).show();*/
                 mCurrentPositon = position;
                 mUpdateProgressBar = (ProgressBar) view.findViewById(R.id.pb_updateapp_progressbar);
                 initProgress();
@@ -232,32 +216,9 @@ public class UpdateManagerActivity extends Activity {
     }
 
     protected void initData() {
-        mSdTotalSize = UpdateUtils.getSDTotalSize();
-        mSdSurplusSize = UpdateUtils.getSDSurplusSize();
-        mSdAvaliableSize = UpdateUtils.getSDAvaliableSize();
-        mSizeProgressBar.setMax(mSdTotalSize);
-        mSizeProgressBar.setProgress(mSdSurplusSize);
-        mRoomSize.setText(getString(R.string.update_sdavaliable_size) + mSdAvaliableSize);
-        if (mAutoUpdate) {
-            mReminder.setVisibility(View.VISIBLE);
-            mReminder.setText(getString(R.string.update_start_autoupdate));
-            return;
-        }
-        final List appList = UpdateUtils.getAppList();
-        mDatas.clear();
-        if (appList.size() < 1 || appList == null) {
-            mReminder.setVisibility(View.VISIBLE);
-        } else {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    closeDialog();
-                    mDatas.addAll(appList);
-                    mRecyclerAdapter.notifyDataSetChanged();
-                    setNum(0);
-                }
-            }, 2000);
-        }
+        mPresenter.getSDInfo();
+        mPresenter.getInstallPkgList(mAutoUpdate);
+        mPresenter.setNum(0);
     }
 
     private void initView() {
@@ -272,12 +233,75 @@ public class UpdateManagerActivity extends Activity {
         mFocusMoveUtil = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
         mFocusScaleUtil = new FocusScaleUtil();
         myFocusRunnable = new MyFocusRunnable();
-        mRecyclerAdapter = new UpdateManagerAdapter(mDatas);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
-        mRecyclerView.setAdapter(mRecyclerAdapter);
+        //mRecyclerView.setAdapter(mRecyclerAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setSelected(true);
 
+    }
+
+    @Override
+    public void showLoadingDialog() {
+        if (mLoadingDialog == null) {
+            mLoadingDialog = LoadingDialog.createLoadingDialog(this, getString((R.string.update_search_updateinfo)));
+            mLoadingDialog.show();
+        }
+    }
+
+    @Override
+    public void hideLoadingDialog() {
+        if (mLoadingDialog != null) {
+            mLoadingDialog.dismiss();
+            mLoadingDialog = null;
+        }
+    }
+
+    @Override
+    public void showNoData() {
+        mReminder.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideNoData() {
+        mReminder.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void showStartAutoUpdate() {
+        mReminder.setVisibility(View.VISIBLE);
+        mReminder.setText(R.string.update_start_autoupdate);
+    }
+
+    @Override
+    public void showSDProgressbar(int currentsize, int total, String sdinfo) {
+        mSizeProgressBar.setMax(total);
+        mSizeProgressBar.setProgress(currentsize);
+        mRoomSize.setText(getString(R.string.update_sdavaliable_size) + sdinfo);
+    }
+
+    @Override
+    public void refreshItem(int position) {
+
+    }
+
+    @Override
+    public void refreshAll() {
+        mRecyclerAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void showCurrentNum(int current, int total) {
+        mCurrentnum.setText(current + "");
+        mTotalnum.setText("/" + total + "行");
+    }
+
+    @Override
+    public void showInstallPkgList(List<AppInfoBean> mDatas) {
+        if (mRecyclerAdapter == null) {
+            mRecyclerAdapter = new UpdateManagerAdapter(mDatas);
+        }
+        mRecyclerView.setAdapter(mRecyclerAdapter);
+        mRecyclerAdapter.notifyDataSetChanged();
     }
 
     private class MyFocusRunnable implements Runnable {
@@ -288,17 +312,6 @@ public class UpdateManagerActivity extends Activity {
                 mFocusScaleUtil.scaleToLarge(mFocusedListChild);
             }
         }
-    }
-
-    /**
-     * 添加item
-     *
-     * @param
-     */
-    public void addData() {
-        initData();
-        mRecyclerAdapter.notifyDataSetChanged();
-        mReminder.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -331,40 +344,4 @@ public class UpdateManagerActivity extends Activity {
         }, 500);
     }
 
-    /**
-     * 显示Dialog
-     */
-    private void showDialog() {
-        if (mLoadingDialog == null) {
-            mLoadingDialog = LoadingDialog.createLoadingDialog(this, getString((R.string.update_search_updateinfo)));
-            mLoadingDialog.show();
-        }
-    }
-
-    /**
-     * 关闭Dialog
-     */
-    private void closeDialog() {
-        if (mLoadingDialog != null) {
-            mLoadingDialog.dismiss();
-            mLoadingDialog = null;
-        }
-    }
-
-    /**
-     * 行数提示
-     * @param position
-     */
-    private void setNum(int position) {
-        int total = mDatas.size() / 3;
-        if (mDatas.size() % 3 != 0) {
-            total += 1;
-        }
-        int cur = position / 3 + 1;
-        if(total==0){
-            cur = 0;
-        }
-        mCurrentnum.setText(cur + "/");
-        mTotalnum.setText(total + "行");
-    }
 }

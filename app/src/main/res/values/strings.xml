@@ -43,7 +43,7 @@
     <string name="install_totalnum">/4行</string>
     <string name="install_bt_deleteall">删除全部</string>
     <string name="install_bt_deleteinstall">删除已安装</string>
-    <string name="install_updateall">已无应用安装包</string>
+    <string name="install_updateall">暂未找到安装包!</string>
     <string name="install_installing">安装中</string>
     <string name="install_app_versionname">版本1.12</string>
     <string name="install_app_size">12.5M</string>
