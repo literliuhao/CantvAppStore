@@ -14,8 +14,6 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.can.downloadlib.entity.DownloadDBEntity;
-import cn.can.downloadlib.gen.DownloadDBEntityDao;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -32,7 +30,7 @@ import okhttp3.ResponseBody;
  */
 public class DownloadTask implements Runnable {
     private DownloadDBEntity mDbEntity;
-    private DownloadDBEntityDao mDownloadDao;
+    private DownloadDao mDownloadDao;
     private DownloadManager mDownloadManager;
     private OkHttpClient mOkHttpClient;
     private String mId;
@@ -269,7 +267,7 @@ public class DownloadTask implements Runnable {
         this.mDownloadStatus = downloadStatus;
     }
 
-    public void setDownloadDao(DownloadDBEntityDao downloadDao) {
+    public void setDownloadDao(DownloadDao downloadDao) {
         this.mDownloadDao = downloadDao;
     }
 

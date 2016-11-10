@@ -1,4 +1,4 @@
-package cn.can.downloadlib.gen;
+package cn.can.downloadlib;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,12 +21,12 @@ public class DaoMaster extends AbstractDaoMaster {
 
     /** Creates underlying database table using DAOs. */
     public static void createAllTables(Database db, boolean ifNotExists) {
-        DownloadDBEntityDao.createTable(db, ifNotExists);
+        DownloadDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
     public static void dropAllTables(Database db, boolean ifExists) {
-        DownloadDBEntityDao.dropTable(db, ifExists);
+        DownloadDao.dropTable(db, ifExists);
     }
 
     /**
@@ -45,7 +45,7 @@ public class DaoMaster extends AbstractDaoMaster {
 
     public DaoMaster(Database db) {
         super(db, SCHEMA_VERSION);
-        registerDaoClass(DownloadDBEntityDao.class);
+        registerDaoClass(DownloadDao.class);
     }
 
     public DaoSession newSession() {
