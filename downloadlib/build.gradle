@@ -22,6 +22,14 @@ android {
     }
 }
 
+apply plugin: 'org.greenrobot.greendao'
+
+greendao {
+    schemaVersion 1
+    daoPackage 'cn.can.downloadlib.gen'
+    targetGenDir 'src/main/java'
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'org.greenrobot:greendao:3.0.1'
