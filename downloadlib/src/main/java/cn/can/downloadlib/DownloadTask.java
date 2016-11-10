@@ -45,7 +45,7 @@ public class DownloadTask implements Runnable {
     private String mFileName;
 
     private List<DownloadTaskListener> mDownloadlisteners = new ArrayList<DownloadTaskListener>();
-
+    private AppInstallListener mAppListener;
     public DownloadTask() {
     }
 
@@ -78,7 +78,7 @@ public class DownloadTask implements Runnable {
         BufferedInputStream bis = null;
         try {
             mDbEntity = mDownloadDao.load(mId);
-            String path = mSaveDirPath + File.separator+mFileName;
+            String path = mSaveDirPath + File.separator + mFileName;
             mRandomAccessFile = new RandomAccessFile(path, "rwd");
             if (mDbEntity != null) {
                 mDownloadedSize = mDbEntity.getDownloadedSize();
@@ -164,19 +164,19 @@ public class DownloadTask implements Runnable {
             onError(DownloadTaskListener.DOWNLOAD_ERROR_FILE_NOT_FOUND);
             return;
         } catch (SocketException e) {
-            Log.d("","*******SocketException*******");
+            Log.d("", "*******SocketException*******");
             e.printStackTrace();
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
             onError(DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR);
             return;
         } catch (IOException e) {
-            Log.d("","*******IOException*******");
+            Log.d("", "*******IOException*******");
             e.printStackTrace();
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
             onError(DownloadTaskListener.DOWNLOAD_ERROR_IO_ERROR);
             return;
         } catch (Exception e) {
-            Log.d("","*******Exception*******");
+            Log.d("", "*******Exception*******");
             e.printStackTrace();
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
             onError(DownloadTaskListener.DOWNLOAD_ERROR_UNKONW_ERROR);
@@ -300,7 +300,7 @@ public class DownloadTask implements Runnable {
      */
     public void cancel() {
         setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
-        File temp = new File(mSaveDirPath +File.separator+ mFileName);
+        File temp = new File(mSaveDirPath + File.separator + mFileName);
         if (temp.exists()) {
             temp.delete();
         }
@@ -329,10 +329,24 @@ public class DownloadTask implements Runnable {
         }
     }
 
+//    private void installAPK() {
+//        mAppListener.onInstalling(this);
+//        setDownloadStatus(AppInstallListener.APP_INSTALLING);
+//        ShellUtils.CommandResult res = ShellUtils.execCommand("pm install " + mSaveDirPath, false);
+//        if (res.result == 0) {
+//            setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
+//            mAppListener.onInstallSucess(this);
+//        } else {
+//            setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
+//            mAppListener.onInstallFail(this);
+//        }
+//    }
+
     private void onCompleted() {
         for (DownloadTaskListener listener : mDownloadlisteners) {
             listener.onCompleted(this);
         }
+        mAppListener.onInstalling(this);
     }
 
     private void onPause() {
@@ -354,6 +368,10 @@ public class DownloadTask implements Runnable {
                 TaskManager.mErrorTaskQueue.add(this.getId()); // 处理任务异常时，获取异常任务taskId
             }
         }
+    }
+
+    public void setAppListener(AppInstallListener listener) {
+        mAppListener = listener;
     }
 
     public void addDownloadListener(DownloadTaskListener listener) {

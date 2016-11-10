@@ -1,6 +1,7 @@
 package cn.can.downloadlib;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
@@ -28,6 +29,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import cn.can.downloadlib.utils.SdcardUtils;
+import cn.can.downloadlib.utils.ShellUtils;
+import cn.can.downloadlib.utils.ToastUtils;
 import okhttp3.OkHttpClient;
 
 /**
@@ -39,18 +43,21 @@ import okhttp3.OkHttpClient;
  * 修订历史：
  * ================================================
  */
-public class DownloadManager {
+public class DownloadManager implements AppInstallListener {
     private static final String TAG = "DownloadManager";
     private static final int READ_TIMEOUT = 5;
     private static final int WRITE_TIMEOUT = 2;
     private static final int CONNECT_TIMEOUT = 5;
     private static final int DELAY_TIME = 1000;
     private static final int MSG_SUBMIT_TASK = 1000;
+    private static final int MSG_APP_INSTALL = 1001;
+
 
     private static DownloadManager mInstance;
     private static DownloadDao mDownloadDao;
     private Context mContext;
     private int mPoolSize = 2;//Runtime.getRuntime().availableProcessors();
+    private int mLimitSpace = 50;
     private ExecutorService mExecutorService;
     private OkHttpClient mOkHttpClient;
 
@@ -73,6 +80,22 @@ public class DownloadManager {
                     }
                     mHander.sendEmptyMessageDelayed(MSG_SUBMIT_TASK, DELAY_TIME);
                     break;
+                case MSG_APP_INSTALL:
+                    long space = SdcardUtils.getSDCardAvailableSpace()/1014/1024;
+                    if (space < mLimitSpace) {
+                        ToastUtils.showMessageLong(mContext.getApplicationContext(), R.string.error_msg);
+                        return false;
+                    }
+                    Bundle bundle = msg.getData();
+                    String path = bundle.getString("path");
+                    String id = bundle.getString("id");
+                    ShellUtils.CommandResult res = ShellUtils.execCommand("pm install " + path, false);
+                    if (res.result == 0) {
+                        onInstallSucess(id);
+                    } else {
+                        onInstallFail(id);
+                    }
+                    break;
             }
             return false;
         }
@@ -81,7 +104,6 @@ public class DownloadManager {
     public DownloadManager(OkHttpClient client, Context context) {
         this.mOkHttpClient = client;
         this.mContext = context;
-
     }
 
     private DownloadManager() {
@@ -234,6 +256,12 @@ public class DownloadManager {
         if (!NetworkUtils.isNetworkConnected(mContext.getApplicationContext())) {
             return false;
         }
+
+        long space = SdcardUtils.getSDCardAvailableSpace()/1014/1024;
+        if (space < mLimitSpace) {
+            ToastUtils.showMessageLong(mContext.getApplicationContext(), R.string.error_msg);
+            return false;
+        }
         DownloadTask downloadTask = mTaskManager.get(task.getId());
         if (null != downloadTask && downloadTask.getDownloadStatus() != DownloadStatus
                 .DOWNLOAD_STATUS_CANCEL) {
@@ -245,6 +273,7 @@ public class DownloadManager {
         task.setDownloadDao(mDownloadDao);
         task.setHttpClient(mOkHttpClient);
         task.addDownloadListener(listener);
+        task.setAppListener(this);
         if (getDBTaskById(task.getId()) == null) {
             DownloadDBEntity dbEntity = new DownloadDBEntity(task.getId(), task.getTotalSize(),
                     task.getCompletedSize(), task.getUrl(), task.getSaveDirPath(), task
@@ -300,6 +329,7 @@ public class DownloadManager {
      */
     public void addDownloadListener(DownloadTask task, DownloadTaskListener listener) {
         task.addDownloadListener(listener);
+        task.setAppListener(this);
     }
 
     /**
@@ -523,6 +553,7 @@ public class DownloadManager {
         task.setDownloadDao(mDownloadDao);
         task.setHttpClient(mOkHttpClient);
         task.addDownloadListener(listener);
+        task.setAppListener(this);
         if (getDBTaskById(task.getId()) == null) {
             DownloadDBEntity dbEntity = new DownloadDBEntity(task.getId(), task.getTotalSize(),
                     task.getCompletedSize(), task.getUrl(), task.getSaveDirPath(), task
@@ -531,4 +562,30 @@ public class DownloadManager {
         }
         new Thread(task).start();
     }
+
+    public void setLimitSpace(int size) {
+        mLimitSpace = size;
+    }
+
+    @Override
+    public void onInstalling(DownloadTask downloadTask) {
+        downloadTask.setDownloadStatus(AppInstallListener.APP_INSTALLING);
+        Message msg = new Message();
+        Bundle bundle = new Bundle();
+        bundle.putString("path", downloadTask.getSaveDirPath());
+        bundle.putString("id", downloadTask.getId());
+        msg.setData(bundle);
+        mHander.sendMessage(msg);
+    }
+
+    @Override
+    public void onInstallSucess(String id) {
+        getCurrentTaskById(id).setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
+    }
+
+    @Override
+    public void onInstallFail(String id) {
+        getCurrentTaskById(id).setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
+    }
+
 }

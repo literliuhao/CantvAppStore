@@ -2,6 +2,9 @@ package com.can.appstore;
 
 import android.app.Application;
 
+import cn.can.downloadlib.DownloadManager;
+import cn.can.downloadlib.DownloadTask;
+
 /**
  * ================================================
  * 作    者：
