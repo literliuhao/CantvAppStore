@@ -25,12 +25,14 @@ public class RecommedGridAdapter extends CanRecyclerViewAdapter {
     private List<AppInfo> mRecommedApps;
     private LayoutInflater mInflater;
     private String mRecommendAppsInfo;
+    private int mRoundSize;
 
     public RecommedGridAdapter(Context context, List<AppInfo> datas) {
         super(datas);
         this.mContext = context;
         this.mRecommedApps = datas;
         mRecommendAppsInfo = mContext.getResources().getString(R.string.recommend_apps_info);
+        mRoundSize = mContext.getResources().getDimensionPixelSize(R.dimen.dimen_20px);
         mInflater = LayoutInflater.from(mContext);
     }
 
@@ -43,14 +45,14 @@ public class RecommedGridAdapter extends CanRecyclerViewAdapter {
 
     @Override
     protected void bindContentData(Object mDatas, RecyclerView.ViewHolder holder, int position) {
-                AppInfo appInfo = mRecommedApps.get(position);
-                String text = String.format(mRecommendAppsInfo, appInfo.getSizeStr(), appInfo.getDownloadCount());
-                ((RecommendGridViewHolder) holder).itemName.setText(appInfo.getName());
-                ((RecommendGridViewHolder) holder).itemSize.setText(text);
-        //        ImageLoader.getInstance().buildTask(((RecommendGridViewHolder) holder).itemIcon,appInfo.getUrl()).bitmapTransformation(new GlideRoundTransform(mContext,12)).build().start(mContext);
-//        String text = String.format(mRecommendAppsInfo, "83M", "1万+");
-//        ((RecommendGridViewHolder) holder).itemName.setText("创意家居");
-//        ((RecommendGridViewHolder) holder).itemSize.setText(text);
+        AppInfo appInfo = mRecommedApps.get(position);
+        String text = String.format(mRecommendAppsInfo, appInfo.getSizeStr(), appInfo.getDownloadCount());
+        ((RecommendGridViewHolder) holder).itemName.setText(appInfo.getName());
+        ((RecommendGridViewHolder) holder).itemSize.setText(text);
+        //        ImageLoader.getInstance().buildTask(((RecommendGridViewHolder) holder).itemIcon,appInfo.getUrl()).bitmapTransformation(new GlideRoundTransform(mContext,mRoundSize)).build().start(mContext);
+        //        String text = String.format(mRecommendAppsInfo, "83M", "1万+");
+        //        ((RecommendGridViewHolder) holder).itemName.setText("创意家居");
+        //        ((RecommendGridViewHolder) holder).itemSize.setText(text);
     }
 
     class RecommendGridViewHolder extends CanRecyclerView.ViewHolder {

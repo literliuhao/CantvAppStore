@@ -462,7 +462,7 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
     }
 
     private void setData() {//TODO   修改设置数据
-        int roundSize = getResources().getDimensionPixelSize(R.dimen.dimen_16px);
+        int roundSize = getResources().getDimensionPixelSize(R.dimen.dimen_36px);
         ImageLoader.getInstance().buildTask(mImageViewIcon, mAppinfo.getIcon()).bitmapTransformation(new GlideRoundTransform(AppDetailActivity.this, roundSize)).build().start(AppDetailActivity.this);
         mAppName.setText(mAppinfo.getName());
         mAppSize.setText(String.format(getResources().getString(R.string.detail_app_size), mAppinfo.getSizeStr()));
