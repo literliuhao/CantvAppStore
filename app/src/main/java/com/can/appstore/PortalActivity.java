@@ -91,18 +91,18 @@ public class PortalActivity extends Activity {
                     startActivity(intent);
                 } else if (position == 2) {
                     Intent intent = new Intent(PortalActivity.this, AppDetailActivity.class);
-                    intent.putExtra("Url", "http://172.16.11.65:8080/download/20161018/F1_Launcher_V532_20161018192912.apk");
+                    intent.putExtra("appID", "1");
                     startActivity(intent);
                 } else if (position == 3) {
                     Intent intent = new Intent(PortalActivity.this, AppDetailActivity.class);
-                    intent.putExtra("Url", "http://172.16.11.65:8080/download/20161018/F2_Launcher_V532_20161018192912.apk");
+                    intent.putExtra("appID", "2");
                     startActivity(intent);
                 } else if (position == 4) {
                     Intent intent = new Intent(PortalActivity.this, UninstallManagerActivity.class);
                     startActivity(intent);
                 } else if (position == 5) {
                     Intent intent = new Intent(PortalActivity.this, AppDetailActivity.class);
-                    intent.putExtra("Url", "http://172.16.11.65:8080/download/20161018/F2_Launcher_V536_20161018191036.apk");
+                    intent.putExtra("appID", "3");
                     startActivity(intent);
                 }
             }

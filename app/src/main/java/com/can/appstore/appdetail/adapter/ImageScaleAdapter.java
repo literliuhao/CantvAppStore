@@ -2,7 +2,6 @@ package com.can.appstore.appdetail.adapter;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -11,6 +10,7 @@ import com.can.appstore.R;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -20,12 +20,12 @@ import java.util.LinkedList;
 public class ImageScaleAdapter extends PagerAdapter {
     private Context mContext;
     private LinkedList<ImageView> mRecycledViews = new LinkedList<ImageView>();
-    private ArrayList<String> mUrlList = new ArrayList<String>();
+    private List<String> mUrlList = new ArrayList<String>();
     int[] imgRes = {R.drawable.a, R.drawable.b, R.drawable.c, R.drawable.d, R.drawable.e};
     private int pageCount;
 
 
-    public ImageScaleAdapter(Context context, ArrayList<String> urlList) {
+    public ImageScaleAdapter(Context context, List<String> urlList) {
         super();
         this.mContext = context;
         this.mUrlList = urlList;

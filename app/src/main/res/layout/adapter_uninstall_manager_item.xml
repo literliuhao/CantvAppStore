@@ -29,6 +29,7 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/dimen_24px"
             android:layout_toRightOf="@+id/iv_icon"
+            android:layout_marginRight="@dimen/dimen_14px"
             android:orientation="vertical">
 
             <TextView
@@ -36,9 +37,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:singleLine="true"
-                android:text="名称"
                 android:includeFontPadding="false"
+                android:maxLines="1"
                 android:textColor="@color/uninstall_app_name_color"
                 android:textSize="@dimen/fontsize_34px"/>
 
@@ -46,11 +46,10 @@
                 android:id="@+id/tv_version"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="5.12.32"
-                android:includeFontPadding="false"
                 android:layout_marginTop="@dimen/dimen_12px"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:maxLines="1"
                 android:textColor="@color/tv_app_version_color"
                 android:textSize="@dimen/fontsize_26px"/>
 
@@ -58,11 +57,10 @@
                 android:id="@+id/tv_size"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="15.36M"
-                android:includeFontPadding="false"
                 android:layout_marginTop="@dimen/dimen_4px"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:maxLines="1"
                 android:textColor="@color/tv_app_version_color"
                 android:textSize="@dimen/fontsize_26px"/>
 

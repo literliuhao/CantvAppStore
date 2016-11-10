@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.entity.AppInfo;
 
 import java.util.List;
 
@@ -21,13 +22,15 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 public class RecommedGridAdapter extends CanRecyclerViewAdapter {
     private Context mContext;
-    private List mRecommedPic;
+    private List<AppInfo> mRecommedApps;
     private LayoutInflater mInflater;
+    private String mRecommendAppsInfo;
 
-    public RecommedGridAdapter(Context context, List<String> datas) {
+    public RecommedGridAdapter(Context context, List<AppInfo> datas) {
         super(datas);
         this.mContext = context;
-        this.mRecommedPic = datas;
+        this.mRecommedApps = datas;
+        mRecommendAppsInfo = mContext.getResources().getString(R.string.recommend_apps_info);
         mInflater = LayoutInflater.from(mContext);
     }
 
@@ -40,8 +43,14 @@ public class RecommedGridAdapter extends CanRecyclerViewAdapter {
 
     @Override
     protected void bindContentData(Object mDatas, RecyclerView.ViewHolder holder, int position) {
-        ((RecommendGridViewHolder) holder).itemName.setText("创意家居");
-        ((RecommendGridViewHolder) holder).itemSize.setText("83M | 1万+");
+                AppInfo appInfo = mRecommedApps.get(position);
+                String text = String.format(mRecommendAppsInfo, appInfo.getSizeStr(), appInfo.getDownloadCount());
+                ((RecommendGridViewHolder) holder).itemName.setText(appInfo.getName());
+                ((RecommendGridViewHolder) holder).itemSize.setText(text);
+        //        ImageLoader.getInstance().buildTask(((RecommendGridViewHolder) holder).itemIcon,appInfo.getUrl()).bitmapTransformation(new GlideRoundTransform(mContext,12)).build().start(mContext);
+//        String text = String.format(mRecommendAppsInfo, "83M", "1万+");
+//        ((RecommendGridViewHolder) holder).itemName.setText("创意家居");
+//        ((RecommendGridViewHolder) holder).itemSize.setText(text);
     }
 
     class RecommendGridViewHolder extends CanRecyclerView.ViewHolder {
