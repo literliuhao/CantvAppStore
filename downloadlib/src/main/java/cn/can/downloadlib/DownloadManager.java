@@ -28,6 +28,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import cn.can.downloadlib.entity.DownloadDBEntity;
+import cn.can.downloadlib.gen.DaoMaster;
+import cn.can.downloadlib.gen.DownloadDBEntityDao;
 import okhttp3.OkHttpClient;
 
 /**
@@ -48,7 +51,7 @@ public class DownloadManager {
     private static final int MSG_SUBMIT_TASK = 1000;
 
     private static DownloadManager mInstance;
-    private static DownloadDao mDownloadDao;
+    private static DownloadDBEntityDao mDownloadDao;
     private Context mContext;
     private int mPoolSize = 2;//Runtime.getRuntime().availableProcessors();
     private ExecutorService mExecutorService;
@@ -205,7 +208,7 @@ public class DownloadManager {
         mExecutorService = Executors.newFixedThreadPool(mPoolSize);
         DaoMaster.OpenHelper openHelper = new DaoMaster.DevOpenHelper(mContext, "downloadDB", null);
         DaoMaster daoMaster = new DaoMaster(openHelper.getWritableDatabase());
-        mDownloadDao = daoMaster.newSession().getDownloadDao();
+        mDownloadDao = daoMaster.newSession().getDownloadDBEntityDao();
         if (okHttpClient != null) {
             mOkHttpClient = okHttpClient;
         } else {
