@@ -1,9 +1,11 @@
 package com.can.appstore.myapps.model;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -58,5 +60,18 @@ public class AppUtils {
 
         }
         return list;
+    }
+
+    /**
+     * 卸载apk
+     */
+    public static void uninstallpkg(Context context, String packageName) {
+        try {
+            Intent uninstallIntent = new Intent(Intent.ACTION_DELETE, Uri.parse("package:"
+                    + packageName));
+            context.startActivity(uninstallIntent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

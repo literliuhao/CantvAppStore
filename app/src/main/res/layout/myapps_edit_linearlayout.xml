@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:id="@+id/myapps_edit_linaerlayout_buttons"
+              android:background="@drawable/shape_myapps_edit_dialog"
+                android:gravity="center"
+
+    >
+
+    <Button
+        android:id="@+id/myapps_but_top"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/px54"
+        android:text="置顶"
+        android:background="@drawable/edit_button_selector"
+        android:focusable="true"
+        android:textSize="@dimen/fontsize_30"
+        />
+    <Button
+        android:id="@+id/myapps_but_remove"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/px54"
+        android:text="移除"
+        android:background="@drawable/edit_button_selector"
+        android:focusable="true"
+        android:layout_below="@+id/myapps_but_top"
+        android:textSize="@dimen/fontsize_30"
+
+        />
+
+</RelativeLayout>

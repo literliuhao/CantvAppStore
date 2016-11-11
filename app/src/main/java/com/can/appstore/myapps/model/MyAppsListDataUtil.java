@@ -39,7 +39,7 @@ public  class MyAppsListDataUtil {
       if( !PreferencesUtils.getString(context,"myappsshowlist","0").equals("0")){
           //存在，证明我在本地已写过过文件
           mShowList = getList();
-          if(mShowList.size() < 16){
+          if(mShowList.size() < 16 && allAppsList.size()>mShowList.size()){
               mShowList.add(new AppInfo("添加应用", context.getResources().getDrawable(R.drawable.ic_launcher)));
           }
       }else{
