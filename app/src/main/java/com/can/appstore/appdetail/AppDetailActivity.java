@@ -260,11 +260,11 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
      * @param view
      */
     public void focusSetting(boolean hasFocus, View view) {
+        mFocusedListChild = view;
         if (hasFocus) {
-            mFocusMoveUtil.startMoveFocus(view, 1.1f);
-            mScaleUtil.scaleToLarge(view);
+            mListFocusMoveRunnable.run();
         } else {
-            mScaleUtil.scaleToNormal(view);
+            mScaleUtil.scaleToNormal();
         }
     }
 
@@ -358,6 +358,9 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
                     changeLayouToRight();
                     recommendGridPositionRequestFocus(500, 0);
                     mScaleUtil.scaleToNormal(mLayoutIntroduceText);
+                    return true;
+                } else if (mBtIntroduction.isFocused()) {
+                    mBtRecommend.requestFocus();
                     return true;
                 }
                 break;
@@ -600,6 +603,7 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
         mIntroducGridAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
+                Log.d(TAG, "mIntroducGridAdapter onItemFocusChanged: " + view + "   position : " + position);
                 if (hasFocus) {
                     mFocusedListChild = view;
                     mIntroducGrid.postDelayed(mListFocusMoveRunnable, 50);
@@ -672,6 +676,7 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
         mRecommedGridAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
+                Log.d(TAG, "mRecommedGridAdapter onItemFocusChanged: " + view + "   position : " + position);
                 if (hasFocus) {
                     mFocusedListChild = view;
                     mRecommendGrid.postDelayed(mListFocusMoveRunnable, 50);
@@ -691,7 +696,7 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
                         if (position % 4 == 0) {
                             startTabLineAnimation(TO_MOVE_LEFT);
                             changeLayouToLeft();
-                            introduceGridFiveRequestFocus();
+                            introduceGridRequestFocus(500, 4);
                             mScaleUtil.scaleToNormal(v);
                             return true;
                         }
@@ -739,27 +744,12 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
         });
     }
 
-    private void introduceGridFiveRequestFocus() {
-        mFocusMoveUtil.hideFocusForShowDelay(500);
+    private void introduceGridRequestFocus(int hideTime, final int position) {
+        mFocusMoveUtil.hideFocusForShowDelay(hideTime);
         mIntroducGrid.postDelayed(new Runnable() {
             @Override
             public void run() {
-                View childAt = mIntroducLayoutManager.findViewByPosition(4);
-                //                View childAt = mIntroducGrid.getChildAt(4);
-                if (childAt != null) {
-                    mFocusMoveUtil.setFocusView(childAt);
-                    childAt.requestFocus();
-                }
-            }
-        }, 50);
-    }
-
-    private void introduceGridOneRequestFocus() {
-        mFocusMoveUtil.hideFocusForShowDelay(50);
-        mIntroducGrid.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                View childAt = mIntroducGrid.getChildAt(0);
+                View childAt = mIntroducLayoutManager.findViewByPosition(position);
                 if (childAt != null) {
                     mFocusMoveUtil.setFocusView(childAt);
                     childAt.requestFocus();
