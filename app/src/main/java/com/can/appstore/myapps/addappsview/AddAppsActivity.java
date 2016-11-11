@@ -105,27 +105,23 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View{
         finish();
     }
 
+
+
     @Override
-    public void loadAllAppInfoSuccess(List<AppInfo> infoList) {
+    public void loadAddAppInfoSuccess(List<AppInfo> infoList) {
         if(mAddAppsRecyclerViewAdapter == null){
             mAddAppsRecyclerViewAdapter = new AddAppsRvAdapter(infoList);
-            //设置右上角总行数
-            tv_curRows.setText("0");
-            int totalRows = 0 ;
-            if(infoList.size() % 4 == 0) {
-                totalRows = infoList.size() / 4;
-            }else{
-                totalRows = infoList.size() / 4 + 1;
-            }
-            tv_totalRows.setText("/"+totalRows+"行");
             mAddAppsPresenter.canSelectCount();
             baseSetting();
             addViewListener();
         }else{
             mAddAppsRecyclerViewAdapter.notifyDataSetChanged();
         }
-
-
+        //设置右上角总行数
+        tv_curRows.setText("0");
+        int totalRows = 0 ;
+        totalRows = mAddAppsPresenter.calculateCurTotalRows();
+        tv_totalRows.setText("/"+totalRows+"行");
     }
 
     private void baseSetting() {
@@ -239,7 +235,7 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View{
                 if(hasFocus){
                     mFocusChild = view;
                     mAddRecyclerView.postDelayed(mFocusRunnable,50);
-                    int curRows = position / 4 + 1;
+                    int curRows =  mAddAppsPresenter.calculateCurRows(position);
                     tv_curRows.setText(""+curRows);
                 }else{
                     mFocusScaleUtil.scaleToNormal();
@@ -255,6 +251,25 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View{
         super.onResume();
         if(mAddAppsPresenter!= null){
             mAddAppsPresenter.addListener();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(mAddAppsPresenter!= null){
+            mAddAppsPresenter.unRegiestr();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mAddAppsPresenter!= null){
+            mAddAppsPresenter.release();
+        }
+        if(mFocusMoveUtil!= null){
+            mFocusMoveUtil.release();
         }
     }
 }

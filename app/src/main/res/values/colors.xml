@@ -25,6 +25,9 @@
     <color name="tv_cur_rows_color">#CCFFFFFF</color>
     <color name="tv_total_rows_color">#7FFFFFFF</color>
     <color name="tv_menu_guanli_color">#80FFFFFF</color>
+    <color name="myapps_custom_item_textbg">#E6CB8021</color>
+    <color name="myapps_custom_item_iconsbg">#99FFFFFF</color>
+
 
     <!--专题详情页面 FW-->
     <color name="color_80_ffffff">#CCffffff</color>

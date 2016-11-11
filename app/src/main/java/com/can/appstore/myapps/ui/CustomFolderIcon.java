@@ -1,114 +1,126 @@
 package com.can.appstore.myapps.ui;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.can.appstore.R;
+
+import java.util.List;
 
 /**
  * Created by wei on 2016/11/4.
  */
 
-public class CustomFolderIcon extends ViewGroup {
+public class CustomFolderIcon extends RelativeLayout {
+    Context context;
 
     public CustomFolderIcon(Context context) {
         super(context);
+        this.context = context;
+        initView();
     }
 
     public CustomFolderIcon(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
+        initView();
     }
 
-    public CustomFolderIcon(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public CustomFolderIcon(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        this.context = context;
+        initView();
     }
 
-    /**
-     * 对子控件进行定位
-     * @param changed
-     * @param l
-     * @param t
-     * @param r
-     * @param b
-     */
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        int cCount = getChildCount();
-        int cWidth = 0;
-        int cHeight = 0;
+    public CustomFolderIcon(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        this.context = context;
+        initView();
+    }
 
-        MarginLayoutParams cParams = null;
+    ImageView iv_01;
+    ImageView iv_02;
+    ImageView iv_03;
+    ImageView iv_04;
+    ImageView iv_05;
+    ImageView iv_06;
 
-        //便利所有的子View，获取他们的宽和高以及margin来设置他们的位置
 
-        for (int i = 0; i < cCount; i++) {
-            View cView = getChildAt(i);
-            cWidth = cView.getMeasuredWidth();
-            cHeight = cView.getMeasuredHeight();
-            cParams = (MarginLayoutParams) cView.getLayoutParams();
 
-            int cl = 0,ct = 0,cr = 0,cb = 0;
+    private void initView() {
+        View.inflate(context,R.layout.custom_folder_icon_item,CustomFolderIcon.this);
+        iv_01 = (ImageView) findViewById(R.id.myapps_sys_icon1);
+        iv_02 = (ImageView) findViewById(R.id.myapps_sys_icon2);
+        iv_03 = (ImageView) findViewById(R.id.myapps_sys_icon3);
+        iv_04 = (ImageView) findViewById(R.id.myapps_sys_icon4);
+        iv_05 = (ImageView) findViewById(R.id.myapps_sys_icon5);
+        iv_06 = (ImageView) findViewById(R.id.myapps_sys_icon6);
+    }
 
-            switch (i){
-                case 0:
-                    cl = cParams.leftMargin;
-                    ct = cParams.topMargin;
-                    break;
-                case 1:
-                    cl = cParams.leftMargin*2 + cWidth;
-                    ct = cParams.topMargin;
-                    break;
-                case 2:
-                    cl = cParams.leftMargin*3 + cWidth*2;
-                    ct = cParams.topMargin;
-                    break;
-                case 3:
-                    cl = cParams.leftMargin;
-                    ct = cParams.topMargin*2 + cHeight;
-                    break;
-                case 4:
-                    cl = cParams.leftMargin*2 + cWidth;
-                    ct = cParams.topMargin*2 + cHeight;
-                    break;
-                case 5:
-                    cl = cParams.leftMargin*3 + cWidth*2;
-                    ct = cParams.topMargin*2 + cHeight;
-                    break;
-            }
-            cr = cl + cWidth;
-            cb = ct + cHeight;
-            cView.layout(cl,ct,cr,cb);
+    public void addMyIcon(List<Drawable> list){
+        switch (list.size()){
+            case 1:
+               addOneIcon(list);
+                break;
+            case 2:
+                addTwoIcon(list);
+                break;
+            case 3:
+                addThreeIcon(list);
+                break;
+            case 4:
+                addForeIcon(list);
+                break;
+            case 5:
+                addFiveIcon(list);
+                break;
+            case 6:
+                addSixIcon(list);
+                break;
         }
-
-
     }
 
-    /**
-     * 设置ViewGroup自身的宽高
-     * @param widthMeasureSpec
-     * @param heightMeasureSpec
-     */
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(R.dimen.px224,R.dimen.px152);
+    public void addOneIcon(List<Drawable>  list){
+        iv_01.setVisibility(VISIBLE);
+        iv_01.setImageDrawable(list.get(0));
     }
 
-    /**
-     * 设置该ViewGroup的布局方式
-     * @param attrs
-     * @return
-     */
-    @Override
-    public LayoutParams generateLayoutParams(AttributeSet attrs) {
-        return new MarginLayoutParams(getContext(), attrs);
+    private void addTwoIcon(List<Drawable> list) {
+        addOneIcon(list);
+        iv_02.setVisibility(VISIBLE);
+        iv_02.setImageDrawable(list.get(1));
     }
+
+    private void addThreeIcon(List<Drawable> list) {
+        addTwoIcon(list);
+        iv_03.setVisibility(VISIBLE);
+        iv_03.setImageDrawable(list.get(2));
+    }
+
+    private void addForeIcon(List<Drawable> list) {
+        addThreeIcon(list);
+        iv_04.setVisibility(VISIBLE);
+        iv_04.setImageDrawable(list.get(3));
+    }
+
+    private void addFiveIcon(List<Drawable> list) {
+        addForeIcon(list);
+        iv_05.setVisibility(VISIBLE);
+        iv_05.setImageDrawable(list.get(4));
+    }
+
+    private void addSixIcon(List<Drawable> list) {
+        addFiveIcon(list);
+        iv_06.setVisibility(VISIBLE);
+        iv_06.setImageDrawable(list.get(5));
+    }
+
 }

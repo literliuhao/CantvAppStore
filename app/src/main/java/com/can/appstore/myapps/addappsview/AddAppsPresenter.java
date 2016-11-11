@@ -65,7 +65,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter{
                         addShowList.add(app);
                     }
                 }
-                mView.loadAllAppInfoSuccess(addShowList);
+                mView.loadAddAppInfoSuccess(addShowList);
                 mView.hideLoading();
             }
         }.execute();
@@ -178,4 +178,5 @@ public class AddAppsPresenter implements AddAppsContract.Presenter{
         }
         mMyAppListData.saveShowList(isShown);
     }
+
 }

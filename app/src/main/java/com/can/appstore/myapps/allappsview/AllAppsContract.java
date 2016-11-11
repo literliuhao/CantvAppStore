@@ -1,15 +1,14 @@
-package com.can.appstore.myapps.addappsview;
-
+package com.can.appstore.myapps.allappsview;
 
 import com.can.appstore.myapps.model.AppInfo;
 
 import java.util.List;
 
 /**
- * Created by wei on 2016/11/3.
+ * Created by wei on 2016/11/8.
  */
 
-public interface AddAppsContract {
+public interface AllAppsContract {
     interface Presenter {
         void startLoad();
 
@@ -25,13 +24,7 @@ public interface AddAppsContract {
 
         void onClickHomeKey();
 
-        void loadAddAppInfoSuccess(List<AppInfo> infoList);
-
-        void showCanSelectCount(int cansel, int alreadyshow);
-
-        void saveSelectInfo(List<AppInfo>  list);
+        void loadAllAppInfoSuccess(List<AppInfo> infoList);
     }
-
-
 
 }

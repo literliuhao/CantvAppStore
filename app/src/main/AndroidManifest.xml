@@ -32,7 +32,7 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
         <activity android:name=".myapps.addappsview.AddAppsActivity"></activity>
-        <activity android:name=".myapps.ui.AllAppsActivity"></activity>
+        <activity android:name=".myapps.allappsview.AllAppsActivity"></activity>
         <activity android:name=".special_detail.SpecialDetailActivity"></activity>
         <activity android:name=".update.UpdateManagerActivity"></activity>
         <activity android:name=".installpkg.InstallManagerActivity"></activity>

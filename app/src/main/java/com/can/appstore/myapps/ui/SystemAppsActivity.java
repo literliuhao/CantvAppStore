@@ -24,6 +24,7 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 
 /**
+ * 预置的有系统权限的应用，如：微信相册，文件管理器..等等
  * Created by wei on 2016/11/2.
  */
 
@@ -69,12 +70,12 @@ public class SystemAppsActivity extends Activity {
                 if(hasFocus){
                     mFocusChild = view;
                     mSystemRecyclerView.postDelayed(mFocusRunnable,50);
+                    systemCurRows.setText(position / 5 + 1  + "/");
                 }else{
                     mFocusScaleUtil.scaleToNormal();
                 }
             }
         });
-
     }
 
     private void addItemClickListener() {
@@ -85,7 +86,6 @@ public class SystemAppsActivity extends Activity {
                 PackageManager pm =getPackageManager();
                 Intent intent = pm.getLaunchIntentForPackage(appInfo.packageName);//获取启动的包名
                 startActivity(intent);
-
             }
         });
 
@@ -99,19 +99,19 @@ public class SystemAppsActivity extends Activity {
                 return false;
             }
         });
-
-
     }
 
     private void initData() {
         dataUtils = new MyAppsListDataUtil(this);
         allAppList = dataUtils.getAllAppList();
+
     }
 
 
     private void initView() {
         systemCurRows = (TextView) findViewById(R.id.systemapps_tv_currows);
         systemTotalRows = (TextView) findViewById(R.id.systemapps_tv_totalrows);
+        systemTotalRows.setText(""+allAppList.size()+"行");
         mSystemRecyclerView = (CanRecyclerView) findViewById(R.id.systemapps_recyclerview);
         mSystemRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(this,5, LinearLayoutManager.VERTICAL,false));
         mSystemRecyclerView.addItemDecoration(new CanRecyclerViewDivider(android.R.color.transparent,40,62));
@@ -122,9 +122,6 @@ public class SystemAppsActivity extends Activity {
         mFocusScaleUtil = new FocusScaleUtil();
         mFocusRunnable = new MyFocusRunnable();
     }
-
-
-
 
     @Override
     protected void onDestroy() {
