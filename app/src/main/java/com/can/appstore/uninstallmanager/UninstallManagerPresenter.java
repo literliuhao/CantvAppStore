@@ -50,7 +50,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
                 if (mAppInfoList != null) {
                     mAppInfoList.clear();
                 }
-                mAppInfoList = PackageUtil.findAllThirdPartyApps(mContext, null);
+                mAppInfoList = PackageUtil.findAllThirdPartyApps(mContext, mAppInfoList);
                 return null;
             }
 
@@ -186,9 +186,9 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     }
 
     private void continueUninstall1() {
-        mSelectPackageName.remove(0);
-        mView.refreshSelectCount(mSelectPackageName.size());
         if (mSelectPackageName.size() > 0) {
+            mSelectPackageName.remove(0);
+            mView.refreshSelectCount(mSelectPackageName.size());
             AppUtils.uninstallpkg(mContext, mSelectPackageName.get(0));
         }
     }

@@ -14,6 +14,7 @@ import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
 
+import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
@@ -30,7 +31,7 @@ import retrofit2.Response;
 /**
  * Created by JasonF on 2016/10/25.
  */
-public class AppDetailPresenter implements AppDetailContract.Presenter, DownloadTaskListener {
+public class AppDetailPresenter implements AppDetailContract.Presenter, DownloadTaskListener, AppInstallListener {
     public final static String TAG = "AppDetailPresenter";
     public final static int DOWNLOAD_BUTTON_STATUS_PREPARE = 1;//下载
     public final static int DOWNLOAD_BUTTON_STATUS_WAIT = 2;//等待中
@@ -51,6 +52,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     private boolean isShowUpdateButton = false;
     private LoadingDialog mLoadingDialog;
     private String mAppId = "1";
+    private String topicId = "54";
     private CanCall<Result<AppInfo>> mAppDetailCall;
     private AppInfo mAppInfo;
     private String mPackageName = "com.dangbeimarket";
@@ -65,6 +67,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public void getData(Intent intent) {
         if (intent != null) {
             mAppId = intent.getStringExtra("appID");
+            //            topicId = intent.getStringExtra("topicID");
         }
     }
 
@@ -146,7 +149,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public void startLoad() {
         mView.showLoading();
         if (mAppDetailCall == null) {
-            mAppDetailCall = HttpManager.getApiService().getAppInfo(mAppId, "54");
+            mAppDetailCall = HttpManager.getApiService().getAppInfo(mAppId, topicId);
         } else {
             mAppDetailCall.clone();
         }
@@ -156,12 +159,10 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 mView.hideLoading();
                 Result<AppInfo> info = response.body();
                 if (info == null) {
-                    //请求失败处理
                     mView.loadDataFail();
                     return;
                 }
                 if (info.getStatus() != 0 || info.getData() == null) {
-                    //没有数据处理
                     mView.loadDataFail();
                     return;
                 }
@@ -209,19 +210,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         } else if (!NetworkUtils.isNetworkConnected(mContext)) { // 网络连接断开时不能点击
             showToast(mContext.getResources().getString(R.string.network_connection_disconnect));
             return;
-        } else if (downloadStatus != DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING && !ApkUtils.isAvailable(mContext, mPackageName) && !isClickUpdateButton) {//内存不足不能点击下载
-            //判断内存是否充足
-            //            if (!TextUtils.isEmpty("应用内存大小")) {
-            //                long remainDownloadSize = totalSize - completedSize;// apk剩余下载的长度
-            //                String ToastMsg = String.format(mContext.getResources().getString(R.string.download_memory_lack), "应用名称");
-            //                if (AppUtils.getApkInstallDirSzie(mContext) <= 100 * 1024 * 1024) {//安装内存不足
-            //                    showToast(ToastMsg);
-            //                    return;
-            //                } else if (AppUtils.getSDAvaliableSize() <= 100 * 1024 * 1024) {//sd卡内存不足
-            //                    showToast(ToastMsg);
-            //                    return;
-            //                }
-            //            }
         }
         if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_INIT || downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PREPARE) {
             DownloadTask Task = new DownloadTask();
@@ -282,6 +270,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(Url));
         if (downloadTask != null) {
             mDownloadManager.addDownloadListener(downloadTask, AppDetailPresenter.this);
+            mDownloadManager.setAppInstallListener(AppDetailPresenter.this);
         }
     }
 
@@ -347,6 +336,21 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         if (isShowUpdateButton) {
             mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
         }
+    }
+
+    @Override
+    public void onInstalling(DownloadTask downloadTask) {
+        Log.d(TAG, "onInstalling: " + downloadTask);
+    }
+
+    @Override
+    public void onInstallSucess(String id) {
+        Log.d(TAG, "onInstallSucess: " + id);
+    }
+
+    @Override
+    public void onInstallFail(String id) {
+        Log.d(TAG, "onInstallFail: " + id);
     }
 
 
