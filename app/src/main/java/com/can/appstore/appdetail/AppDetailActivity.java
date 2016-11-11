@@ -357,7 +357,7 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
                     startTabLineAnimation(TO_MOVE_RIGHT);
                     changeLayouToRight();
                     recommendGridPositionRequestFocus(500, 0);
-                    mScaleUtil.scaleToNormal(mLayoutIntroduceText);
+                    mScaleUtil.scaleToNormal();
                     return true;
                 } else if (mBtIntroduction.isFocused()) {
                     mBtRecommend.requestFocus();
@@ -686,6 +686,12 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
                     view.setBackgroundResource(R.drawable.shape_bg_uninstall_manager_item);
                 }
             }
+
+            @Override
+            public boolean onFocusMoveOutside(int currFocus, int direction) {
+                return super.onFocusMoveOutside(currFocus, direction);
+            }
+
         });
         mRecommedGridAdapter.setItemKeyEventListener(new CanRecyclerViewAdapter.OnItemKeyEventListener() {
             @Override
@@ -708,7 +714,7 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
                             return true;
                         }
                     } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP && event.getAction() == KeyEvent.ACTION_DOWN) {
-                        if (position == 0 || position == 1 || position == 2 || position == 3) {
+                        if (position == 0 || position == 1 || position == 2 || position == 3) { //TODO
                             isRecommendGridFirstRow = true;
                         } else {
                             isRecommendGridFirstRow = false;
@@ -726,7 +732,7 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
                     Intent intent = new Intent(AppDetailActivity.this, AppDetailActivity.class);
                     intent.putExtra("appID", mAppinfo.getRecommend().get(position).getId());
                     startActivity(intent);
-                    finish();
+                    finish(); // TODO直接刷新
                 }
             }
         });

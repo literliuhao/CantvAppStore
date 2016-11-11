@@ -162,7 +162,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                     mView.loadDataFail();
                     return;
                 }
-                if (info.getStatus() != 0 || info.getData() == null) {
+                if (info.getData() == null) {
                     mView.loadDataFail();
                     return;
                 }
@@ -225,7 +225,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
             clickRefreshButtonStatus(isClickUpdateButton, per);
             mDownloadManager.resume(MD5.MD5(Url));
-        } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {
+        } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {//TODO
             if (downlaodErrorCode != DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR) {//重试
                 clickRefreshButtonStatus(isClickUpdateButton, per);
                 mDownloadManager.resume(MD5.MD5(Url));

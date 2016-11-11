@@ -199,6 +199,9 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
 
     @Override
     public void loadAllAppInfoSuccess(List<PackageUtil.AppInfo> infoList) {
+        for (int i = 0; i < infoList.size(); i++) {
+            Log.d(TAG, "loadAllAppInfoSuccess: " + infoList.get(i).toString());
+        }
         if (infoList.size() == 0) {
             mNotUninstallApp.setVisibility(View.VISIBLE);
             return;
