@@ -17,6 +17,7 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -52,7 +53,6 @@ public class DownloadManager implements AppInstallListener {
     private static final int MSG_SUBMIT_TASK = 1000;
     private static final int MSG_APP_INSTALL = 1001;
 
-
     private static DownloadManager mInstance;
     private static DownloadDao mDownloadDao;
     private Context mContext;
@@ -60,6 +60,8 @@ public class DownloadManager implements AppInstallListener {
     private int mLimitSpace = 50;
     private ExecutorService mExecutorService;
     private OkHttpClient mOkHttpClient;
+//    private AppInstallListener mAppInstallListener;
+    private List<AppInstallListener> mAppInstallListeners;
 
     private TaskManager mTaskManager = new TaskManager();
 
@@ -81,7 +83,7 @@ public class DownloadManager implements AppInstallListener {
                     mHander.sendEmptyMessageDelayed(MSG_SUBMIT_TASK, DELAY_TIME);
                     break;
                 case MSG_APP_INSTALL:
-                    long space = SdcardUtils.getSDCardAvailableSpace()/1014/1024;
+                    long space = SdcardUtils.getSDCardAvailableSpace() / 1014 / 1024;
                     if (space < mLimitSpace) {
                         ToastUtils.showMessageLong(mContext.getApplicationContext(), R.string.error_msg);
                         return false;
@@ -576,16 +578,35 @@ public class DownloadManager implements AppInstallListener {
         bundle.putString("id", downloadTask.getId());
         msg.setData(bundle);
         mHander.sendMessage(msg);
+        for (AppInstallListener listener : mAppInstallListeners) {
+            listener.onInstalling(downloadTask);
+        }
     }
 
     @Override
     public void onInstallSucess(String id) {
         getCurrentTaskById(id).setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
+        Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
+        while(iter.hasNext()){
+            AppInstallListener listener = iter.next();
+            listener.onInstallSucess(id);
+            iter.remove();
+        }
     }
 
     @Override
     public void onInstallFail(String id) {
         getCurrentTaskById(id).setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
+        Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
+        while(iter.hasNext()){
+            AppInstallListener listener = iter.next();
+            listener.onInstallFail(id);
+            iter.remove();
+        }
+    }
+
+    public void setAppInstallListener (AppInstallListener listener) {
+        mAppInstallListeners.add(listener);
     }
 
 }
