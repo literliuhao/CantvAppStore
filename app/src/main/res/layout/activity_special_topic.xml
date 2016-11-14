@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_2D313A"
-    tools:context="com.can.appstore.subject.SubjectActivity">
+    tools:context="com.can.appstore.specialtopic.SpecialActivity">
     <TextView
-        android:id="@+id/subject_title_tv"
+        android:id="@+id/special_title_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/px160"
@@ -19,28 +19,55 @@
         android:gravity="center_vertical"
         android:text="专题"/>
     <TextView
-        android:id="@+id/subject_row_tv"
+        android:id="@+id/special_row_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_marginEnd="@dimen/px160"
         android:layout_marginTop="@dimen/px80"
-        android:text="1/25行"
         android:textSize="@dimen/fontsize_30"
         android:gravity="center_vertical|end"
         android:textColor="@color/color_96989D"
         />
     <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
-        android:id="@+id/subject_recyclerview"
+        android:id="@+id/special_recyclerview"
         android:paddingTop="@dimen/px20"
         android:paddingStart="@dimen/px160"
         android:paddingEnd="@dimen/px136"
         android:paddingBottom="@dimen/px90"
         android:clipToPadding="false"
         android:clipChildren="false"
-        android:layout_below="@+id/subject_title_tv"
+        android:layout_below="@+id/special_title_tv"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     </cn.can.tvlib.ui.view.recyclerview.CanRecyclerView>
+    <RelativeLayout
+        android:id="@+id/special_remind_layout"
+        android:layout_below="@+id/special_title_tv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone"
+        >
+        <TextView
+            android:id="@+id/special_remind_tv"
+            android:text="@string/no_data"
+            android:gravity="center"
+            android:textColor="@color/white_opa80"
+            android:textSize="@dimen/fontsize_34"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/special_retry_btn"
+            android:layout_below="@+id/special_remind_tv"
+            android:text="@string/click_retry"
+            android:layout_marginTop="@dimen/dimen_30px"
+            android:textSize="@dimen/fontsize_32"
+            android:textColor="@color/white_opa80"
+            android:layout_width="@dimen/px200"
+            android:layout_height="@dimen/px75"
+            android:gravity="center"
+            android:background="@drawable/bg_btn_download" />
+    </RelativeLayout>
 
 </RelativeLayout>

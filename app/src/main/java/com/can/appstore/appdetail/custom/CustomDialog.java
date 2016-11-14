@@ -65,7 +65,7 @@ public class CustomDialog extends Dialog {
             mScrollView.setVerticalScrollBarEnabled(false);
             //            mLinearLyoutOneBg.setBackground(mDrawable);
             mLinearLyoutOneBg.setBackgroundResource(R.color.introduce_one_bg);
-            mTvAppUpdatelog.setText(mUpdatelogText);
+            mTvAppUpdatelog.setText(mContext.getResources().getString(R.string.update_introduce) + mUpdatelogText);
             mTvAppAbout.setText(mAboutText);
             calculateShowScrollBar();
             return customDialog;

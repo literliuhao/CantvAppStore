@@ -60,6 +60,7 @@
     <dimen name="dimen_70px">47dp</dimen>
     <dimen name="dimen_72px">48dp</dimen>
     <dimen name="dimen_75px">50dp</dimen>
+    <dimen name="dimen_77px">51.3dp</dimen>
     <dimen name="dimen_80px">53dp</dimen>
     <dimen name="dimen_84px">56dp</dimen>
     <dimen name="dimen_85px">56.6dp</dimen>

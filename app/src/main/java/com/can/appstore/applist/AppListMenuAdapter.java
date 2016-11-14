@@ -42,28 +42,16 @@ public class AppListMenuAdapter extends CanRecyclerViewAdapter {
 
     @Override
     protected RecyclerView.ViewHolder generateViewHolder(ViewGroup parent, int viewType) {
-        View inflate;
-        if(viewType == TYPE_NORMAL){
-            inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_app_list_item, parent, false);
-            inflate.setFocusable(true);
-            return new ItemViewHolder(inflate);
-        }else{
-            inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_app_list_search_item, parent, false);
-            inflate.setFocusable(true);
-            return new SearchViewHolder(inflate);
-        }
+        View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_app_list_item, parent, false);
+        inflate.setFocusable(true);
+        return new ItemViewHolder(inflate);
     }
 
     @Override
     protected void bindContentData(Object mDatas, RecyclerView.ViewHolder holder, int position) {
         AppListMenuInfo info = (AppListMenuInfo) mDatas;
-        if(holder instanceof ItemViewHolder ){
-            ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-            itemViewHolder.mTextView.setText(info.getName());
-        }else{
-            SearchViewHolder searchViewHolder= (SearchViewHolder) holder;
-            searchViewHolder.mTextView.setText(info.getName());
-        }
+        ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+        itemViewHolder.mTextView.setText(info.getName());
     }
 
     class ItemViewHolder extends RecyclerView.ViewHolder {
@@ -75,13 +63,4 @@ public class AppListMenuAdapter extends CanRecyclerViewAdapter {
             mTextView = (TextView) itemView.findViewById(R.id.tv_app_list);
         }
     }
-    class SearchViewHolder extends RecyclerView.ViewHolder {
-        private TextView mTextView;
-
-        public SearchViewHolder(View itemView) {
-            super(itemView);
-            mTextView = (TextView) itemView.findViewById(R.id.tv_app_list_search);
-        }
-    }
-
 }

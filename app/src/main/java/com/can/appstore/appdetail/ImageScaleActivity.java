@@ -20,6 +20,10 @@ import com.can.appstore.appdetail.adapter.ImageScaleAdapter;
 import com.can.appstore.appdetail.custom.AlphaPageTransformer;
 import com.can.appstore.appdetail.custom.ScaleInTransformer;
 
+import java.util.List;
+
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
+
 /**
  * Created by JasonF on 2016/10/20.
  */
@@ -34,6 +38,7 @@ public class ImageScaleActivity extends Activity {
     private int mBeforePosition;
     private View mRootView;
     private BroadcastReceiver mHomeReceivcer;
+    private List<String> mImageUrls;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +52,7 @@ public class ImageScaleActivity extends Activity {
     public void getData() {//获取数据
         Intent intent = getIntent();
         mCurSelectPositon = intent.getIntExtra("currentIndex", 0);
+//        mImageUrls = (List<String>) intent.getSerializableExtra("imageUrl");
         Log.d(TAG, "mCurSelectPositon pic : " + mCurSelectPositon);
     }
 
@@ -85,7 +91,7 @@ public class ImageScaleActivity extends Activity {
 
         mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.dimen_210px));
         mViewPager.setOffscreenPageLimit(3);
-        mScaleAdapter = new ImageScaleAdapter(ImageScaleActivity.this, null);
+        mScaleAdapter = new ImageScaleAdapter(ImageScaleActivity.this, mImageUrls);
         mViewPager.setAdapter(mScaleAdapter);
         mViewPager.setPageTransformer(true, new ScaleInTransformer(0.91f, new AlphaPageTransformer(0.3f)));
         mViewPager.setCurrentItem(mScaleAdapter.getInstantiatePosition(mCurSelectPositon), true);
@@ -119,8 +125,6 @@ public class ImageScaleActivity extends Activity {
         mViewPager.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(ImageScaleActivity.this
-                        , "点击的位置" + mCurSelectPositon, Toast.LENGTH_SHORT).show();
                 finish();
             }
         });

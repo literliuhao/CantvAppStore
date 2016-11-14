@@ -42,5 +42,6 @@
     <color name="black_opa90">#E5000000</color>
     <color name="black_opa95">#F2000000</color>
     <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
 
 </resources>

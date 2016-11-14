@@ -17,7 +17,7 @@
             android:id="@+id/iv_icon"
             android:layout_width="@dimen/dimen_200px"
             android:layout_height="@dimen/dimen_200px"
-            android:src="@drawable/markettv"/>
+            android:scaleType="fitXY"/>
 
 
         <TextView
@@ -203,6 +203,7 @@
                 android:layout_marginTop="@dimen/dimen_4px"
                 android:clipChildren="false"
                 android:clipToPadding="false"
+                android:paddingEnd="@dimen/dimen_25px"
                 android:paddingStart="@dimen/dimen_25px"
                 android:paddingTop="@dimen/dimen_25px"/>
 
@@ -254,10 +255,10 @@
             android:id="@+id/crlv_recommed_grid"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="@dimen/dimen_100px"
+            android:layout_marginBottom="@dimen/dimen_77px"
             android:layout_marginEnd="@dimen/dimen_129px"
             android:layout_marginStart="@dimen/dimen_137px"
-            android:layout_marginTop="@dimen/dimen_4px"
+            android:layout_marginTop="@dimen/dimen_6px"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:paddingLeft="@dimen/dimen_23px"

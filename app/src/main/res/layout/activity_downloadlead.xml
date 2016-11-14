@@ -7,7 +7,7 @@
     tools:context="com.can.appstore.MainActivity">
 
     <Button
-        android:text="下载"
+        android:text="批量下载"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button"
@@ -15,7 +15,7 @@
         android:layout_alignParentStart="true" />
 
     <Button
-        android:text="暂停"
+        android:text="暂停所有"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button2"
@@ -24,7 +24,7 @@
         android:layout_marginStart="18dp" />
 
     <Button
-        android:text="删除"
+        android:text="删除所有"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button3"
@@ -33,7 +33,7 @@
         android:layout_marginStart="34dp" />
 
     <Button
-        android:text="恢复"
+        android:text="恢复所有"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button4"
@@ -42,7 +42,7 @@
         android:layout_marginStart="39dp" />
 
     <Button
-        android:text="跳转下载页"
+        android:text="下载页"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button5"
@@ -51,7 +51,7 @@
         android:layout_toEndOf="@+id/button4" />
 
     <Button
-        android:text="删除所有"
+        android:text="删除所有已下载文件"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -60,7 +60,7 @@
         android:id="@+id/button6" />
 
     <Button
-        android:text="跳转专题也页"
+        android:text="专题页"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"

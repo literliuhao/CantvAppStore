@@ -1,36 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="424px"
-                android:layout_height="184px"
-                android:layout_marginTop="20px"
-                android:layout_marginBottom="20px"
-                android:layout_marginLeft="20px"
-                android:layout_marginRight="20px"
+                android:layout_width="@dimen/px424"
+                android:layout_height="@dimen/px184"
                 android:descendantFocusability="blocksDescendants"
                 android:focusable="true"
-                android:background="@drawable/shap_app_list"
+                android:background="@drawable/selector_shap_applist_bg"
     >
 
     <ImageView
         android:id="@+id/iv_app_list_item"
-        android:layout_width="136px"
-        android:layout_height="136px"
-        android:layout_marginTop="24px"
-        android:layout_marginLeft="24px"
-        android:layout_marginBottom="24px"
-        android:background="#33ffffff"
+        android:layout_width="@dimen/px136"
+        android:layout_height="@dimen/px136"
+        android:layout_marginTop="@dimen/px24"
+        android:layout_marginLeft="@dimen/px24"
+        android:layout_marginBottom="@dimen/px24"
+        android:background="@color/white_opa30"
+        android:scaleType="fitXY"
         />
 
     <TextView
         android:id="@+id/tv_app_list_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16px"
-        android:layout_marginTop="45px"
+        android:layout_marginLeft="@dimen/px16"
+        android:layout_marginTop="@dimen/px45"
         android:layout_toRightOf="@id/iv_app_list_item"
         android:gravity="center"
-        android:text="三国杀传奇"
-        android:textSize="34px"
+        android:textSize="@dimen/px34"
         style="@style/NormalText"
         />
 
@@ -40,24 +36,23 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_app_list_name"
         android:layout_toRightOf="@id/iv_app_list_item"
-        android:layout_marginTop="10px"
-        android:layout_marginLeft="16px"
+        android:layout_marginTop="@dimen/px10"
+        android:layout_marginLeft="@dimen/px16"
         android:textColor="@color/white_opa50"
         style="@style/NormalText"
-        android:textSize="26px"
+        android:textSize="@dimen/px26"
         android:gravity="center"
-        android:text="10Mb"
         />
 
 
     <ImageView
         android:id="@+id/iv_split_line"
-        android:layout_width="1dp"
-        android:layout_height="26px"
+        android:layout_width="@dimen/px1"
+        android:layout_height="@dimen/px26"
         android:layout_below="@id/tv_app_list_name"
         android:layout_toRightOf="@id/tv_app_list_size"
-        android:layout_marginLeft="16px"
-        android:layout_marginTop="16px"
+        android:layout_marginLeft="@dimen/px16"
+        android:layout_marginTop="@dimen/px16"
         android:background="@color/white_opa50"
         />
 
@@ -68,18 +63,17 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_app_list_name"
         android:layout_toRightOf="@id/iv_split_line"
-        android:layout_marginLeft="16px"
-        android:layout_marginTop="10px"
-        android:text="1000+"
-        android:textSize="26px"
+        android:layout_marginLeft="@dimen/px16"
+        android:layout_marginTop="@dimen/px10"
+        android:textSize="@dimen/px26"
         android:textColor="@color/white_opa50"
         style="@style/NormalText"
         />
 
     <ImageView
         android:id="@+id/iv_app_list_corner"
-        android:layout_width="92px"
-        android:layout_height="92px"
+        android:layout_width="@dimen/px92"
+        android:layout_height="@dimen/px92"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:background="@mipmap/app_new"

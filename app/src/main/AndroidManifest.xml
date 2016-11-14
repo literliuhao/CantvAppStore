@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.GET_PACKAGE_SIZE"/>
 
     <application
+        android:name=".MyApp"
         android:allowBackup="true"
         android:name=".MyApp"
         android:icon="@mipmap/ic_launcher"
@@ -39,7 +40,7 @@
             android:theme="@style/AppTheme.Translucent.FadeIn"
             >
         </activity>
-        <activity android:name=".subject.SubjectActivity"
+        <activity android:name=".specialtopic.SpecialActivity"
             android:theme="@style/AppTheme.Translucent.FadeIn">
         </activity>
         <activity android:name=".applist.AppListActivity">

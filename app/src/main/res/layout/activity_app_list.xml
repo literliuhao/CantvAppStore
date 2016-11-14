@@ -1,109 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:background="#2d313a"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/color_2D313A"
+                android:orientation="horizontal"
     >
 
     <ImageView
         android:id="@+id/iv_app_list_icon"
-        android:layout_width="6px"
-        android:layout_height="35px"
-        android:background="#efd624"
-        android:layout_marginLeft="424px"
-        android:layout_marginTop="80px"
+        android:layout_width="@dimen/px6"
+        android:layout_height="@dimen/px35"
+        android:layout_marginLeft="@dimen/px424"
+        android:layout_marginTop="@dimen/px80"
+        android:background="@color/colorYellow"
         />
 
     <TextView
+        android:id="@+id/textView"
+        style="@style/NormalText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="动作冒险"
-        android:textSize="38px"
-        style="@style/NormalText"
+        android:layout_marginLeft="@dimen/px20"
+        android:layout_marginTop="@dimen/px70"
         android:layout_toRightOf="@id/iv_app_list_icon"
-        android:layout_marginTop="70px"
-        android:layout_marginLeft="20px"
-        android:id="@+id/textView"/>
+        android:text="动作冒险"
+        android:textSize="@dimen/fontsize_38"/>
 
     <TextView
         android:id="@+id/tv_app_list_line"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/px160"
+        android:layout_marginTop="@dimen/px70"
         android:gravity="center"
-        android:visibility="gone"
-        android:textSize="38px"
-        android:layout_marginTop="70px"
-        android:layout_marginRight="160px"
         android:textColor="@color/white_opa50"
+        android:textSize="@dimen/px38"
+        android:visibility="gone"
         />
-
-    <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
-        android:id="@+id/rv_app_menu"
+    <LinearLayout
+        android:id="@+id/ll_app_menu"
+        android:layout_width="@dimen/px240"
         android:layout_height="match_parent"
-        android:layout_width="240px"
-        android:layout_marginTop="130px"
-        android:layout_marginLeft="140px"
-        android:focusable="false"
+        android:orientation="vertical"
+        android:layout_marginRight="@dimen/px20"
+        android:layout_marginLeft="@dimen/px140"
+        android:layout_marginTop="@dimen/px130"
         >
-
-    </cn.can.tvlib.ui.view.recyclerview.CanRecyclerView>
-
+        <TextView
+            android:id="@+id/tv_app_list_search"
+            android:layout_width="@dimen/px200"
+            android:layout_height="@dimen/px72"
+            android:layout_marginLeft="@dimen/px20"
+            android:layout_marginRight="@dimen/px20"
+            android:layout_marginBottom="@dimen/px20"
+            android:drawableLeft="@mipmap/list_search"
+            android:drawablePadding="@dimen/px_minus_15"
+            android:gravity="center"
+            android:paddingLeft="@dimen/px40"
+            android:textColor="@color/white_opa80"
+            android:textSize="@dimen/px34"
+            android:text="@string/serach"
+            android:focusable="true"
+            />
+        <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
+            android:id="@+id/rv_app_menu"
+            android:layout_width="@dimen/px240"
+            android:layout_height="match_parent"
+            android:focusable="false"
+            />
+    </LinearLayout>
 
     <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
         android:id="@+id/rv_app_list"
-        android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:layout_marginLeft="24px"
-        android:layout_marginRight="123px"
-        android:layout_marginTop="130px"
-        android:paddingBottom="@dimen/px58"
-        android:paddingTop="@dimen/px10"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="@dimen/px24"
+        android:layout_marginRight="@dimen/px123"
+        android:layout_marginTop="@dimen/px130"
+        android:layout_toRightOf="@id/ll_app_menu"
         android:clipChildren="false"
         android:clipToPadding="false"
         android:focusable="false"
-        android:visibility="gone"
-        android:layout_toRightOf="@id/rv_app_menu"
-        android:layout_alignParentTop="true">
-    </cn.can.tvlib.ui.view.recyclerview.CanRecyclerView>
+        android:paddingBottom="@dimen/px58"
+        android:paddingTop="@dimen/px10"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/ll_app_list_load_fail"
-        android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_marginLeft="24px"
-        android:layout_marginRight="123px"
-        android:layout_marginTop="130px"
-        android:layout_marginBottom="100px"
-        android:paddingBottom="@dimen/px58"
-        android:paddingTop="@dimen/px10"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="@dimen/px100"
+        android:layout_marginLeft="@dimen/px24"
+        android:layout_marginRight="@dimen/px123"
+        android:layout_marginTop="@dimen/px130"
+        android:layout_toRightOf="@id/ll_app_menu"
         android:focusable="false"
         android:gravity="center"
-        android:visibility="gone"
-        android:layout_toRightOf="@id/rv_app_menu"
-        android:layout_alignParentTop="true">
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/px58"
+        android:paddingTop="@dimen/px10"
+        android:visibility="gone">
+
         <TextView
+            style="@style/NormalText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/NormalText"
-            android:text="网络访问错误"
-            android:textSize="34px"
-            android:textColor="@color/white_opa80"
             android:focusable="false"
+            android:text="@string/load_fail"
+            android:textColor="@color/white_opa80"
+            android:textSize="@dimen/px34"
             />
+
         <TextView
             android:id="@+id/tv_load_retry"
-            android:layout_width="300px"
-            android:layout_height="100px"
             style="@style/NormalText"
-            android:text="点击重试"
-            android:textSize="34px"
-            android:textColor="@color/white_opa80"
+            android:layout_width="@dimen/px300"
+            android:layout_height="@dimen/px100"
+            android:layout_marginTop="@dimen/px40"
             android:background="@drawable/shap_app_list"
-            android:layout_marginTop="40px"
             android:focusable="true"
+            android:text="@string/retry"
+            android:textColor="@color/white_opa80"
+            android:textSize="@dimen/px34"
             />
 
     </LinearLayout>

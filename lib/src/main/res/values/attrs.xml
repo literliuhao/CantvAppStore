@@ -6,5 +6,8 @@
         <attr name="ringColor" format="color"/>
     </declare-styleable>
 
+    <declare-styleable name="RoundCornerView">
+        <attr name="cornerSize" format="dimension"/>
+    </declare-styleable>
 
 </resources>

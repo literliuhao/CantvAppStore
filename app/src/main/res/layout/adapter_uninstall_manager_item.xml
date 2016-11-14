@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:custom="http://schemas.Android.com/apk/res-auto"
              android:layout_width="@dimen/dimen_424px"
              android:layout_height="@dimen/dimen_184px"
              android:background="@drawable/shape_bg_uninstall_manager_item"
@@ -14,12 +15,14 @@
         android:visibility="visible"
         >
 
-        <ImageView
+        <cn.can.tvlib.ui.view.RoundCornerImageView
             android:id="@+id/iv_icon"
             android:layout_width="@dimen/dimen_136px"
             android:layout_height="@dimen/dimen_136px"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/dimen_24px"
+            android:scaleType="fitXY"
+            custom:cornerSize="@dimen/dimen_24px"
             />
 
         <LinearLayout
@@ -27,6 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dimen_14px"
             android:layout_marginStart="@dimen/dimen_24px"
             android:layout_toRightOf="@+id/iv_icon"
             android:orientation="vertical">
@@ -36,9 +40,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:singleLine="true"
-                android:text="名称"
                 android:includeFontPadding="false"
+                android:maxLines="1"
                 android:textColor="@color/uninstall_app_name_color"
                 android:textSize="@dimen/fontsize_34px"/>
 
@@ -46,11 +49,10 @@
                 android:id="@+id/tv_version"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="5.12.32"
-                android:includeFontPadding="false"
                 android:layout_marginTop="@dimen/dimen_12px"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:maxLines="1"
                 android:textColor="@color/tv_app_version_color"
                 android:textSize="@dimen/fontsize_26px"/>
 
@@ -58,11 +60,10 @@
                 android:id="@+id/tv_size"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="15.36M"
-                android:includeFontPadding="false"
                 android:layout_marginTop="@dimen/dimen_4px"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:maxLines="1"
                 android:textColor="@color/tv_app_version_color"
                 android:textSize="@dimen/fontsize_26px"/>
 

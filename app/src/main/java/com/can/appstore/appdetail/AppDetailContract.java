@@ -1,5 +1,7 @@
 package com.can.appstore.appdetail;
 
+import com.can.appstore.entity.AppInfo;
+
 /**
  * Created by JasonF on 2016/10/25.
  */
@@ -27,7 +29,7 @@ public class AppDetailContract {
 
         void onClickHomeKey();
 
-        void loadAppInfoOnSuccess();
+        void loadAppInfoOnSuccess(AppInfo appInfo);
 
         void refreshDownloadButtonStatus(int status, float progress);
 

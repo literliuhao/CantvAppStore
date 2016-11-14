@@ -32,8 +32,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dimen_27px"
-            android:text="@string/select_app_count"
             android:includeFontPadding="false"
+            android:text="@string/select_app_count"
             android:textColor="@color/app_name_color"
             android:textSize="@dimen/fontsize_26px"/>
 
@@ -42,9 +42,9 @@
             android:id="@+id/tv_select_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="4"
-            android:includeFontPadding="false"
             android:layout_marginTop="@dimen/dimen_11px"
+            android:includeFontPadding="false"
+            android:text="4"
             android:textColor="@color/select_app_count"
             android:textSize="@dimen/fontsize_44px"/>
 
@@ -86,19 +86,38 @@
 
         </LinearLayout>
 
-        <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
-            android:id="@+id/crlv_grid"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/dimen_42px"
-            android:layout_marginTop="@dimen/dimen_f7px"
-            android:layout_marginEnd="@dimen/dimen_142px"
-            android:layout_toRightOf="@+id/bt_batch_uninstall"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:paddingLeft="@dimen/dimen_23px"
-            android:paddingTop="@dimen/dimen_23px"
-            />
+            android:layout_toRightOf="@+id/bt_batch_uninstall">
+
+            <TextView
+                android:id="@+id/tv_no_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/not_uinstall_data"
+                android:layout_gravity="center"
+                android:visibility="invisible"
+                android:textColor="@color/uninstall_app_name_color"
+                android:textSize="@dimen/dimen_36px"
+                android:textStyle="bold"/>
+
+
+            <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
+                android:id="@+id/crlv_grid"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/dimen_142px"
+                android:layout_marginStart="@dimen/dimen_42px"
+                android:layout_marginTop="@dimen/dimen_f7px"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:paddingLeft="@dimen/dimen_23px"
+                android:paddingTop="@dimen/dimen_23px"
+                />
+
+
+        </FrameLayout>
 
     </LinearLayout>
 

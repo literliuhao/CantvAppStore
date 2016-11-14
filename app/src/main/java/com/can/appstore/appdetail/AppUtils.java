@@ -28,10 +28,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.ShellUtils;
 import cn.can.tvlib.utils.ShellUtils.CommandResult;
 
@@ -41,50 +41,6 @@ import cn.can.tvlib.utils.ShellUtils.CommandResult;
 
 public class AppUtils {
     private static long lastClickTime;
-
-    /**
-     * 获取已安装的所有apk信息
-     *
-     * @param context
-     * @return
-     */
-    public static List<AppInfo> findAllInstallApkInfo(Context context) {
-        // 创建集合
-        List<AppInfo> list = new ArrayList<AppInfo>();
-        // 包管理 所有已经安装的apk
-        PackageManager pm = context.getPackageManager();
-        // 所有已经安装的apk
-        List<PackageInfo> pList = pm.getInstalledPackages(0);
-        for (PackageInfo info : pList) {
-            AppInfo bean = new AppInfo();
-            bean.packageName = info.packageName;
-            // ApplicationInfo application标签
-            ApplicationInfo applicationInfo = info.applicationInfo;
-            bean.installApkpath = applicationInfo.sourceDir;
-            // 图标
-            bean.appIcon = applicationInfo.loadIcon(pm);
-            // 名称
-            bean.appName = applicationInfo.loadLabel(pm).toString();
-            // 版本名称
-            bean.versionName = info.versionName;
-            // 版本号
-            bean.versionCode = info.versionCode;
-            // 大小
-            File apk = new File(applicationInfo.sourceDir);
-            bean.size = apk.length();// apk包文件大小
-
-            // 是否是系统权限
-            if ((applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM) {
-                bean.isSystemApp = true;
-                continue;
-            } else {
-                bean.isSystemApp = false;
-            }
-            list.add(bean);
-
-        }
-        return list;
-    }
 
     /**
      * 卸载apk
@@ -97,36 +53,6 @@ public class AppUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static int dip2px(Context context, double dpValue) {
-        float density = context.getResources().getDisplayMetrics().density;
-        return (int) (dpValue * density + 0.5);
-    }
-
-    public static int getScreenWidth(Context context) {
-        return context.getResources().getDisplayMetrics().widthPixels;
-    }
-
-    /**
-     * 转换文件大小
-     *
-     * @param size
-     * @return
-     */
-    public static String FormetFileSize(long size) {
-        DecimalFormat df = new DecimalFormat("#.00");
-        String fileSizeString = "";
-        if (size < 1024) {
-            fileSizeString = df.format((double) size) + "B";
-        } else if (size < 1048576) {
-            fileSizeString = df.format((double) size / 1024) + "K";
-        } else if (size < 1073741824) {
-            fileSizeString = df.format((double) size / 1048576) + "M";
-        } else {
-            fileSizeString = df.format((double) size / 1073741824) + "G";
-        }
-        return fileSizeString;
     }
 
     public static long getAvailableMemory(Context context) {
@@ -225,31 +151,6 @@ public class AppUtils {
     }
 
     /**
-     * 静默安装
-     */
-    public static synchronized int installAPK(final String downloadPath) {
-        Log.i("", "installAPK :  " + downloadPath);
-        // new Thread() {
-        // public void run() {
-        // Process install = null;
-        // try {
-        // install = Runtime.getRuntime().exec("pm install -r " + downloadPath);
-        // return install.waitFor();
-        // } catch (Exception e) {
-        // e.printStackTrace();
-        // } finally {
-        // if (install != null) {
-        // install.destroy();
-        // }
-        // }
-        // }
-        // }.start();
-
-        CommandResult res = ShellUtils.execCommand("pm install -r " + downloadPath, false);
-        return res.result;
-    }
-
-    /**
      * 图片高斯模糊
      *
      * @param bitmap
@@ -328,18 +229,19 @@ public class AppUtils {
 
     /**
      * dirName是输出的文件夹名称，filaName是输出的文件名，两者共同组成输出的路径，如“ /mnt/sdcard/pictures/shot.png”
+     *
      * @param bmp
      * @param dirName
      * @param fileName
      * @throws IOException
      */
-    private void saveToSD(Bitmap bmp, String dirName,String fileName) throws IOException {
+    private void saveToSD(Bitmap bmp, String dirName, String fileName) throws IOException {
         // 判断sd卡是否存在
         if (Environment.getExternalStorageState().equals(
                 Environment.MEDIA_MOUNTED)) {
             File dir = new File(dirName);
             // 判断文件夹是否存在，不存在则创建
-            if(!dir.exists()){
+            if (!dir.exists()) {
                 dir.mkdir();
             }
 
