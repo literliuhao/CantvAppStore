@@ -13,7 +13,6 @@ import com.can.appstore.appdetail.AppUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.can.tvlib.ui.widgets.LoadingDialog;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.SystemUtil;
@@ -28,8 +27,6 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     private Context mContext;
     private static List<PackageUtil.AppInfo> mAppInfoList;
     private AppInstallReceiver mInstalledReceiver;
-    private LoadingDialog mLoadingDialog;
-    private BroadcastReceiver mHomeReceivcer;
     private ArrayList<String> mSelectPackageName = new ArrayList<String>();
 
     public UninstallManagerPresenter(UninstallManagerContract.View view, Context context) {
@@ -42,7 +39,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected void onPreExecute() {
-                mView.showLoading();
+                mView.showLoadingDialog();
             }
 
             @Override
@@ -57,29 +54,14 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
             @Override
             protected void onPostExecute(Void aVoid) {
                 mView.loadAllAppInfoSuccess(mAppInfoList);
-                mView.hideLoading();
+                mView.hideLoadingDialog();
             }
         }.execute();
-    }
-
-    public void hideLoading() {
-        if (mLoadingDialog != null) {
-            mLoadingDialog.dismiss();
-        }
-    }
-
-    public void showLoading(String msg) {
-        if (mLoadingDialog == null) {
-            mLoadingDialog = new LoadingDialog(mContext, mContext.getResources().getDimensionPixelSize(R.dimen.dimen_80px));
-            mLoadingDialog.setMessage(msg);
-            mLoadingDialog.show();
-        }
     }
 
     @Override
     public void addListener() {
         registerInstallReceiver();
-        registHomeBoradCast();
     }
 
     /**
@@ -135,25 +117,6 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
         return position / 3 + 1;
     }
 
-    /**
-     * 注册按主页键的广播
-     */
-    private void registHomeBoradCast() {
-        mHomeReceivcer = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (action.equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)) {
-                    mView.onClickHomeKey();
-                    return;
-                }
-            }
-        };
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-        mContext.registerReceiver(mHomeReceivcer, filter);
-    }
-
     class AppInstallReceiver extends BroadcastReceiver {
 
         @Override
@@ -185,11 +148,14 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
         }
     }
 
+    /**
+     * 继续卸载
+     */
     private void continueUninstall1() {
         if (mSelectPackageName.size() > 0) {
             mSelectPackageName.remove(0);
             mView.refreshSelectCount(mSelectPackageName.size());
-            AppUtils.uninstallpkg(mContext, mSelectPackageName.get(0));
+            PackageUtil.unInstall(mContext, mSelectPackageName.get(0));
         }
     }
 
@@ -198,15 +164,16 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
             mContext.unregisterReceiver(mInstalledReceiver);
             mInstalledReceiver = null;
         }
-        if (mHomeReceivcer != null) {
-            mContext.unregisterReceiver(mHomeReceivcer);
-            mHomeReceivcer = null;
-        }
     }
 
+    /**
+     * 批量卸载
+     *
+     * @param selectPackageList
+     */
     public void batchUninstallApp(ArrayList<String> selectPackageList) {
         this.mSelectPackageName = selectPackageList;
-        AppUtils.uninstallpkg(mContext, mSelectPackageName.get(0));
+        PackageUtil.unInstall(mContext, mSelectPackageName.get(0));
     }
 
     @Override
@@ -219,6 +186,5 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
             mSelectPackageName.clear();
             mSelectPackageName = null;
         }
-        hideLoading();
     }
 }

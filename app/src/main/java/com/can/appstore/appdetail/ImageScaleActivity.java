@@ -1,34 +1,29 @@
 package com.can.appstore.appdetail;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.can.appstore.R;
 import com.can.appstore.appdetail.adapter.ImageScaleAdapter;
 import com.can.appstore.appdetail.custom.AlphaPageTransformer;
+import com.can.appstore.appdetail.custom.PointView;
 import com.can.appstore.appdetail.custom.ScaleInTransformer;
+import com.can.appstore.base.BaseActivity;
 
 import java.util.List;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 
 /**
  * Created by JasonF on 2016/10/20.
  */
 
-public class ImageScaleActivity extends Activity {
+public class ImageScaleActivity extends BaseActivity {
 
     private static final String TAG = "ImageScaleActivity";
     private ViewPager mViewPager;
@@ -36,9 +31,8 @@ public class ImageScaleActivity extends Activity {
     private ImageScaleAdapter mScaleAdapter;
     private int mCurSelectPositon;
     private int mBeforePosition;
-    private View mRootView;
-    private BroadcastReceiver mHomeReceivcer;
     private List<String> mImageUrls;
+    private PointView mPointView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,45 +43,23 @@ public class ImageScaleActivity extends Activity {
         initView();
     }
 
-    public void getData() {//获取数据
+    public void getData() {
         Intent intent = getIntent();
         mCurSelectPositon = intent.getIntExtra("currentIndex", 0);
-//        mImageUrls = (List<String>) intent.getSerializableExtra("imageUrl");
-        Log.d(TAG, "mCurSelectPositon pic : " + mCurSelectPositon);
+        mImageUrls = (List<String>) intent.getSerializableExtra("imageUrl");
     }
 
     @Override
     protected void onResume() {
-        registHomeBoradCast();
         super.onResume();
     }
 
-    private void registHomeBoradCast() {
-        if (mHomeReceivcer == null) {
-            mHomeReceivcer = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    String action = intent.getAction();
-                    if (action.equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)) {
-                        if (mRootView != null) {
-                            mRootView.setVisibility(View.INVISIBLE);
-                        }
-                        finish();
-                        return;
-                    }
-                }
-            };
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-            registerReceiver(mHomeReceivcer, filter);
-        }
-    }
-
     private void initView() {
-        mRootView = findViewById(R.id.ll_view);
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mLinearLayout = (LinearLayout) findViewById(R.id.ll_point);
-        createPoint();
+        mPointView = (PointView) findViewById(R.id.point_view);
+        mPointView.setPointCount(mImageUrls.size());
+        mPointView.setSelectPosition(mCurSelectPositon);
 
         mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.dimen_210px));
         mViewPager.setOffscreenPageLimit(3);
@@ -118,7 +90,6 @@ public class ImageScaleActivity extends Activity {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                Log.d(TAG, "currState : " + state);
             }
         });
 
@@ -131,25 +102,8 @@ public class ImageScaleActivity extends Activity {
     }
 
     private void setPointSelector(int selectPosition, boolean isSelect) {
-        Log.d(TAG, "setPointSelector selectPosition: " + selectPosition + "isSelect : " + isSelect);
-        ImageView img = (ImageView) mLinearLayout.getChildAt(selectPosition);
-        img.clearAnimation();
-        img.setSelected(isSelect);
-    }
-
-    private void createPoint() {
-        int dotSize = getResources().getDimensionPixelSize(R.dimen.dimen_16px);
-        for (int i = 0; i < 5; i++) {
-            ImageView imagePont = new ImageView(ImageScaleActivity.this);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dotSize, dotSize);
-            imagePont.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imagePont.setBackgroundResource(R.drawable.selector_point_foucs);
-            imagePont.setSelected(false);
-            if (i != 0) {
-                params.setMarginStart(dotSize);
-            }
-            imagePont.setLayoutParams(params);
-            mLinearLayout.addView(imagePont);
+        if (isSelect) {
+            mPointView.setSelectPosition(selectPosition);
         }
     }
 
@@ -160,20 +114,12 @@ public class ImageScaleActivity extends Activity {
             case KeyEvent.KEYCODE_BACK:
                 finish();
                 break;
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                break;
-            default:
-                break;
         }
         return super.onKeyDown(keyCode, event);
     }
 
     @Override
     protected void onStop() {
-        if (mHomeReceivcer != null) {
-            unregisterReceiver(mHomeReceivcer);
-            mHomeReceivcer = null;
-        }
         super.onStop();
     }
 

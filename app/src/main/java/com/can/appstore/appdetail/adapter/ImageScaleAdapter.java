@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import cn.can.tvlib.imageloader.ImageLoader;
+import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
+
 
 /**
  * Created by JasonF on 2016/10/20.
@@ -21,7 +24,6 @@ public class ImageScaleAdapter extends PagerAdapter {
     private Context mContext;
     private LinkedList<ImageView> mRecycledViews = new LinkedList<ImageView>();
     private List<String> mUrlList = new ArrayList<String>();
-    int[] imgRes = {R.drawable.a, R.drawable.b, R.drawable.c, R.drawable.d, R.drawable.e};
     private int pageCount;
     private int mRoundSize;
 
@@ -31,8 +33,7 @@ public class ImageScaleAdapter extends PagerAdapter {
         this.mContext = context;
         this.mUrlList = urlList;
         mRoundSize = mContext.getResources().getDimensionPixelSize(R.dimen.dimen_8px);
-        //TODO 正常是mUrlList的size
-        pageCount = imgRes.length;
+        pageCount = mUrlList.size();
     }
 
     @Override
@@ -56,8 +57,12 @@ public class ImageScaleAdapter extends PagerAdapter {
             imageView = new ImageView(mContext);
         }
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-        //        ImageLoader.getInstance().buildTask(imageView, mUrlList.get(position)).bitmapTransformation(new GlideRoundTransform(mContext, mRoundSize)).build().start(mContext);
-        imageView.setImageResource(imgRes[index]);
+        ImageLoader.getInstance()
+                .buildTask(imageView, mUrlList.get(index))
+                .bitmapTransformation(new GlideRoundTransform(mContext, mRoundSize))
+                .placeholder(R.drawable.errorholder_cibn)
+                .build()
+                .start(mContext);
         container.addView(imageView);
         return imageView;
     }

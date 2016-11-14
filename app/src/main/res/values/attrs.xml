@@ -15,4 +15,11 @@
         <attr name="barcolor" format="color"/>
         <attr name="progresscolor" format="color"/>
     </declare-styleable>
+
+    <declare-styleable name="pointview">
+        <attr name="pointradius" format="dimension"/>
+        <attr name="pointspace" format="dimension"/>
+        <attr name="selectcolor" format="color"/>
+        <attr name="unselectcolor" format="color"/>
+    </declare-styleable>
 </resources>

@@ -1,6 +1,5 @@
 package com.can.appstore.uninstallmanager;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
@@ -12,8 +11,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.appdetail.AppDetailContract;
 import com.can.appstore.appdetail.AppUtils;
 import com.can.appstore.appdetail.custom.TextProgressBar;
+import com.can.appstore.base.BaseActivity;
 import com.can.appstore.uninstallmanager.adapter.UninstallManagerAdapter;
 
 import java.util.ArrayList;
@@ -26,14 +27,12 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PackageUtil;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
-
 /**
  * 本地卸载管理页面
  * Created by JasonF on 2016/10/13.
  */
 
-public class UninstallManagerActivity extends Activity implements UninstallManagerContract.View {
+public class UninstallManagerActivity extends BaseActivity implements UninstallManagerContract.View {
     public static final String TAG = "UninstallManagerActivi";
 
     private CanRecyclerView mCanRecyclerView;
@@ -46,7 +45,7 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
     private ListFocusMoveRunnable mListFocusMoveRunnable;
     private UninstallManagerPresenter mPresenter;
     private ArrayList<String> mSelectPackageName;
-    private boolean flag;
+    private boolean isSelect;
     private Button mBtBatchUninstall;
     private TextView mTvItemCurRows;
     private TextView mTvItemTotalRows;
@@ -54,7 +53,6 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
     private TextView mSelectCount;
     private TextView mNotUninstallApp;
     private LinearLayout mLinearLayoutSelectApp;
-    private int mCurSelectPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,17 +73,6 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
         if (mPresenter != null) {
             mPresenter.addListener();
         }
-        //        mFocusMoveUtil.hideFocusForShowDelay(50);
-        //        mCanRecyclerView.postDelayed(new Runnable() {
-        //            @Override
-        //            public void run() {
-        //                View childAt = mCanRecyclerView.getChildAt(mCurSelectPosition);
-        //                if (childAt != null) {
-        //                    childAt.requestFocus();
-        //                }
-        //            }
-        //        }, 50);
-
     }
 
     private void initView() {
@@ -117,7 +104,7 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
             @Override
             public void onClick(View view) {
                 if (mUninstallManagerAdapter.getCurrentSelectMode() == CanRecyclerViewAdapter.MODE_SELECT) {
-                    if (flag && mSelectPackageName != null && mSelectPackageName.size() > 0) {
+                    if (isSelect && mSelectPackageName != null && mSelectPackageName.size() > 0) {
                         mPresenter.batchUninstallApp(mSelectPackageName);
                     } else {
                         mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_NORMAL);
@@ -125,12 +112,12 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
                             mSelectPackageName.clear();
                         }
                         hideSelectAppCount();
-                        flag = !flag;
+                        isSelect = !isSelect;
                     }
                 } else if (mUninstallManagerAdapter.getCurrentSelectMode() == CanRecyclerViewAdapter.MODE_NORMAL) {
                     mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_SELECT);
                     showSelectAppCount();
-                    flag = !flag;
+                    isSelect = !isSelect;
                 }
             }
         });
@@ -154,20 +141,20 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Log.d(TAG, "onKeyDow : " + keyCode);
         if (keyCode == KeyEvent.KEYCODE_MENU && event.getAction() == KeyEvent.ACTION_DOWN) {
-            mUninstallManagerAdapter.switchSelectMode(flag ? CanRecyclerViewAdapter.MODE_NORMAL : CanRecyclerViewAdapter.MODE_SELECT);
-            if (flag) {
+            mUninstallManagerAdapter.switchSelectMode(isSelect ? CanRecyclerViewAdapter.MODE_NORMAL : CanRecyclerViewAdapter.MODE_SELECT);
+            if (isSelect) {
                 hideSelectAppCount();
             } else {
                 showSelectAppCount();
             }
-            flag = !flag;
-        } else if (keyCode == KeyEvent.KEYCODE_BACK && flag && event.getAction() == KeyEvent.ACTION_DOWN) {
+            isSelect = !isSelect;
+        } else if (keyCode == KeyEvent.KEYCODE_BACK && isSelect && event.getAction() == KeyEvent.ACTION_DOWN) {
             mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_NORMAL);
             hideSelectAppCount();
             if (mSelectPackageName != null) {
                 mSelectPackageName.clear();
             }
-            flag = !flag;
+            isSelect = !isSelect;
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -180,21 +167,6 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
 
     private void hideSelectAppCount() {
         mLinearLayoutSelectApp.setVisibility(View.INVISIBLE);
-    }
-
-    @Override
-    public void showLoading() {
-        mPresenter.showLoading(getResources().getString(R.string.loading));
-    }
-
-    @Override
-    public void hideLoading() {
-        mPresenter.hideLoading();
-    }
-
-    @Override
-    public void onClickHomeKey() {
-        finish();
     }
 
     @Override
@@ -249,11 +221,7 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
 
     }
 
-    /**
-     * 添加RecyclerView的一些监听事件
-     */
     private void addRecyclerViewListener() {
-        //添加焦点移动的监听,需要在adapter上设置
         mUninstallManagerAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
             @Override
             public boolean onFocusMoveOutside(int currFocus, int direction) {
@@ -266,7 +234,6 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
                     mFocusedListChild = view;
                     Log.d(TAG, "onItemFocusChanged " + position);
                     mCanRecyclerView.postDelayed(mListFocusMoveRunnable, 50);
-                    mCurSelectPosition = position;
                     view.setBackgroundResource(R.drawable.shape_bg_uninstall_manager_item_focus);
                 } else {
                     mScaleUtil.scaleToNormal();
@@ -275,14 +242,6 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
                 mTvItemCurRows.setText(mPresenter.calculateCurRows(position) + "");
                 String totalRowsStr = String.format(getResources().getString(R.string.rows_str), mPresenter.calculateCurTotalRows());
                 mTvItemTotalRows.setText(totalRowsStr);
-            }
-        });
-
-        mUninstallManagerAdapter.setItemKeyEventListener(new CanRecyclerViewAdapter.OnItemKeyEventListener() {
-            @Override
-            public boolean onItemKeyEvent(int position, View v, int keyCode, KeyEvent event) {
-                Log.d(TAG, "keycode = " + keyCode + "isHideCheckBox : " + flag);
-                return false;
             }
         });
 
@@ -310,10 +269,9 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
         mUninstallManagerAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {//不是选择模式的点击事件
             @Override
             public void onClick(View view, int position, Object data) {
-                //进入普通点击事件  点击弹出卸载对话框
+                //进入普通点击事件  点击弹出卸载对话框 // TODO: 2016/11/14
                 PackageUtil.AppInfo info = (PackageUtil.AppInfo) data;
-                Log.d(TAG, "onSelectChanged = " + position + "packageName" + info.packageName);
-                AppUtils.uninstallpkg(UninstallManagerActivity.this, info.packageName);
+                PackageUtil.unInstall(UninstallManagerActivity.this, info.packageName);
             }
         });
 
@@ -329,6 +287,11 @@ public class UninstallManagerActivity extends Activity implements UninstallManag
                 mListFocusMoveRunnable.run();
             }
         });
+    }
+
+    @Override
+    public void setPresenter(AppDetailContract.Presenter presenter) {
+
     }
 
     private class ListFocusMoveRunnable implements Runnable {

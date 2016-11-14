@@ -11,6 +11,8 @@ import com.can.appstore.R;
 
 import java.util.List;
 
+import cn.can.tvlib.imageloader.ImageLoader;
+import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
@@ -22,12 +24,13 @@ public class IntroducGridAdapter extends CanRecyclerViewAdapter {
     private Context mContext;
     private List<String> mIntroduceList;
     private LayoutInflater mInflater;
-    int[] imgRes = {R.drawable.a, R.drawable.b, R.drawable.c, R.drawable.d, R.drawable.e};
+    private int roundSize;
 
     public IntroducGridAdapter(Context context, List<String> datas) {
         super(datas);
         this.mContext = context;
         this.mIntroduceList = datas;
+        roundSize = mContext.getResources().getDimensionPixelSize(R.dimen.dimen_12px);
         mInflater = LayoutInflater.from(mContext);
     }
 
@@ -41,8 +44,12 @@ public class IntroducGridAdapter extends CanRecyclerViewAdapter {
 
     @Override
     protected void bindContentData(Object mDatas, RecyclerView.ViewHolder holder, int position) {
-        ((IntroducGridViewHolder) holder).introducItem.setImageResource(imgRes[position]);
-        // TODO 加载图片
+        ImageLoader.getInstance()
+                .buildTask(((IntroducGridViewHolder) holder).introducItem, mIntroduceList.get(position))
+                .bitmapTransformation(new GlideRoundTransform(mContext, roundSize))
+                .placeholder(R.drawable.errorholder_cibn)
+                .build()
+                .start(mContext);
     }
 
     class IntroducGridViewHolder extends CanRecyclerView.ViewHolder {
