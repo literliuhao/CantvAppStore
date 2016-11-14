@@ -12,10 +12,14 @@ import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.widget.ImageView;
 
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
+import com.bumptech.glide.request.target.SquaringDrawable;
+
+import cn.can.tvlib.R;
 
 import cn.can.tvlib.R;
 
@@ -49,13 +53,8 @@ public class RoundCornerImageView extends ImageView {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
-
         mMaskPaint = new Paint(mPaint);
         mMaskPaint.setStyle(Paint.Style.FILL);
-
-        cornerRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, mRoundSize,
-                context.getResources().getDisplayMetrics());
-
         mRect = new RectF();
     }
 
@@ -65,6 +64,7 @@ public class RoundCornerImageView extends ImageView {
         mRect.bottom = h;
     }
 
+    private static final String TAG = "RoundCornerImageView";
     @Override
     protected void onDraw(Canvas canvas) {
         Drawable bg = getBackground();
@@ -72,13 +72,14 @@ public class RoundCornerImageView extends ImageView {
             bg.setBounds(0, 0, getWidth(), getHeight());
             bg.draw(canvas);
         }
-        if (getDrawable() != null) {
-            Drawable drawable = getDrawable();
+        if(getDrawable() != null){
+            Log.i(TAG, "onDraw: drawable is not null");
+            Drawable drawable = getDrawable().getCurrent();
             Bitmap bmp = null;
-            if (drawable instanceof BitmapDrawable) {
-                bmp = ((BitmapDrawable) drawable).getBitmap();
-            } else if (drawable instanceof GlideBitmapDrawable) {
-                bmp = ((GlideBitmapDrawable) drawable).getBitmap();
+            if(drawable instanceof BitmapDrawable){
+                bmp = ((BitmapDrawable)drawable).getBitmap();
+            } else if(drawable instanceof GlideBitmapDrawable){
+                bmp = ((GlideBitmapDrawable)drawable).getBitmap();
             }
             if (bmp != null) {
                 int bmpW = bmp.getWidth();
@@ -118,6 +119,8 @@ public class RoundCornerImageView extends ImageView {
                     canvas.drawRoundRect(mRect, cornerRadius, cornerRadius, mMaskPaint);
                 }
             }
+        } else {
+            Log.i(TAG, "onDraw: drawable null");
         }
     }
 

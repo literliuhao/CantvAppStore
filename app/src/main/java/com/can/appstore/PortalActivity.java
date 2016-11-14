@@ -82,7 +82,7 @@ public class PortalActivity extends Activity {
                 // TODO: 2016/11/4  添加跳转页面点击事件
                 if (position == 0) {
                     Intent intent = new Intent(PortalActivity.this, AppListActivity.class);
-                    intent.putExtra(AppListActivity.FROM_TYPE, AppListActivity.APPLICATION);
+                    intent.putExtra(AppListActivity.PAGE_TYPE, AppListActivity.APPLICATION);
                     intent.putExtra(AppListActivity.TOPIC_ID, "");
                     intent.putExtra(AppListActivity.TYPE_ID, "");
                     PortalActivity.this.startActivity(intent);

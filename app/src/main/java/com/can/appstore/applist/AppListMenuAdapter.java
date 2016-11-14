@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.entity.Topic;
 
 import java.util.List;
 
@@ -20,8 +21,6 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
  */
 
 public class AppListMenuAdapter extends CanRecyclerViewAdapter {
-    public static final int TYPE_NORMAL = 0;
-    public static final int TYPE_SEARCH = 1;
     private Context mContext;
     private List mData;
 
@@ -29,15 +28,6 @@ public class AppListMenuAdapter extends CanRecyclerViewAdapter {
         super(data);
         mData = data;
         this.mContext = context;
-    }
-
-    @Override
-    public int getViewType(int position) {
-        AppListMenuInfo info = (AppListMenuInfo) mData.get(position);
-        if(AppListPresenter.DEFAULT_TOPIC.equals(info.getId())){
-            return TYPE_SEARCH;
-        }
-        return TYPE_NORMAL;
     }
 
     @Override
@@ -49,7 +39,7 @@ public class AppListMenuAdapter extends CanRecyclerViewAdapter {
 
     @Override
     protected void bindContentData(Object mDatas, RecyclerView.ViewHolder holder, int position) {
-        AppListMenuInfo info = (AppListMenuInfo) mDatas;
+        Topic info = (Topic) mDatas;
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.mTextView.setText(info.getName());
     }
