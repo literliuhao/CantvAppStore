@@ -49,4 +49,10 @@
     <string name="downlaod_restart">重试</string>
     <string name="introduce_detail">简介详情</string>
     <string name="load_data_faild">加载数据失败,请稍后再试...</string>
+
+    <!-- 活动页 -->
+    <string name="active_click_participate">点击参加活动</string>
+    <string name="active_app_download_waiting">等待中</string>
+    <string name="active_app_installing">安装中</string>
+
 </resources>

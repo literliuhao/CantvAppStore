@@ -6,10 +6,7 @@ package com.can.appstore.active;
 
 public class ActiveContract {
     interface TaskPresenter{
-        //初始化下载任务，以及下载状态
-        void initDownloadTask();
-
-        void startDownload();
+        void clickBtnDownload();
     }
 
     interface OperationView{
@@ -18,5 +15,9 @@ public class ActiveContract {
         void refreshTextProgressbarTextStatus(String status);
 
         void showToast(String toastContent);
+
+        void loadwebview(String url);
+
+        void setLayoutBackground(String url);
     }
 }

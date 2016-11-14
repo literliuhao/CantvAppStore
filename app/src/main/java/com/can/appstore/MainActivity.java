@@ -29,7 +29,19 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, ActiveActivity.class));
 //                SearchActivity.startAc(MainActivity.this);
-//                final CanDialog canDialog = new CanDialog(MainActivity.this);
+//                final CanDialog canDialog = new CanDialog(MainActivity.this).setmIvDialogTitle(R.mipmap.ic_launcher)
+//                .setmTvDialogTitle("QQ音乐").setmBtnDialogPositive("安装").setmBtnDialogNegative("卸载");
+//                canDialog.setOnCanBtnClickListener(new CanDialog.OnCanBtnClickListener() {
+//                    @Override
+//                    public void onClickPositive() {
+//                        ToastUtil.toastShort("点击了 Positive 按钮");
+//                    }
+//
+//                    @Override
+//                    public void onClickNegative() {
+//                        ToastUtil.toastShort("点击了 Negative 按钮");
+//                    }
+//                }).show();
 //
 //                CanDialog.OnCanBtnClickListener onCanBtnClickListener = new CanDialog.OnCanBtnClickListener() {
 //                    @Override

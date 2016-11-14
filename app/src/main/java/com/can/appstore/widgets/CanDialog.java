@@ -55,79 +55,6 @@ public class CanDialog extends Dialog {
         mBtnDialogPositive = (Button) dialogView.findViewById(R.id.btn_dialog_positive);
         mBtnDialogNegative = (Button) dialogView.findViewById(R.id.btn_dialog_negative);
 
-        addListeneForBtn();
-    }
-
-    /**
-     * 安装框
-     * @param titleImgId  应用图标
-     * @param titleStr    标题（应用名称）
-     * @param positiveStr 按钮一
-     * @param negativeStr 按钮二
-     * @param onCanBtnClickListener  按钮点击事件
-     */
-    public void showDialogForInstallAPP(int titleImgId, String titleStr, String positiveStr, String negativeStr,
-                                        OnCanBtnClickListener onCanBtnClickListener) {
-        mIvDialogTitle.setImageResource(titleImgId);
-        setViewConent(titleImgId, titleStr, "", "", "", positiveStr, negativeStr, onCanBtnClickListener);
-    }
-
-    /**
-     *应用卸载框
-     * @param titleImgId  应用图标
-     * @param titleStr  标题（应用名称）
-     * @param contentStr  提示内容
-     * @param positiveStr 按钮一
-     * @param negativeStr 按钮二
-     * @param onCanBtnClickListener  按钮点击事件
-     */
-    public void showDialogForUninstallAPP(int titleImgId, String titleStr, String contentStr, String positiveStr, String
-            negativeStr, OnCanBtnClickListener onCanBtnClickListener) {
-        setViewConent(titleImgId, titleStr, contentStr, "", "", positiveStr, negativeStr, onCanBtnClickListener);
-    }
-
-    /**
-     * 针对更新设置特定的对话框
-     * @param titleStr   标题
-     * @param leftContentStr  左上内容
-     * @param rightContentStr 右上内容
-     * @param belowContentStr 左下内容
-     * @param positiveStr 按钮一
-     * @param negativeStr 按钮二
-     * @param onCanBtnClickListener 按钮点击事件
-     */
-    public void showDialogForUpdateSetting(String titleStr, String leftContentStr, String rightContentStr, String
-            belowContentStr, String positiveStr, String negativeStr, OnCanBtnClickListener onCanBtnClickListener) {
-        setViewConent(-1, titleStr, leftContentStr, rightContentStr, belowContentStr, positiveStr, negativeStr, onCanBtnClickListener);
-    }
-
-    private void setViewConent(int titleImgId, String titleStr, String leftContentStr, String rightContentStr,
-                              String belowContentStr, String positiveStr, String negativeStr,
-                              OnCanBtnClickListener onCanBtnClickListener) {
-        if (titleImgId == -1) {
-            mIvDialogTitle.setVisibility(View.GONE);
-        } else {
-            mIvDialogTitle.setImageResource(titleImgId);
-        }
-        if (TextUtils.isEmpty(leftContentStr)) {
-            mTvDialogTopLeftContent.setVisibility(View.GONE);
-        } else {
-            mTvDialogTopLeftContent.setText(leftContentStr);
-        }
-        if (TextUtils.isEmpty(rightContentStr)) {
-            mTvDialogTopRightContent.setVisibility(View.GONE);
-        } else {
-            mTvDialogTopRightContent.setText(rightContentStr);
-        }
-        if (TextUtils.isEmpty(belowContentStr)) {
-            mTvDialogBelowContent.setVisibility(View.GONE);
-        } else {
-            mTvDialogBelowContent.setText(belowContentStr);
-        }
-        mTvDialogTitle.setText(titleStr);
-        mBtnDialogPositive.setText(positiveStr);
-        mBtnDialogNegative.setText(negativeStr);
-        this.mOnCanBtnClickListener = onCanBtnClickListener;
     }
 
 
@@ -146,4 +73,66 @@ public class CanDialog extends Dialog {
         });
     }
 
+    public CanDialog setmTvDialogTitle(String title) {
+        this.mTvDialogTitle.setVisibility(View.VISIBLE);
+        this.mTvDialogTitle.setText(title);
+        return this;
+    }
+
+    public CanDialog setmTvDialogTopLeftContent(String topLeftContent) {
+        this.mTvDialogTopLeftContent.setVisibility(View.VISIBLE);
+        this.mTvDialogTopLeftContent.setText(topLeftContent);
+        return this;
+    }
+
+    public CanDialog setmTvDialogTopRightContent(String topRightContent) {
+        this.mTvDialogTopRightContent.setVisibility(View.VISIBLE);
+        this.mTvDialogTopRightContent.setText(topRightContent);
+        return this;
+    }
+
+    public CanDialog setmTvDialogBelowContent(String belowContent) {
+        this.mTvDialogBelowContent.setVisibility(View.VISIBLE);
+        this.mTvDialogBelowContent.setText(belowContent);
+        return this;
+    }
+
+    public CanDialog setmBtnDialogPositive(String positiveStr) {
+        this.mBtnDialogPositive.setVisibility(View.VISIBLE);
+        this.mBtnDialogPositive.setText(positiveStr);
+        this.mBtnDialogPositive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOnCanBtnClickListener.onClickPositive();
+            }
+        });
+        return this;
+    }
+
+    public CanDialog setmBtnDialogNegative(String negativeStr) {
+        this.mBtnDialogNegative.setVisibility(View.VISIBLE);
+        this.mBtnDialogNegative.setText(negativeStr);
+        this.mBtnDialogNegative.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOnCanBtnClickListener.onClickNegative();
+            }
+        });
+        return this;
+    }
+
+    public CanDialog setmIvDialogTitle(int imgResId) {
+        this.mIvDialogTitle.setVisibility(View.VISIBLE);
+        this.mIvDialogTitle.setImageResource(imgResId);
+        return this;
+    }
+
+    public CanDialog setOnCanBtnClickListener(OnCanBtnClickListener listener){
+        this.mOnCanBtnClickListener = listener;
+        return this;
+    }
+
+    public void setmContentLayout() {
+        this.mContentLayout.setVisibility(View.VISIBLE);
+    }
 }

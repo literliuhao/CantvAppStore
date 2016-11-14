@@ -25,8 +25,8 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 public class SpecialDetailActivity extends Activity {
     private CanRecyclerView mCanRecyclerView;
     private View mCurrFocusView;
-    private FocusMoveUtil focusMoveUtil;
-    private FocusScaleUtil focusScaleUtil;
+    private FocusMoveUtil mFocusMoveUtil;
+    private FocusScaleUtil mFocusScaleUtil;
     private Handler mHandler = new Handler();
 
     public static void startAc(Context context) {
@@ -48,8 +48,8 @@ public class SpecialDetailActivity extends Activity {
         @Override
         public void run() {
             if(mCurrFocusView != null && mCurrFocusView.isFocused()){
-                focusMoveUtil.startMoveFocus(mCurrFocusView,1.1f);
-                focusScaleUtil.scaleToLarge(mCurrFocusView);
+                mFocusMoveUtil.startMoveFocus(mCurrFocusView,1.1f);
+                mFocusScaleUtil.scaleToLarge(mCurrFocusView);
             }
         }
     };
@@ -69,8 +69,8 @@ public class SpecialDetailActivity extends Activity {
         mCanRecyclerView.setAdapter(adapter);
 
         //焦点工具初始化
-        focusMoveUtil = new FocusMoveUtil(SpecialDetailActivity.this, getWindow().getDecorView(), R.mipmap.image_focus);
-        focusScaleUtil = new FocusScaleUtil();
+        mFocusMoveUtil = new FocusMoveUtil(SpecialDetailActivity.this, getWindow().getDecorView(), R.mipmap.image_focus);
+        mFocusScaleUtil = new FocusScaleUtil();
 
         addListener(adapter);
 
@@ -101,7 +101,7 @@ public class SpecialDetailActivity extends Activity {
                     mHandler.removeCallbacks(mfocusMoveRunnable);
                     mHandler.postDelayed(mfocusMoveRunnable, 50);
                 }else{
-                    focusScaleUtil.scaleToNormal(view);
+                    mFocusScaleUtil.scaleToNormal(view);
                 }
             }
         });
