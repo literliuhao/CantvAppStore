@@ -1,7 +1,9 @@
 package cn.can.tvlib.imageloader;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Looper;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -199,22 +201,49 @@ public class ImageLoader implements ImageLoaderI {
 
     @Override
     public void pauseTask(Context context) {
+        if(hasDestroyed(context)){
+            return;
+        }
         Glide.with(context).pauseRequests();
     }
 
     @Override
     public void pauseAllTask(Context context) {
+        if(hasDestroyed(context)){
+            return;
+        }
         Glide.with(context).pauseRequestsRecursive();
     }
 
     @Override
     public void resumeTask(Context context) {
+        if(hasDestroyed(context)){
+            return;
+        }
         Glide.with(context).resumeRequests();
     }
 
     @Override
     public void resumeAllTask(Context context) {
+        if(hasDestroyed(context)){
+            return;
+        }
         Glide.with(context).resumeRequestsRecursive();
+    }
+
+    private boolean hasDestroyed(Context context){
+        if(context instanceof Activity){
+            Activity activity = (Activity) context;
+            if(activity.isFinishing() || activity.isDestroyed()){
+                return true;
+            }
+        } else if(context instanceof FragmentActivity){
+            FragmentActivity activity = (FragmentActivity) context;
+            if(activity.isFinishing() || activity.isDestroyed()){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
