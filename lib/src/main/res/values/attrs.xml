@@ -4,10 +4,9 @@
     <declare-styleable name="CircleImageView">
         <attr name="ringWidth" format="dimension"/>
         <attr name="ringColor" format="color"/>
+        <attr name="roundCorner" format="dimension"/>
     </declare-styleable>
-
     <declare-styleable name="RoundCornerView">
         <attr name="cornerSize" format="dimension"/>
     </declare-styleable>
-
 </resources>

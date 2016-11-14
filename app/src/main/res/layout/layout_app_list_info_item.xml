@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:roundCornerImage="http://schemas.android.com/apk/res-auto"
                 android:layout_width="@dimen/px424"
                 android:layout_height="@dimen/px184"
                 android:descendantFocusability="blocksDescendants"
@@ -7,27 +8,41 @@
                 android:background="@drawable/selector_shap_applist_bg"
     >
 
-    <ImageView
+    <cn.can.tvlib.ui.view.RoundCornerImageView
         android:id="@+id/iv_app_list_item"
         android:layout_width="@dimen/px136"
         android:layout_height="@dimen/px136"
         android:layout_marginTop="@dimen/px24"
         android:layout_marginLeft="@dimen/px24"
         android:layout_marginBottom="@dimen/px24"
-        android:background="@color/white_opa30"
+        android:background="@drawable/shap_app_list_icon_bg"
         android:scaleType="fitXY"
+        roundCornerImage:cornerSize="@dimen/dimen_24px"
+        />
+    <ImageView
+        android:id="@+id/iv_app_list_error"
+        android:layout_width="@dimen/px136"
+        android:layout_height="@dimen/px136"
+        android:layout_marginTop="@dimen/px24"
+        android:layout_marginLeft="@dimen/px24"
+        android:layout_marginBottom="@dimen/px24"
+        android:scaleType="centerInside"
+        android:src="@mipmap/cibn_icon"
+        android:visibility="gone"
         />
 
     <TextView
         android:id="@+id/tv_app_list_name"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/px240"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/px16"
         android:layout_marginTop="@dimen/px45"
         android:layout_toRightOf="@id/iv_app_list_item"
-        android:gravity="center"
+        android:gravity="left"
         android:textSize="@dimen/px34"
         style="@style/NormalText"
+        android:ellipsize="end"
+        android:lines="1"
         />
 
     <TextView
@@ -76,6 +91,5 @@
         android:layout_height="@dimen/px92"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:background="@mipmap/app_new"
         />
 </RelativeLayout>

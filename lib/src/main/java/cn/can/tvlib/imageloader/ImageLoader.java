@@ -124,6 +124,27 @@ public class ImageLoader implements ImageLoaderI {
      * @param url
      * @param placeHolder
      * @param errorHolder
+     */
+    @Override
+    public void load(Context context, ImageView view, String url, int placeHolder, int errorHolder) {
+        new GlideLoadTask.Builder()
+                .view(view)
+                .url(url)
+                .placeholder(placeHolder)
+                .errorHolder(errorHolder)
+                .build()
+                .start(context);
+    }
+
+    /**
+     * load network image to ImageView.<br/>
+     * If u want to modify all kinds of Configs, u can invoke the @method{createTask} to obtain a loadTask, then start it after your config finish.
+     *
+     * @param context
+     * @param view
+     * @param url
+     * @param placeHolder
+     * @param errorHolder
      * @param successCallback
      * @param failCallback
      */
