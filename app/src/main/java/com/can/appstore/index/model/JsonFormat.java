@@ -22,7 +22,7 @@ public class JsonFormat {
             pageBean = new PageBean();
             JSONArray jsonArray = new JSONArray(DataUtils.indexData);
             LayoutBean layoutBean;
-            List<LayoutBean> layoutLists = new ArrayList<LayoutBean>();
+            List<LayoutBean> layoutLists = new ArrayList<>();
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject childObject = new JSONObject(jsonArray.get(i).toString());
                 layoutBean = new LayoutBean();
@@ -30,7 +30,7 @@ public class JsonFormat {
                 layoutBean.setTitle(childObject.getString("title"));
                 JSONArray childArray = childObject.getJSONArray("layout");
                 List<ChildBean> beanList = null;
-                beanList = new ArrayList<ChildBean>();
+                beanList = new ArrayList<>();
                 for (int j = 0; j < childArray.length(); j++) {
                     JSONObject layoutObject = new JSONObject(childArray.get(j).toString());
                     ChildBean childBean = new ChildBean();

@@ -1,11 +1,9 @@
 package com.can.appstore.myapps.ui;
 
-
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -15,7 +13,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.can.appstore.R;
-import com.can.appstore.index.interfaces.ICallBack;
+import com.can.appstore.index.interfaces.IAddFocusListener;
+import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.myapps.adapter.MyAppsRvAdapter;
 import com.can.appstore.myapps.model.AppInfo;
 import com.can.appstore.myapps.model.MyAppsListDataUtil;
@@ -33,7 +32,7 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
  * Created by wei on 2016/10/13.
  */
 
-public class MyAppsFragment extends Fragment {
+public class MyAppsFragment extends BaseFragment {
 
     //本地全部的第三方应用
     List<AppInfo> mAppsList = new ArrayList<AppInfo>();
@@ -53,11 +52,11 @@ public class MyAppsFragment extends Fragment {
 //    private View mFocusedListChild;
 //    MyFocusMoveRunnable mFocusMoveRunnable;
     private OnFocusChangeListener mFocusChangeListener;
-    private ICallBack mICallBack;
+    private IAddFocusListener mFocusListener;
 
     MyAppsListDataUtil mMyAppsListDataUtil;
-    public MyAppsFragment(ICallBack iCallBack){
-        this.mICallBack = iCallBack;
+    public MyAppsFragment(IAddFocusListener iCallBack){
+        this.mFocusListener = iCallBack;
 
     }
 
@@ -98,7 +97,7 @@ public class MyAppsFragment extends Fragment {
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
                 if( !needFocus ){
-                    mICallBack.onSuccess(view,hasFocus);
+                    mFocusListener.addFocusListener(view,hasFocus);
                 }
 
 //                if (hasFocus) {
@@ -257,7 +256,8 @@ public class MyAppsFragment extends Fragment {
         mMyAppsRvAdapter.setOnFocusChangeListener(mFocusChangeListener);
     }
 
-
-
-
+    @Override
+    public View getLastView() {
+        return null;
+    }
 }

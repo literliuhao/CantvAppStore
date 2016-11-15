@@ -1,27 +1,27 @@
 package com.can.appstore.index.ui;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.can.appstore.R;
-import com.can.appstore.index.interfaces.ICallBack;
+import com.can.appstore.index.interfaces.IAddFocusListener;
 
 /**
  * Created by liuhao on 2016/10/21.
  */
 
-public class ManagerFragment extends Fragment implements View.OnFocusChangeListener {
+public class ManagerFragment extends BaseFragment implements View.OnFocusChangeListener, OnClickListener {
     public static final String BUNDLE_TITLE = "title";
     private String mTitle = "DefaultValue";
     private View viewAll;
-//    private FocusMoveUtil mFocusUtils;
+    //    private FocusMoveUtil mFocusUtils;
 //    private FocusScaleUtil mFocusScaleUtils;
-    private ICallBack mICallBack;
+    private IAddFocusListener mFocusListener;
     private LayoutInflater mInflater;
     private RelativeLayout mrl_1;
     private RelativeLayout mrl_2;
@@ -32,23 +32,23 @@ public class ManagerFragment extends Fragment implements View.OnFocusChangeListe
     private RelativeLayout mrl_7;
     private RelativeLayout mrl_8;
 
-    public ManagerFragment(ICallBack iCallBack) {
-        mICallBack = iCallBack;
+    public ManagerFragment(IAddFocusListener focusListener) {
+        mFocusListener = focusListener;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle arguments = getArguments();
         mInflater = inflater;
         if (arguments != null) {
             mTitle = arguments.getString(BUNDLE_TITLE);
         }
-        viewAll = inflater.from(container.getContext()).inflate(R.layout.index_manager, null);
+        viewAll = inflater.from(inflater.getContext()).inflate(R.layout.index_manager, null);
         return viewAll;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initViews();
 
@@ -82,6 +82,14 @@ public class ManagerFragment extends Fragment implements View.OnFocusChangeListe
         mrl_6.setOnFocusChangeListener(this);
         mrl_7.setOnFocusChangeListener(this);
         mrl_8.setOnFocusChangeListener(this);
+        mrl_1.setOnClickListener(this);
+        mrl_2.setOnClickListener(this);
+        mrl_3.setOnClickListener(this);
+        mrl_4.setOnClickListener(this);
+        mrl_5.setOnClickListener(this);
+        mrl_6.setOnClickListener(this);
+        mrl_7.setOnClickListener(this);
+        mrl_8.setOnClickListener(this);
     }
 
     @Override
@@ -103,6 +111,41 @@ public class ManagerFragment extends Fragment implements View.OnFocusChangeListe
      */
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
-        mICallBack.onSuccess(view, hasFocus);
+        mFocusListener.addFocusListener(view, hasFocus);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.rl_item1:
+                Log.i("ManagerFragment", "rl_item1....");
+                break;
+            case R.id.rl_item2:
+                Log.i("ManagerFragment", "rl_item2....");
+                break;
+            case R.id.rl_item3:
+                Log.i("ManagerFragment", "rl_item3....");
+                break;
+            case R.id.rl_item4:
+                Log.i("ManagerFragment", "rl_item4....");
+                break;
+            case R.id.rl_item5:
+                Log.i("ManagerFragment", "rl_item5....");
+                break;
+            case R.id.rl_item6:
+                Log.i("ManagerFragment", "rl_item6....");
+                break;
+            case R.id.rl_item7:
+                Log.i("ManagerFragment", "rl_item7....");
+                break;
+            case R.id.rl_item8:
+                Log.i("ManagerFragment", "rl_item8....");
+                break;
+        }
+    }
+
+    @Override
+    public View getLastView() {
+        return mrl_4;
     }
 }

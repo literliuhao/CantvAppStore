@@ -36,12 +36,18 @@
             android:id="@+id/btn_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="搜 索"/>
+            android:text="搜 索" />
 
         <Button
             android:id="@+id/bt_specail_detail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="专题详情" />
+
+        <Button
+            android:id="@+id/bt_install"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="安装包管理" />
     </LinearLayout>
 </LinearLayout>

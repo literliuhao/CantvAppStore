@@ -5,6 +5,8 @@
 
     <RelativeLayout
         android:id="@+id/rl_item1"
+        android:nextFocusRight="@+id/rl_item2"
+        android:nextFocusDown="@+id/rl_item5"
         style="@style/index_manager_padding"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
@@ -14,7 +16,7 @@
             android:layout_height="@dimen/px368"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:background="@color/manager_008fc3"/>
+            android:background="@drawable/index_item1_shape"/>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -36,6 +38,7 @@
         style="@style/index_manager_padding"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/px10"
         android:layout_toRightOf="@+id/rl_item1">
 
         <ImageView
@@ -43,7 +46,7 @@
             android:layout_height="@dimen/px368"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:background="@color/manager_cb8123"/>
+            android:background="@drawable/index_item2_shape"/>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -65,6 +68,7 @@
         android:id="@+id/rl_item3"
         style="@style/index_manager_padding"
         android:layout_width="wrap_content"
+        android:layout_marginLeft="@dimen/px10"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/rl_item2">
 
@@ -73,7 +77,7 @@
             android:layout_height="@dimen/px368"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:background="@color/manager_039979"/>
+            android:background="@drawable/index_item3_shape"/>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -94,6 +98,7 @@
         android:id="@+id/rl_item4"
         style="@style/index_manager_padding"
         android:layout_width="wrap_content"
+        android:layout_marginLeft="@dimen/px10"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/rl_item3">
 
@@ -102,7 +107,7 @@
             android:layout_height="@dimen/px368"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:background="@color/manager_c45341"/>
+            android:background="@drawable/index_item4_shape"/>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -130,7 +135,7 @@
             android:layout_width="@dimen/px270"
             android:layout_height="@dimen/px180"
             android:layout_centerHorizontal="true"
-            android:background="@color/manager_c45241"/>
+            android:background="@drawable/index_item5_shape"/>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -152,6 +157,7 @@
         style="@style/index_manager_padding"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/px10"
         android:layout_alignBottom="@+id/rl_item5"
         android:layout_toRightOf="@+id/rl_item5">
 
@@ -159,7 +165,7 @@
             android:layout_width="@dimen/px270"
             android:layout_height="@dimen/px180"
             android:layout_centerHorizontal="true"
-            android:background="@color/manager_448c15"/>
+            android:background="@drawable/index_item6_shape"/>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -180,6 +186,7 @@
         android:id="@+id/rl_item7"
         style="@style/index_manager_padding"
         android:layout_width="wrap_content"
+        android:layout_marginLeft="@dimen/px10"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/rl_item6"
         android:layout_toRightOf="@+id/rl_item6">
@@ -188,7 +195,7 @@
             android:layout_width="@dimen/px270"
             android:layout_height="@dimen/px180"
             android:layout_centerHorizontal="true"
-            android:background="@color/manager_7a5be0"/>
+            android:background="@drawable/index_item7_shape"/>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -209,6 +216,7 @@
         android:id="@+id/rl_item8"
         style="@style/index_manager_padding"
         android:layout_width="wrap_content"
+        android:layout_marginLeft="@dimen/px10"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/rl_item7"
         android:layout_toRightOf="@+id/rl_item7">
@@ -217,7 +225,7 @@
             android:layout_width="@dimen/px270"
             android:layout_height="@dimen/px180"
             android:layout_centerHorizontal="true"
-            android:background="@color/manager_069597"/>
+            android:background="@drawable/index_item8_shape"/>
 
         <ImageView
             android:layout_width="wrap_content"
