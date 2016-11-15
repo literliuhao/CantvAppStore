@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.util.Log;
 
 import com.can.appstore.R;
+import com.can.appstore.appdetail.custom.CustomDialog;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.Result;
 import com.can.appstore.http.CanCall;
@@ -14,18 +15,18 @@ import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
 
+import java.io.Serializable;
+
 import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
-import cn.can.tvlib.ui.widgets.LoadingDialog;
 import cn.can.tvlib.utils.ApkUtils;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtils;
-import cn.can.tvlib.utils.ToastUtils;
 import retrofit2.Response;
 
 /**
@@ -50,12 +51,12 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     private AppDetailPresenter.AppInstallReceiver mInstalledReceiver;
     public static String Url = "";
     private boolean isShowUpdateButton = false;
-    private LoadingDialog mLoadingDialog;
-    private String mAppId = "1";
-    private String topicId = "54";
+    public String mAppId = "1";
+    private String mTopicId = "54";
     private CanCall<Result<AppInfo>> mAppDetailCall;
     private AppInfo mAppInfo;
     private String mPackageName = "com.dangbeimarket";
+    private CustomDialog mCustomDialog;
 
     public AppDetailPresenter(AppDetailContract.View view, Context context, Intent intent) {
         this.mView = view;
@@ -147,16 +148,12 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     @Override
     public void startLoad() {
-        mView.showLoading();
-        if (mAppDetailCall == null) {
-            mAppDetailCall = HttpManager.getApiService().getAppInfo(mAppId, topicId);
-        } else {
-            mAppDetailCall.clone();
-        }
+        mView.showLoadingDialog();
+        mAppDetailCall = HttpManager.getApiService().getAppInfo(mAppId, mTopicId);
         mAppDetailCall.enqueue(new CanCallback<Result<AppInfo>>() {
             @Override
             public void onResponse(CanCall<Result<AppInfo>> call, Response<Result<AppInfo>> response) throws Exception {
-                mView.hideLoading();
+                mView.hideLoadingDialog();
                 Result<AppInfo> info = response.body();
                 if (info == null) {
                     mView.loadDataFail();
@@ -180,8 +177,10 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
             @Override
             public void onFailure(CanCall<Result<AppInfo>> call, CanErrorWrapper errorWrapper) {
+                Log.d(TAG, "onFailure: " + errorWrapper.getReason());
+                mView.showToast(mContext.getResources().getString(R.string.load_data_faild));
+                mView.hideLoadingDialog();
                 mView.loadDataFail();
-                mView.hideLoading();
             }
         });
     }
@@ -200,7 +199,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             per = calculatorPercent(completedSize, totalSize);
             Log.d(TAG, "clickStartDownload completedSize: " + completedSize + "totalSize : " + totalSize + "  downloadStatus : " + downloadStatus);
         }
-        if (AppUtils.isFastDoubleClick()) {//防止连续点击
+        if (Utils.isFastDoubleClick()) {//防止连续点击
             return;
         } else if (ApkUtils.isAvailable(mContext, mPackageName) && !isClickUpdateButton) {//应用已经安装
             PackageUtil.openApp(mContext, mPackageName);
@@ -208,7 +207,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_COMPLETED && !ApkUtils.isAvailable(mContext, mPackageName)) {//完成 , 并且正在安装时不能点击
             return;
         } else if (!NetworkUtils.isNetworkConnected(mContext)) { // 网络连接断开时不能点击
-            showToast(mContext.getResources().getString(R.string.network_connection_disconnect));
+            mView.showToast(mContext.getResources().getString(R.string.network_connection_disconnect));
             return;
         }
         if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_INIT || downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PREPARE) {
@@ -225,12 +224,13 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
             clickRefreshButtonStatus(isClickUpdateButton, per);
             mDownloadManager.resume(MD5.MD5(Url));
-        } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {//TODO
-            if (downlaodErrorCode != DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR) {//重试
-                clickRefreshButtonStatus(isClickUpdateButton, per);
-                mDownloadManager.resume(MD5.MD5(Url));
-            }
         }
+        //        else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {//TODO
+        //            if (downlaodErrorCode != DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR) {//重试
+        //                clickRefreshButtonStatus(isClickUpdateButton, per);
+        //                mDownloadManager.resume(MD5.MD5(Url));
+        //            }
+        //        }
     }
 
     public void clickRefreshButtonStatus(boolean isClickUpdateButton, float per) {
@@ -239,10 +239,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         } else {
             mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_WAIT, per);
         }
-    }
-
-    public void showToast(String msg) {
-        ToastUtils.showMessage(mContext, msg);
     }
 
     @Override
@@ -279,6 +275,9 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(Url));
         if (downloadTask != null) {
             mDownloadManager.removeDownloadListener(downloadTask, this);
+        }
+        if (mAppDetailCall != null) {
+            mAppDetailCall.cancel();
         }
     }
 
@@ -360,16 +359,16 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         downlaodErrorCode = errorCode;
         float per = calculatorPercent(downloadTask.getCompletedSize(), downloadTask.getTotalSize());
         if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_FILE_NOT_FOUND) {
-            showToast(mContext.getResources().getString(R.string.downlaod_error));
+            mView.showToast(mContext.getResources().getString(R.string.downlaod_error));
             errorRefreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
         } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_IO_ERROR) {
-            showToast(mContext.getResources().getString(R.string.downlaod_error));
+            mView.showToast(mContext.getResources().getString(R.string.downlaod_error));
             errorRefreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
         } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR) {
-            showToast(mContext.getResources().getString(R.string.network_connection_error));
+            mView.showToast(mContext.getResources().getString(R.string.network_connection_error));
             errorRefreshButtonStatus(DOWNLOAD_BUTTON_STATUS_PAUSE, per);
         } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_UNKONW_ERROR) {
-            showToast(mContext.getResources().getString(R.string.unkonw_error));
+            mView.showToast(mContext.getResources().getString(R.string.unkonw_error));
             errorRefreshButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, per);
         }
     }
@@ -395,20 +394,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                     }
                 }
             }
-        }
-    }
-
-    public void hideLoading() {
-        if (mLoadingDialog != null) {
-            mLoadingDialog.dismiss();
-        }
-    }
-
-    public void showLoading(String msg) {
-        if (mLoadingDialog == null) {
-            mLoadingDialog = new LoadingDialog(mContext, mContext.getResources().getDimensionPixelSize(R.dimen.dimen_80px));
-            mLoadingDialog.setMessage(msg);
-            mLoadingDialog.show();
         }
     }
 
@@ -442,7 +427,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     public void enterImageScaleActivity(int currentIndex) {// TODO  进入到图放大页面
         Intent intent = new Intent(mContext, ImageScaleActivity.class);
-        //        intent.putExtra("imageUrl", (Serializable) mAppInfo.getThumbs());
+        intent.putExtra("imageUrl", (Serializable) mAppInfo.getThumbs());
         intent.putExtra("currentIndex", currentIndex);
         mContext.startActivity(intent);
     }
@@ -451,8 +436,18 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         return mPackageName;
     }
 
-    public boolean getUpdateButtonStatus() {
-        return isShowUpdateButton;
+    public void showIntroduceDialog() {
+        CustomDialog.Builder builder = new CustomDialog.Builder(mContext);
+        builder.setUpdatelogText(mAppInfo.getUpdateLog());
+        builder.setAboutText(mAppInfo.getAbout());
+        mCustomDialog = builder.create();
+        mCustomDialog.show();
+    }
+
+    public void dismissIntroduceDialog() {
+        if (mCustomDialog != null) {
+            mCustomDialog.dismiss();
+        }
     }
 
     /**

@@ -12,7 +12,7 @@ import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.TypedValue;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
@@ -34,28 +34,24 @@ import cn.can.tvlib.R;
  */
 public class RoundCornerImageView extends ImageView {
 
+    private static final String TAG = "RoundCornerImageView";
+
     protected float cornerRadius;
     private Paint mPaint;
     private Paint mMaskPaint;
     private RectF mRect;
     private int mMaskColor;
     private boolean showMask;
-    private int mRoundSize;
 
     public RoundCornerImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RoundCornerView);
-        mRoundSize = typedArray.getDimensionPixelSize(R.styleable.RoundCornerView_cornerSize, 12);
+        cornerRadius = typedArray.getDimensionPixelSize(R.styleable.RoundCornerView_cornerSize, 12);
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
-
         mMaskPaint = new Paint(mPaint);
         mMaskPaint.setStyle(Paint.Style.FILL);
-
-        cornerRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, mRoundSize,
-                context.getResources().getDisplayMetrics());
-
         mRect = new RectF();
     }
 
@@ -67,25 +63,32 @@ public class RoundCornerImageView extends ImageView {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        ScaleType scaleType = getScaleType();
+        if(scaleType == ScaleType.CENTER_CROP || scaleType == ScaleType.CENTER || scaleType == ScaleType.FIT_END
+            || scaleType == ScaleType.FIT_START || scaleType == ScaleType.FIT_CENTER || scaleType == ScaleType.MATRIX){
+            throw new IllegalStateException("Unsupported scaleType of RoundCornerImageView, please user 'fit_xy' or 'center_inside'.");
+        }
+
         Drawable bg = getBackground();
         if (bg != null) {
             bg.setBounds(0, 0, getWidth(), getHeight());
             bg.draw(canvas);
         }
-        if (getDrawable() != null) {
-            Drawable drawable = getDrawable();
+        if(getDrawable() != null){
+            Log.i(TAG, "onDraw: drawable is not null");
+            Drawable drawable = getDrawable().getCurrent();
             Bitmap bmp = null;
-            if (drawable instanceof BitmapDrawable) {
-                bmp = ((BitmapDrawable) drawable).getBitmap();
-            } else if (drawable instanceof GlideBitmapDrawable) {
-                bmp = ((GlideBitmapDrawable) drawable).getBitmap();
+            if(drawable instanceof BitmapDrawable){
+                bmp = ((BitmapDrawable)drawable).getBitmap();
+            } else if(drawable instanceof GlideBitmapDrawable){
+                bmp = ((GlideBitmapDrawable)drawable).getBitmap();
             }
             if (bmp != null) {
                 int bmpW = bmp.getWidth();
                 int bmpH = bmp.getHeight();
                 int width = getWidth();
                 int height = getHeight();
-                ScaleType scaleType = getScaleType();
+
                 if (scaleType == ScaleType.FIT_XY) {
                     mRect.right = width;
                     mRect.bottom = height;
@@ -118,6 +121,8 @@ public class RoundCornerImageView extends ImageView {
                     canvas.drawRoundRect(mRect, cornerRadius, cornerRadius, mMaskPaint);
                 }
             }
+        } else {
+            Log.i(TAG, "onDraw: drawable null");
         }
     }
 

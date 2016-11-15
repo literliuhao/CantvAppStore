@@ -19,6 +19,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
+
 /**
  * ================================================
  * 作    者：朱洪龙
@@ -111,7 +112,13 @@ public class DownloadTask implements Runnable {
                     mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING;
                     if (mTotalSize <= 0) {
                         mTotalSize = responseBody.contentLength();
-                        mDbEntity.setTotalSize(mTotalSize);
+                        /** 下载过程中删除任务，此处mDbEntity为空 xingzl 2016-11-15 15:37:43 start*/
+                        if(mDbEntity==null){
+                            mDbEntity = new DownloadDBEntity(mId, mTotalSize, mDownloadedSize, mUrl, mSaveDirPath,
+                                    mFileName, mDownloadStatus);
+                        }else{
+                            mDbEntity.setTotalSize(mTotalSize);
+                        }
                         mDownloadDao.update(mDbEntity);
                     }
                     if (TextUtils.isEmpty(response.header("Content-Range"))) {
@@ -144,14 +151,18 @@ public class DownloadTask implements Runnable {
                             // Update download information database
                             buffOffset = 0;
                             //考虑是否需要频繁进行数据库的读取，如果在下载过程程序崩溃的话，程序不会保存最新的下载进度,并且下载过程不会更新进度
-                            mDbEntity.setDownloadedSize(mDownloadedSize);
-                            mDownloadDao.update(mDbEntity);
-                            onDownloading();
+                            if(DownloadStatus.DOWNLOAD_STATUS_CANCEL!=getDownloadStatus()){
+                                mDbEntity.setDownloadedSize(mDownloadedSize);
+                                mDownloadDao.update(mDbEntity);
+                                onDownloading();
+                            };
                         }
                     }
-                    mDbEntity.setDownloadedSize(mDownloadedSize);
-                    mDownloadDao.update(mDbEntity);
-                    onDownloading();
+                    if(DownloadStatus.DOWNLOAD_STATUS_CANCEL!=getDownloadStatus()){
+                        mDbEntity.setDownloadedSize(mDownloadedSize);
+                        mDownloadDao.update(mDbEntity);
+                        onDownloading();
+                    }
                 }
             } else {
                 mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
@@ -216,7 +227,7 @@ public class DownloadTask implements Runnable {
                 break;
             case DownloadStatus.DOWNLOAD_STATUS_CANCEL:
                 mDownloadDao.delete(mDbEntity);
-                File temp = new File(mSaveDirPath + mFileName);
+                File temp = new File(mSaveDirPath +File.separator+ mFileName);
                 if (temp.exists()) temp.delete();
                 onCancel();
                 break;
@@ -293,6 +304,10 @@ public class DownloadTask implements Runnable {
 
     public void setFileName(String fileName) {
         this.mFileName = fileName;
+    }
+
+    public String getFilePath(){
+        return getSaveDirPath()+File.separator+getFileName();
     }
 
     /**
@@ -411,5 +426,18 @@ public class DownloadTask implements Runnable {
     @Override
     public int hashCode() {
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "DownloadTask{" +
+                "mId='" + mId + '\'' +
+                ", mTotalSize=" + mTotalSize +
+                ", mDownloadedSize=" + mDownloadedSize +
+                ", mUrl='" + mUrl + '\'' +
+                ", mSaveDirPath='" + mSaveDirPath + '\'' +
+                ", mDownloadStatus=" + mDownloadStatus +
+                ", mFileName='" + mFileName + '\'' +
+                '}';
     }
 }

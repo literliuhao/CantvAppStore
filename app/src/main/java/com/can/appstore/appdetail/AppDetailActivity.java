@@ -1,7 +1,5 @@
 package com.can.appstore.appdetail;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,20 +18,23 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.target.Target;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.adapter.IntroducGridAdapter;
 import com.can.appstore.appdetail.adapter.RecommedGridAdapter;
-import com.can.appstore.appdetail.custom.CustomDialog;
 import com.can.appstore.appdetail.custom.TextProgressBar;
+import com.can.appstore.base.BaseActivity;
 import com.can.appstore.entity.AppInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
-import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
+import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
@@ -44,19 +45,20 @@ import cn.can.tvlib.utils.SystemUtil;
 /**
  * Created by JasonF on 2016/10/13.
  */
-public class AppDetailActivity extends Activity implements AppDetailContract.View, View.OnFocusChangeListener, View.OnClickListener {
+public class AppDetailActivity extends BaseActivity implements AppDetailContract.View, View.OnFocusChangeListener, View.OnClickListener {
     private static final String TAG = "AppDetailActivity";
     private static final int TO_MOVE_RIGHT = 0;
     private static final int TO_MOVE_LEFT = 1;
     private static final int MESSAGE_TYPE_DOWNLAOD = 2;
     private static final int MESSAGE_TYPE_UPDATE = 3;
+    private static final int LINE_COUNT = 4;
     private View mFocusedListChild;
     private AppDetailActivity.ListFocusMoveRunnable mListFocusMoveRunnable;
     private FocusMoveUtil mFocusMoveUtil;
     private FocusScaleUtil mScaleUtil;
     private boolean focusSearchFailed;
     private AppDetailPresenter mAppDetailPresenter;
-    private ImageView mImageViewIcon;
+    private RoundCornerImageView mImageViewIcon;
     private TextView mAppName;
     private TextView mAppSize;
     private TextView mAppUodateDate;
@@ -74,16 +76,16 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
     private TextView mTvAppIntroduc;
     private TextView mTvAddFuntion;
     private RelativeLayout mRelativeLayuotOperatingEquipment;
-    private List<String> mIntroduceInfoList = new ArrayList<String>();
+    private List<String> mControlType = new ArrayList<String>();
     private RecommedGridAdapter mRecommedGridAdapter;
     private IntroducGridAdapter mIntroducGridAdapter;
-    private boolean isTabLineMoveToRecommend = false;//线是否移动到推荐
-    private boolean isRecommendGridFirstRow = false;//焦点是否在推荐列表的第一行
-    private boolean isSwitchAnimatComplete = true;//底部动画是否切换完成
     private ViewFlipper mViewFlipper;
     private CanRecyclerView.CanLinearLayoutManager mIntroducLayoutManager;
     private LinearLayout mLayoutIntroduceText;
-    private CustomDialog mCustomDialog;
+    private LinearLayout mLayoutAppDetail;
+    private boolean isTabLineMoveToRecommend = false;//线是否移动到推荐
+    private boolean isRecommendGridFirstRow = false;//焦点是否在推荐列表的第一行
+    private boolean isSwitchAnimatComplete = true;//底部动画是否切换完成
     private AppInfo mAppinfo;
 
     @Override
@@ -107,7 +109,7 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
 
     private void initView() {
         mViewFlipper = (ViewFlipper) findViewById(R.id.flipper);
-        mImageViewIcon = (ImageView) findViewById(R.id.iv_icon);
+        mImageViewIcon = (RoundCornerImageView) findViewById(R.id.iv_icon);
         mAppName = (TextView) findViewById(R.id.tv_app_name);
         mAppSize = (TextView) findViewById(R.id.tv_app_size);
         mAppUodateDate = (TextView) findViewById(R.id.tv_update_date);
@@ -122,6 +124,7 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
         mButtonUpdate = (TextProgressBar) findViewById(R.id.bt_update);
         mRelativeLayuotOperatingEquipment = (RelativeLayout) findViewById(R.id.rl_operating_equipment);
         mLayoutIntroduceText = (LinearLayout) findViewById(R.id.ll_introduce_text);
+        mLayoutAppDetail = (LinearLayout) findViewById(R.id.ll_app_detail);
         mRecommendGrid = (CanRecyclerView) findViewById(R.id.crlv_recommed_grid);
         mIntroducGrid = (CanRecyclerView) findViewById(R.id.crlv_introduce_grid);
         mButtonDownload.setTextSize(getResources().getDimensionPixelSize(R.dimen.dimen_36px));
@@ -145,17 +148,6 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
             }
         });
         mIntroducLayoutManager = new CanRecyclerView.CanLinearLayoutManager(AppDetailActivity.this, CanRecyclerView.CanLinearLayoutManager.HORIZONTAL, false);
-        mIntroducLayoutManager.setOnFocusSearchFailCallback(new CanRecyclerView.OnFocusSearchCallback() {
-            @Override
-            public void onSuccess(View view, View focused, int focusDirection, RecyclerView.Recycler recycler, RecyclerView.State state) {
-                focusSearchFailed = false;
-            }
-
-            @Override
-            public void onFail(View focused, int focusDirection, RecyclerView.Recycler recycler, RecyclerView.State state) {
-                focusSearchFailed = true;
-            }
-        });
         mIntroducGrid.setLayoutManager(mIntroducLayoutManager);
     }
 
@@ -174,7 +166,6 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
 
     @Override
     public void onClick(View view) {
-        Log.d(TAG, "onClick view : " + view);
         switch (view.getId()) {
             case R.id.bt_download:
                 mAppDetailPresenter.clickStartDownload(false);
@@ -182,28 +173,8 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
             case R.id.bt_update:
                 mAppDetailPresenter.clickStartDownload(true);
                 break;
-            case R.id.bt_Introduction:
-                break;
-            case R.id.bt_recommend:
-                break;
             case R.id.ll_introduce_text:
-                CustomDialog.Builder builder = new CustomDialog.Builder(AppDetailActivity.this);
-                builder.setUpdatelogText(mAppinfo.getUpdateLog());
-                builder.setAboutText(mAppinfo.getAbout());
-                //                Bitmap shots = AppUtils.getScreenShots(AppDetailActivity.this);
-                //                Canvas canvas = new Canvas(shots);
-                //                canvas.drawARGB(0xD2, 23, 25, 29);
-                //                Drawable drawable = AppUtils.blurBitmap(shots, AppDetailActivity.this);
-                //                builder.setBulrBg(drawable);
-                //                Bitmap shots = AppUtils.getScreenShots(AppDetailActivity.this);
-                //                Drawable drawable = AppUtils.blurBitmap(shots, AppDetailActivity.this);
-                //                BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-                //                Bitmap bitmap = bitmapDrawable.getBitmap();
-                //                Canvas canvas = new Canvas(bitmap);
-                //                canvas.drawARGB(0xD2, 23, 25, 29);
-                //                builder.setBulrBg(drawable);
-                mCustomDialog = builder.create();
-                mCustomDialog.show();
+                mAppDetailPresenter.showIntroduceDialog();
                 break;
         }
     }
@@ -234,38 +205,65 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
             case R.id.bt_Introduction:
                 if (hasFocus) {
                     if (isTabLineMoveToRecommend) {
-                        changeLayouToLeft();
-                        startTabLineAnimation(TO_MOVE_LEFT);
+                        startMoveAnmi(TO_MOVE_LEFT);
                     }
                 }
                 break;
             case R.id.bt_recommend:
                 if (hasFocus) {
                     if (!isTabLineMoveToRecommend) {
-                        changeLayouToRight();
-                        startTabLineAnimation(TO_MOVE_RIGHT);
+                        startMoveAnmi(TO_MOVE_RIGHT);
                     }
                 }
                 break;
-            case R.id.ll_introduce_text:
-                break;
         }
-        focusSetting(hasFocus, view);
+        buttonFocusSetting(hasFocus, view);
     }
 
-    /**
-     * 焦点框设置
-     *
-     * @param hasFocus
-     * @param view
-     */
-    public void focusSetting(boolean hasFocus, View view) {
+    public void buttonFocusSetting(boolean hasFocus, View view) {
         mFocusedListChild = view;
         if (hasFocus) {
             mListFocusMoveRunnable.run();
         } else {
             mScaleUtil.scaleToNormal();
         }
+    }
+
+    public void requestFocus(View view) {
+        view.setFocusable(true);
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.d(TAG, "onKeyDown : " + keyCode);
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+                if (!isSwitchAnimatComplete) {
+                    return true;
+                }
+                break;
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                if (!isSwitchAnimatComplete) {
+                    return true;
+                } else if (mLayoutIntroduceText.isFocused()) {
+                    startMoveAnmi(TO_MOVE_RIGHT);
+                    recommendGridPositionRequestFocus(500, 0);
+                    mScaleUtil.scaleToNormal();
+                    return true;
+                }
+                break;
+            case KeyEvent.KEYCODE_DPAD_UP:
+                if (mButtonUpdate.isFocused() || mButtonDownload.isFocused() || mBtIntroduction.isFocused() || mBtRecommend.isFocused()) {
+                    return true;
+                } else if (mRecommendGrid.isShown() && isRecommendGridFirstRow) {
+                    requestFocus(mButtonDownload);
+                } else if (mIntroducGrid.isShown() && !mLayoutIntroduceText.isFocused()) {
+                    requestFocus(mButtonDownload);
+                }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     public void startTabLineAnimation(int moveDirection) {
@@ -283,109 +281,43 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
         mIvTabLine.startAnimation(translateAnimation);
     }
 
-    public void changeLayouToRight() {
+    public void startMoveLayout(int moveDirection) {
         isSwitchAnimatComplete = false;
-        mViewFlipper.setInAnimation(AppDetailActivity.this, R.anim.push_right_in);
-        mViewFlipper.setOutAnimation(AppDetailActivity.this, R.anim.push_left_out);
-        mViewFlipper.showNext();
-        mViewFlipper.getInAnimation().setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                isSwitchAnimatComplete = true;
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
-    }
-
-    public void changeLayouToLeft() {
-        isSwitchAnimatComplete = false;
-        mViewFlipper.setInAnimation(AppDetailActivity.this, R.anim.push_left_in);
-        mViewFlipper.setOutAnimation(AppDetailActivity.this, R.anim.push_right_out);
-        mViewFlipper.showPrevious();
-        mViewFlipper.getInAnimation().setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                isSwitchAnimatComplete = true;
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Log.d(TAG, "onKeyDown : " + keyCode);
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_DPAD_LEFT:
-                if (mButtonDownload.isFocused()) {
-                    return true;
-                } else if (mBtIntroduction.isFocused() && mButtonUpdate.getVisibility() == View.INVISIBLE) {
-                    requestFocus(mButtonDownload);
-                    return true;
-                } else if (mBtIntroduction.isFocused() && mButtonUpdate.getVisibility() == View.VISIBLE) {
-                    requestFocus(mButtonUpdate);
-                    return true;
-                } else if (mButtonUpdate.isFocused() && mButtonUpdate.getVisibility() == View.VISIBLE) {
-                    requestFocus(mButtonDownload);
-                    return true;
-                } else if (mLayoutIntroduceText.isFocused()) {
-                    return true;
-                } else if (!isSwitchAnimatComplete) {
-                    return true;
-                }
-                break;
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                if (mButtonDownload.isFocused() && mButtonUpdate.getVisibility() == View.VISIBLE) {
-                    requestFocus(mButtonUpdate);
-                    return true;
-                } else if (!isSwitchAnimatComplete) {
-                    return true;
-                } else if (mLayoutIntroduceText.isFocused()) {
-                    startTabLineAnimation(TO_MOVE_RIGHT);
-                    changeLayouToRight();
-                    recommendGridPositionRequestFocus(500, 0);
-                    mScaleUtil.scaleToNormal();
-                    return true;
-                } else if (mBtIntroduction.isFocused()) {
-                    mBtRecommend.requestFocus();
-                    return true;
-                }
-                break;
-            case KeyEvent.KEYCODE_DPAD_DOWN:
-                if (mLayoutIntroduceText.isFocused()) {
-                    return true;
-                }
-                break;
-            case KeyEvent.KEYCODE_DPAD_UP:
-                if (mButtonUpdate.isFocused() || mButtonDownload.isFocused() || mBtIntroduction.isFocused() || mBtRecommend.isFocused()) {
-                    return true;
-                } else if (mRecommendGrid.isShown() && isRecommendGridFirstRow) {
-                    requestFocus(mButtonDownload);
-                } else if (mIntroducGrid.isShown() && !mLayoutIntroduceText.isFocused()) {
-                    requestFocus(mButtonDownload);
-                }
-            default:
-                break;
+        if (moveDirection == TO_MOVE_RIGHT) {
+            mViewFlipper.setInAnimation(AppDetailActivity.this, R.anim.push_right_in);
+            mViewFlipper.setOutAnimation(AppDetailActivity.this, R.anim.push_left_out);
+            mViewFlipper.showNext();
+        } else if (moveDirection == TO_MOVE_LEFT) {
+            mViewFlipper.setInAnimation(AppDetailActivity.this, R.anim.push_left_in);
+            mViewFlipper.setOutAnimation(AppDetailActivity.this, R.anim.push_right_out);
+            mViewFlipper.showPrevious();
         }
-        return super.onKeyDown(keyCode, event);
+        mViewFlipper.getInAnimation().setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                isSwitchAnimatComplete = true;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
     }
 
-    /**
-     * 请求推荐列表的第一个位置焦点
-     */
+    private void startMoveAnmi(int moveDirection) {
+        if (moveDirection == TO_MOVE_RIGHT) {
+            startMoveLayout(TO_MOVE_RIGHT);
+            startTabLineAnimation(TO_MOVE_RIGHT);
+        } else if (moveDirection == TO_MOVE_LEFT) {
+            startMoveLayout(TO_MOVE_LEFT);
+            startTabLineAnimation(TO_MOVE_LEFT);
+        }
+    }
+
     private void recommendGridPositionRequestFocus(int hideFocusTime, final int position) {
         mFocusMoveUtil.hideFocusForShowDelay(hideFocusTime);
         mRecommendGrid.postDelayed(new Runnable() {
@@ -402,72 +334,32 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
         }, 50);
     }
 
-    public void requestFocus(View view) {
-        view.setFocusable(true);
-        view.setFocusableInTouchMode(true);
-        view.requestFocus();
-    }
-
-    /**
-     * 更新下载按钮的状态
-     *
-     * @param buttonText
-     * @param progress
-     */
-    public void refreshDownloadButtonProgress(String buttonText, float progress) {
-        if (mButtonDownload != null) {
-            mButtonDownload.setProgress((int) progress);
-            mButtonDownload.setText(buttonText);
-        }
-    }
-
-    /**
-     * 刷新更新按钮的状态
-     *
-     * @param buttonText
-     * @param progress
-     */
-    public void refreshUpdateButtonProgress(String buttonText, float progress) {
-        if (mButtonUpdate != null) {
-            mButtonUpdate.setProgress((int) progress);
-            mButtonUpdate.setText(buttonText);
-        }
-    }
-
-    @Override
-    public void showLoading() {
-        mAppDetailPresenter.showLoading(getResources().getString(R.string.loading));
-    }
-
-    @Override
-    public void hideLoading() {
-        mAppDetailPresenter.hideLoading();
-    }
-
     @Override
     public void loadDataFail() {
-        mAppDetailPresenter.showToast(getResources().getString(R.string.load_data_faild));
         finish();
     }
 
     @Override
     public void onClickHomeKey() {
-        dismissIntroduceDialog();
+        mAppDetailPresenter.dismissIntroduceDialog();
         finish();
     }
 
     @Override
-    public void loadAppInfoOnSuccess(AppInfo appInfo) {
-        mAppinfo = appInfo;
-        setData();
-        setIntroduceAdapter();
-        setRecommendAdapter();
+    public void setPresenter(AppDetailContract.Presenter presenter) {
     }
 
     private void setData() {//TODO   修改设置数据
-        int roundSize = getResources().getDimensionPixelSize(R.dimen.dimen_36px);
-        ImageLoader.getInstance().buildTask(mImageViewIcon, mAppinfo.getIcon()).bitmapTransformation(new GlideRoundTransform(AppDetailActivity.this, roundSize)).build().start(AppDetailActivity.this);
-        mAppName.setText(mAppinfo.getName());
+        ImageLoader.getInstance().load(AppDetailActivity.this, mImageViewIcon, mAppinfo.getIcon(), android.R.anim.fade_in,
+                R.mipmap.icon_load_default, R.mipmap.icon_loading_fail, new GlideLoadTask.SuccessCallback() {
+                    @Override
+                    public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        mImageViewIcon.setScaleType(ImageView.ScaleType.FIT_XY);
+                        mImageViewIcon.setImageDrawable(resource);
+                        return true;
+                    }
+                }, null);
+        mAppName.setText(String.format(getResources().getString(R.string.detail_app_name), mAppinfo.getName(), mAppinfo.getVersionName()));
         mAppSize.setText(String.format(getResources().getString(R.string.detail_app_size), mAppinfo.getSizeStr()));
         mAppUodateDate.setText(String.format(getResources().getString(R.string.detail_app_update_date), mAppinfo.getUpdateTime()));
         mAppDownloadCount.setText(String.format(getResources().getString(R.string.detail_app_downlaod_count), mAppinfo.getDownloadCount()));
@@ -478,12 +370,11 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
         setOperaPic(mAppinfo.getControls());
     }
 
-    /**
-     * 设置操作类型的图标
-     *
-     * @param type
-     */
     public void setOperaPic(List<String> type) {
+        if (mRelativeLayuotOperatingEquipment.getChildCount() != 1) {
+            mRelativeLayuotOperatingEquipment.removeViewsInLayout(1, mControlType.size());
+        }
+        mControlType = type;
         for (int i = 0; i < type.size(); i++) {
             View childAt = mRelativeLayuotOperatingEquipment.getChildAt(i);
             RelativeLayout.LayoutParams controllerTypePic = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -507,10 +398,36 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
     @Override
     public void refreshDownloadButtonStatus(int status, float progress) {
         mHandler.removeMessages(MESSAGE_TYPE_UPDATE);
+        sendProgressMessage(status, MESSAGE_TYPE_DOWNLAOD, progress);
+    }
+
+    @Override
+    public void refreshUpdateButtonStatus(int status, float progress) {
+        mHandler.removeMessages(MESSAGE_TYPE_DOWNLAOD);
+        sendProgressMessage(status, MESSAGE_TYPE_UPDATE, progress);
+    }
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == MESSAGE_TYPE_DOWNLAOD) {
+                float progress = msg.arg1;
+                String text = (String) msg.obj;
+                refreshButtonProgress(MESSAGE_TYPE_DOWNLAOD, text, progress);
+            } else if (msg.what == MESSAGE_TYPE_UPDATE) {
+                float progress = msg.arg1;
+                String text = (String) msg.obj;
+                refreshButtonProgress(MESSAGE_TYPE_UPDATE, text, progress);
+            }
+            super.handleMessage(msg);
+        }
+    };
+
+    private void sendProgressMessage(int status, int what, float progress) {
         Message message = mHandler.obtainMessage();
-        message.what = MESSAGE_TYPE_DOWNLAOD;
+        message.what = what;
         message.arg1 = (int) progress;
-        if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_RUN) {
+        if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_RUN && what == MESSAGE_TYPE_DOWNLAOD) {
             message.obj = getResources().getString(R.string.detail_app_run);
             mButtonDownload.setBackgroundResource(R.drawable.layer_list_app_detail_run);
         } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_INSTALLING) {
@@ -529,26 +446,14 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
         mHandler.sendMessage(message);
     }
 
-    @Override
-    public void refreshUpdateButtonStatus(int status, float progress) {
-        mHandler.removeMessages(MESSAGE_TYPE_DOWNLAOD);
-        Message message = mHandler.obtainMessage();
-        message.what = MESSAGE_TYPE_UPDATE;
-        message.arg1 = (int) progress;
-        if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_INSTALLING) {
-            message.obj = getResources().getString(R.string.detail_app_installing);
-        } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_PAUSE) {
-            message.obj = getResources().getString(R.string.detail_app_click_continue);
-        } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_PREPARE) {
-            message.obj = getResources().getString(R.string.detail_app_update);
-        } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_WAIT) {
-            message.obj = getResources().getString(R.string.detail_app_download_wait);
-        } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_DOWNLAODING) {
-            message.obj = getResources().getString(R.string.detail_app_click_pause);
-        } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_RESTART) {
-            message.obj = getResources().getString(R.string.downlaod_restart);
+    public void refreshButtonProgress(int refreshButtonProgress, String buttonText, float progress) {
+        if (mButtonDownload != null && refreshButtonProgress == MESSAGE_TYPE_DOWNLAOD) {
+            mButtonDownload.setProgress((int) progress);
+            mButtonDownload.setText(buttonText);
+        } else if (mButtonUpdate != null && refreshButtonProgress == MESSAGE_TYPE_UPDATE) {
+            mButtonUpdate.setProgress((int) progress);
+            mButtonUpdate.setText(buttonText);
         }
-        mHandler.sendMessage(message);
     }
 
     @Override
@@ -560,32 +465,34 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
                 mButtonUpdate.setVisibility(View.INVISIBLE);
             }
         }
+        setFocusMoveView(isShow);
     }
 
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            if (msg.what == MESSAGE_TYPE_DOWNLAOD) {
-                float progress = msg.arg1;
-                String text = (String) msg.obj;
-                refreshDownloadButtonProgress(text, progress);
-            } else if (msg.what == MESSAGE_TYPE_UPDATE) {
-                float progress = msg.arg1;
-                String text = (String) msg.obj;
-                refreshUpdateButtonProgress(text, progress);
-            }
-            super.handleMessage(msg);
+    private void setFocusMoveView(boolean isShow) {
+        if (isShow) {
+            mButtonDownload.setNextFocusRightId(R.id.bt_update);
+            mButtonUpdate.setNextFocusRightId(R.id.bt_Introduction);
+            mBtIntroduction.setNextFocusLeftId(R.id.bt_update);
+        } else {
+            mButtonDownload.setNextFocusRightId(R.id.bt_Introduction);
+            mBtIntroduction.setNextFocusLeftId(R.id.bt_download);
         }
-    };
+        mBtIntroduction.setNextFocusRightId(R.id.bt_recommend);
+        mBtRecommend.setNextFocusLeftId(R.id.bt_Introduction);
+    }
+
+    @Override
+    public void loadAppInfoOnSuccess(AppInfo appInfo) {
+        mLayoutAppDetail.setVisibility(View.VISIBLE);
+        mAppinfo = appInfo;
+        setData();
+        setIntroduceAdapter();
+        setRecommendAdapter();
+    }
 
     private void setIntroduceAdapter() {
-        mIntroduceInfoList.clear();
-        for (int i = 0; i < 5; i++) {
-            mIntroduceInfoList.add("1");
-        }
         if (mIntroducGridAdapter == null) {
-            mIntroducGridAdapter = new IntroducGridAdapter(AppDetailActivity.this, mIntroduceInfoList);
-            //                        mIntroducGridAdapter = new IntroducGridAdapter(AppDetailActivity.this, mAppinfo.getThumbs());
+            mIntroducGridAdapter = new IntroducGridAdapter(AppDetailActivity.this, mAppinfo.getThumbs());
             addIntroduceGridListener();
             addIntroduceSetting();
         }
@@ -603,7 +510,6 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
         mIntroducGridAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
-                Log.d(TAG, "mIntroducGridAdapter onItemFocusChanged: " + view + "   position : " + position);
                 if (hasFocus) {
                     mFocusedListChild = view;
                     mIntroducGrid.postDelayed(mListFocusMoveRunnable, 50);
@@ -616,19 +522,15 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
         mIntroducGridAdapter.setItemKeyEventListener(new CanRecyclerViewAdapter.OnItemKeyEventListener() {
             @Override
             public boolean onItemKeyEvent(int position, View v, int keyCode, KeyEvent event) {
-                Log.d(TAG, "mIntroducGridAdapter onItemKeyEvent keyCode : " + keyCode + "    position : " + position);
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && event.getAction() == KeyEvent.ACTION_DOWN) {
                     if (position == 4) {
-                        startTabLineAnimation(TO_MOVE_RIGHT);
-                        changeLayouToRight();
+                        startMoveAnmi(TO_MOVE_RIGHT);
                         recommendGridPositionRequestFocus(500, 0);
                         mScaleUtil.scaleToNormal(v);
                         return true;
                     }
                 } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && event.getAction() == KeyEvent.ACTION_DOWN) {
                     mLayoutIntroduceText.requestFocus();
-                    return true;
-                } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && event.getAction() == KeyEvent.ACTION_DOWN && position == 0) {
                     return true;
                 }
                 return false;
@@ -651,7 +553,7 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
                     if (size < 4) {
                         recommendGridPositionRequestFocus(200, size - 1);
                     } else {
-                        recommendGridPositionRequestFocus(0, 3);
+                        recommendGridPositionRequestFocus(200, 3);
                     }
                 }
             }
@@ -686,22 +588,14 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
                     view.setBackgroundResource(R.drawable.shape_bg_uninstall_manager_item);
                 }
             }
-
-            @Override
-            public boolean onFocusMoveOutside(int currFocus, int direction) {
-                return super.onFocusMoveOutside(currFocus, direction);
-            }
-
         });
         mRecommedGridAdapter.setItemKeyEventListener(new CanRecyclerViewAdapter.OnItemKeyEventListener() {
             @Override
             public boolean onItemKeyEvent(int position, View v, int keyCode, KeyEvent event) {
-                Log.d(TAG, "mRecommedGridAdapter onItemKeyEvent keyCode : " + keyCode + "    position : " + position);
                 if (mRecommendGrid.isShown()) {
                     if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && event.getAction() == KeyEvent.ACTION_DOWN) {
-                        if (position % 4 == 0) {
-                            startTabLineAnimation(TO_MOVE_LEFT);
-                            changeLayouToLeft();
+                        if (position % LINE_COUNT == 0) {
+                            startMoveAnmi(TO_MOVE_LEFT);
                             introduceGridRequestFocus(500, 4);
                             mScaleUtil.scaleToNormal(v);
                             return true;
@@ -710,11 +604,11 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
                         int size = mAppinfo.getRecommend().size();
                         if (size - 1 == position) {
                             return true;
-                        } else if (position % 4 == 3) {
+                        } else if (position % LINE_COUNT == 3) {
                             return true;
                         }
                     } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP && event.getAction() == KeyEvent.ACTION_DOWN) {
-                        if (position == 0 || position == 1 || position == 2 || position == 3) { //TODO
+                        if (position >= 0 && position <= 3) {
                             isRecommendGridFirstRow = true;
                         } else {
                             isRecommendGridFirstRow = false;
@@ -727,13 +621,9 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
         mRecommedGridAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, int position, Object data) {
-                Log.d(TAG, "mRecommedGridAdapter onClick position: " + position);
-                if (mRecommendGrid.isShown()) {
-                    Intent intent = new Intent(AppDetailActivity.this, AppDetailActivity.class);
-                    intent.putExtra("appID", mAppinfo.getRecommend().get(position).getId());
-                    startActivity(intent);
-                    finish(); // TODO直接刷新
-                }
+                String appId = mAppinfo.getRecommend().get(position).getId();  // TODO: 2016/11/14
+                mAppDetailPresenter.mAppId = "2";
+                mAppDetailPresenter.startLoad();
             }
         });
         mRecommendGrid.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -778,19 +668,13 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
         mAppDetailPresenter.unRegiestr();
     }
 
-    public void dismissIntroduceDialog() {
-        if (mCustomDialog != null) {
-            mCustomDialog.dismiss();
-        }
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mFocusMoveUtil.release();
         mAppDetailPresenter.release();
         mIvTabLine.clearAnimation();
-        dismissIntroduceDialog();
+        mAppDetailPresenter.dismissIntroduceDialog();
         mHandler.removeMessages(MESSAGE_TYPE_UPDATE);
         mHandler.removeMessages(MESSAGE_TYPE_DOWNLAOD);
         isRecommendGridFirstRow = false;
@@ -801,10 +685,11 @@ public class AppDetailActivity extends Activity implements AppDetailContract.Vie
         public void run() {
             if (mFocusedListChild != null) {
                 mScaleUtil.scaleToLarge(mFocusedListChild);
+                mScaleUtil.setFocusScale(1.0f);
                 if (focusSearchFailed) {
-                    mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.1f);
+                    mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f);
                 } else {
-                    mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.1f, 0);
+                    mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f, 0);
                 }
             }
         }

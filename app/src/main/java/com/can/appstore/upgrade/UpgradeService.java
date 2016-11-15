@@ -108,6 +108,7 @@ public class UpgradeService extends IntentService {
      */
     private void checkUpgradeInfo() {
         // 下载到本地的更新的APK的地址
+        // TODO: 2016/11/11  地址  名称
         mUpdatePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/updateapk";
         if (!Util.isFileExist(mUpdatePath)) {
             Util.creatDir(mUpdatePath);
@@ -119,6 +120,7 @@ public class UpgradeService extends IntentService {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+        // TODO: 2016/11/11 完善log
         Log.d(TAG, "获取到版本号=" + mLocalVersion);
         // TODO: 2016/11/3  对比版本号是否下载
         if (mUpgradeInfo.getVersionCode() <= mLocalVersion) {

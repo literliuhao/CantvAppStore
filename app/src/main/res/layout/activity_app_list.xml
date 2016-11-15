@@ -16,60 +16,105 @@
         />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/tv_type_name"
         style="@style/NormalText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/px20"
         android:layout_marginTop="@dimen/px70"
         android:layout_toRightOf="@id/iv_app_list_icon"
-        android:text="动作冒险"
         android:textSize="@dimen/fontsize_38"/>
 
     <TextView
         android:id="@+id/tv_app_list_line"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/dimen_220px"
+        android:layout_height="@dimen/dimen_40px"
         android:layout_alignParentRight="true"
         android:layout_marginRight="@dimen/px160"
-        android:layout_marginTop="@dimen/px70"
-        android:gravity="center"
+        android:layout_marginTop="@dimen/px80"
+        android:gravity="right"
         android:textColor="@color/white_opa50"
-        android:textSize="@dimen/px38"
+        android:textSize="@dimen/px32"
         android:visibility="gone"
+        android:includeFontPadding="true"
         />
-    <LinearLayout
+
+    <RelativeLayout
         android:id="@+id/ll_app_menu"
         android:layout_width="@dimen/px240"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_marginRight="@dimen/px20"
+        android:layout_marginBottom="@dimen/px80"
         android:layout_marginLeft="@dimen/px140"
+        android:layout_marginRight="@dimen/px20"
         android:layout_marginTop="@dimen/px130"
+        android:orientation="vertical"
         >
+
         <TextView
             android:id="@+id/tv_app_list_search"
             android:layout_width="@dimen/px200"
             android:layout_height="@dimen/px72"
+            android:layout_marginBottom="@dimen/px20"
             android:layout_marginLeft="@dimen/px20"
             android:layout_marginRight="@dimen/px20"
-            android:layout_marginBottom="@dimen/px20"
             android:drawableLeft="@mipmap/list_search"
             android:drawablePadding="@dimen/px_minus_15"
+            android:focusable="false"
             android:gravity="center"
             android:paddingLeft="@dimen/px40"
+            android:text="@string/serach"
             android:textColor="@color/white_opa80"
             android:textSize="@dimen/px34"
-            android:text="@string/serach"
-            android:focusable="true"
             />
+
         <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
             android:id="@+id/rv_app_menu"
             android:layout_width="@dimen/px240"
             android:layout_height="match_parent"
+            android:layout_below="@id/tv_app_list_search"
             android:focusable="false"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             />
-    </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_menu_top_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_50px"
+            android:layout_below="@id/tv_app_list_search"
+            android:background="@mipmap/menu_top_shadow"
+            android:visibility="gone"
+            />
+
+        <ImageView
+            android:id="@+id/iv_menu_bottom_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_70px"
+            android:layout_alignParentBottom="true"
+            android:background="@mipmap/menu_bottom_shadow"
+            android:visibility="gone"
+            />
+
+        <ImageView
+            android:id="@+id/iv_arrow_down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="@dimen/px102"
+            android:background="@mipmap/arrow_down"
+            android:visibility="gone"
+            />
+
+        <ImageView
+            android:id="@+id/iv_arrow_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_app_list_search"
+            android:layout_marginLeft="@dimen/px102"
+            android:background="@mipmap/arrow_up"
+            android:visibility="gone"
+            />
+    </RelativeLayout>
 
     <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
         android:id="@+id/rv_app_list"
@@ -90,12 +135,12 @@
     <LinearLayout
         android:id="@+id/ll_app_list_load_fail"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginBottom="@dimen/px100"
         android:layout_marginLeft="@dimen/px24"
         android:layout_marginRight="@dimen/px123"
-        android:layout_marginTop="@dimen/px130"
+        android:layout_marginTop="@dimen/px430"
         android:layout_toRightOf="@id/ll_app_menu"
         android:focusable="false"
         android:gravity="center"

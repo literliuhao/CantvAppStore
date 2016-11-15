@@ -39,9 +39,13 @@
                 android:id="@+id/tv_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
+                android:duplicateParentState="true"
+                android:ellipsize="marquee"
                 android:includeFontPadding="false"
+                android:marqueeRepeatLimit="marquee_forever"
                 android:maxLines="1"
+                android:paddingRight="@dimen/dimen_24px"
+                android:singleLine="true"
                 android:textColor="@color/uninstall_app_name_color"
                 android:textSize="@dimen/fontsize_34px"/>
 

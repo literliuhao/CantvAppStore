@@ -1,14 +1,16 @@
 package com.can.appstore.appdetail;
 
+import com.can.appstore.base.BasePresenter;
+import com.can.appstore.base.BaseView;
 import com.can.appstore.entity.AppInfo;
 
 /**
  * Created by JasonF on 2016/10/25.
  */
 
-public class AppDetailContract {
+public interface AppDetailContract {
 
-    interface Presenter {
+    interface Presenter extends BasePresenter{
         void startLoad();
 
         void clickStartDownload(boolean isUpdateButton);
@@ -16,15 +18,9 @@ public class AppDetailContract {
         void addBroadcastReceiverListener();
 
         void addDownlaodListener();
-
-        void release();
     }
 
-    interface View {
-        void showLoading();
-
-        void hideLoading();
-
+    interface View extends BaseView<Presenter>{
         void loadDataFail();
 
         void onClickHomeKey();

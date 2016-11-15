@@ -1,140 +1,37 @@
 package com.can.appstore.appdetail;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Environment;
-import android.os.StatFs;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
-import android.util.Log;
+import android.support.v4.view.ViewPager;
 import android.view.Display;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Interpolator;
 
-import java.io.BufferedReader;
+import com.can.appstore.appdetail.custom.FixedSpeedScroller;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.ShellUtils;
-import cn.can.tvlib.utils.ShellUtils.CommandResult;
+import java.lang.reflect.Field;
 
 /**
  * Created by JasonF on 2016/10/13.
  */
 
-public class AppUtils {
+public class Utils {
     private static long lastClickTime;
-
-    /**
-     * 卸载apk
-     */
-    public static void uninstallpkg(Context context, String packageName) {
-        try {
-            Intent uninstallIntent = new Intent(Intent.ACTION_DELETE, Uri.parse("package:"
-                    + packageName));
-            context.startActivity(uninstallIntent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static long getAvailableMemory(Context context) {
-        ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
-        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        activityManager.getMemoryInfo(mi);
-        return mi.availMem / 1024 / 1024;
-    }
-
-    /**
-     * 获取SD卡总大小
-     *
-     * @return
-     */
-    public static long getSDTotalSize() {
-        File sdcardDir = Environment.getExternalStorageDirectory();
-        StatFs statFs = new StatFs(sdcardDir.getPath());
-        long blockSize = statFs.getBlockSizeLong();
-        long totalSize = statFs.getBlockCountLong();
-        return blockSize * totalSize;
-    }
-
-    /**
-     * 获得sd卡剩余容量，即可用大小
-     *
-     * @return 剩余多少M
-     */
-    public static long getSDAvaliableSize() {
-        // 获取存储卡路径
-        File path = Environment.getExternalStorageDirectory();
-        // StatFs 看文件系统空间使用情况
-        StatFs statFs = new StatFs(path.getPath());
-        long blockSize = statFs.getBlockSizeLong();
-        long availableBlocks = statFs.getAvailableBlocksLong();
-        return blockSize * availableBlocks;
-    }
-
-    /**
-     * 获取系统总内存
-     *
-     * @param context 可传入应用程序上下文。
-     * @return 总内存大单位为B。
-     */
-    public static long getTotalMemorySize(Context context) {
-        String dir = "/proc/meminfo";
-        try {
-            FileReader fr = new FileReader(dir);
-            BufferedReader br = new BufferedReader(fr, 2048);
-            String memoryLine = br.readLine();
-            String subMemoryLine = memoryLine.substring(memoryLine.indexOf("MemTotal:"));
-            br.close();
-            return Integer.parseInt(subMemoryLine.replaceAll("\\D+", "")) * 1024l;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    public static long getApkInstallDirSzie(Context context) {
-        long usableSpace = context.getFilesDir().getAbsoluteFile().getUsableSpace();
-        return usableSpace;
-    }
-
-    /**
-     * 检测应用是否安装
-     *
-     * @param context
-     * @param packageName
-     * @return
-     */
-    public static boolean isAppInstalled(Context context, String packageName) {
-        final PackageManager packageManager = context.getPackageManager();
-        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
-        List<String> pName = new ArrayList<String>();
-        if (pinfo != null) {
-            for (int i = 0; i < pinfo.size(); i++) {
-                String pn = pinfo.get(i).packageName;
-                pName.add(pn);
-            }
-        }
-        return pName.contains(packageName);
-    }
+    private static FixedSpeedScroller mScroller = null;
 
     /**
      * 按钮是否延时响应
@@ -148,6 +45,29 @@ public class AppUtils {
         }
         lastClickTime = time;
         return false;
+    }
+
+    /**
+     * 设置ViewPager的滑动时间
+     *
+     * @param context
+     * @param viewpager      ViewPager控件
+     * @param DurationSwitch 滑动延时
+     */
+    public static void controlViewPagerSpeed(Context context, ViewPager viewpager, int DurationSwitch) {
+        try {
+            Field mField;
+            mField = ViewPager.class.getDeclaredField("mScroller");
+            mField.setAccessible(true);
+            //            mScroller = new FixedSpeedScroller(context, new AccelerateInterpolator());
+            Field interpolator = ViewPager.class.getDeclaredField("sInterpolator");
+            interpolator.setAccessible(true);
+            mScroller = new FixedSpeedScroller(context, (Interpolator) interpolator.get(null));
+            mScroller.setmDuration(DurationSwitch);
+            mField.set(viewpager, mScroller);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

@@ -6,11 +6,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.target.Target;
 import com.can.appstore.R;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import cn.can.tvlib.imageloader.GlideLoadTask;
+import cn.can.tvlib.imageloader.ImageLoader;
+import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 
 
 /**
@@ -21,7 +27,6 @@ public class ImageScaleAdapter extends PagerAdapter {
     private Context mContext;
     private LinkedList<ImageView> mRecycledViews = new LinkedList<ImageView>();
     private List<String> mUrlList = new ArrayList<String>();
-    int[] imgRes = {R.drawable.a, R.drawable.b, R.drawable.c, R.drawable.d, R.drawable.e};
     private int pageCount;
     private int mRoundSize;
 
@@ -31,8 +36,7 @@ public class ImageScaleAdapter extends PagerAdapter {
         this.mContext = context;
         this.mUrlList = urlList;
         mRoundSize = mContext.getResources().getDimensionPixelSize(R.dimen.dimen_8px);
-        //TODO 正常是mUrlList的size
-        pageCount = imgRes.length;
+        pageCount = mUrlList.size();
     }
 
     @Override
@@ -55,9 +59,24 @@ public class ImageScaleAdapter extends PagerAdapter {
         } else {
             imageView = new ImageView(mContext);
         }
-        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-        //        ImageLoader.getInstance().buildTask(imageView, mUrlList.get(position)).bitmapTransformation(new GlideRoundTransform(mContext, mRoundSize)).build().start(mContext);
-        imageView.setImageResource(imgRes[index]);
+        imageView.setBackgroundResource(R.drawable.bg_item);
+        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        final ImageView finalImageView = imageView;
+        ImageLoader.getInstance()
+                .buildTask(imageView, mUrlList.get(index))
+                .bitmapTransformation(new GlideRoundTransform(mContext, mRoundSize))
+                .placeholder(R.mipmap.icon_load_default)
+                .errorHolder(R.mipmap.icon_loading_fail)
+                .successCallback(new GlideLoadTask.SuccessCallback() {
+                    @Override
+                    public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        finalImageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                        finalImageView.setImageDrawable(resource);
+                        return true;
+                    }
+                })
+                .build()
+                .start(mContext);
         container.addView(imageView);
         return imageView;
     }

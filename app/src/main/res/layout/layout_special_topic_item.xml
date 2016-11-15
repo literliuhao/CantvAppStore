@@ -9,7 +9,8 @@
     <cn.can.tvlib.ui.view.RoundCornerImageView
         android:id="@+id/subject_item_imgvi"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_item"/>
     <TextView
         android:id="@+id/subject_item_title_tv"
         android:layout_alignBottom="@+id/subject_item_imgvi"

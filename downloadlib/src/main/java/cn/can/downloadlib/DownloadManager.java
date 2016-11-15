@@ -60,7 +60,7 @@ public class DownloadManager implements AppInstallListener {
     private int mLimitSpace = 50;
     private ExecutorService mExecutorService;
     private OkHttpClient mOkHttpClient;
-//    private AppInstallListener mAppInstallListener;
+    //    private AppInstallListener mAppInstallListener;
     private List<AppInstallListener> mAppInstallListeners;
 
     private TaskManager mTaskManager = new TaskManager();
@@ -73,7 +73,7 @@ public class DownloadManager implements AppInstallListener {
             switch (msg.what) {
                 case MSG_SUBMIT_TASK:
                     if (NetworkUtils.isNetworkConnected(mContext.getApplicationContext())) {
-                        if (((ThreadPoolExecutor)mExecutorService).getActiveCount() < mPoolSize) {
+                        if (((ThreadPoolExecutor) mExecutorService).getActiveCount() < mPoolSize) {
                             DownloadTask task = mTaskManager.poll();
                             if (task != null) {
                                 mExecutorService.submit(task);
@@ -176,7 +176,9 @@ public class DownloadManager implements AppInstallListener {
     public static DownloadManager getInstance(Context context, InputStream sslKey) {
         if (mInstance == null) {
             synchronized (DownloadManager.class) {
-                mInstance = new DownloadManager(context, sslKey);
+                if(mInstance==null){
+                    mInstance = new DownloadManager(context, sslKey);
+                }
             }
         }
         return mInstance;
@@ -259,7 +261,7 @@ public class DownloadManager implements AppInstallListener {
             return false;
         }
 
-        long space = SdcardUtils.getSDCardAvailableSpace()/1014/1024;
+        long space = SdcardUtils.getSDCardAvailableSpace() / 1014 / 1024;
         if (space < mLimitSpace) {
             ToastUtils.showMessageLong(mContext.getApplicationContext(), R.string.error_msg);
             return false;
@@ -313,6 +315,7 @@ public class DownloadManager implements AppInstallListener {
                 /**修复数据库获取task 无法resume 问题  xingzl 2016-11-4 16:51:58 start*/
                 downloadTask.setDownloadDao(mDownloadDao);
                 downloadTask.setHttpClient(mOkHttpClient);
+                downloadTask.setAppListener(this);
                 mTaskManager.put(downloadTask);
 //                mWorkTaskQueue.offer(taskId);
 //                /**修复数据库获取task 无法resume 问题  xingzl 2016-11-4 16:51:58 end*/
@@ -351,9 +354,9 @@ public class DownloadManager implements AppInstallListener {
      */
     public void cancel(DownloadTask task) {
         task.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
-        mDownloadDao.deleteByKey(task.getId());
         task.cancel();
         mTaskManager.remove(task.getId());
+        mDownloadDao.deleteByKey(task.getId());
     }
 
     /**
@@ -483,6 +486,7 @@ public class DownloadManager implements AppInstallListener {
             for (DownloadTask task : list) {
                 task.setDownloadDao(mDownloadDao);
                 task.setHttpClient(mOkHttpClient);
+                task.setAppListener(this);
                 mTaskManager.put(task);
             }
         }
@@ -544,6 +548,7 @@ public class DownloadManager implements AppInstallListener {
 
     /**
      * 单一任务，不加入任务队列
+     *
      * @param task
      * @param listener
      */
@@ -573,43 +578,67 @@ public class DownloadManager implements AppInstallListener {
     public void onInstalling(DownloadTask downloadTask) {
         downloadTask.setDownloadStatus(AppInstallListener.APP_INSTALLING);
         Message msg = new Message();
+        msg.what = MSG_APP_INSTALL;
         Bundle bundle = new Bundle();
-        bundle.putString("path", downloadTask.getSaveDirPath());
+        bundle.putString("path", downloadTask.getFilePath());
         bundle.putString("id", downloadTask.getId());
         msg.setData(bundle);
         mHander.sendMessage(msg);
-        for (AppInstallListener listener : mAppInstallListeners) {
-            listener.onInstalling(downloadTask);
+        if (mAppInstallListeners != null) {
+            Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
+            while (iter.hasNext()) {
+                AppInstallListener listener = iter.next();
+                listener.onInstalling(downloadTask);
+            }
         }
+
     }
 
     @Override
     public void onInstallSucess(String id) {
-        getCurrentTaskById(id).setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
-        Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
-        while(iter.hasNext()){
-            AppInstallListener listener = iter.next();
-            listener.onInstallSucess(id);
-            iter.remove();
+        DownloadTask task= getCurrentTaskById(id);
+        if(task!=null){
+            task.setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
+        }
+        if (mAppInstallListeners != null) {
+            Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
+            while (iter.hasNext()) {
+                AppInstallListener listener = iter.next();
+                listener.onInstallSucess(id);
+                iter.remove();
+            }
         }
     }
 
     @Override
     public void onInstallFail(String id) {
-        getCurrentTaskById(id).setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
-        Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
-        while(iter.hasNext()){
-            AppInstallListener listener = iter.next();
-            listener.onInstallFail(id);
-            iter.remove();
+        DownloadTask task= getCurrentTaskById(id);
+        if(task!=null){
+            task.setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
         }
+        if (mAppInstallListeners != null) {
+            Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
+            while (iter.hasNext()) {
+                AppInstallListener listener = iter.next();
+                listener.onInstallFail(id);
+                iter.remove();
+            }
+        }
+
     }
 
-    public void setAppInstallListener (AppInstallListener listener) {
-        if(mAppInstallListeners == null){
-            mAppInstallListeners = new ArrayList<AppInstallListener>();
+    public void setAppInstallListener(AppInstallListener listener) {
+        if (mAppInstallListeners == null) {
+            mAppInstallListeners = new ArrayList<>();
         }
         mAppInstallListeners.add(listener);
     }
+
+    public void removeAppInstallListener(AppInstallListener listener) {
+        if (mAppInstallListeners != null) {
+            mAppInstallListeners.remove(listener);
+        }
+    }
+
 
 }

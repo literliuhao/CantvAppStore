@@ -37,11 +37,23 @@
             android:name=".download.DownloadActivity"
             android:theme="@style/AppTheme.Translucent.FadeIn"
             >
+            <intent-filter>
+                <action android:name="com.can.appstore.action.DOWNLOAD"/>
+            </intent-filter>
         </activity>
         <activity android:name=".specialtopic.SpecialActivity"
-            android:theme="@style/AppTheme.Translucent.FadeIn">
+            android:theme="@style/AppTheme.Translucent.FadeIn"
+            >
+            <intent-filter>
+                <action android:name="com.can.appstore.action.SPECIAL_TOPIC"/>
+            </intent-filter>
         </activity>
         <activity android:name=".applist.AppListActivity">
+            <intent-filter>
+                <action android:name="com.can.appstore.applist.ACTION.applist"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
         </activity>
         <activity android:name=".download.DownloadLeadAcitivity">
         </activity>
