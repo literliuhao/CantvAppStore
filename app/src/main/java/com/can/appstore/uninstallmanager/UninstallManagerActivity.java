@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.appdetail.AppDetailContract;
-import com.can.appstore.appdetail.AppUtils;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.uninstallmanager.adapter.UninstallManagerAdapter;
@@ -242,6 +241,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
                 mTvItemCurRows.setText(mPresenter.calculateCurRows(position) + "");
                 String totalRowsStr = String.format(getResources().getString(R.string.rows_str), mPresenter.calculateCurTotalRows());
                 mTvItemTotalRows.setText(totalRowsStr);
+                view.setSelected(hasFocus);
             }
         });
 

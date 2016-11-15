@@ -77,12 +77,13 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     private List<String> mControlType = new ArrayList<String>();
     private RecommedGridAdapter mRecommedGridAdapter;
     private IntroducGridAdapter mIntroducGridAdapter;
-    private boolean isTabLineMoveToRecommend = false;//线是否移动到推荐
-    private boolean isRecommendGridFirstRow = false;//焦点是否在推荐列表的第一行
-    private boolean isSwitchAnimatComplete = true;//底部动画是否切换完成
     private ViewFlipper mViewFlipper;
     private CanRecyclerView.CanLinearLayoutManager mIntroducLayoutManager;
     private LinearLayout mLayoutIntroduceText;
+    private LinearLayout mLayoutAppDetail;
+    private boolean isTabLineMoveToRecommend = false;//线是否移动到推荐
+    private boolean isRecommendGridFirstRow = false;//焦点是否在推荐列表的第一行
+    private boolean isSwitchAnimatComplete = true;//底部动画是否切换完成
     private AppInfo mAppinfo;
 
     @Override
@@ -121,6 +122,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         mButtonUpdate = (TextProgressBar) findViewById(R.id.bt_update);
         mRelativeLayuotOperatingEquipment = (RelativeLayout) findViewById(R.id.rl_operating_equipment);
         mLayoutIntroduceText = (LinearLayout) findViewById(R.id.ll_introduce_text);
+        mLayoutAppDetail = (LinearLayout) findViewById(R.id.ll_app_detail);
         mRecommendGrid = (CanRecyclerView) findViewById(R.id.crlv_recommed_grid);
         mIntroducGrid = (CanRecyclerView) findViewById(R.id.crlv_introduce_grid);
         mButtonDownload.setTextSize(getResources().getDimensionPixelSize(R.dimen.dimen_36px));
@@ -353,7 +355,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 .placeholder(R.drawable.errorholder_cibn_icon)
                 .build()
                 .start(AppDetailActivity.this);
-        mAppName.setText(mAppinfo.getName());
+        mAppName.setText(String.format(getResources().getString(R.string.detail_app_name), mAppinfo.getName(), mAppinfo.getVersionName()));
         mAppSize.setText(String.format(getResources().getString(R.string.detail_app_size), mAppinfo.getSizeStr()));
         mAppUodateDate.setText(String.format(getResources().getString(R.string.detail_app_update_date), mAppinfo.getUpdateTime()));
         mAppDownloadCount.setText(String.format(getResources().getString(R.string.detail_app_downlaod_count), mAppinfo.getDownloadCount()));
@@ -477,6 +479,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     @Override
     public void loadAppInfoOnSuccess(AppInfo appInfo) {
+        mLayoutAppDetail.setVisibility(View.VISIBLE);
         mAppinfo = appInfo;
         setData();
         setIntroduceAdapter();

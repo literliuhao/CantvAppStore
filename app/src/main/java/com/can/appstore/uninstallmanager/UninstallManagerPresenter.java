@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.can.appstore.R;
-import com.can.appstore.appdetail.AppUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,7 +130,9 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
                 Log.d(TAG, "uninstall packageName : " + packageName);
                 if (mSelectPackageName != null) {
                     refreshItemInListPosition(packageName);
-                    continueUninstall1();
+                    if (mSelectPackageName.size() > 0) {
+                        continueUninstall1();
+                    }
                 } else {
                     startLoad();
                 }
@@ -152,9 +153,9 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
      * 继续卸载
      */
     private void continueUninstall1() {
+        mSelectPackageName.remove(0);
+        mView.refreshSelectCount(mSelectPackageName.size());
         if (mSelectPackageName.size() > 0) {
-            mSelectPackageName.remove(0);
-            mView.refreshSelectCount(mSelectPackageName.size());
             PackageUtil.unInstall(mContext, mSelectPackageName.get(0));
         }
     }

@@ -1,46 +1,37 @@
 package com.can.appstore.appdetail;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Environment;
-import android.os.StatFs;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
-import android.util.Log;
+import android.support.v4.view.ViewPager;
 import android.view.Display;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Interpolator;
 
-import java.io.BufferedReader;
+import com.can.appstore.appdetail.custom.FixedSpeedScroller;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.ShellUtils;
-import cn.can.tvlib.utils.ShellUtils.CommandResult;
+import java.lang.reflect.Field;
 
 /**
  * Created by JasonF on 2016/10/13.
  */
 
-public class AppUtils {
+public class Utils {
     private static long lastClickTime;
+    private static FixedSpeedScroller mScroller = null;
 
     /**
      * 按钮是否延时响应
@@ -54,6 +45,29 @@ public class AppUtils {
         }
         lastClickTime = time;
         return false;
+    }
+
+    /**
+     * 设置ViewPager的滑动时间
+     *
+     * @param context
+     * @param viewpager      ViewPager控件
+     * @param DurationSwitch 滑动延时
+     */
+    public static void controlViewPagerSpeed(Context context, ViewPager viewpager, int DurationSwitch) {
+        try {
+            Field mField;
+            mField = ViewPager.class.getDeclaredField("mScroller");
+            mField.setAccessible(true);
+            //            mScroller = new FixedSpeedScroller(context, new AccelerateInterpolator());
+            Field interpolator = ViewPager.class.getDeclaredField("sInterpolator");
+            interpolator.setAccessible(true);
+            mScroller = new FixedSpeedScroller(context, (Interpolator) interpolator.get(null));
+            mScroller.setmDuration(DurationSwitch);
+            mField.set(viewpager, mScroller);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

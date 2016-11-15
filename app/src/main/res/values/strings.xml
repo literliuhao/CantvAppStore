@@ -23,6 +23,7 @@
     <string name="rows_str">/%d行</string>
 
     <!--应用详情页-->
+    <string name="detail_app_name">%1$s&#160;V%2$s</string>
     <string name="detail_app_size">大小&#160;:&#160;%s</string>
     <string name="detail_app_update_date">更新&#160;:&#160;%s</string>
     <string name="detail_app_downlaod_count">下载&#160;:&#160;%s</string>

@@ -1,6 +1,5 @@
 package com.can.appstore.appdetail;
 
-import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -8,7 +7,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
-import android.widget.LinearLayout;
 
 import com.can.appstore.R;
 import com.can.appstore.appdetail.adapter.ImageScaleAdapter;
@@ -27,7 +25,6 @@ public class ImageScaleActivity extends BaseActivity {
 
     private static final String TAG = "ImageScaleActivity";
     private ViewPager mViewPager;
-    private LinearLayout mLinearLayout;
     private ImageScaleAdapter mScaleAdapter;
     private int mCurSelectPositon;
     private int mBeforePosition;
@@ -56,12 +53,12 @@ public class ImageScaleActivity extends BaseActivity {
 
     private void initView() {
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
-        mLinearLayout = (LinearLayout) findViewById(R.id.ll_point);
         mPointView = (PointView) findViewById(R.id.point_view);
         mPointView.setPointCount(mImageUrls.size());
         mPointView.setSelectPosition(mCurSelectPositon);
 
         mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.dimen_210px));
+        Utils.controlViewPagerSpeed(ImageScaleActivity.this, mViewPager, 500);
         mViewPager.setOffscreenPageLimit(3);
         mScaleAdapter = new ImageScaleAdapter(ImageScaleActivity.this, mImageUrls);
         mViewPager.setAdapter(mScaleAdapter);
@@ -113,6 +110,10 @@ public class ImageScaleActivity extends BaseActivity {
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
                 finish();
+                break;
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+                break;
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
                 break;
         }
         return super.onKeyDown(keyCode, event);

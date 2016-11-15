@@ -199,7 +199,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             per = calculatorPercent(completedSize, totalSize);
             Log.d(TAG, "clickStartDownload completedSize: " + completedSize + "totalSize : " + totalSize + "  downloadStatus : " + downloadStatus);
         }
-        if (AppUtils.isFastDoubleClick()) {//防止连续点击
+        if (Utils.isFastDoubleClick()) {//防止连续点击
             return;
         } else if (ApkUtils.isAvailable(mContext, mPackageName) && !isClickUpdateButton) {//应用已经安装
             PackageUtil.openApp(mContext, mPackageName);
