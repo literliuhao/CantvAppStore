@@ -13,16 +13,16 @@ import cn.can.downloadlib.DownloadTask;
 
 public interface DownloadContract {
 
-    public static interface DownloadPresenter extends BasePresenter{
+    interface DownloadPresenter extends BasePresenter{
 
         void loadData();
-        void onItemFocused(int focusedPos);
+        void calculateRowNum(int focusedPos);
         void deleteAllTasks();
         boolean pauseAllTasks();
         boolean resumeAllTasks();
     }
 
-    public static interface DownloadView extends BaseView<DownloadPresenter>{
+    interface DownloadView extends BaseView<DownloadPresenter>{
 
         void onDataLoaded(List<DownloadTask> tasks);
         void refreshRowNumber(String formatRow);

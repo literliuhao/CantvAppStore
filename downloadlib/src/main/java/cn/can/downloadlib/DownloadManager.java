@@ -7,7 +7,6 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyManagementException;
@@ -177,7 +176,9 @@ public class DownloadManager implements AppInstallListener {
     public static DownloadManager getInstance(Context context, InputStream sslKey) {
         if (mInstance == null) {
             synchronized (DownloadManager.class) {
-                mInstance = new DownloadManager(context, sslKey);
+                if(mInstance==null){
+                    mInstance = new DownloadManager(context, sslKey);
+                }
             }
         }
         return mInstance;
@@ -579,7 +580,7 @@ public class DownloadManager implements AppInstallListener {
         Message msg = new Message();
         msg.what = MSG_APP_INSTALL;
         Bundle bundle = new Bundle();
-        bundle.putString("path", downloadTask.getSaveDirPath() + File.separator + downloadTask.getFileName());
+        bundle.putString("path", downloadTask.getFilePath());
         bundle.putString("id", downloadTask.getId());
         msg.setData(bundle);
         mHander.sendMessage(msg);
@@ -595,7 +596,10 @@ public class DownloadManager implements AppInstallListener {
 
     @Override
     public void onInstallSucess(String id) {
-        getCurrentTaskById(id).setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
+        DownloadTask task= getCurrentTaskById(id);
+        if(task!=null){
+            task.setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
+        }
         if (mAppInstallListeners != null) {
             Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
             while (iter.hasNext()) {
@@ -608,9 +612,12 @@ public class DownloadManager implements AppInstallListener {
 
     @Override
     public void onInstallFail(String id) {
-        getCurrentTaskById(id).setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
-        Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
+        DownloadTask task= getCurrentTaskById(id);
+        if(task!=null){
+            task.setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
+        }
         if (mAppInstallListeners != null) {
+            Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
             while (iter.hasNext()) {
                 AppInstallListener listener = iter.next();
                 listener.onInstallFail(id);

@@ -43,6 +43,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
     private List<DownloadTask> data;
     private ItemEventListener mHolderItemEventListener;
     private LayoutInflater mLayoutInflater;
+    private RecyclerView mRecyclerView;
 
     public DownloadAdapter(List<DownloadTask> datas) {
         super(datas);
@@ -64,7 +65,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
 
     @Override
     protected void bindContentData(DownloadTask task, RecyclerView.ViewHolder holder, int position) {
-        Log.i(TAG, "bindContentData: " + task.toString());
+        Log.i(TAG, "bindContentData: task="+task.toString());
         DownloadViewHolder viewHolder = (DownloadViewHolder) holder;
         viewHolder.appNameTv.setText(task.getFileName());
         viewHolder.position = position;
@@ -73,6 +74,12 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
         viewHolder.appControlBtn.setTag(viewHolder);
         viewHolder.appDeleteBtn.setTag(viewHolder);
         viewHolder.refreshStatus();
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        mRecyclerView = recyclerView;
     }
 
     /**
@@ -116,7 +123,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     setDownloadListener();
                     eventBus.register(DownloadViewHolder.this);
                     appDownloadStatusImgVi.startRotate();
-                    DownloadManager.getInstance(v.getContext()).setAppInstallListener(appInstallListener);
+                    DownloadManager.getInstance(v.getContext().getApplicationContext()).setAppInstallListener(appInstallListener);
                 }
 
                 @Override
@@ -124,7 +131,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     if (downloadTask != null) {
                         downloadTask.removeDownloadListener(downloadListener);
                     }
-                    DownloadManager.getInstance(v.getContext()).removeAppInstallListener(appInstallListener);
+                    DownloadManager.getInstance(v.getContext().getApplicationContext()).removeAppInstallListener(appInstallListener);
                     v.removeCallbacks(showControlViewRunnable);
                     v.removeCallbacks(selectedViewRunnable);
                     eventBus.unregister(DownloadViewHolder.this);
@@ -155,13 +162,17 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                 @Override
                 public void onInstallSucess(String id) {
                     Log.i(TAG, "onInstallSucess: ");
-                    postRefreshStatus();
+                    if(downloadTask.getId().equals(id)){
+                        postRefreshStatus();
+                    }
                 }
 
                 @Override
                 public void onInstallFail(String id) {
                     Log.i(TAG, "onInstallFail: ");
-                    postRefreshStatus();
+                    if(downloadTask.getId().equals(id)){
+                        postRefreshStatus();
+                    }
                 }
             };
 
@@ -210,8 +221,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
             refreshStatusRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    refreshControlButtonStatus();
-                    refreshDownloadStatus();
+                    refreshStatus();
                 }
             };
 
@@ -269,6 +279,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
             if (downloadTask == null) {
                 return;
             }
+            Log.i(TAG, "refreshControlButtonStatus: downloadtask=="+downloadTask.toString());
             switch (downloadTask.getDownloadStatus()) {
                 case DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING:
                 case DownloadStatus.DOWNLOAD_STATUS_INIT:
@@ -289,10 +300,10 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     appControlBtn.setText("安装中");
                     break;
                 case AppInstallListener.APP_INSTALL_FAIL:
-                    appDownloadStatusTv.setText("重新安装");
+                    appControlBtn.setText("重新安装");
                     break;
                 case AppInstallListener.APP_INSTALL_SUCESS:
-                    appDownloadStatusTv.setText("打开");
+                    appControlBtn.setText("打开");
                     break;
             }
         }
@@ -423,8 +434,10 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                         break;
                     case AppInstallListener.APP_INSTALL_SUCESS:
                         //TODO
+
                         break;
                     case AppInstallListener.APP_INSTALL_FAIL:
+                        // TODO: 2016/11/15
                         File apkFile = new File(holder.downloadTask.getSaveDirPath() + File.separator + holder.downloadTask.getFileName());
                         ApkUtils.install(v.getContext(), apkFile);
                         break;
@@ -435,6 +448,11 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     mOnItemEventListener.onControlButtonClick(v, holder.position, holder.downloadTask);
                 }
             } else if (v.getId() == holder.appDeleteBtn.getId()) {
+                if (AppInstallListener.APP_INSTALLING == holder.downloadTask.getDownloadStatus()
+                        || AppInstallListener.APP_INSTALL_SUCESS == holder.downloadTask.getDownloadStatus()) {
+                    //安装中 安装成功 删除按钮不可点击
+                    return;
+                }
                 DownloadManager.getInstance(v.getContext().getApplicationContext()).cancel(holder.downloadTask);
                 boolean deleteSuccessful = data.remove(holder.downloadTask);
                 if (deleteSuccessful) {

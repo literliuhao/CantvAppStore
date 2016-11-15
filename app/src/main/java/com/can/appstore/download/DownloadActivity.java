@@ -39,6 +39,8 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
     private String pauseAllTaskString;
     private String resumeAllTaskString;
 
+    private int lastFocusPos = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,75 +129,80 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
     @Override
     public void onDataLoaded(final List<DownloadTask> tasks) {
         refreshControlAllBtn(tasks);
-        if (mAdapter == null) {
-            mPresenter.onItemFocused(0);
-            mAdapter = new DownloadAdapter(tasks);
-            mCanRecyclerView.setAdapter(mAdapter);
-            mCanRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        mPresenter.calculateRowNum(0);
+        mAdapter = new DownloadAdapter(tasks);
+        mCanRecyclerView.setAdapter(mAdapter);
+        mCanRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
 
-                }
+            }
 
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                focusMoveDelay();
+            }
+        });
+        mAdapter.setOnItemEventListener(new DownloadAdapter.OnItemEventListener() {
+            @Override
+            public void onItemContentFocusChanged(View view, boolean hasFocus, int pos) {
+                if (hasFocus) {
+                    mFocusView = view;
                     focusMoveDelay();
+                    mPresenter.calculateRowNum(pos);
+                    lastFocusPos = -1;
                 }
-            });
-            mAdapter.setOnItemEventListener(new DownloadAdapter.OnItemEventListener() {
-                @Override
-                public void onItemContentFocusChanged(View view, boolean hasFocus, int pos) {
-                    if (hasFocus) {
-                        mFocusView = view;
+            }
+
+            @Override
+            public void onItemControlButtonFocusChanged(View view, boolean hasFocus, int pos, DownloadTask downloadTask) {
+                if (hasFocus) {
+                    mFocusView = view;
+                    focusMoveDelay();
+                    mPresenter.calculateRowNum(pos);
+                    lastFocusPos = -1;
+                }
+
+            }
+
+            @Override
+            public void onItemDeleteButtonFocusChanged(View view, boolean hasFocus, int pos, DownloadTask downloadTask) {
+                if (hasFocus) {
+                    mFocusView = view;
+                    if (lastFocusPos == pos) {
+                        focusMoveDelay(500);
+                    } else {
                         focusMoveDelay();
-                        mPresenter.onItemFocused(pos);
                     }
+                    mPresenter.calculateRowNum(pos);
+                    lastFocusPos = pos;
                 }
+            }
 
-                @Override
-                public void onItemControlButtonFocusChanged(View view, boolean hasFocus, int pos, DownloadTask downloadTask) {
-                    if (hasFocus) {
-                        mFocusView = view;
-                        focusMoveDelay();
-                        mPresenter.onItemFocused(pos);
-                    }
+            @Override
+            public void onItemContentClick(View view, int pos, DownloadTask downloadTask) {
 
+            }
+
+            @Override
+            public void onControlButtonClick(View view, int pos, DownloadTask downloadTask) {
+
+            }
+
+            @Override
+            public void onDeleteButtonClick(View view, int pos, DownloadTask downloadTask) {
+                if (tasks.size() == 0) {
+                    showNoDataView();
+                } else {
+                    mPresenter.calculateRowNum(pos);
                 }
+            }
 
-                @Override
-                public void onItemDeleteButtonFocusChanged(View view, boolean hasFocus, int pos, DownloadTask downloadTask) {
-                    if (hasFocus) {
-                        mFocusView = view;
-                        focusMoveDelay();
-                        mPresenter.onItemFocused(pos);
-                    }
-                }
-
-                @Override
-                public void onItemContentClick(View view, int pos, DownloadTask downloadTask) {
-
-                }
-
-                @Override
-                public void onControlButtonClick(View view, int pos, DownloadTask downloadTask) {
-
-                }
-
-                @Override
-                public void onDeleteButtonClick(View view, int pos, DownloadTask downloadTask) {
-                    if (tasks.size() == 0) {
-                        showNoDataView();
-                    }
-                }
-
-                @Override
-                public boolean onItemContentKeyListener(View view, int keyCode, KeyEvent event, int pos, DownloadTask downloadTask) {
-                    return false;
-                }
-            });
-        } else {
-            mAdapter.notifyDataSetChanged();
-        }
+            @Override
+            public boolean onItemContentKeyListener(View view, int keyCode, KeyEvent event, int pos, DownloadTask downloadTask) {
+                return false;
+            }
+        });
     }
 
     @Override
@@ -209,9 +216,13 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
     }
 
     private void focusMoveDelay() {
+        focusMoveDelay(DELAY_MILLIS);
+    }
+
+    private void focusMoveDelay(int delayMillis) {
         if (mFocusMoveUtil != null) {
             hanlder.removeCallbacks(mFocusMoveRunnable);
-            hanlder.postDelayed(mFocusMoveRunnable, DELAY_MILLIS);
+            hanlder.postDelayed(mFocusMoveRunnable, delayMillis);
         }
     }
 
