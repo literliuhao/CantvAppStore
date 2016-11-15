@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:custom="http://schemas.Android.com/apk/res-auto"
               android:id="@+id/ll_app_detail"
-              android:visibility="invisible"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:background="@color/two_page_bg"
-              android:orientation="vertical">
+              android:orientation="vertical"
+              android:visibility="invisible">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -15,11 +16,13 @@
         android:layout_marginTop="@dimen/dimen_100px"
         >
 
-        <ImageView
+        <cn.can.tvlib.ui.view.RoundCornerImageView
             android:id="@+id/iv_icon"
             android:layout_width="@dimen/dimen_200px"
             android:layout_height="@dimen/dimen_200px"
-            android:scaleType="fitXY"/>
+            android:background="@drawable/bg_icon_item"
+            android:scaleType="centerInside"
+            custom:cornerSize="@dimen/dimen_36px"/>
 
 
         <TextView

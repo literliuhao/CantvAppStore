@@ -18,10 +18,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.target.Target;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.adapter.IntroducGridAdapter;
 import com.can.appstore.appdetail.adapter.RecommedGridAdapter;
-import com.can.appstore.appdetail.custom.CustomDialog;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.entity.AppInfo;
@@ -29,10 +30,11 @@ import com.can.appstore.entity.AppInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
-import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
+import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
@@ -56,7 +58,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     private FocusScaleUtil mScaleUtil;
     private boolean focusSearchFailed;
     private AppDetailPresenter mAppDetailPresenter;
-    private ImageView mImageViewIcon;
+    private RoundCornerImageView mImageViewIcon;
     private TextView mAppName;
     private TextView mAppSize;
     private TextView mAppUodateDate;
@@ -107,7 +109,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     private void initView() {
         mViewFlipper = (ViewFlipper) findViewById(R.id.flipper);
-        mImageViewIcon = (ImageView) findViewById(R.id.iv_icon);
+        mImageViewIcon = (RoundCornerImageView) findViewById(R.id.iv_icon);
         mAppName = (TextView) findViewById(R.id.tv_app_name);
         mAppSize = (TextView) findViewById(R.id.tv_app_size);
         mAppUodateDate = (TextView) findViewById(R.id.tv_update_date);
@@ -348,13 +350,15 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     }
 
     private void setData() {//TODO   修改设置数据
-        int roundSize = getResources().getDimensionPixelSize(R.dimen.dimen_36px);
-        ImageLoader.getInstance()
-                .buildTask(mImageViewIcon, mAppinfo.getIcon())
-                .bitmapTransformation(new GlideRoundTransform(AppDetailActivity.this, roundSize))
-                .placeholder(R.drawable.error_cibn_icon)
-                .build()
-                .start(AppDetailActivity.this);
+        ImageLoader.getInstance().load(AppDetailActivity.this, mImageViewIcon, mAppinfo.getIcon(), android.R.anim.fade_in,
+                R.mipmap.icon_load_default, R.mipmap.icon_loading_fail, new GlideLoadTask.SuccessCallback() {
+                    @Override
+                    public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        mImageViewIcon.setScaleType(ImageView.ScaleType.FIT_XY);
+                        mImageViewIcon.setImageDrawable(resource);
+                        return true;
+                    }
+                }, null);
         mAppName.setText(String.format(getResources().getString(R.string.detail_app_name), mAppinfo.getName(), mAppinfo.getVersionName()));
         mAppSize.setText(String.format(getResources().getString(R.string.detail_app_size), mAppinfo.getSizeStr()));
         mAppUodateDate.setText(String.format(getResources().getString(R.string.detail_app_update_date), mAppinfo.getUpdateTime()));
@@ -681,10 +685,11 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         public void run() {
             if (mFocusedListChild != null) {
                 mScaleUtil.scaleToLarge(mFocusedListChild);
+                mScaleUtil.setFocusScale(1.0f);
                 if (focusSearchFailed) {
-                    mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.1f);
+                    mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f);
                 } else {
-                    mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.1f, 0);
+                    mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f, 0);
                 }
             }
         }

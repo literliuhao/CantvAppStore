@@ -7,10 +7,10 @@
               android:focusable="true"
               android:orientation="horizontal">
 
-    <ImageView
+    <cn.can.tvlib.ui.view.RoundCornerImageView
         android:id="@+id/iv_introduc_item"
         android:layout_width="@dimen/dimen_513px"
         android:layout_height="@dimen/dimen_288px"
-        android:scaleType="fitXY"/>
+        android:background="@drawable/bg_item"/>
 
 </LinearLayout>

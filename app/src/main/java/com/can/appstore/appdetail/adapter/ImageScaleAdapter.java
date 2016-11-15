@@ -6,12 +6,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.target.Target;
 import com.can.appstore.R;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 
@@ -56,11 +59,22 @@ public class ImageScaleAdapter extends PagerAdapter {
         } else {
             imageView = new ImageView(mContext);
         }
-        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+        imageView.setBackgroundResource(R.drawable.bg_item);
+        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        final ImageView finalImageView = imageView;
         ImageLoader.getInstance()
                 .buildTask(imageView, mUrlList.get(index))
                 .bitmapTransformation(new GlideRoundTransform(mContext, mRoundSize))
-                .placeholder(R.drawable.error_cibn)
+                .placeholder(R.mipmap.icon_load_default)
+                .errorHolder(R.mipmap.icon_loading_fail)
+                .successCallback(new GlideLoadTask.SuccessCallback() {
+                    @Override
+                    public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        finalImageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                        finalImageView.setImageDrawable(resource);
+                        return true;
+                    }
+                })
                 .build()
                 .start(mContext);
         container.addView(imageView);

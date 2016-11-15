@@ -125,8 +125,8 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             @Override
             public void onFocusChange(View view, boolean b) {
                 if (b) {
-                    mFocusMoveUtil.startMoveFocus(view, 1.1f);
-                    mScaleUtil.scaleToLarge(mBtBatchUninstall);
+                    mFocusedListChild = view;
+                    mListFocusMoveRunnable.run();
                     mBtBatchUninstall.setBackgroundResource(R.drawable.shape_bg_uninstall_manager_item_focus);
                 } else {
                     mScaleUtil.scaleToNormal(view);
@@ -300,13 +300,20 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         public void run() {
             if (mFocusedListChild != null) {
                 mScaleUtil.scaleToLarge(mFocusedListChild);
+                mScaleUtil.setFocusScale(1.0f);
                 if (focusSearchFailed) {
-                    mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.1f);
+                    mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f);
                 } else {
-                    mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.1f, 0);
+                    mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f, 0);
                 }
             }
         }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        Log.d(TAG, "onWindowFocusChanged: hasFocus " + hasFocus);
+        super.onWindowFocusChanged(hasFocus);
     }
 
     @Override
