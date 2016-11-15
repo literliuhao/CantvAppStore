@@ -60,7 +60,7 @@ public class ImageScaleAdapter extends PagerAdapter {
         ImageLoader.getInstance()
                 .buildTask(imageView, mUrlList.get(index))
                 .bitmapTransformation(new GlideRoundTransform(mContext, mRoundSize))
-                .placeholder(R.drawable.errorholder_cibn)
+                .placeholder(R.drawable.error_cibn)
                 .build()
                 .start(mContext);
         container.addView(imageView);

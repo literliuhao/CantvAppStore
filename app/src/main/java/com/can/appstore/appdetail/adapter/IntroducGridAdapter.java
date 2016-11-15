@@ -47,7 +47,7 @@ public class IntroducGridAdapter extends CanRecyclerViewAdapter {
         ImageLoader.getInstance()
                 .buildTask(((IntroducGridViewHolder) holder).introducItem, mIntroduceList.get(position))
                 .bitmapTransformation(new GlideRoundTransform(mContext, roundSize))
-                .placeholder(R.drawable.errorholder_cibn)
+                .placeholder(R.drawable.error_cibn)
                 .build()
                 .start(mContext);
     }

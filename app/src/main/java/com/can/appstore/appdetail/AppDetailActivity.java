@@ -352,7 +352,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         ImageLoader.getInstance()
                 .buildTask(mImageViewIcon, mAppinfo.getIcon())
                 .bitmapTransformation(new GlideRoundTransform(AppDetailActivity.this, roundSize))
-                .placeholder(R.drawable.errorholder_cibn_icon)
+                .placeholder(R.drawable.error_cibn_icon)
                 .build()
                 .start(AppDetailActivity.this);
         mAppName.setText(String.format(getResources().getString(R.string.detail_app_name), mAppinfo.getName(), mAppinfo.getVersionName()));
