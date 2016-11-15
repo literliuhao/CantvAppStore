@@ -13,13 +13,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.TypedValue;
 import android.widget.ImageView;
 
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
-import com.bumptech.glide.request.target.SquaringDrawable;
-
-import cn.can.tvlib.R;
 
 import cn.can.tvlib.R;
 
@@ -37,6 +33,8 @@ import cn.can.tvlib.R;
  * ================================================
  */
 public class RoundCornerImageView extends ImageView {
+
+    private static final String TAG = "RoundCornerImageView";
 
     protected float cornerRadius;
     private Paint mPaint;
@@ -63,9 +61,14 @@ public class RoundCornerImageView extends ImageView {
         mRect.bottom = h;
     }
 
-    private static final String TAG = "RoundCornerImageView";
     @Override
     protected void onDraw(Canvas canvas) {
+        ScaleType scaleType = getScaleType();
+        if(scaleType == ScaleType.CENTER_CROP || scaleType == ScaleType.CENTER || scaleType == ScaleType.FIT_END
+            || scaleType == ScaleType.FIT_START || scaleType == ScaleType.FIT_CENTER || scaleType == ScaleType.MATRIX){
+            throw new IllegalStateException("Unsupported scaleType of RoundCornerImageView, please user 'fit_xy' or 'center_inside'.");
+        }
+
         Drawable bg = getBackground();
         if (bg != null) {
             bg.setBounds(0, 0, getWidth(), getHeight());
@@ -85,7 +88,7 @@ public class RoundCornerImageView extends ImageView {
                 int bmpH = bmp.getHeight();
                 int width = getWidth();
                 int height = getHeight();
-                ScaleType scaleType = getScaleType();
+
                 if (scaleType == ScaleType.FIT_XY) {
                     mRect.right = width;
                     mRect.bottom = height;
