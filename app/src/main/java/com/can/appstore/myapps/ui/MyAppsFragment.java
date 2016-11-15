@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 
+import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.index.interfaces.ICallBack;
 import com.can.appstore.myapps.adapter.MyAppsRvAdapter;
@@ -61,7 +63,7 @@ public class MyAppsFragment extends Fragment implements MyAppsFramentContract.Vi
     private Button mRemoveAppBtn;
 
     //显示的list数据
-    private List<AppInfo> mShowList;
+    public List<AppInfo> mShowList;
 
     public MyAppsFragment(ICallBack iCallBack) {
         this.mICallBack = iCallBack;
@@ -69,20 +71,23 @@ public class MyAppsFragment extends Fragment implements MyAppsFramentContract.Vi
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.i("myappfragment","----onCreatView()");
         View view = inflater.inflate(R.layout.fragment_myapps, container, false);
         mAppsRecyclerView = (CanRecyclerView) view.findViewById(R.id.cr_myapps);
         mAppsRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(getActivity(), 6, GridLayoutManager.VERTICAL, false));
         mAppsRecyclerView.addItemDecoration(new CanRecyclerViewDivider(Color.TRANSPARENT, 10, 0));
 
         mMyAppsFramPresenter = new MyAppsFragPresenter(this, getContext());
-        mMyAppsFramPresenter.startLoad();
+
         return view;
     }
 
     @Override
     public void onResume() {
+        Log.i("myappfragment","----onResume()");
         if (mMyAppsFramPresenter != null) {
             mMyAppsFramPresenter.addListener();
+            mMyAppsFramPresenter.startLoad();
         }
         super.onResume();
     }
@@ -90,18 +95,21 @@ public class MyAppsFragment extends Fragment implements MyAppsFramentContract.Vi
 
     @Override
     public void loadAddAppInfoSuccess(List<AppInfo> infoList) {
+        mShowList = infoList;
+        if(infoList.size()-2 < MyApp.myAppList.size() && infoList.size() < 18 && !infoList.get(infoList.size()-1).packageName .isEmpty()){
+            infoList.add(new AppInfo("添加应用", getActivity().getResources().getDrawable(R.drawable.addapp_icon)));
+        }
         if (mMyAppsRvAdapter == null) {
-            mShowList = infoList;
             mMyAppsRvAdapter = new MyAppsRvAdapter(infoList);
             baseSetting();
         } else {
-            mMyAppsRvAdapter.notifyDataSetChanged();
+          mMyAppsRvAdapter.notifyDataSetChanged();
         }
     }
 
     private void baseSetting() {
         Drawable d1 = getResources().getDrawable(R.drawable.bj_02);
-        Drawable d2 = getResources().getDrawable(R.drawable.icon_loading);
+        Drawable d2 = getResources().getDrawable(R.drawable.bj_04);
         Drawable d3 = getResources().getDrawable(R.drawable.bj_03);
         Drawable d4 = getResources().getDrawable(R.drawable.bj_04);
         Drawable d5 = getResources().getDrawable(R.drawable.bj_05);
@@ -109,9 +117,9 @@ public class MyAppsFragment extends Fragment implements MyAppsFramentContract.Vi
         ArrayList<Drawable> list = new ArrayList<Drawable>();
         list.add(d1);
         list.add(d2);
-        //        list.add(d3);
-        //        list.add(d4);
-        //        list.add(d5);
+                list.add(d3);
+                list.add(d4);
+                list.add(d5);
 
         mAppsRecyclerView.setAdapter(mMyAppsRvAdapter);
         mMyAppsRvAdapter.setCustomData(list);
@@ -258,6 +266,7 @@ public class MyAppsFragment extends Fragment implements MyAppsFramentContract.Vi
 
     @Override
     public void onStop() {
+        Log.i("myappfragment","----onStop()");
         if (mMyAppsFramPresenter != null) {
             mMyAppsFramPresenter.unRegiestr();
         }
@@ -266,7 +275,22 @@ public class MyAppsFragment extends Fragment implements MyAppsFramentContract.Vi
 
     @Override
     public void onDestroyView() {
+        Log.i("myappfragment","----onDestory()");
         mMyAppsFramPresenter.release();
         super.onDestroyView();
     }
+
+    @Override
+    public void onStart() {
+        Log.i("myappfragment","----onStart()");
+        super.onStart();
+    }
+
+    @Override
+    public void onPause() {
+        Log.i("myappfragment","----onPause()");
+        super.onPause();
+    }
+
+
 }

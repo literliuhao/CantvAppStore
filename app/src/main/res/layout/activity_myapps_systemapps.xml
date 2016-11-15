@@ -28,8 +28,8 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/px100"
+        android:layout_height="@dimen/px36"
         android:layout_alignParentRight="true"
         android:layout_marginEnd="@dimen/px160"
         android:layout_marginTop="@dimen/px80"
@@ -58,7 +58,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/px140"
-        android:layout_marginEnd="@dimen/px85"
+        android:layout_marginEnd="@dimen/px100"
         android:layout_below="@+id/systemapps_title"
         android:clipChildren="false"
         android:clipToPadding="false"

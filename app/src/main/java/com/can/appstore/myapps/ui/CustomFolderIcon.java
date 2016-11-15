@@ -53,7 +53,7 @@ public class CustomFolderIcon extends RelativeLayout {
     ImageView iv_05;
     ImageView iv_06;
 
-
+//压缩图片
 
     private void initView() {
         View.inflate(context,R.layout.custom_folder_icon_item,CustomFolderIcon.this);

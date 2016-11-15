@@ -94,11 +94,11 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
             mAdapter = new AllAppsRecyclerViewAdapter(infoList);
             baseSetting();
             addFocusListener();
-        } else if (mAdapter != null && infoList.size() != allAppList.size()) {
+        } /*else if (mAdapter != null && infoList.size() != allAppList.size()) {
             mAdapter = new AllAppsRecyclerViewAdapter(infoList);
             baseSetting();
             addFocusListener();
-        } else {
+        }*/ else {
             mAdapter.notifyDataSetChanged();
         }
         //设置右上角总行数
