@@ -1,4 +1,4 @@
-package com.can.appstore.special_detail.adapter;
+package com.can.appstore.specialdetail;
 
 
 import android.content.Context;
@@ -8,16 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.can.appstore.R;
-import com.can.appstore.search.SearchActivity;
-import com.can.appstore.special_detail.bean.AppDetail;
-
+import com.can.appstore.entity.AppInfo;
 import java.util.List;
-
 import cn.can.tvlib.imageloader.ImageLoader;
+import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 import cn.can.tvlib.ui.focus.CanRecyclerViewFocusHelper;
-import cn.can.tvlib.ui.view.CircleImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 /**
@@ -25,17 +21,17 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
  * 专题详情适配器
  */
 
-public class SpecialDetailAdapter extends CanRecyclerViewAdapter<AppDetail> {
+public class SpecialDetailAdapter extends CanRecyclerViewAdapter<AppInfo>{
     private Context mContext;
 
-    private List<AppDetail> mAppDetails;
+    private List<AppInfo> mAppInfos;
 
     private CanRecyclerViewFocusHelper mCanFocusHelper;
 
-    public SpecialDetailAdapter(List<AppDetail> appDetails, Context context) {
-        super(appDetails);
+    public SpecialDetailAdapter(List<AppInfo> appInfos, Context context) {
+        super(appInfos);
         this.mContext = context;
-        this.mAppDetails = appDetails;
+        this.mAppInfos = appInfos;
     }
 
     @Override
@@ -46,14 +42,14 @@ public class SpecialDetailAdapter extends CanRecyclerViewAdapter<AppDetail> {
     }
 
     @Override
-    protected void bindContentData(AppDetail appDetail, RecyclerView.ViewHolder holder, int position) {
+    protected void bindContentData(AppInfo appInfo, RecyclerView.ViewHolder holder, int position) {
         MyViewHolder viewHolder = (MyViewHolder) holder;
-        ImageLoader.getInstance().load(mContext, viewHolder.mAppImgView, appDetail.getAppIcon());
-        viewHolder.mAppNameView.setText(appDetail.getAppName());
-
-        //暂时写死在layout 中
-//        viewHolder.mAppSize.setText(appDetail.getAppSize());
-//        viewHolder.mAppDownloadNum.setText(appDetail.getAppDownloadNum());
+        ImageLoader.getInstance().load(mContext, viewHolder.mAppImgView, appInfo.getIcon());
+        ImageLoader.getInstance().buildTask(viewHolder.mAppImgView, appInfo.getIcon()).bitmapTransformation(new
+                GlideRoundTransform(mContext,12)).build().start(mContext);
+        viewHolder.mAppNameView.setText(appInfo.getName());
+        viewHolder.mAppSize.setText(appInfo.getSizeStr());
+        viewHolder.mAppDownloadNum.setText(appInfo.getDownloadCount());
     }
 
     /**

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/active_root_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -10,16 +9,30 @@
     android:layout_height="match_parent"
     android:visibility="gone"/>
 
-    <com.can.appstore.widgets.TextProgressBar
-        android:max="100"
-        android:focusable="true"
-        android:layout_width="@dimen/px312"
-        android:layout_height="@dimen/px102"
-        android:layout_marginStart="@dimen/px340"
-        android:layout_marginTop="@dimen/px815"
-        android:id="@+id/active_textprogressbar"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-        android:progressDrawable="@drawable/layer_list_text_progressbar"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/active_native_layout"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/active_native_imgbg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"/>
+
+        <com.can.appstore.widgets.TextProgressBar
+            android:max="100"
+            android:focusable="true"
+            android:layout_width="@dimen/px312"
+            android:layout_height="@dimen/px102"
+            android:layout_marginStart="@dimen/px340"
+            android:layout_marginTop="@dimen/px815"
+            android:id="@+id/active_textprogressbar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:progressDrawable="@drawable/layer_list_text_progressbar"/>
+
+    </RelativeLayout>
 
 
 </RelativeLayout>

@@ -606,6 +606,9 @@ public class DownloadManager implements AppInstallListener {
     }
 
     public void setAppInstallListener (AppInstallListener listener) {
+        if(mAppInstallListeners == null){
+            mAppInstallListeners = new ArrayList<AppInstallListener>();
+        }
         mAppInstallListeners.add(listener);
     }
 

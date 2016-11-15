@@ -6,9 +6,9 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.can.appstore.active.ActiveActivity;
-import com.can.appstore.search.ToastUtil;
-import com.can.appstore.special_detail.SpecialDetailActivity;
-import com.can.appstore.widgets.CanDialog;
+import com.can.appstore.appdetail.AppDetailActivity;
+import com.can.appstore.specialdetail.SpecialDetailActivity;
+import com.can.appstore.specialtopic.SpecialActivity;
 
 /**
  * ================================================

@@ -1,19 +1,16 @@
 package com.can.appstore.active;
 
 import android.app.Activity;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
-
 import com.can.appstore.R;
 import com.can.appstore.search.ToastUtil;
 import com.can.appstore.widgets.TextProgressBar;
-
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 
@@ -28,7 +25,8 @@ public class ActiveActivity extends Activity implements ActiveContract.Operation
 
     private WebView mActiveWebview;
     private TextProgressBar mActiveTextProgressBar;
-    private RelativeLayout mRootLayout;
+    private RelativeLayout mActiveLayout;
+    private ImageView mImgBg;
     private ActivePresenter mActivePresenter;
     private FocusMoveUtil mFocusMoveUtil;
 
@@ -43,13 +41,11 @@ public class ActiveActivity extends Activity implements ActiveContract.Operation
 
     private void initUI() {
         mActiveWebview = (WebView) findViewById(R.id.active_webview);
+        mImgBg = (ImageView) findViewById(R.id.active_native_imgbg);
         mActiveTextProgressBar = (TextProgressBar) findViewById(R.id.active_textprogressbar);
-        mRootLayout = (RelativeLayout) findViewById(R.id.active_root_layout);
+        mActiveLayout = (RelativeLayout) findViewById(R.id.active_native_layout);
         mActiveTextProgressBar.setTextSize(R.dimen.px24);
         addViewListener();
-        mFocusMoveUtil = new FocusMoveUtil(ActiveActivity.this.getApplicationContext(), R
-                .drawable.btn_focus, getWindow().getDecorView(), false);
-        mHandler.postDelayed(mfocusMoveRunnable,10);
     }
 
     private Runnable mfocusMoveRunnable = new Runnable() {
@@ -97,7 +93,6 @@ public class ActiveActivity extends Activity implements ActiveContract.Operation
     public void loadwebview(String url) {
         mActiveWebview.setVisibility(View.VISIBLE);
         mActiveWebview.loadUrl(url);
-        mActiveTextProgressBar.setVisibility(View.GONE);
     }
 
     /**
@@ -105,13 +100,13 @@ public class ActiveActivity extends Activity implements ActiveContract.Operation
      * @param url
      */
     @Override
-    public void setLayoutBackground(String url) {
-        boolean flag = ImageLoader.getInstance().downloadImgByUrl(url,"");
-        Drawable drawable = null;
-        if(flag){
-            drawable = Drawable.createFromPath("");
-        }
-        mRootLayout.setBackground(drawable!=null?drawable:getResources().getDrawable(R.mipmap.bj));
+    public void setNativeLayout(String url) {
+        mActiveLayout.setVisibility(View.VISIBLE);
+        mActiveTextProgressBar.requestFocus();
+        ImageLoader.getInstance().load(ActiveActivity.this,mImgBg,url);
+        mFocusMoveUtil = new FocusMoveUtil(ActiveActivity.this.getApplicationContext(), R
+                .drawable.btn_focus, getWindow().getDecorView(), false);
+        mHandler.postDelayed(mfocusMoveRunnable,10);
     }
 
     private Handler mHandler = new Handler() {

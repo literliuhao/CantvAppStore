@@ -18,6 +18,6 @@ public class ActiveContract {
 
         void loadwebview(String url);
 
-        void setLayoutBackground(String url);
+        void setNativeLayout(String url);
     }
 }

@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_special_detail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/canbj"
     android:clipChildren="false"
     android:clipToPadding="false"
-    tools:context="com.can.appstore.special_detail.SpecialDetailActivity">
+    tools:context="com.can.appstore.specialdetail.SpecialDetailActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/special_detail_img"
+        android:focusable="false"
+        android:scaleType="centerCrop"/>
 
     <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
         android:id="@+id/special_detail_crview"
