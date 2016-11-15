@@ -103,14 +103,15 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
             });
 
             layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            myImageView.setLeft(rect[0]);
+            myImageView.setTop(rect[1]);
             layoutParams.leftMargin = rect[0];
             layoutParams.topMargin = rect[1];
             layoutParams.width = rect[2];
             layoutParams.height = rect[3];
             myImageView.setLayoutParams(layoutParams);
-            markLastView(rect, myImageView);
+            markLastView(myImageView);
             frameLayout.addView(myImageView);
-//            lastView =
         }
         horizontalScrollView.addView(frameLayout);
 //        horizontalScrollView.setId(container.getId());
@@ -118,29 +119,14 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
         return horizontalScrollView;
     }
 
-    private View markLastView(int rect[], MyImageView mView) {
+    private void markLastView(MyImageView mView) {
         if (null == lastView) {
-            return lastView = mView;
+            lastView = mView;
         } else {
-            int[] mViewRect = new int[2];
-            int[] lastViewRect = new int[2];
-
-//            mView.getLayoutParams().
-            int  sss = mView.getLayoutParams().height;
-
-            mView.getLocationOnScreen(mViewRect);
-            lastView.getLocationOnScreen(lastViewRect);
-            if (mViewRect[0] > lastViewRect[0]) {
-                lastView = mView;
-            } else {
-                if (mViewRect[0] == lastViewRect[0]) {
-                    if (mViewRect[1] < lastViewRect[1]) {
-                        lastView = mView;
-                    }
-                }
+            if (mView.getTop() <= lastView.getTop() && mView.getLeft() >= lastView.getLeft()) {
+                lastView = frameLayout.getChildAt(frameLayout.getChildCount() - 1);
+                Log.i("FragmentBody", "return lastView " + lastView.getId());
             }
-
-            return lastView;
         }
     }
 
@@ -185,15 +171,11 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
      */
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-        if (null != v) {
-            lastView = v;
-            Log.i("FragmentBody", "lastView " + lastView.getId());
-        }
         mFocusListener.addFocusListener(v, hasFocus);
     }
 
     @Override
     public View getLastView() {
-        return frameLayout.getChildAt(frameLayout.getChildCount() - 1);
+        return lastView;
     }
 }
