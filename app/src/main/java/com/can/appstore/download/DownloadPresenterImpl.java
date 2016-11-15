@@ -10,6 +10,7 @@ import com.can.appstore.eventbus.dispatcher.DownloadDispatcher;
 
 import java.util.List;
 
+import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
@@ -83,7 +84,12 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
         DownloadManager downloadManager=DownloadManager.getInstance(mView.getContext().getApplicationContext());
         int pauseSize=0;
         for (DownloadTask task: mTasks) {
-            if(DownloadStatus.DOWNLOAD_STATUS_COMPLETED==task.getDownloadStatus()){
+            if(DownloadStatus.DOWNLOAD_STATUS_COMPLETED==task.getDownloadStatus()
+                    ||DownloadStatus.DOWNLOAD_STATUS_CANCEL==task.getDownloadStatus()
+                    ||DownloadStatus.DOWNLOAD_STATUS_ERROR==task.getDownloadStatus()
+                    || AppInstallListener.APP_INSTALL_FAIL==task.getDownloadStatus()
+                    ||AppInstallListener.APP_INSTALL_SUCESS==task.getDownloadStatus()
+                    ||AppInstallListener.APP_INSTALLING==task.getDownloadStatus()){
                 continue;
             }
             pauseSize++;
@@ -105,11 +111,16 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
         }
         int pauseSize=0;
         DownloadManager downloadManager=DownloadManager.getInstance(mView.getContext().getApplicationContext());
-        for (int i=0;i<mTasks.size();i++){
-            if(DownloadStatus.DOWNLOAD_STATUS_COMPLETED==mTasks.get(i).getDownloadStatus()){
+        for (DownloadTask task: mTasks){
+            if(DownloadStatus.DOWNLOAD_STATUS_COMPLETED==task.getDownloadStatus()
+                    ||DownloadStatus.DOWNLOAD_STATUS_CANCEL==task.getDownloadStatus()
+                    ||DownloadStatus.DOWNLOAD_STATUS_ERROR==task.getDownloadStatus()
+                    ||AppInstallListener.APP_INSTALL_FAIL==task.getDownloadStatus()
+                    ||AppInstallListener.APP_INSTALLING==task.getDownloadStatus()
+                    ||AppInstallListener.APP_INSTALL_SUCESS==task.getDownloadStatus()){
                continue;
             }
-            downloadManager.resume(mTasks.get(i).getId());
+            downloadManager.resume(task.getId());
             pauseSize++;
         }
         if(pauseSize>0){

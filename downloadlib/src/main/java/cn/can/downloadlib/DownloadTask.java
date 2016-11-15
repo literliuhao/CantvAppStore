@@ -413,4 +413,17 @@ public class DownloadTask implements Runnable {
     public int hashCode() {
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return "DownloadTask{" +
+                "mId='" + mId + '\'' +
+                ", mTotalSize=" + mTotalSize +
+                ", mDownloadedSize=" + mDownloadedSize +
+                ", mUrl='" + mUrl + '\'' +
+                ", mSaveDirPath='" + mSaveDirPath + '\'' +
+                ", mDownloadStatus=" + mDownloadStatus +
+                ", mFileName='" + mFileName + '\'' +
+                '}';
+    }
 }

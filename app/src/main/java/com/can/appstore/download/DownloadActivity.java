@@ -3,10 +3,8 @@ package com.can.appstore.download;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.can.appstore.R;
@@ -23,6 +21,9 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 
 public class DownloadActivity extends BaseActivity implements DownloadContract.DownloadView {
 
+    private static final String TAG = "DownloadActivity";
+    public static final int DELAY_MILLIS = 30;
+
     private TextView mRowTv, mNoDataTv, mPauseAllBtn, mDeleteAllBtn;
     private CanRecyclerView mCanRecyclerView;
 
@@ -38,8 +39,6 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
     private String pauseAllTaskString;
     private String resumeAllTaskString;
 
-    private static final String TAG = "DownloadActivity";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,13 +47,6 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
         initData();
         initHandler();
         setListener();
-        getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener(new ViewTreeObserver.OnGlobalFocusChangeListener() {
-            @Override
-            public void onGlobalFocusChanged(View oldFocus, View newFocus) {
-                Log.i(TAG, "onGlobalFocusChanged: oldFocus="+oldFocus+" newFocus="+newFocus);
-            }
-        });
-
     }
 
     private void initView() {
@@ -96,13 +88,13 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
             @Override
             public void onClick(View v) {
                 if (pauseAllTaskString.equals(mPauseAllBtn.getText())) {
-                    if(mPresenter.pauseAllTasks()){
+                    if (mPresenter.pauseAllTasks()) {
                         mPauseAllBtn.setText(resumeAllTaskString);
                     }
                 } else {
-                   if( mPresenter.resumeAllTasks()){
-                       mPauseAllBtn.setText(pauseAllTaskString);
-                   }
+                    if (mPresenter.resumeAllTasks()) {
+                        mPauseAllBtn.setText(pauseAllTaskString);
+                    }
                 }
             }
         });
@@ -165,7 +157,9 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
                     if (hasFocus) {
                         mFocusView = view;
                         focusMoveDelay();
+                        mPresenter.onItemFocused(pos);
                     }
+
                 }
 
                 @Override
@@ -173,6 +167,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
                     if (hasFocus) {
                         mFocusView = view;
                         focusMoveDelay();
+                        mPresenter.onItemFocused(pos);
                     }
                 }
 
@@ -188,14 +183,13 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
 
                 @Override
                 public void onDeleteButtonClick(View view, int pos, DownloadTask downloadTask) {
-                    if(tasks.size()==0){
+                    if (tasks.size() == 0) {
                         showNoDataView();
                     }
                 }
 
                 @Override
                 public boolean onItemContentKeyListener(View view, int keyCode, KeyEvent event, int pos, DownloadTask downloadTask) {
-
                     return false;
                 }
             });
@@ -208,6 +202,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
     public void setPresenter(DownloadContract.DownloadPresenter presenter) {
         mPresenter = presenter;
     }
+
     @Override
     public void refreshRowNumber(String formatRow) {
         mRowTv.setText(formatRow);
@@ -216,7 +211,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
     private void focusMoveDelay() {
         if (mFocusMoveUtil != null) {
             hanlder.removeCallbacks(mFocusMoveRunnable);
-            hanlder.postDelayed(mFocusMoveRunnable, 30);
+            hanlder.postDelayed(mFocusMoveRunnable, DELAY_MILLIS);
         }
     }
 
@@ -231,18 +226,18 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
         if (mNoDataTv != null) {
             mNoDataTv.setVisibility(View.VISIBLE);
         }
-        if(mRowTv!=null){
+        if (mRowTv != null) {
             mRowTv.setText("");
         }
         if (mCanRecyclerView != null) {
-            mCanRecyclerView.setVisibility(View.GONE);
+            mCanRecyclerView.setVisibility(View.INVISIBLE);
         }
     }
 
     @Override
     public void hideNoDataView() {
         if (mNoDataTv != null) {
-            mNoDataTv.setVisibility(View.GONE);
+            mNoDataTv.setVisibility(View.INVISIBLE);
         }
         if (mCanRecyclerView != null) {
             mCanRecyclerView.setVisibility(View.VISIBLE);
@@ -264,6 +259,5 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
             }
         }
         mPauseAllBtn.setText(text);
-
     }
 }

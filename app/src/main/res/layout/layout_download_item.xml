@@ -65,7 +65,7 @@
             android:gravity="center|left"
             android:background="@drawable/selector_bg_download_item_right"
             >
-            <ImageView
+            <com.can.appstore.download.widget.RotateView
                 android:id="@+id/download_item_status_imgvi"
                 android:layout_width="@dimen/px40"
                 android:layout_height="@dimen/px40"
@@ -94,6 +94,7 @@
         android:layout_marginStart="@dimen/px16"
         android:layout_toRightOf="@id/download_item_content_rlayout"
         android:visibility="gone"
+        tools:visibility="visible"
         >
 
         <TextView

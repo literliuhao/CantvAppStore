@@ -5,9 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -33,9 +30,11 @@ import static com.can.appstore.R.id.special_recyclerview;
 
 public class SpecialActivity extends BaseActivity implements SpecialContract.SubjectView {
 
-
+    private static final String TAG = "SpecialActivity";
     private static final float FOCUS_SCALE = 1.0f;
     public static final int COLUMN_COUNT = 4;
+    public static final int FOCUS_IMAGE=R.mipmap.image_focus;
+    public static final int FOCUS_BUTTON=R.mipmap.btn_focus;
 
     private TextView mRowTv, mRemindTv;
     private RelativeLayout mRemindLayout;
@@ -56,9 +55,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
 
     private String noDataStr, netErrorStr;
 
-    private static final String TAG = "SpecialActivity";
-
-    private int mFocusType=R.mipmap.image_focus;
+    private int mFocusType =FOCUS_IMAGE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +85,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
             public void run() {
                 if (mCurrFocusView != null) {
                     mFocusMoveUtils.startMoveFocus(mCurrFocusView, FOCUS_SCALE);
-                   // mFocusScaleUtils.scaleToLarge(mCurrFocusView);
+                    // mFocusScaleUtils.scaleToLarge(mCurrFocusView);
                 }
             }
         };
@@ -109,6 +106,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
                     ImageLoader.getInstance().pauseTask(SpecialActivity.this);
                 }
             }
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (dx == 0 && dy == 0) {
@@ -123,9 +121,9 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    if(R.mipmap.btn_focus!=mFocusType){
-                        mFocusType=R.mipmap.btn_focus;
-                        mFocusMoveUtils.setFocusRes(getContext(),mFocusType);
+                    if (FOCUS_BUTTON != mFocusType) {
+                        mFocusType = FOCUS_BUTTON;
+                        mFocusMoveUtils.setFocusRes(getContext(), mFocusType);
                     }
                     mCurrFocusView = v;
                     mHandler.removeCallbacks(mFocusMoveRunnable);
@@ -137,7 +135,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
         mRetryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!NetworkUtils.isNetworkConnected(getContext().getApplicationContext())){
+                if (!NetworkUtils.isNetworkConnected(getContext().getApplicationContext())) {
                     showToast(R.string.network_connection_disconnect);
                     return;
                 }
@@ -148,6 +146,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     }
 
     private void initData() {
+        //TODO 删除
         noDataStr = getString(R.string.no_data);
         netErrorStr = getString(R.string.network_error);
 
@@ -160,51 +159,42 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
 
     @Override
     public void refreshData(List<SpecialTopic> data) {
-        if (mAdapter == null) {
-            mAdapter = new SpecialAdapter(data, this);
-            mRecyclerView.setAdapter(mAdapter);
-            mAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
-                @Override
-                public void onItemFocusChanged(View view, int position, boolean hasFocus) {
-                    if (hasFocus) {
-                        mCurrFocusView = view;
-                        if(R.mipmap.image_focus!=mFocusType){
-                            mFocusType=R.mipmap.image_focus;
-                            mFocusMoveUtils.setFocusRes(getContext(),mFocusType);
-                        }
-                        mHandler.removeCallbacks(mFocusMoveRunnable);
-                        mHandler.postDelayed(mFocusMoveRunnable, 30);
-                        view.setSelected(true);
-                        if (mPresenter != null) {
-                            mPresenter.onItemFocused(position);
-                        }
-                    } else {
-                        mFocusScaleUtils.scaleToNormal();
-                        view.setSelected(false);
+        mAdapter = new SpecialAdapter(data, this);
+        mRecyclerView.setAdapter(mAdapter);
+        mAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
+            @Override
+            public void onItemFocusChanged(View view, int position, boolean hasFocus) {
+                if (hasFocus) {
+                    mCurrFocusView = view;
+                    if (FOCUS_IMAGE!= mFocusType) {
+                        mFocusType = FOCUS_IMAGE;
+                        mFocusMoveUtils.setFocusRes(getContext(), mFocusType);
                     }
+                    mHandler.removeCallbacks(mFocusMoveRunnable);
+                    mHandler.postDelayed(mFocusMoveRunnable, 30);
+                    view.setSelected(true);
+                    if (mPresenter != null) {
+                        mPresenter.onItemFocused(position);
+                    }
+                } else {
+                    mFocusScaleUtils.scaleToNormal();
+                    view.setSelected(false);
                 }
-            });
-            mAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
-                @Override
-                public void onClick(View view, int position, Object data) {
-                    //TODO
-                    showToast(data.toString());
-                }
-            });
-            findFirstFocus();
-        } else {
-            mAdapter.setDatas(data);
-            mAdapter.notifyDataSetChanged();
-            mFocusMoveUtils.showFocus();
-        }
+            }
+        });
+        mAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(View view, int position, Object data) {
+                //TODO
+                showToast(data.toString());
+            }
+        });
+        resolveFirstFocus();
     }
 
     @Override
-    public void refreshRowNum(String formatRow) {
-        int pos = formatRow.indexOf("/");
-        SpannableString ss = new SpannableString(formatRow);
-        ss.setSpan(new ForegroundColorSpan(Color.parseColor("#EAEAEA")), 0, pos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        mRowTv.setText(ss);
+    public void refreshRowNum(String row) {
+        mRowTv.setText(row);
     }
 
     @Override
@@ -235,7 +225,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
         return super.dispatchKeyEvent(event);
     }
 
-    private void findFirstFocus() {
+    private void resolveFirstFocus() {
         mRecyclerView.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -253,7 +243,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     @Override
     public void showNoDataView() {
         mRemindTv.setText(noDataStr);
-        mRecyclerView.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.INVISIBLE);
         mRetryBtn.requestFocus();
         mFocusMoveUtils.showFocus();
         mRemindLayout.setVisibility(View.VISIBLE);
@@ -262,7 +252,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     @Override
     public void showRetryView() {
         mRemindTv.setText(netErrorStr);
-        mRecyclerView.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.INVISIBLE);
         mRetryBtn.requestFocus();
         mFocusMoveUtils.showFocus();
         mRemindLayout.setVisibility(View.VISIBLE);
@@ -272,7 +262,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     @Override
     public void hideRetryView() {
         mRecyclerView.setVisibility(View.VISIBLE);
-        mRemindLayout.setVisibility(View.GONE);
+        mRemindLayout.setVisibility(View.INVISIBLE);
     }
 
     @Override
