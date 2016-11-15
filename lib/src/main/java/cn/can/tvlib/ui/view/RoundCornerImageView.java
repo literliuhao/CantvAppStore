@@ -44,12 +44,11 @@ public class RoundCornerImageView extends ImageView {
     private RectF mRect;
     private int mMaskColor;
     private boolean showMask;
-    private int mRoundSize;
 
     public RoundCornerImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RoundCornerView);
-        mRoundSize = typedArray.getDimensionPixelSize(R.styleable.RoundCornerView_cornerSize, 12);
+        cornerRadius = typedArray.getDimensionPixelSize(R.styleable.RoundCornerView_cornerSize, 12);
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
