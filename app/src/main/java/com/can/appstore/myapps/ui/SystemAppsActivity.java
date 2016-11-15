@@ -103,7 +103,7 @@ public class SystemAppsActivity extends Activity {
 
     private void initData() {
         dataUtils = new MyAppsListDataUtil(this);
-        allAppList = dataUtils.getAllAppList();
+        allAppList = dataUtils.getAllAppList(null);
 
     }
 
@@ -111,7 +111,8 @@ public class SystemAppsActivity extends Activity {
     private void initView() {
         systemCurRows = (TextView) findViewById(R.id.systemapps_tv_currows);
         systemTotalRows = (TextView) findViewById(R.id.systemapps_tv_totalrows);
-        systemTotalRows.setText(""+allAppList.size()+"行");
+        int total = allAppList.size()/5 + 1;
+        systemTotalRows.setText(""+total+"行");
         mSystemRecyclerView = (CanRecyclerView) findViewById(R.id.systemapps_recyclerview);
         mSystemRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(this,5, LinearLayoutManager.VERTICAL,false));
         mSystemRecyclerView.addItemDecoration(new CanRecyclerViewDivider(android.R.color.transparent,40,62));

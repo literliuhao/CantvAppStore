@@ -67,7 +67,6 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<AppInfo> {
             MyCustomViewHolder mMyCustomViewHolder = new MyCustomViewHolder(view);
             return mMyCustomViewHolder;
         }
-
     }
 
     @Override
@@ -80,7 +79,12 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<AppInfo> {
             MyAppsViewHolder myAppsViewHolder = (MyAppsViewHolder) holder;
             myAppsViewHolder.mImageView.setImageDrawable(mList.get(position).appIcon);
             myAppsViewHolder.mTextView.setText(mList.get(position).appName);
-            myAppsViewHolder.mLinearLayout.setBackgroundResource(mItemColors[position % 8]);
+            //添加按钮的背景设为透明
+            if(position == (mList.size()-1) && mDatas.packageName.isEmpty()){
+                myAppsViewHolder.mLinearLayout.setBackgroundResource(R.drawable.addapp_bj);
+            }else{
+                myAppsViewHolder.mLinearLayout.setBackgroundResource(mItemColors[position % 8]);
+            }
         }
 
 

@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 
-import com.can.appstore.index.Data.JokeData;
 import com.can.appstore.index.IndexActivity;
 import com.can.appstore.installpkg.InstallManagerActivity;
 import com.can.appstore.myapps.ui.CustomFolderIconActivity;
@@ -38,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
         TextView textViewTitle = (TextView) findViewById(R.id.tv_joke_title);
         textViewTitle.setText("内涵" + (random + 1) + "段：为你提神醒脑！");
 
-        TextView textView = (TextView) findViewById(R.id.tv_joke);
-        textView.setText(JokeData.getJokeList().get(random));
+//        TextView textView = (TextView) findViewById(R.id.tv_joke);
+//        textView.setText(JokeData.getJokeList().get(random));
 
         findViewById(R.id.btn_index).setOnClickListener(new View.OnClickListener() {
             @Override

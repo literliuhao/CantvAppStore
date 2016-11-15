@@ -45,7 +45,8 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
             protected Void doInBackground(Void... params) {
                 //初始化数据
                 mMyAppsListDataUtil = new MyAppsListDataUtil(mContext);
-                mShowList = mMyAppsListDataUtil.getShowList();
+                mShowList = mMyAppsListDataUtil.getShowList(mShowList);
+                Log.i("MYSHOWLIST","------"+mShowList.size());
                 return null;
             }
 

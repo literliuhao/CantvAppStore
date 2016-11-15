@@ -101,10 +101,10 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/px100"
+        android:layout_height="@dimen/px36"
         android:layout_alignParentRight="true"
-        android:layout_marginEnd="@dimen/px160"
+        android:layout_marginEnd="@dimen/px180"
         android:layout_marginTop="@dimen/px86">
 
         <TextView

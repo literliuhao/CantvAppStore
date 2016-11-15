@@ -209,6 +209,7 @@ public class PackageUtil {
             app.packageName = info.packageName;
             app.versionName = info.versionName;
             app.versionCode = info.versionCode;
+            app.installtime = info.firstInstallTime;
             ApplicationInfo applicationInfo = info.applicationInfo;
             app.installPath = applicationInfo.sourceDir;
             app.appIcon = applicationInfo.loadIcon(pm);
@@ -252,6 +253,7 @@ public class PackageUtil {
             app.packageName = info.packageName;
             app.versionName = info.versionName;
             app.versionCode = info.versionCode;
+            app.installtime = info.firstInstallTime;
             ApplicationInfo applicationInfo = info.applicationInfo;
             app.installPath = applicationInfo.sourceDir;
             app.appIcon = applicationInfo.loadIcon(pm);
@@ -302,6 +304,7 @@ public class PackageUtil {
             app.packageName = info.packageName;
             app.versionName = info.versionName;
             app.versionCode = info.versionCode;
+            app.installtime = info.firstInstallTime;
             app.installPath = applicationInfo.sourceDir;
             app.appIcon = applicationInfo.loadIcon(pm);
             app.appName = applicationInfo.loadLabel(pm).toString();
@@ -349,6 +352,7 @@ public class PackageUtil {
             app.packageName = info.packageName;
             app.versionName = info.versionName;
             app.versionCode = info.versionCode;
+            app.installtime = info.firstInstallTime;
             app.installPath = applicationInfo.sourceDir;
             app.appIcon = applicationInfo.loadIcon(pm);
             app.appName = applicationInfo.loadLabel(pm).toString();
@@ -396,9 +400,11 @@ public class PackageUtil {
             app.packageName = info.packageName;
             app.versionName = info.versionName;
             app.versionCode = info.versionCode;
+            app.installtime = info.firstInstallTime;
             app.installPath = applicationInfo.sourceDir;
             app.appIcon = applicationInfo.loadIcon(pm);
             app.appName = applicationInfo.loadLabel(pm).toString();
+
             // 应用占用空间大小
             try {
                 Method method = PackageManager.class.getMethod("getPackageSizeInfo", String.class, IPackageStatsObserver.class);
@@ -428,6 +434,7 @@ public class PackageUtil {
         public long size = 0;
         public String installPath = "";   //已经安装的apk文件的路径  在data/app下有   .apk文件
         public String apkPath = "";  // 所有的apk文件的路径
+        public long installtime = 0;
 
         @Override
         public String toString() {
