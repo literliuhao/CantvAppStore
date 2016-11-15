@@ -20,8 +20,8 @@
         android:text="专题"/>
     <TextView
         android:id="@+id/special_row_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/px120"
+        android:layout_height="@dimen/px40"
         android:layout_alignParentRight="true"
         android:layout_marginEnd="@dimen/px160"
         android:layout_marginTop="@dimen/px80"
@@ -47,7 +47,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:visibility="gone"
+        android:visibility="invisible"
         >
         <TextView
             android:id="@+id/special_remind_tv"

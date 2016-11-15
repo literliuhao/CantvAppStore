@@ -19,6 +19,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
+
 /**
  * ================================================
  * 作    者：朱洪龙
@@ -411,5 +412,18 @@ public class DownloadTask implements Runnable {
     @Override
     public int hashCode() {
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "DownloadTask{" +
+                "mId='" + mId + '\'' +
+                ", mTotalSize=" + mTotalSize +
+                ", mDownloadedSize=" + mDownloadedSize +
+                ", mUrl='" + mUrl + '\'' +
+                ", mSaveDirPath='" + mSaveDirPath + '\'' +
+                ", mDownloadStatus=" + mDownloadStatus +
+                ", mFileName='" + mFileName + '\'' +
+                '}';
     }
 }
