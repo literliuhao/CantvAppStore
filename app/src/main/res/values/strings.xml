@@ -13,16 +13,19 @@
     <string name="download_pause_all">全部暂停</string>
     <string name="download_resume_all">全部继续</string>
     <string name="download_no_task">当前暂无下载任务！</string>
+    <string name="download_installing">正在安装</string>
+    <string name="download_installed">安装完成</string>
+
 
     <!--卸载管理-->
     <string name="bt_batch_uninstall">批量卸载</string>
     <string name="tv_uninstall_manager">卸载管理</string>
-    <string name="uninsatll_manager_free_storage">可用内存&#160;:&#160;</string>
+    <string name="uninsatll_manager_free_storage">可用空间&#160;:&#160;</string>
     <string name="downloaded">下载</string>
     <string name="select_app_count">已选择应用数</string>
     <string name="loading">加载中,请稍后</string>
     <string name="not_uinstall_data">暂无应用!</string>
-    <string name="rows_str">/%d行</string>
+    <string name="rows_str">%1$d/%2$d行</string>
 
     <!--应用详情页-->
     <string name="detail_app_name">%1$s&#160;V%2$s</string>

@@ -20,6 +20,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
@@ -255,7 +256,9 @@ public class PackageUtil {
         }
         PackageManager pm = context.getApplicationContext().getPackageManager();
         List<PackageInfo> pList = pm.getInstalledPackages(0);
+        final AtomicInteger index = new AtomicInteger();
         for (PackageInfo info : pList) {
+            index.incrementAndGet();
             final AppInfo app = new AppInfo();
             app.packageName = info.packageName;
             app.versionName = info.versionName;
@@ -274,6 +277,7 @@ public class PackageUtil {
                     @Override
                     public void onGetStatsCompleted(PackageStats pStats, boolean succeeded) throws RemoteException {
                         app.size = pStats.codeSize + pStats.dataSize + pStats.cacheSize;
+                        int i = index.decrementAndGet();
                     }
                 });
             } catch (Exception e) {
@@ -282,11 +286,18 @@ public class PackageUtil {
             }
             appList.add(app);
         }
+        while (index.get() > 0) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         return appList;
     }
 
     /**
-     * 获取已安装的第三方应用信息
+     * 获取所有的系统应用
      *
      * @param context
      * @return
@@ -299,6 +310,7 @@ public class PackageUtil {
         }
         PackageManager pm = context.getApplicationContext().getPackageManager();
         List<PackageInfo> pList = pm.getInstalledPackages(0);
+        final AtomicInteger index = new AtomicInteger();
         for (PackageInfo info : pList) {
             ApplicationInfo applicationInfo = info.applicationInfo;
             // 是否是系统权限
@@ -306,6 +318,7 @@ public class PackageUtil {
             if (!isSystemApp) {
                 continue;
             }
+            index.incrementAndGet();
             final AppInfo app = new AppInfo();
             app.isSystemApp = isSystemApp;
             app.packageName = info.packageName;
@@ -322,6 +335,7 @@ public class PackageUtil {
                     @Override
                     public void onGetStatsCompleted(PackageStats pStats, boolean succeeded) throws RemoteException {
                         app.size = pStats.codeSize + pStats.dataSize + pStats.cacheSize;
+                        int i = index.decrementAndGet();
                     }
                 });
             } catch (Exception e) {
@@ -329,6 +343,13 @@ public class PackageUtil {
                 app.size = apk.length();// apk包文件大小
             }
             appList.add(app);
+        }
+        while (index.get() > 0) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         return appList;
     }
@@ -347,6 +368,7 @@ public class PackageUtil {
         }
         PackageManager pm = context.getApplicationContext().getPackageManager();
         List<PackageInfo> pList = pm.getInstalledPackages(0);
+        final AtomicInteger index = new AtomicInteger();
         for (PackageInfo info : pList) {
             ApplicationInfo applicationInfo = info.applicationInfo;
             // 是否是系统权限
@@ -354,6 +376,7 @@ public class PackageUtil {
             if (isSystemApp) {
                 continue;
             }
+            index.incrementAndGet();
             final AppInfo app = new AppInfo();
             app.isSystemApp = isSystemApp;
             app.packageName = info.packageName;
@@ -370,6 +393,7 @@ public class PackageUtil {
                     @Override
                     public void onGetStatsCompleted(PackageStats pStats, boolean succeeded) throws RemoteException {
                         app.size = pStats.codeSize + pStats.dataSize + pStats.cacheSize;
+                        int i = index.decrementAndGet();
                     }
                 });
             } catch (Exception e) {
@@ -377,6 +401,13 @@ public class PackageUtil {
                 app.size = apk.length();// apk包文件大小
             }
             appList.add(app);
+        }
+        while (index.get() > 0) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         return appList;
     }
@@ -395,6 +426,7 @@ public class PackageUtil {
         }
         PackageManager pm = context.getApplicationContext().getPackageManager();
         List<PackageInfo> pList = pm.getInstalledPackages(0);
+        final AtomicInteger index = new AtomicInteger();
         for (PackageInfo info : pList) {
             ApplicationInfo applicationInfo = info.applicationInfo;
             boolean isSystemApp = (applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM;
@@ -402,6 +434,7 @@ public class PackageUtil {
             if (isSystemApp && !appWhiteList.contains(info.packageName)) {
                 continue;
             }
+            index.incrementAndGet();
             final AppInfo app = new AppInfo();
             app.isSystemApp = isSystemApp;
             app.packageName = info.packageName;
@@ -418,6 +451,7 @@ public class PackageUtil {
                     @Override
                     public void onGetStatsCompleted(PackageStats pStats, boolean succeeded) throws RemoteException {
                         app.size = pStats.codeSize + pStats.dataSize + pStats.cacheSize;
+                        int i = index.decrementAndGet();
                     }
                 });
             } catch (Exception e) {
@@ -425,6 +459,13 @@ public class PackageUtil {
                 app.size = apk.length();// apk包文件大小
             }
             appList.add(app);
+        }
+        while (index.get() > 0) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         return appList;
     }

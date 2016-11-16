@@ -22,11 +22,20 @@ public class DownloadDispatcher extends AbsCanDispatcher {
         return instance;
     }
 
-    public void postUpdateStatusEvent(String history,String tag){
+    public void postDownloadStatusEvent(String history,String tag){
         DownloadEvent event=new DownloadEvent();
         event.setHistory(history);
         event.setTag(tag);
-        event.setEventType(DownloadEvent.DOWNLOADEVENT_UPDATE_LIST_STATUS);
+        event.setEventType(DownloadEvent.DOWNLOADEVENT_UPDATE_DOWNLOAD_STATUS);
+        postEvent(event);
+    }
+
+    public void postInstallStatusEvent(String taskid,String history,String tag){
+        DownloadEvent event=new DownloadEvent();
+        event.setHistory(history);
+        event.setTag(tag);
+        event.setDownloadTaskId(taskid);
+        event.setEventType(DownloadEvent.DOWNLOADEVENT_UPDATE_INSTALL_STATUS);
         postEvent(event);
     }
 

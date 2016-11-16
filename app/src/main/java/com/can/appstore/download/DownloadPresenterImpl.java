@@ -15,6 +15,8 @@ import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
+import cn.can.tvlib.utils.StringUtils;
+import cn.can.tvlib.utils.SystemUtil;
 
 /**
  * Created by laiforg on 2016/10/31.
@@ -22,20 +24,22 @@ import cn.can.downloadlib.DownloadTask;
 
 public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter {
 
-
-    public static final String TAG_DOWNLOAD_UPDATA_STATUS = "download_update_status";
-
+    private static final String TAG = "DownloadPresenterImpl";
+    public static final String TAG_DOWNLOAD_UPDATA__STATUS = "download_update_status";
     private DownloadContract.DownloadView mView;
 
     private DownloadManager mDownLoadManager;
 
     private List<DownloadTask> mTasks;
 
-    private static final String TAG = "DownloadPresenterImpl";
+    private AppInstallListener mAppInstallListener;
+
 
     public DownloadPresenterImpl(DownloadContract.DownloadView view) {
         mView = view;
+        mAppInstallListener=new AppInstallListenerImpl();
         mDownLoadManager = DownloadManager.getInstance(mView.getContext());
+        mDownLoadManager.setAppInstallListener(mAppInstallListener);
         mView.setPresenter(this);
     }
 
@@ -52,6 +56,7 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
 
     /**
      * 加载未安装成功的task，并删除成功的
+     *
      * @return
      */
     private List<DownloadTask> loadDownloadTask() {
@@ -69,8 +74,18 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
 
     @Override
     public void release() {
+        mDownLoadManager.removeAppInstallListener(mAppInstallListener);
         mView = null;
-        mDownLoadManager.release();
+    }
+
+    @Override
+    public void caculateStorage() {
+        long freeSize = SystemUtil.getSDCardAvailableSpace();
+        long totalSize = SystemUtil.getSDCardTotalSpace();
+        int progress = (int) ((totalSize - freeSize) * 100 / totalSize);
+        String freeStorage = mView.getContext().getResources().getString(R.string.uninsatll_manager_free_storage) +
+                StringUtils.formatFileSize(freeSize, false);
+        mView.showStorageView(progress, freeStorage);
     }
 
     @Override
@@ -79,13 +94,14 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
         int pos = rowFmt.indexOf("/");
         SpannableString ss = new SpannableString(rowFmt);
         ss.setSpan(new ForegroundColorSpan(Color.parseColor("#EAEAEA")), 0, pos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        mView.refreshRowNumber(rowFmt);
+        mView.refreshRowNumber(ss);
     }
 
     @Override
     public void deleteAllTasks() {
         if (mTasks == null || mTasks.size() == 0) {
             mView.showToast(R.string.download_no_task);
+            return;
         }
         DownloadManager downloadManager = DownloadManager.getInstance(mView.getContext().getApplicationContext());
         downloadManager.cancelAll();
@@ -115,7 +131,7 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
         }
 
         if (pauseSize > 0) {
-            DownloadDispatcher.getInstance().postUpdateStatusEvent(TAG, TAG_DOWNLOAD_UPDATA_STATUS);
+            DownloadDispatcher.getInstance().postDownloadStatusEvent(TAG, TAG_DOWNLOAD_UPDATA__STATUS);
             return true;
         }
         return false;
@@ -142,10 +158,28 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
             pauseSize++;
         }
         if (pauseSize > 0) {
-            DownloadDispatcher.getInstance().postUpdateStatusEvent(TAG, TAG_DOWNLOAD_UPDATA_STATUS);
+            DownloadDispatcher.getInstance().postDownloadStatusEvent(TAG, TAG_DOWNLOAD_UPDATA__STATUS);
             return true;
         }
         return false;
+    }
+
+    private class AppInstallListenerImpl implements AppInstallListener {
+
+        @Override
+        public void onInstalling(DownloadTask downloadTask) {
+            DownloadDispatcher.getInstance().postInstallStatusEvent(downloadTask.getId(),TAG,TAG_DOWNLOAD_UPDATA__STATUS );
+        }
+
+        @Override
+        public void onInstallSucess(String id) {
+            DownloadDispatcher.getInstance().postInstallStatusEvent(id,TAG,TAG_DOWNLOAD_UPDATA__STATUS );
+        }
+
+        @Override
+        public void onInstallFail(String id) {
+            DownloadDispatcher.getInstance().postInstallStatusEvent(id,TAG,TAG_DOWNLOAD_UPDATA__STATUS );
+        }
     }
 
 }

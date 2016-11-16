@@ -610,13 +610,13 @@ public class DownloadManager implements AppInstallListener {
         DownloadTask task= getCurrentTaskById(id);
         if(task!=null){
             task.setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
+            Log.d(TAG, "onInstallSucess: name="+task.getFileName());
         }
         if (mAppInstallListeners != null) {
             Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
             while (iter.hasNext()) {
                 AppInstallListener listener = iter.next();
                 listener.onInstallSucess(id);
-                iter.remove();
             }
         }
     }
@@ -626,13 +626,13 @@ public class DownloadManager implements AppInstallListener {
         DownloadTask task= getCurrentTaskById(id);
         if(task!=null){
             task.setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
+            Log.d(TAG, "onInstallSucess: name="+task.getFileName());
         }
         if (mAppInstallListeners != null) {
             Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
             while (iter.hasNext()) {
                 AppInstallListener listener = iter.next();
                 listener.onInstallFail(id);
-                iter.remove();
             }
         }
 
