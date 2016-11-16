@@ -425,6 +425,10 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         return drawableID;
     }
 
+    /**
+     * 进入到图片放大页面
+     * @param currentIndex
+     */
     public void enterImageScaleActivity(int currentIndex) {// TODO  进入到图放大页面
         Intent intent = new Intent(mContext, ImageScaleActivity.class);
         intent.putExtra("imageUrl", (Serializable) mAppInfo.getThumbs());
@@ -432,10 +436,17 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         mContext.startActivity(intent);
     }
 
+    /**
+     * 获取当前apk的包名
+     * @return
+     */
     public String getCurAppPackageName() {
         return mPackageName;
     }
 
+    /**
+     * 显示推荐对话框
+     */
     public void showIntroduceDialog() {
         CustomDialog.Builder builder = new CustomDialog.Builder(mContext);
         builder.setUpdatelogText(mAppInfo.getUpdateLog());
@@ -444,6 +455,9 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         mCustomDialog.show();
     }
 
+    /**
+     * 隐藏推荐对话框
+     */
     public void dismissIntroduceDialog() {
         if (mCustomDialog != null) {
             mCustomDialog.dismiss();
@@ -460,6 +474,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 String action = intent.getAction();
                 if (action.equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)) {
                     mView.onClickHomeKey();
+                    dismissIntroduceDialog();
                     return;
                 }
             }
@@ -469,6 +484,9 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         mContext.registerReceiver(mHomeReceivcer, filter);
     }
 
+    /**
+     * 取消注册监听
+     */
     public void unRegiestr() {
         if (mInstalledReceiver != null) {
             mContext.unregisterReceiver(mInstalledReceiver);

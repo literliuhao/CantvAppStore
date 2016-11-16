@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.GET_PACKAGE_SIZE"/>
 
     <application
@@ -38,7 +38,8 @@
                 <action android:name="com.can.appstore.action.DOWNLOAD"/>
             </intent-filter>
         </activity>
-        <activity android:name=".specialtopic.SpecialActivity"
+        <activity
+            android:name=".specialtopic.SpecialActivity"
             android:theme="@style/AppTheme.Translucent.FadeIn"
             >
             <intent-filter>
@@ -55,10 +56,24 @@
         <activity android:name=".download.DownloadLeadAcitivity">
         </activity>
 
-        <activity android:name=".uninstallmanager.UninstallManagerActivity">
+        <activity
+            android:name=".uninstallmanager.UninstallManagerActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.can.appstore.action.UNINSTALL_MANAGER"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
         </activity>
 
-        <activity android:name=".appdetail.AppDetailActivity">
+        <activity
+            android:name=".appdetail.AppDetailActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.can.appstore.action.APP_DETAIL"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
         </activity>
 
         <activity

@@ -46,9 +46,10 @@ public class RecommedGridAdapter extends CanRecyclerViewAdapter {
     @Override
     protected void bindContentData(Object mDatas, RecyclerView.ViewHolder holder, int position) {
         AppInfo appInfo = mRecommedApps.get(position);
+        RecommendGridViewHolder recommendGridViewHolder = ((RecommendGridViewHolder) holder);
         String text = String.format(mRecommendAppsInfo, appInfo.getSizeStr(), appInfo.getDownloadCount());
-        ((RecommendGridViewHolder) holder).itemName.setText(appInfo.getName());
-        ((RecommendGridViewHolder) holder).itemSize.setText(text);
+        recommendGridViewHolder.itemName.setText(appInfo.getName());
+        recommendGridViewHolder.itemSize.setText(text);
     }
 
     class RecommendGridViewHolder extends CanRecyclerView.ViewHolder {

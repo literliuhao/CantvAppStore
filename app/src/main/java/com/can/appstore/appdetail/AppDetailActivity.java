@@ -341,7 +341,6 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     @Override
     public void onClickHomeKey() {
-        mAppDetailPresenter.dismissIntroduceDialog();
         finish();
     }
 
@@ -495,6 +494,8 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             mIntroducGridAdapter = new IntroducGridAdapter(AppDetailActivity.this, mAppinfo.getThumbs());
             addIntroduceGridListener();
             addIntroduceSetting();
+        }else {
+            mIntroducGridAdapter.notifyDataSetChanged();
         }
     }
 
@@ -553,7 +554,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                     if (size < 4) {
                         recommendGridPositionRequestFocus(200, size - 1);
                     } else {
-                        recommendGridPositionRequestFocus(200, 3);
+                        recommendGridPositionRequestFocus(300, 3);
                     }
                 }
             }
@@ -571,6 +572,8 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             mRecommedGridAdapter = new RecommedGridAdapter(AppDetailActivity.this, mAppinfo.getRecommend());
             addRecommendGridListener();
             addRecommendSetting();
+        }else {
+            mRecommedGridAdapter.notifyDataSetChanged();
         }
     }
 
