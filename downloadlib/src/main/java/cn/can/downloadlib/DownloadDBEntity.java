@@ -19,7 +19,7 @@ public class DownloadDBEntity {
     private Integer downloadStatus;
     private String icon;
 
-    @Generated
+    @Generated(hash = 1143139915)
     public DownloadDBEntity() {
     }
 
@@ -27,7 +27,7 @@ public class DownloadDBEntity {
         this.downloadId = downloadId;
     }
 
-    @Generated
+    @Generated(hash = 500647050)
     public DownloadDBEntity(String downloadId, Long totalSize, Long downloadedSize, String url, String saveDirPath, String fileName, Integer downloadStatus, String icon) {
         this.downloadId = downloadId;
         this.totalSize = totalSize;
