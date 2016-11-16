@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="E:\WorkSpace\android_workspace\CANAppStore\downloadlib\src\main\shaders"/></dataSet><dataSet config="debug"><source path="E:\WorkSpace\android_workspace\CANAppStore\downloadlib\src\debug\shaders"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="/Users/liuhao/work/studio-project/CANAppStore/downloadlib/src/main/shaders"/></dataSet><dataSet config="debug"><source path="/Users/liuhao/work/studio-project/CANAppStore/downloadlib/src/debug/shaders"/></dataSet></merger>

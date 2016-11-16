@@ -1,0 +1,222 @@
+<HorizontalScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <RelativeLayout
+                android:id="@+id/rl_item1"
+                style="@style/index_manager_padding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:nextFocusDown="@+id/rl_item5"
+                android:nextFocusRight="@+id/rl_item2">
+
+                <ImageView
+                    android:layout_width="@dimen/px270"
+                    android:layout_height="@dimen/px368"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/index_item1_shape"/>
+
+                <ImageView
+                    style=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    style="@style/index_manager_textstyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="测试排行"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rl_item2"
+                style="@style/index_manager_padding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/px20"
+                android:layout_toRightOf="@+id/rl_item1">
+
+                <ImageView
+                    android:layout_width="@dimen/px270"
+                    android:layout_height="@dimen/px368"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/index_item2_shape"/>
+
+
+                <TextView
+                    style="@style/index_manager_textstyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="测试排行"/>
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/rl_item3"
+                style="@style/index_manager_padding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/px20"
+                android:layout_toRightOf="@+id/rl_item2">
+
+                <ImageView
+                    android:layout_width="@dimen/px270"
+                    android:layout_height="@dimen/px368"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/index_item3_shape"/>
+
+
+                <TextView
+                    style="@style/index_manager_textstyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="测试排行"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rl_item4"
+                style="@style/index_manager_padding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/px20"
+                android:layout_toRightOf="@+id/rl_item3">
+
+                <ImageView
+                    android:layout_width="@dimen/px270"
+                    android:layout_height="@dimen/px368"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/index_item4_shape"/>
+
+
+                <TextView
+                    style="@style/index_manager_textstyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="测试排行"/>
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <RelativeLayout
+                android:id="@+id/rl_item5"
+                style="@style/index_manager_padding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rl_item1">
+
+                <ImageView
+                    android:layout_width="@dimen/px270"
+                    android:layout_height="@dimen/px180"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/index_item5_shape"/>
+
+
+                <TextView
+                    style="@style/index_manager_mini_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="测试排行"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rl_item6"
+                style="@style/index_manager_padding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/rl_item5"
+                android:layout_marginLeft="@dimen/px20"
+                android:layout_toRightOf="@+id/rl_item5">
+
+                <ImageView
+                    android:layout_width="@dimen/px270"
+                    android:layout_height="@dimen/px180"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/index_item6_shape"/>
+
+
+                <TextView
+                    style="@style/index_manager_mini_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="测试排行"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rl_item7"
+                style="@style/index_manager_padding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/rl_item6"
+                android:layout_marginLeft="@dimen/px20"
+                android:layout_toRightOf="@+id/rl_item6">
+
+                <ImageView
+                    android:layout_width="@dimen/px270"
+                    android:layout_height="@dimen/px180"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/index_item7_shape"/>
+
+
+                <TextView
+                    style="@style/index_manager_mini_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="测试排行"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rl_item8"
+                style="@style/index_manager_padding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/rl_item7"
+                android:layout_marginLeft="@dimen/px20"
+                android:layout_toRightOf="@+id/rl_item7">
+
+                <ImageView
+                    android:layout_width="@dimen/px270"
+                    android:layout_height="@dimen/px180"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/index_item8_shape"/>
+
+                <TextView
+                    style="@style/index_manager_mini_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="测试排行"/>
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+</HorizontalScrollView>
+

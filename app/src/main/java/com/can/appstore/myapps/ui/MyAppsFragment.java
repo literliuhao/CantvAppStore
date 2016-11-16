@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.util.Log;
 import android.view.Gravity;
@@ -21,7 +20,8 @@ import android.widget.Button;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
-import com.can.appstore.index.interfaces.ICallBack;
+import com.can.appstore.index.interfaces.IAddFocusListener;
+import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.myapps.adapter.MyAppsRvAdapter;
 import com.can.appstore.myapps.addappsview.AddAppsActivity;
 import com.can.appstore.myapps.allappsview.AllAppsActivity;
@@ -42,7 +42,7 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
  * Created by wei on 2016/10/13.
  */
 
-public class MyAppsFragment extends Fragment implements MyAppsFramentContract.View {
+public class MyAppsFragment extends BaseFragment implements MyAppsFramentContract.View {
 
     MyAppsFragPresenter mMyAppsFramPresenter;
 
@@ -55,7 +55,7 @@ public class MyAppsFragment extends Fragment implements MyAppsFramentContract.Vi
 
     //焦点的监听和主Activity处理焦点框的回调
     private OnFocusChangeListener mFocusChangeListener;
-    private ICallBack mICallBack;
+    private IAddFocusListener mFocusListener;
 
 
     //浮层对话框的按钮
@@ -65,8 +65,8 @@ public class MyAppsFragment extends Fragment implements MyAppsFramentContract.Vi
     //显示的list数据
     public List<AppInfo> mShowList;
 
-    public MyAppsFragment(ICallBack iCallBack) {
-        this.mICallBack = iCallBack;
+    public MyAppsFragment(IAddFocusListener focusListener) {
+        this.mFocusListener = focusListener;
     }
 
     @Override
@@ -134,7 +134,7 @@ public class MyAppsFragment extends Fragment implements MyAppsFramentContract.Vi
         mFocusChangeListener = new OnFocusChangeListener() {
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
-                mICallBack.onSuccess(view, hasFocus);
+                mFocusListener.addFocusListener(view, hasFocus);
             }
         };
         //添加焦点移动的监听,要在adapter里设置
@@ -293,4 +293,7 @@ public class MyAppsFragment extends Fragment implements MyAppsFramentContract.Vi
     }
 
 
+    public View getLastView() {
+        return null;
+    }
 }

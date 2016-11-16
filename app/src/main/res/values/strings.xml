@@ -16,7 +16,11 @@
 
     <!--首页排行榜-->
     <string name="rank_more_str">更多</string>
-
+    <!--首页导航-->
+    <string name="index_top">排行</string>
+    <string name="index_manager">管理</string>
+    <string name="index_myapp">我的应用</string>
+    <!--首页管理-->
     <string name="index_manager_text1">一键加速</string>
     <string name="index_manager_text2">更新管理</string>
     <string name="index_manager_text3">文件管理</string>

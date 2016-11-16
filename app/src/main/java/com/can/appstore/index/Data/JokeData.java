@@ -1,4 +1,4 @@
-package com.can.appstore.index.Data;
+package com.can.appstore.index.data;
 
 import java.util.ArrayList;
 import java.util.List;
