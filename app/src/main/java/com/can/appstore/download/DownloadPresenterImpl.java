@@ -15,6 +15,8 @@ import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
+import cn.can.tvlib.utils.StringUtils;
+import cn.can.tvlib.utils.SystemUtil;
 
 /**
  * Created by laiforg on 2016/10/31.
@@ -52,6 +54,7 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
 
     /**
      * 加载未安装成功的task，并删除成功的
+     *
      * @return
      */
     private List<DownloadTask> loadDownloadTask() {
@@ -74,6 +77,16 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
     }
 
     @Override
+    public void caculateStorage() {
+        long freeSize = SystemUtil.getSDCardAvailableSpace();
+        long totalSize = SystemUtil.getSDCardTotalSpace();
+        int progress = (int) ((totalSize - freeSize) * 100 / totalSize);
+        String freeStorage = mView.getContext().getResources().getString(R.string.uninsatll_manager_free_storage) +
+                StringUtils.formatFileSize(freeSize, false);
+        mView.showStorageView(progress, freeStorage);
+    }
+
+    @Override
     public void calculateRowNum(int focusPos) {
         String rowFmt = String.format("%d/%d行", focusPos + 1, mTasks.size());
         int pos = rowFmt.indexOf("/");
@@ -86,6 +99,7 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
     public void deleteAllTasks() {
         if (mTasks == null || mTasks.size() == 0) {
             mView.showToast(R.string.download_no_task);
+            return;
         }
         DownloadManager downloadManager = DownloadManager.getInstance(mView.getContext().getApplicationContext());
         downloadManager.cancelAll();

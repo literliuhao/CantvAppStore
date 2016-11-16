@@ -65,7 +65,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
 
     @Override
     protected void bindContentData(DownloadTask task, RecyclerView.ViewHolder holder, int position) {
-        Log.i(TAG, "bindContentData: task="+task.toString());
+        Log.i(TAG, "bindContentData: task=" + task.toString());
         DownloadViewHolder viewHolder = (DownloadViewHolder) holder;
         viewHolder.appNameTv.setText(task.getFileName());
         viewHolder.position = position;
@@ -117,29 +117,12 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
             initListener();
             initView();
             initRunnable();
-            itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
-                @Override
-                public void onViewAttachedToWindow(View v) {
-                    setDownloadListener();
-                    eventBus.register(DownloadViewHolder.this);
-                    appDownloadStatusImgVi.startRotate();
-                    DownloadManager.getInstance(v.getContext().getApplicationContext()).setAppInstallListener(appInstallListener);
-                }
-
-                @Override
-                public void onViewDetachedFromWindow(View v) {
-                    if (downloadTask != null) {
-                        downloadTask.removeDownloadListener(downloadListener);
-                    }
-                    DownloadManager.getInstance(v.getContext().getApplicationContext()).removeAppInstallListener(appInstallListener);
-                    v.removeCallbacks(showControlViewRunnable);
-                    v.removeCallbacks(selectedViewRunnable);
-                    eventBus.unregister(DownloadViewHolder.this);
-                    appDownloadStatusImgVi.stopRotate();
-                }
-            });
+            initItemAttachStateListener();
         }
 
+        /**
+         * 初始化downloadListener appintallslistener
+         */
         private void initListener() {
             downloadListener = new DownloadListener() {
                 @Override
@@ -152,6 +135,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     postRefreshStatus();
                 }
             };
+            //app下载listener 后期考虑用EventBus 免去在viewholder 持有appInstallInstaller引用 xzl
             appInstallListener = new AppInstallListener() {
                 @Override
                 public void onInstalling(DownloadTask downloadTask) {
@@ -162,7 +146,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                 @Override
                 public void onInstallSucess(String id) {
                     Log.i(TAG, "onInstallSucess: ");
-                    if(downloadTask.getId().equals(id)){
+                    if (downloadTask.getId().equals(id)) {
                         postRefreshStatus();
                     }
                 }
@@ -170,7 +154,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                 @Override
                 public void onInstallFail(String id) {
                     Log.i(TAG, "onInstallFail: ");
-                    if(downloadTask.getId().equals(id)){
+                    if (downloadTask.getId().equals(id)) {
                         postRefreshStatus();
                     }
                 }
@@ -201,13 +185,28 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
             appContentLayout.setOnKeyListener(eventListener);
         }
 
-        public void setDownloadListener() {
-            if (downloadTask != null) {
-                downloadTask.removeDownloadListener(downloadListener);
-                downloadTask.addDownloadListener(downloadListener);
-            }
-        }
+        private void initItemAttachStateListener() {
 
+            itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View v) {
+                    setDownloadListener();
+                    eventBus.register(DownloadViewHolder.this);
+                    appDownloadStatusImgVi.startRotate();
+                    DownloadManager.getInstance(v.getContext().getApplicationContext()).setAppInstallListener(appInstallListener);
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+                    removeDownloadListener();
+                    DownloadManager.getInstance(v.getContext().getApplicationContext()).removeAppInstallListener(appInstallListener);
+                    v.removeCallbacks(showControlViewRunnable);
+                    v.removeCallbacks(selectedViewRunnable);
+                    eventBus.unregister(DownloadViewHolder.this);
+                    appDownloadStatusImgVi.stopRotate();
+                }
+            });
+        }
 
         private void initRunnable() {
 
@@ -231,6 +230,18 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     appContentLayout.setSelected(true);
                 }
             };
+        }
+
+        private void setDownloadListener() {
+            if (downloadTask != null) {
+                downloadTask.addDownloadListener(downloadListener);
+            }
+        }
+
+        private void removeDownloadListener(){
+            if (downloadTask != null) {
+                downloadTask.removeDownloadListener(downloadListener);
+            }
         }
 
         /**
@@ -279,7 +290,6 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
             if (downloadTask == null) {
                 return;
             }
-            Log.i(TAG, "refreshControlButtonStatus: downloadtask=="+downloadTask.toString());
             switch (downloadTask.getDownloadStatus()) {
                 case DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING:
                 case DownloadStatus.DOWNLOAD_STATUS_INIT:

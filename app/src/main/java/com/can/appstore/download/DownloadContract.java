@@ -18,6 +18,7 @@ public interface DownloadContract {
         void loadData();
         void calculateRowNum(int focusedPos);
         void deleteAllTasks();
+        void caculateStorage();
         boolean pauseAllTasks();
         boolean resumeAllTasks();
     }
@@ -28,6 +29,7 @@ public interface DownloadContract {
         void refreshRowNumber(String formatRow);
         void showNoDataView();
         void hideNoDataView();
+        void showStorageView(int progress, String storage);
 
     }
 
