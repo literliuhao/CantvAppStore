@@ -88,9 +88,7 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
             mView.showToast(R.string.download_no_task);
         }
         DownloadManager downloadManager = DownloadManager.getInstance(mView.getContext().getApplicationContext());
-        for (DownloadTask task : mTasks) {
-            downloadManager.cancel(task);
-        }
+        downloadManager.cancelAll();
         mTasks.clear();
         mView.showNoDataView();
     }

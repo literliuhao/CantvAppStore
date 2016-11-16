@@ -264,6 +264,7 @@ public class DownloadManager implements AppInstallListener {
         long space = SdcardUtils.getSDCardAvailableSpace() / 1014 / 1024;
         if (space < mLimitSpace) {
             ToastUtils.showMessageLong(mContext.getApplicationContext(), R.string.error_msg);
+            task.setDownloadStatus(DownloadStatus.SPACE_NOT_ENOUGH);
             return false;
         }
         DownloadTask downloadTask = mTaskManager.get(task.getId());
@@ -281,7 +282,7 @@ public class DownloadManager implements AppInstallListener {
         if (getDBTaskById(task.getId()) == null) {
             DownloadDBEntity dbEntity = new DownloadDBEntity(task.getId(), task.getTotalSize(),
                     task.getCompletedSize(), task.getUrl(), task.getSaveDirPath(), task
-                    .getFileName(), task.getDownloadStatus());
+                    .getFileName(), task.getDownloadStatus(), task.getIcon());
             mDownloadDao.insertOrReplace(dbEntity);
         }
         mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
@@ -353,10 +354,20 @@ public class DownloadManager implements AppInstallListener {
      * @param task
      */
     public void cancel(DownloadTask task) {
+        mTaskManager.remove(task.getId());
         task.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
         task.cancel();
-        mTaskManager.remove(task.getId());
         mDownloadDao.deleteByKey(task.getId());
+    }
+
+    /**
+     * 取消所有任务
+     *
+     */
+    public void cancelAll() {
+        mDownloadDao.deleteAll();
+        mTaskManager.release();
+        mHander.removeCallbacksAndMessages(null);
     }
 
     /**
@@ -410,7 +421,7 @@ public class DownloadManager implements AppInstallListener {
         List<DownloadDBEntity> list = loadAllDownloadEntityFromDB();
         List<DownloadTask> downloadTaskList = null;
         if (list != null && !list.isEmpty()) {
-            downloadTaskList = new ArrayList<DownloadTask>();
+            downloadTaskList = new ArrayList<>();
             for (DownloadDBEntity entity : list) {
                 downloadTaskList.add(DownloadTask.parse(entity));
             }
@@ -426,7 +437,7 @@ public class DownloadManager implements AppInstallListener {
     public List<DownloadTask> loadAllTask() {
         List<DownloadTask> list = loadAllDownloadTaskFromDB();
         Map<String, DownloadTask> currentTaskMap = getCurrentTaskList();
-        List<DownloadTask> currentList = new ArrayList<DownloadTask>();
+        List<DownloadTask> currentList = new ArrayList<>();
         if (currentTaskMap != null) {
             currentList.addAll(currentTaskMap.values());
         }
@@ -564,7 +575,7 @@ public class DownloadManager implements AppInstallListener {
         if (getDBTaskById(task.getId()) == null) {
             DownloadDBEntity dbEntity = new DownloadDBEntity(task.getId(), task.getTotalSize(),
                     task.getCompletedSize(), task.getUrl(), task.getSaveDirPath(), task
-                    .getFileName(), task.getDownloadStatus());
+                    .getFileName(), task.getDownloadStatus(), task.getIcon());
             mDownloadDao.insertOrReplace(dbEntity);
         }
         new Thread(task).start();
