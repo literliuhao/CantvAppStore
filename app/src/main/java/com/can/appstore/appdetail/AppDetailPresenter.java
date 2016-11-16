@@ -38,10 +38,10 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public final static int DOWNLOAD_BUTTON_STATUS_WAIT = 2;//等待中
     public final static int DOWNLOAD_BUTTON_STATUS_DOWNLAODING = 3;//"点击暂停下载"
     public final static int DOWNLOAD_BUTTON_STATUS_PAUSE = 4;//点击继续下载
-    public final static int DOWNLOAD_BUTTON_STATUS_RUN = 6;//运行
     public final static int DOWNLOAD_BUTTON_STATUS_INSTALLING = 5;//安装中
-    public final static int DOWNLOAD_BUTTON_STATUS_RESTART = 6;//重试
-    public final static int DOWNLOAD_BUTTON_STATUS_UPDATE = 7;//更新
+    public final static int DOWNLOAD_BUTTON_STATUS_RUN = 6;//运行
+    public final static int DOWNLOAD_BUTTON_STATUS_RESTART = 7;//重试
+    public final static int DOWNLOAD_BUTTON_STATUS_UPDATE = 8;//更新
     public final static float DOWNLOAD_INIT_PROGRESS = 0f;//初始时进度
     public final static float DOWNLOAD_FINISH_PROGRESS = 100f;//完成时进度
     public int downlaodErrorCode = 0;//下载错误
@@ -172,6 +172,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                     isShowUpdateButton = true;
                     initUpdateButtonStatus();
                     mView.refreshUpdateButton(true);
+                } else {
+                    mView.refreshUpdateButton(false);
                 }
                 mView.loadAppInfoOnSuccess(mAppInfo);
             }

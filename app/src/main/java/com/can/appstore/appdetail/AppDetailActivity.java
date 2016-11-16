@@ -45,6 +45,7 @@ import cn.can.tvlib.utils.SystemUtil;
 /**
  * Created by JasonF on 2016/10/13.
  */
+@SuppressWarnings("deprecation")
 public class AppDetailActivity extends BaseActivity implements AppDetailContract.View, View.OnFocusChangeListener, View.OnClickListener {
     private static final String TAG = "AppDetailActivity";
     private static final int TO_MOVE_RIGHT = 0;
@@ -179,7 +180,6 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
         Log.d(TAG, "onFocusChange : " + hasFocus + " view : " + view + " isTabLineMoveToRec : " + isTabLineMoveToRecommend);
@@ -449,6 +449,9 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             mButtonDownload.setProgress((int) progress);
             mButtonDownload.setText(buttonText);
             mHandler.removeMessages(MESSAGE_TYPE_DOWNLAOD);
+            if (!buttonText.equals(getResources().getString(R.string.detail_app_run))) {
+                mButtonDownload.setProgressDrawable(getResources().getDrawable(R.drawable.layer_list_app_detail_download));
+            }
         } else if (mButtonUpdate != null && refreshButtonProgress == MESSAGE_TYPE_UPDATE) {
             mButtonUpdate.setProgress((int) progress);
             mButtonUpdate.setText(buttonText);

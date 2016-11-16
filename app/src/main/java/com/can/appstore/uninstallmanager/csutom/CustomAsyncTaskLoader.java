@@ -31,7 +31,6 @@ public class CustomAsyncTaskLoader extends AsyncTaskLoader<List<PackageUtil.AppI
 
     @Override
     public List<PackageUtil.AppInfo> loadInBackground() {
-        Log.d("fjm", "loadInBackground()");
         switch (mAppsType) {
             case FILTER_ALL_APP:
                 mAppinfos = PackageUtil.findAllApps(mContext, mAppinfos);
@@ -48,20 +47,20 @@ public class CustomAsyncTaskLoader extends AsyncTaskLoader<List<PackageUtil.AppI
             default:
                 break;
         }
-        Log.i(TAG, "loadInBackground: mAppinfos = " + mAppinfos);
+        Log.d(TAG, "loadInBackground: mAppinfos = " + mAppinfos);
         return mAppinfos;
     }
 
     @Override
     public void onStartLoading() {
-        Log.d("fjm", "onStartLoading()");
+        Log.d(TAG, "onStartLoading()");
         forceLoad();
         super.onStartLoading();
     }
 
     @Override
     public void deliverResult(List<PackageUtil.AppInfo> data) {
-        Log.d("fjm", "deliverResult()");
+        Log.d(TAG, "deliverResult()");
         if (isReset()) {
             if (data != null) {
                 releaseResources(data);
@@ -74,14 +73,14 @@ public class CustomAsyncTaskLoader extends AsyncTaskLoader<List<PackageUtil.AppI
 
     @Override
     public void onStopLoading() {
-        Log.d("fjm", "onStopLoading()");
+        Log.d(TAG, "onStopLoading()");
         cancelLoad();
         super.onStopLoading();
     }
 
     @Override
     public void onReset() {
-        Log.d("fjm", "onReset()");
+        Log.d(TAG, "onReset()");
         super.onReset();
     }
 
