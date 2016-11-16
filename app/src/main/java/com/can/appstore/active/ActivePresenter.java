@@ -21,6 +21,7 @@ import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
+import cn.can.tvlib.utils.ApkUtils;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.StringUtils;
 import retrofit2.Response;
@@ -136,9 +137,10 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
         DownloadTask downloadTask = mDownloadManger.getCurrentTaskById(MD5.MD5(downloadUrl));
         if (downloadTask != null) {
             int status = downloadTask.getDownloadStatus();
-            if(status == AppInstallListener.APP_INSTALL_SUCESS){
+            String pkgName = mActive.getRecommend().getPackageName();
+            if(status == AppInstallListener.APP_INSTALL_SUCESS || ApkUtils.isAvailable(mContext,pkgName)){
                 mOperationView.showToast("安装成功");
-                startApk(mActive.getRecommend().getPackageName());
+                startApk(pkgName);
                 return;
             }
             if(status == AppInstallListener.APP_INSTALL_FAIL){
@@ -199,9 +201,9 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
     public void onStart(DownloadTask downloadTask) {
         Log.d(TAG, "onStart: " + downloadTask.getCompletedSize());
         if (downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_START) {
+            mOperationView.refreshTextProgressbarTextStatus("");
             float downloadProgress = calculatePercent(downloadTask.getCompletedSize(), downloadTask.getTotalSize());
-           if(downloadProgress < 2){
-               mOperationView.refreshTextProgressbarTextStatus("");
+            if(downloadProgress < 2){
                mOperationView.refreshProgressbarProgress(2);
            }
         }
@@ -284,6 +286,10 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
     private void startApk(String packageName){
         PackageManager pm = mContext.getPackageManager();
         Intent intent=pm.getLaunchIntentForPackage(packageName);
+        if(intent == null){
+            mOperationView.showToast("未找到该应用");
+            return;
+        }
         mContext.startActivity(intent);
     }
 }

@@ -32,7 +32,6 @@ public class SpecialDetailActivity extends Activity {
     private ImageView mDetailImgBg;
     private View mCurrFocusView;
     private FocusMoveUtil mFocusMoveUtil;
-    private FocusScaleUtil mFocusScaleUtil;
     private Handler mHandler = new Handler();
     private List<AppInfo> mRecommdList;
 
@@ -50,7 +49,6 @@ public class SpecialDetailActivity extends Activity {
 
         //焦点工具初始化
         mFocusMoveUtil = new FocusMoveUtil(SpecialDetailActivity.this, getWindow().getDecorView(), R.mipmap.btn_focus);
-        mFocusScaleUtil = new FocusScaleUtil();
         getAPPData();
     }
 
@@ -59,8 +57,7 @@ public class SpecialDetailActivity extends Activity {
         @Override
         public void run() {
             if (mCurrFocusView != null && mCurrFocusView.isFocused()) {
-                mFocusMoveUtil.startMoveFocus(mCurrFocusView, 1.1f);
-                mFocusScaleUtil.scaleToLarge(mCurrFocusView);
+                mFocusMoveUtil.startMoveFocus(mCurrFocusView);
             }
         }
     };
@@ -136,8 +133,6 @@ public class SpecialDetailActivity extends Activity {
                     mCurrFocusView = view;
                     mHandler.removeCallbacks(mfocusMoveRunnable);
                     mHandler.postDelayed(mfocusMoveRunnable, 50);
-                } else {
-                    mFocusScaleUtil.scaleToNormal(view);
                 }
                 view.setSelected(hasFocus);
             }
@@ -162,6 +157,10 @@ public class SpecialDetailActivity extends Activity {
         super.onStop();
         if(mSpecialTopic!=null){
             mSpecialTopic.cancel();
+        }
+        if(mFocusMoveUtil != null){
+            mFocusMoveUtil.release();
+            mFocusMoveUtil = null;
         }
     }
 
