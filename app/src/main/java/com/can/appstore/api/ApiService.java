@@ -75,7 +75,7 @@ public interface ApiService {
     /**
      * 获取搜索页热词
      */
-    @GET
+    @GET("application/everyonesearch")
     CanCall<ListResult<PopularWord>> getHotKeywords();
 
     /**
@@ -89,7 +89,7 @@ public interface ApiService {
     /**
      * 获取隐藏应用列表
      */
-    @GET
+    @GET("application/gethideapp")
     CanCall<ListResult<String>> getHiddenApps();
 
     /**
@@ -100,11 +100,6 @@ public interface ApiService {
     @POST("application/updateapp")
     CanCall<ListResult<AppInfo>> checkUpdate(@Body List<AppInfo> apps);
 
-    /**
-     * 自升级检查
-     */
-    @GET
-    CanCall<Result<AppInfo>> checkUpdateSelf();
 
     /**
      * 首页导航
@@ -115,6 +110,6 @@ public interface ApiService {
     /**
      * 获取消息
      */
-    @GET
+    @GET("application/getmessage")
     CanCall<Result<MessageContainer>> getMessages();
 }
