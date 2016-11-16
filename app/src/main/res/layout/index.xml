@@ -2,9 +2,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="false"
     android:background="@drawable/index_bj">
 
-    <include android:id="@+id/layout_top" layout="@layout/index_top"/>
+    <include
+        android:id="@+id/layout_top"
+        layout="@layout/index_top"/>
 
     <com.can.appstore.index.ui.TitleBar
         android:id="@+id/id_indicator"
@@ -13,16 +16,20 @@
         android:layout_below="@id/layout_top"
         android:layout_marginLeft="@dimen/px110"
         android:layout_marginTop="@dimen/px30"
+        android:focusable="false"
         android:orientation="horizontal">
     </com.can.appstore.index.ui.TitleBar>
+
 
     <android.support.v4.view.ViewPager
         android:id="@+id/id_vp"
         android:layout_width="@dimen/px1700"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/id_indicator"
+        android:layout_height="@dimen/px700"
         android:layout_centerHorizontal="true"
+        android:layout_below="@id/id_indicator"
+        android:focusable="false"
         android:layout_marginTop="@dimen/px50">
     </android.support.v4.view.ViewPager>
+
 
 </RelativeLayout>

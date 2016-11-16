@@ -10,7 +10,6 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -19,7 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
-import com.can.appstore.index.interfaces.ICallBack;
+import com.can.appstore.index.interfaces.IAddFocusListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +52,7 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
 
     private List<TextView> textViewList;
     private int mCurrentIndex = 0;
-    private ICallBack mCallBack;
+    private IAddFocusListener mFocusListener;
 
     public TitleBar(Context context) {
         this(context, null);
@@ -108,8 +107,8 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
         mInitTranslationX = getWidth() / mTabVisibleCount / 2 - mTriangleWidth / 2;
     }
 
-    public void initTitle(ICallBack callBack) {
-        this.mCallBack = callBack;
+    public void initTitle(IAddFocusListener onFocusChange) {
+        this.mFocusListener = onFocusChange;
 
     }
 
@@ -134,30 +133,25 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
             this.mTabTitles = datas;
 
             for (int i = 0; i < mTabTitles.size(); i++) {
-                addView(generateTextView(mTabTitles.get(i),i));
+                TextView textView = generateTextView(mTabTitles.get(i));
+                if (0 == i) {
+                    textView.requestFocus();
+                }
+                addView(textView, i);
             }
-//            onFocusView();
+            //得到最后titleBar进行相关设置
+            TextView lastBar = (TextView) this.getChildAt(mTabTitles.size() - 1);
+            lastBar.setId(R.id.tv_index_title_last);
+            lastBar.setNextFocusRightId(R.id.rl_search);
             // 设置item的click事件
             setItemClickEvent();
         }
 
     }
 
-//    private void onFocusView() {
-//        for (int i = 0; i < textViewList.size(); i++) {
-//            final TextView textView = textViewList.get(i);
-//            textView.setOnFocusChangeListener(new OnFocusChangeListener() {
-//                @Override
-//                public void onFocusChange(View view, boolean hasFocus) {
-//                    mCallBack.onSuccess(view,hasFocus);
-//                }
-//            });
-//        }
-//    }
-
     @Override
     public void onFocusChange(View view, boolean b) {
-//        Log.i("TitleBar", "onFocusChange " + String.valueOf(view));
+//        Log.i("TitleBar", "addFocusListener " + String.valueOf(view));
     }
 
     /**
@@ -235,18 +229,16 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
         TitleBar.this.getViewTreeObserver().addOnGlobalFocusChangeListener(new ViewTreeObserver.OnGlobalFocusChangeListener() {
             @Override
             public void onGlobalFocusChanged(View oldFocus, View newFocus) {
-                Log.i("TitleBar", "onGlobalFocusChanged old " + String.valueOf(oldFocus));
-                Log.i("TitleBar", "onGlobalFocusChanged new " + String.valueOf(newFocus));
+//                Log.i("TitleBar", "onGlobalFocusChanged old " + String.valueOf(oldFocus));
+//                Log.i("TitleBar", "onGlobalFocusChanged new " + String.valueOf(newFocus));
 
                 if (!(oldFocus instanceof TextView) && newFocus instanceof TextView) {
                     newFocus = textViewList.get(mViewPager.getCurrentItem());
                     newFocus.requestFocus();
-                    mCallBack.onSuccess(newFocus, true);
-                } else {
+                    mFocusListener.addFocusListener(newFocus, true);
+                } else if (oldFocus instanceof TextView && newFocus instanceof TextView) {
                     if (null == oldFocus || null == newFocus) return;
-                    Log.i("TitleBar", "onGlobalFocusChanged else old" + String.valueOf(oldFocus.getId()));
-                    Log.i("TitleBar", "onGlobalFocusChanged else new " + String.valueOf(newFocus.getId()));
-                    mCallBack.onSuccess(newFocus, true);
+                    mFocusListener.addFocusListener(newFocus, true);
                 }
             }
         });
@@ -303,26 +295,22 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
      * @param text
      * @return
      */
-    private TextView generateTextView(String text,int viewID) {
+    private TextView generateTextView(String text) {
         final TextView textView = new TextView(getContext());
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
         int marginLR = (int) getResources().getDimension(R.dimen.px40);
-        int textWidth = (int) getResources().getDimension(R.dimen.px100);
-        int textHeight = (int) getResources().getDimension(R.dimen.px50);
-        int textSize = (int) getResources().getDimension(R.dimen.px24);
+        int textSize = (int) getResources().getDimension(R.dimen.px30);
 
         lp.setMargins(marginLR, 0, marginLR, 0);
-        lp.width = textWidth;
-        lp.height = textHeight;
-        textView.setId(viewID);
         textView.setGravity(Gravity.CENTER);
         textView.setTextColor(COLOR_TEXT_NORMAL);
         textView.setText(text);
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+        textView.setTextSize(textSize);
         textView.setLayoutParams(lp);
         textView.setFocusable(true);
         textView.setOnFocusChangeListener(this);
+        textView.setPadding((int) getResources().getDimension(R.dimen.px15), 0, (int) getResources().getDimension(R.dimen.px15), 0);
         textViewList.add(textView);
         return textView;
     }
@@ -344,11 +332,6 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
      * @param offset
      */
     public void scroll(int position, float offset) {
-        /**
-         * <pre>
-         *  0-1:position=0 ;1-0:postion=0;
-         * </pre>
-         */
         // 不断改变偏移量，invalidate
         mTranslationX = getWidth() / mTabVisibleCount * (position + offset);
 
