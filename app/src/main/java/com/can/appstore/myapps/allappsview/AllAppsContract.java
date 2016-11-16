@@ -1,8 +1,9 @@
 package com.can.appstore.myapps.allappsview;
 
-import com.can.appstore.myapps.model.AppInfo;
 
 import java.util.List;
+
+import cn.can.tvlib.utils.PackageUtil;
 
 /**
  * Created by wei on 2016/11/8.
@@ -24,7 +25,7 @@ public interface AllAppsContract {
 
         void onClickHomeKey();
 
-        void loadAllAppInfoSuccess(List<AppInfo> infoList);
+        void loadAllAppInfoSuccess(List<PackageUtil.AppInfo> infoList);
     }
 
 }

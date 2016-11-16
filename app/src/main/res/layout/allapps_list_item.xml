@@ -48,6 +48,7 @@
             android:layout_height="@dimen/px54"
             android:text="启动"
             android:textSize="@dimen/fontsize_30"
+            android:textColor="@drawable/edit_buttn_textcolor_delector"
             android:background="@drawable/edit_button_selector"
             android:focusable="true"
             />
@@ -57,6 +58,7 @@
             android:layout_height="@dimen/px54"
             android:text="卸载"
             android:textSize="@dimen/fontsize_30"
+            android:textColor="@drawable/edit_buttn_textcolor_delector"
             android:background="@drawable/edit_button_selector"
             android:focusable="true"
             />

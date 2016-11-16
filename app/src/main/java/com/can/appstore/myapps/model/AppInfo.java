@@ -1,12 +1,15 @@
+/*
 package com.can.appstore.myapps.model;
 
 import android.graphics.drawable.Drawable;
 
 import java.io.Serializable;
 
+*/
 /**
  * Created by wei on 2016/10/11.
- */
+ *//*
+
 
 public class AppInfo implements Serializable{
     public String appName = "";
@@ -86,3 +89,4 @@ public class AppInfo implements Serializable{
         return result;
     }
 }
+*/

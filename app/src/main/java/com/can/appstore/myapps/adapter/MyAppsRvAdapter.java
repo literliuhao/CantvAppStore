@@ -10,19 +10,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
-import com.can.appstore.myapps.model.AppInfo;
 import com.can.appstore.myapps.ui.CustomFolderIcon;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
+import cn.can.tvlib.utils.PackageUtil;
+import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 /**
  * Created by wei on 2016/10/17.
  */
 
-public class MyAppsRvAdapter extends CanRecyclerViewAdapter<AppInfo> {
+public class MyAppsRvAdapter extends CanRecyclerViewAdapter<PackageUtil.AppInfo> {
 
     public List<AppInfo> mList = null;
     public List<Drawable> mCustomSys = null;
@@ -38,7 +39,6 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<AppInfo> {
         } else {
             mCustomSys = new ArrayList<Drawable>();
         }
-
     }
 
     int NOMAL_TYPE = 0X001;
@@ -123,7 +123,6 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<AppInfo> {
             mCustomFolderIcon = (CustomFolderIcon) itemView.findViewById(R.id.my_icons);
             mTextView = (TextView) itemView.findViewById(R.id.myapps_custom_tv_name);
         }
-
     }
 
 

@@ -85,6 +85,8 @@ public class CustomFolderIcon extends RelativeLayout {
             case 6:
                 addSixIcon(list);
                 break;
+            default:
+                break;
         }
     }
 

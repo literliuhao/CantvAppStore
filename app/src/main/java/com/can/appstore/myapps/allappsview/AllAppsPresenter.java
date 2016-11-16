@@ -8,13 +8,12 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.can.appstore.R;
-import com.can.appstore.myapps.model.AppInfo;
-import com.can.appstore.myapps.model.AppUtils;
 import com.can.appstore.myapps.model.MyAppsListDataUtil;
 
 import java.util.List;
 
 import cn.can.tvlib.ui.widgets.LoadingDialog;
+import cn.can.tvlib.utils.PackageUtil;
 
 import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
@@ -27,7 +26,7 @@ public class AllAppsPresenter implements AllAppsContract.Presenter {
     LoadingDialog mLoadingDialog;
     AllAppsContract.View mView;
     MyAppsListDataUtil mMyAppsListDataUtil;
-    List<AppInfo> allAppsList;
+    List<PackageUtil.AppInfo> allAppsList;
     Context mContext;
 
     AppInstallReceiver mAppInstallReceiver;
@@ -183,12 +182,12 @@ public class AllAppsPresenter implements AllAppsContract.Presenter {
     }
 
     public void startApp(int position) {
-        //TODO
+        PackageUtil.openApp(mContext,allAppsList.get(position).packageName);
     }
 
     public void uninstallApp(int position) {
         String packageName = allAppsList.get(position).packageName;
-        AppUtils.uninstallpkg(mContext, packageName);
+        PackageUtil.unInstall(mContext,packageName);
     }
 
     public void unRegiestr() {

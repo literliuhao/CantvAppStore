@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.myapps.adapter.AllAppsRecyclerViewAdapter;
-import com.can.appstore.myapps.model.AppInfo;
 
 import java.util.List;
 
@@ -21,6 +20,7 @@ import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
+import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 /**
  * Created by wei on 2016/10/26.
@@ -94,11 +94,7 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
             mAdapter = new AllAppsRecyclerViewAdapter(infoList);
             baseSetting();
             addFocusListener();
-        } /*else if (mAdapter != null && infoList.size() != allAppList.size()) {
-            mAdapter = new AllAppsRecyclerViewAdapter(infoList);
-            baseSetting();
-            addFocusListener();
-        }*/ else {
+        } else {
             mAdapter.notifyDataSetChanged();
         }
         //设置右上角总行数
@@ -121,9 +117,10 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
             }
         }, 50);
     }
-
+    Button butStrartapp;
+    Button  butUninstall;
     private void editItem(final View item, final int position) {
-        Button butStrartapp = (Button) item.findViewById(R.id.allapps_but_startapp);
+
         butStrartapp.requestFocus();
         butStrartapp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,6 +132,11 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
         butStrartapp.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int keyCode, KeyEvent event) {
+                if(butUninstall.getVisibility() == View.GONE){
+                    if(keyCode == KeyEvent.KEYCODE_DPAD_DOWN){
+                        return true;
+                    }
+                }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_UP) {
                     return true;
                 }
@@ -145,7 +147,7 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
                 return false;
             }
         });
-        Button butUninstall = (Button) item.findViewById(R.id.allapps_but_uninstallapp);
+
         butUninstall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -231,7 +233,14 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
                 //判断系统应用机制 TODO
                 mAdapter.setOnFocusChangeListener(null);
                 ll_edit = (LinearLayout) v.findViewById(R.id.allapps_ll_edit);
+                butStrartapp = (Button) ll_edit.findViewById(R.id.allapps_but_startapp);
+                butUninstall = (Button) ll_edit.findViewById(R.id.allapps_but_uninstallapp);
                 ll_edit.setVisibility(View.VISIBLE);
+                if(allAppList.get(position).isSystemApp){
+                    butUninstall.setVisibility(View.GONE);
+                }else{
+                    butUninstall.setVisibility(View.VISIBLE);
+                }
                 editItem(v, position);
             }
             return false;
