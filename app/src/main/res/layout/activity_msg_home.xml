@@ -25,6 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/red_dote"
+        android:visibility="invisible"
         android:layout_alignTop="@+id/btn_iv_msg"
         android:layout_alignEnd="@+id/btn_iv_msg"/>
 </RelativeLayout>

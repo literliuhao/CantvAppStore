@@ -115,6 +115,6 @@ public interface ApiService {
     /**
      * 获取消息
      */
-    @GET
+    @GET("application/getmessage")
     CanCall<Result<MessageContainer>> getMessages();
 }

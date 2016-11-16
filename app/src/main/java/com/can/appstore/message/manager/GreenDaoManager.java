@@ -157,4 +157,18 @@ public class GreenDaoManager {
         });
     }
 
+    /**
+     * 插入数据
+     * */
+    public void insert(final MessageInfo msgInfo){
+        if (msgInfo != null){
+            msgDao.getSession().runInTx(new Runnable() {
+                @Override
+                public void run() {
+                    msgDao.insertInTx(msgInfo);
+                }
+            });
+        }
+    }
+
 }

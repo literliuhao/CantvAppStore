@@ -6,12 +6,12 @@ import android.os.Handler;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.can.appstore.ActionConstants;
 import com.can.appstore.R;
 import com.can.appstore.message.adapter.MessageAdapter;
 import com.can.appstore.message.db.entity.MessageInfo;
@@ -20,6 +20,7 @@ import com.can.appstore.message.manager.GreenDaoManager;
 import java.util.List;
 
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
+import cn.can.tvlib.utils.ToastUtils;
 
 /**
  * 消息主页面
@@ -43,11 +44,6 @@ public class MessageActivity extends Activity implements View.OnClickListener, V
     private boolean focusViewMoveEnable = true;
     private boolean isBtnTagClick = false;
     private boolean deleteLastItem = false;
-
-    private final static String MSG_NO = "action_nothing"; // 点击无反应
-    private final static String MSG_APP_DETAIL = "action_app_detail"; //点击跳转应用详情页
-    private final static String MSG_SPECIAL = "action_topic_detail"; //点击跳转到专题详情页
-    private final static String MSG_ACTIVITY = "action_activity_detail"; //点击跳转到活动详情页
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +91,7 @@ public class MessageActivity extends Activity implements View.OnClickListener, V
             initRecyclerView();
             refreshTotalText(msgList.size());
         } else {
+            itemPos.setVisibility(View.INVISIBLE);
             empty.setVisibility(View.VISIBLE);
         }
     }
@@ -118,17 +115,17 @@ public class MessageActivity extends Activity implements View.OnClickListener, V
                     mAdapter.notifyItemChanged(position);
                 }
                 switch (msg.getAction()) {
-                    case MSG_NO:
-                        Log.i(TAG, "MSG_NO");
+                    case ActionConstants.ACTION_NOTHIN:
+                        ToastUtils.showMessage(MessageActivity.this , "无反应");
                         break;
-                    case MSG_APP_DETAIL:
-                        Log.i(TAG, "MSG_APP_DETAIL");
+                    case ActionConstants.ACTION_APP_DETAIL:
+                        ToastUtils.showMessage(MessageActivity.this , "应用详情页");
                         break;
-                    case MSG_SPECIAL:
-                        Log.i(TAG, "MSG_SPECIAL");
+                    case ActionConstants.ACTION_TOPIC_DETAIL:
+                        ToastUtils.showMessage(MessageActivity.this , "专题详情页");
                         break;
-                    case MSG_ACTIVITY:
-                        Log.i(TAG, "MSG_ACTIVITY");
+                    case ActionConstants.ACTION_ACTIVITY_DETAIL:
+                        ToastUtils.showMessage(MessageActivity.this , "活动详情页");
                         break;
                 }
             }
@@ -144,7 +141,6 @@ public class MessageActivity extends Activity implements View.OnClickListener, V
         mAdapter.setOnMsgDeleteClickListener(new MessageAdapter.OnMsgDeleteClickListener() {
             @Override
             public void onDeleteClick(View view, int position) {
-                focusMoveUtil.hideFocusForShowDelay(300);
                 dbManager.deleteMsg(msgList.get(position));
                 int msgCount = msgList.size();
                 msgList.remove(position);
@@ -158,6 +154,12 @@ public class MessageActivity extends Activity implements View.OnClickListener, V
                     return;
                 }
                 refreshTotalText(msgCount - 1);
+                int first = llManager.findFirstVisibleItemPosition();
+                int last = llManager.findLastVisibleItemPosition();
+                if (first != 0 && last == msgCount - 1) {
+                    focusMsgItem(position - 1);
+                    return;
+                }
                 deleteLastItem = position == msgCount - 1;
                 final int posi = deleteLastItem ? position - 1 : position;
                 focusMsgItem(posi);
@@ -167,7 +169,7 @@ public class MessageActivity extends Activity implements View.OnClickListener, V
                     public void run() {
                         focusMsgItemInRunnable(posi);
                     }
-                }, 400);
+                }, 500);
             }
         });
     }
@@ -299,6 +301,11 @@ public class MessageActivity extends Activity implements View.OnClickListener, V
         if (focusViewMoveEnable) {
             if (hasFocus) {
                 mFocusedView = v;
+                /*if (mFocusedView.getId() == R.id.iv_btn_delete){
+                    focusMoveUtil.setFocusRes(MessageActivity.this , R.mipmap.btn_circle_focus);
+                }else{
+                    focusMoveUtil.setFocusRes(MessageActivity.this , R.mipmap.btn_focus);
+                }*/
                 if (mFocusedView == btnTag || mFocusedView == btnClear) {
                     refreshPosText(0);
                 }
