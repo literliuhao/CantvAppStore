@@ -15,7 +15,7 @@ public interface AppInstallListener {
     void onInstallSucess(String id);
     void onInstallFail(String id);
 
-    public static final int APP_INSTALLING = 7;
-    public static final int APP_INSTALL_SUCESS = 8;
-    public static final int APP_INSTALL_FAIL = 9;
+    public static final int APP_INSTALLING = 8;
+    public static final int APP_INSTALL_SUCESS = 9;
+    public static final int APP_INSTALL_FAIL = 10;
 }
