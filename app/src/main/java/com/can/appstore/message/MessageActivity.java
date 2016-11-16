@@ -1,6 +1,5 @@
 package com.can.appstore.message;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -8,11 +7,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.can.appstore.ActionConstants;
 import com.can.appstore.R;
+import com.can.appstore.base.BaseActivity;
 import com.can.appstore.message.adapter.MessageAdapter;
 import com.can.appstore.message.db.entity.MessageInfo;
 import com.can.appstore.message.manager.GreenDaoManager;
@@ -26,7 +25,7 @@ import cn.can.tvlib.utils.ToastUtils;
  * 消息主页面
  * Created by HEKANG on 2016/10/18.
  */
-public class MessageActivity extends Activity implements View.OnClickListener, View.OnFocusChangeListener {
+public class MessageActivity extends BaseActivity implements View.OnClickListener, View.OnFocusChangeListener {
 
     private final static String TAG = "MessageActivity";
     private List<MessageInfo> msgList;
@@ -37,7 +36,6 @@ public class MessageActivity extends Activity implements View.OnClickListener, V
     private Runnable mFocusMoveRunnable;
     private Button btnTag, btnClear;
     private TextView empty, itemPos, itemTotal;
-    private ProgressBar loading;
     private RecyclerView mRecyclerView;
     private MessageAdapter mAdapter;
     private View mFocusedView;
@@ -50,6 +48,7 @@ public class MessageActivity extends Activity implements View.OnClickListener, V
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
         initView();
+        showLoadingDialog();
         initData();
         initFocusView();
     }
@@ -63,7 +62,6 @@ public class MessageActivity extends Activity implements View.OnClickListener, V
         btnClear.setOnFocusChangeListener(this);
         itemPos = (TextView) findViewById(R.id.tv_item_pos);
         itemTotal = (TextView) findViewById(R.id.tv_item_total);
-        loading = (ProgressBar) findViewById(R.id.loading);
         empty = (TextView) findViewById(R.id.tv_empty_msg);
     }
 
@@ -85,7 +83,7 @@ public class MessageActivity extends Activity implements View.OnClickListener, V
             }
         };
         msgList = queryData();
-        loading.setVisibility(View.GONE);
+        hideLoadingDialog();
         if (msgList != null && !msgList.isEmpty()) {
             initAdapter();
             initRecyclerView();
@@ -256,6 +254,12 @@ public class MessageActivity extends Activity implements View.OnClickListener, V
         stringBuilder.append(total);
         stringBuilder.append("行");
         itemTotal.setText(stringBuilder);
+    }
+
+    @Override
+    protected void onHomeKeyListener() {
+        finish();
+        super.onHomeKeyListener();
     }
 
     @Override
