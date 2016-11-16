@@ -17,8 +17,9 @@ public class DownloadDBEntity {
     private String saveDirPath;
     private String fileName;
     private Integer downloadStatus;
+    private String icon;
 
-    @Generated(hash = 1143139915)
+    @Generated
     public DownloadDBEntity() {
     }
 
@@ -26,8 +27,8 @@ public class DownloadDBEntity {
         this.downloadId = downloadId;
     }
 
-    @Generated(hash = 164179038)
-    public DownloadDBEntity(String downloadId, Long totalSize, Long downloadedSize, String url, String saveDirPath, String fileName, Integer downloadStatus) {
+    @Generated
+    public DownloadDBEntity(String downloadId, Long totalSize, Long downloadedSize, String url, String saveDirPath, String fileName, Integer downloadStatus, String icon) {
         this.downloadId = downloadId;
         this.totalSize = totalSize;
         this.downloadedSize = downloadedSize;
@@ -35,6 +36,7 @@ public class DownloadDBEntity {
         this.saveDirPath = saveDirPath;
         this.fileName = fileName;
         this.downloadStatus = downloadStatus;
+        this.icon = icon;
     }
 
     public String getDownloadId() {
@@ -91,6 +93,14 @@ public class DownloadDBEntity {
 
     public void setDownloadStatus(Integer downloadStatus) {
         this.downloadStatus = downloadStatus;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
 }
