@@ -31,6 +31,7 @@ import cn.can.downloadlib.DownloadTask;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.utils.ApkUtils;
 import cn.can.tvlib.utils.StringUtils;
+import cn.can.tvlib.utils.ToastUtils;
 
 /**
  * Created by laiforg on 2016/10/31.
@@ -97,7 +98,6 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
         TextView appDeleteBtn, appControlBtn;
 
         DownloadTask downloadTask;
-        AppInstallListener appInstallListener;
         ItemEventListener eventListener;
         private DownloadListener downloadListener;
         private Runnable showControlViewRunnable, refreshStatusRunnable, selectedViewRunnable;
@@ -135,31 +135,6 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     postRefreshStatus();
                 }
             };
-            //app下载listener 后期考虑用EventBus 免去在viewholder 持有appInstallInstaller引用 xzl
-            appInstallListener = new AppInstallListener() {
-                @Override
-                public void onInstalling(DownloadTask downloadTask) {
-                    Log.i(TAG, "onInstalling: ");
-                    postRefreshStatus();
-                }
-
-                @Override
-                public void onInstallSucess(String id) {
-                    Log.i(TAG, "onInstallSucess: ");
-                    if (downloadTask.getId().equals(id)) {
-                        postRefreshStatus();
-                    }
-                }
-
-                @Override
-                public void onInstallFail(String id) {
-                    Log.i(TAG, "onInstallFail: ");
-                    if (downloadTask.getId().equals(id)) {
-                        postRefreshStatus();
-                    }
-                }
-            };
-
         }
 
         private void initView() {
@@ -193,13 +168,11 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     setDownloadListener();
                     eventBus.register(DownloadViewHolder.this);
                     appDownloadStatusImgVi.startRotate();
-                    DownloadManager.getInstance(v.getContext().getApplicationContext()).setAppInstallListener(appInstallListener);
                 }
 
                 @Override
                 public void onViewDetachedFromWindow(View v) {
                     removeDownloadListener();
-                    DownloadManager.getInstance(v.getContext().getApplicationContext()).removeAppInstallListener(appInstallListener);
                     v.removeCallbacks(showControlViewRunnable);
                     v.removeCallbacks(selectedViewRunnable);
                     eventBus.unregister(DownloadViewHolder.this);
@@ -238,7 +211,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
             }
         }
 
-        private void removeDownloadListener(){
+        private void removeDownloadListener() {
             if (downloadTask != null) {
                 downloadTask.removeDownloadListener(downloadListener);
             }
@@ -301,6 +274,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     appControlBtn.setText("继续");
                     break;
                 case DownloadStatus.DOWNLOAD_STATUS_ERROR:
+                case DownloadStatus.SPACE_NOT_ENOUGH:
                     appControlBtn.setText("重试");
                     break;
                 case DownloadStatus.DOWNLOAD_STATUS_COMPLETED:
@@ -341,6 +315,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     appDownloadStatusTv.setText("等待中");
                     break;
                 case DownloadStatus.DOWNLOAD_STATUS_ERROR:
+                case DownloadStatus.SPACE_NOT_ENOUGH:
                     appDownloadStatusImgVi.setImageResource(R.mipmap.icon_download_fail);
                     appDownloadStatusTv.setText("失败");
                     break;
@@ -375,9 +350,17 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
          */
         @Subscribe(threadMode = ThreadMode.MAIN)
         public void onDownloadEvent(DownloadEvent event) {
-            if (DownloadPresenterImpl.TAG_DOWNLOAD_UPDATA_STATUS.equals(event.getTag())
-                    && DownloadEvent.DOWNLOADEVENT_UPDATE_LIST_STATUS == event.getEventType()) {
-                refreshStatus();
+            if (DownloadPresenterImpl.TAG_DOWNLOAD_UPDATA__STATUS.equals(event.getTag())) {
+                switch (event.getEventType()) {
+                    case DownloadEvent.DOWNLOADEVENT_UPDATE_DOWNLOAD_STATUS:
+                        refreshStatus();
+                        break;
+                    case DownloadEvent.DOWNLOADEVENT_UPDATE_INSTALL_STATUS:
+                        if (event.getDownloadTaskId().equals(downloadTask.getId())) {
+                            refreshStatus();
+                        }
+                        break;
+                }
             }
         }
     }
@@ -418,7 +401,6 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                 if (mOnItemEventListener != null) {
                     mOnItemEventListener.onItemContentClick(v, holder.position, holder.downloadTask);
                 }
-
             } else if (v.getId() == holder.appControlBtn.getId()) {
 
                 switch (holder.downloadTask.getDownloadStatus()) {
@@ -434,13 +416,17 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                                 getApplicationContext()).resume(holder.downloadTask.getId());
                         break;
                     case DownloadStatus.DOWNLOAD_STATUS_ERROR:
-                        //TODO
                         holder.downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
                         DownloadManager.getInstance(v.getContext().getApplicationContext()).
                                 addDownloadTask(holder.downloadTask, holder.downloadListener);
                         break;
+                    case DownloadStatus.SPACE_NOT_ENOUGH:
+                        DownloadManager.getInstance(v.getContext().
+                                getApplicationContext()).resume(holder.downloadTask.getId());
+                        break;
                     case AppInstallListener.APP_INSTALLING:
-                        // TODO: 2016/11/14
+                        //正在安装
+                        ToastUtils.showMessage(v.getContext(), v.getContext().getString(R.string.download_installing));
                         break;
                     case AppInstallListener.APP_INSTALL_SUCESS:
                         //TODO
@@ -458,9 +444,13 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     mOnItemEventListener.onControlButtonClick(v, holder.position, holder.downloadTask);
                 }
             } else if (v.getId() == holder.appDeleteBtn.getId()) {
-                if (AppInstallListener.APP_INSTALLING == holder.downloadTask.getDownloadStatus()
-                        || AppInstallListener.APP_INSTALL_SUCESS == holder.downloadTask.getDownloadStatus()) {
+                if (AppInstallListener.APP_INSTALLING == holder.downloadTask.getDownloadStatus()) {
                     //安装中 安装成功 删除按钮不可点击
+                    ToastUtils.showMessage(v.getContext(), v.getContext().getString(R.string.download_installing));
+                    return;
+                }
+                if (AppInstallListener.APP_INSTALL_SUCESS == holder.downloadTask.getDownloadStatus()) {
+                    ToastUtils.showMessage(v.getContext(), v.getContext().getString(R.string.download_installed));
                     return;
                 }
                 DownloadManager.getInstance(v.getContext().getApplicationContext()).cancel(holder.downloadTask);
@@ -520,6 +510,10 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
             }
             if (v.getId() == holder.appContentLayout.getId()) {
                 if (holder.position == 0 && KeyEvent.KEYCODE_DPAD_UP == keyCode) {
+                    return true;
+                }
+                if (KeyEvent.KEYCODE_DPAD_RIGHT == keyCode && KeyEvent.ACTION_DOWN == event.getAction()) {
+                    holder.appControlBtn.requestFocus();
                     return true;
                 }
                 if (mOnItemEventListener != null) {
