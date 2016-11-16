@@ -20,6 +20,7 @@ import cn.can.tvlib.ui.focus.FocusMoveUtil;
  */
 
 public class ActiveActivity extends Activity implements ActiveContract.OperationView {
+    private final static int REFRESH_PROGRESSBAR_TEXT = 0x10;
     private final static int REFRESH_PROGRESSBAR_PROGRESS = 0x11;
     private final static int SHOW_TOAST = 0x12;
 
@@ -77,12 +78,16 @@ public class ActiveActivity extends Activity implements ActiveContract.Operation
 
     @Override
     public void refreshTextProgressbarTextStatus(String status) {
-        mActiveTextProgressBar.setText(status);
+        mHandler.removeMessages(REFRESH_PROGRESSBAR_TEXT);
+        Message msg = mHandler.obtainMessage();
+        msg.what = REFRESH_PROGRESSBAR_TEXT;
+        msg.obj = status;
+        mHandler.sendMessage(msg);
     }
 
     @Override
     public void showToast(String toastContent) {
-        mHandler.removeMessages(REFRESH_PROGRESSBAR_PROGRESS);
+        mHandler.removeMessages(SHOW_TOAST);
         Message msg = mHandler.obtainMessage();
         msg.what = SHOW_TOAST;
         msg.obj = toastContent;
@@ -113,6 +118,10 @@ public class ActiveActivity extends Activity implements ActiveContract.Operation
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
+                case REFRESH_PROGRESSBAR_TEXT:
+                    mActiveTextProgressBar.setText((String) msg.obj);
+                    mActiveTextProgressBar.invalidate();
+                    break;
                 case REFRESH_PROGRESSBAR_PROGRESS:
                     mActiveTextProgressBar.setProgress(msg.arg1);
                     break;
@@ -122,4 +131,13 @@ public class ActiveActivity extends Activity implements ActiveContract.Operation
             }
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        if(mActivePresenter != null){
+            mActivePresenter.removeAllListener();
+        }
+        mHandler.removeCallbacksAndMessages(null);
+        super.onDestroy();
+    }
 }

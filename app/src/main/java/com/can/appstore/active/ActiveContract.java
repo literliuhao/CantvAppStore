@@ -7,6 +7,8 @@ package com.can.appstore.active;
 public class ActiveContract {
     interface TaskPresenter{
         void clickBtnDownload();
+
+        void removeAllListener();
     }
 
     interface OperationView{

@@ -2,7 +2,8 @@ package com.can.appstore.active;
 
 
 import android.content.Context;
-import android.os.Environment;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -20,11 +21,11 @@ import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
-import cn.can.tvlib.utils.MD5Util;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.StringUtils;
-import cn.can.tvlib.utils.SystemUtil;
 import retrofit2.Response;
+
+import static com.can.appstore.R.string.active_app_installing;
 
 /**
  * Created by Atangs on 2016/11/2.
@@ -33,10 +34,10 @@ import retrofit2.Response;
  * 缺少应用安装，以及安装是否成功状态未设置
  */
 
-public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTaskListener {
+public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTaskListener, AppInstallListener{
     private final static String TAG = "ActivePresenter";
-    public final static String URL = "http://172.16.11.65:8080/download/20161018/F2_Launcher_V536_20161018191036.apk";
-
+//    public final static String URL = "http://172.16.11.65:8080/download/20161018/F2_Launcher_V536_20161018191036.apk";
+    private DownloadTask mDownloadTask;
     private ActiveContract.OperationView mOperationView;
     private DownloadManager mDownloadManger;
     private Context mContext;
@@ -48,11 +49,11 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
         this.mOperationView = operationView;
         this.mContext = context;
 
-        loadData();
+        requestActiveData();
 
     }
 
-    private void loadData(){
+    private void requestActiveData(){
         final CanCall<Result<Activity>> mActiveData = HttpManager.getApiService().getActivityInfo("234");
         mActiveData.enqueue(new CanCallback<Result<Activity>>() {
             @Override
@@ -62,6 +63,7 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
                     return;
                 }
                 mActive = info.getData();
+                mActive.getRecommend().getPackageName();
                 if (StringUtils.isEmpty(mActive.getUrl())) {
                     mOperationView.setNativeLayout(mActive.getBackground());
                     initDownloadTask(mActive.getRecommend().getUrl());
@@ -81,6 +83,7 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
     private void initDownloadTask(String downloadUrl) {
         mDownloadManger = DownloadManager.getInstance(mContext);
         DownloadTask downloadTask = mDownloadManger.getCurrentTaskById(MD5.MD5(downloadUrl));
+        mDownloadTask = downloadTask;
         if (downloadTask != null) {
             int status = downloadTask.getDownloadStatus();
             switch (status){
@@ -98,7 +101,7 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
                     break;
                 case DownloadStatus.DOWNLOAD_STATUS_COMPLETED:
                 case AppInstallListener.APP_INSTALLING:
-                    mOperationView.refreshTextProgressbarTextStatus(mContext.getString(R.string.active_app_installing));
+                    mOperationView.refreshTextProgressbarTextStatus(mContext.getString(active_app_installing));
                     break;
                 case AppInstallListener.APP_INSTALL_FAIL:
                     mOperationView.refreshTextProgressbarTextStatus("重新安装");
@@ -110,7 +113,7 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
                     break;
             }
             mDownloadManger.addDownloadListener(downloadTask, ActivePresenter.this);
-            setAppInstallListener();
+            mDownloadManger.setAppInstallListener(ActivePresenter.this);
         } else {
             mOperationView.refreshTextProgressbarTextStatus(mContext.getString(R.string.active_click_participate));
         }
@@ -135,10 +138,11 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
             int status = downloadTask.getDownloadStatus();
             if(status == AppInstallListener.APP_INSTALL_SUCESS){
                 mOperationView.showToast("安装成功");
+                startApk(mActive.getRecommend().getPackageName());
                 return;
             }
             if(status == AppInstallListener.APP_INSTALL_FAIL){
-                mOperationView.showToast("安装成功");
+                mOperationView.showToast("安装失败");
                 return;
             }
             if(status == AppInstallListener.APP_INSTALLING){
@@ -146,10 +150,6 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
                 return;
             }
 
-            if (status == DownloadStatus.DOWNLOAD_STATUS_COMPLETED) {
-                mOperationView.showToast("下载完成");
-                return;
-            }
             if (status == DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING || status == DownloadStatus.DOWNLOAD_STATUS_PREPARE) {
                 mOperationView.showToast("已暂停下载");
                 mDownloadManger.pause(downloadTask);
@@ -168,30 +168,28 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
                     +"/":"");
             downloadTask.setUrl(downloadUrl);
             mDownloadManger.addDownloadTask(downloadTask, ActivePresenter.this);
-            setAppInstallListener();
+            mDownloadManger.setAppInstallListener(ActivePresenter.this);
+        }
+        mDownloadTask = downloadTask;
+    }
 
+    @Override
+    public void removeAllListener() {
+        if(mDownloadManger != null){
+            mDownloadManger.removeAppInstallListener(ActivePresenter.this);
+            if(mDownloadTask!=null){
+                mDownloadManger.removeDownloadListener(mDownloadTask,ActivePresenter.this);
+                mDownloadTask = null;
+            }
+            mDownloadManger=null;
         }
     }
-
-    private boolean isFastContinueClickView() {
-        long curClickTime = System.currentTimeMillis();
-        if (curClickTime - mLastClickTime < 1500) {
-            return true;
-        }
-        mLastClickTime = curClickTime;
-        return false;
-    }
-
-    private float calculatePercent(long completedSize, long totalSize) {
-        return totalSize == 0 ? 0 : (float) (completedSize * 100 / totalSize);
-    }
-
 
     // -------------------------------- DownloadTaskListener Event -----------
     @Override
     public void onPrepare(DownloadTask downloadTask) {
         Log.d(TAG, "onPrepare: " + downloadTask.getCompletedSize());
-        if (downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_PREPARE) {
+        if(downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_PREPARE){
             mOperationView.refreshTextProgressbarTextStatus(mContext.getResources().getString(R.string
                     .active_app_download_waiting));
         }
@@ -200,21 +198,18 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
     @Override
     public void onStart(DownloadTask downloadTask) {
         Log.d(TAG, "onStart: " + downloadTask.getCompletedSize());
-        if (downloadTask.getCompletedSize() == 0) {
-            mOperationView.refreshTextProgressbarTextStatus(mContext.getResources().getString(R.string
-                    .active_app_download_waiting));
+        if (downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_START) {
+            float downloadProgress = calculatePercent(downloadTask.getCompletedSize(), downloadTask.getTotalSize());
+           if(downloadProgress < 2){
+               mOperationView.refreshTextProgressbarTextStatus("");
+               mOperationView.refreshProgressbarProgress(2);
+           }
         }
     }
 
     @Override
     public void onDownloading(DownloadTask downloadTask) {
         Log.d(TAG, "onDownloading: " + downloadTask.getCompletedSize());
-        if (downloadTask.getCompletedSize() == 0) {
-            mOperationView.refreshTextProgressbarTextStatus(mContext.getResources().getString(R.string
-                    .active_app_download_waiting));
-            return;
-        }
-        mOperationView.refreshTextProgressbarTextStatus("");
         mOperationView.refreshProgressbarProgress(calculatePercent(downloadTask.getCompletedSize(), downloadTask.getTotalSize()));
     }
 
@@ -231,11 +226,6 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
     @Override
     public void onCompleted(DownloadTask downloadTask) {
         Log.d(TAG, "onCompleted: " + downloadTask.getCompletedSize());
-            //调用安装
-
-//            mOperationView.refreshProgressbarProgress(0);
-//            mOperationView.refreshTextProgressbarTextStatus(mContext.getResources().getString
-//                    (R.string.active_app_installing));
     }
 
     @Override
@@ -257,32 +247,43 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
         }
     }
 
-    private void setAppInstallListener(){
-        if(mDownloadManger!=null){
-            mDownloadManger.setAppInstallListener(new AppInstallListener() {
-                @Override
-                public void onInstalling(DownloadTask downloadTask) {
-                    Log.d(TAG, "onInstalling(downloadTask " + downloadTask.getCompletedSize() +")");
-                    mOperationView.refreshProgressbarProgress(0);
-                    mOperationView.refreshTextProgressbarTextStatus(mContext.getResources().getString
-                            (R.string.active_app_installing));
-                }
-
-                @Override
-                public void onInstallSucess(String id) {
-                    Log.d(TAG, "onInstallSucess(id " + id +")");
-                    mOperationView.refreshTextProgressbarTextStatus(mContext.getResources().getString
-                            (R.string.active_click_participate));
-                }
-
-                @Override
-                public void onInstallFail(String id) {
-                    Log.d(TAG, "onInstallFail(id " + id +")");
-                    mOperationView.refreshTextProgressbarTextStatus("重新安装");
-                }
-            });
-        }
+    //<!-----------------AppInstallListener--------------------->
+    @Override
+    public void onInstalling(DownloadTask downloadTask) {
+        Log.d(TAG, "onInstalling(downloadTask " + downloadTask.getCompletedSize() +")");
+        mOperationView.refreshProgressbarProgress(0);
+        mOperationView.refreshTextProgressbarTextStatus(mContext.getString(active_app_installing));
     }
 
+    @Override
+    public void onInstallSucess(String id) {
+        Log.d(TAG, "onInstallSucess(id " + id +")");
+        mOperationView.refreshTextProgressbarTextStatus(mContext.getString(R.string.active_click_participate));
+        mOperationView.showToast("安装成功");
+    }
 
+    @Override
+    public void onInstallFail(String id) {
+        Log.d(TAG, "onInstallFail(id " + id +")");
+        mOperationView.refreshTextProgressbarTextStatus("重新安装");
+    }
+
+    private boolean isFastContinueClickView() {
+        long curClickTime = System.currentTimeMillis();
+        if (curClickTime - mLastClickTime < 1500) {
+            return true;
+        }
+        mLastClickTime = curClickTime;
+        return false;
+    }
+
+    private float calculatePercent(long completedSize, long totalSize) {
+        return totalSize == 0 ? 0 : (float) (completedSize * 100 / totalSize);
+    }
+
+    private void startApk(String packageName){
+        PackageManager pm = mContext.getPackageManager();
+        Intent intent=pm.getLaunchIntentForPackage(packageName);
+        mContext.startActivity(intent);
+    }
 }
