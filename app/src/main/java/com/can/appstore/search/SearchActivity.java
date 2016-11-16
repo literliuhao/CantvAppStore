@@ -274,8 +274,8 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
         public void run() {
             if (mFocusedListChild != null) {
                 mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f);
-                //1f,1f不就行缩放
-                mFocusScaleUtil.scaleToLarge(mFocusedListChild,1f,1f);
+                //1f,1f不缩放
+                mFocusScaleUtil.scaleToLarge(mFocusedListChild, 1f, 1f);
             }
         }
     }
@@ -292,6 +292,7 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
             } else {
                 mFocusScaleUtil.scaleToNormal();
             }
+            view.setSelected(hasFocus);
         }
     }
 
