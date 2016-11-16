@@ -43,7 +43,7 @@ public class ManagerFragmentTest extends BaseFragment implements View.OnFocusCha
         if (arguments != null) {
             mTitle = arguments.getString(BUNDLE_TITLE);
         }
-        viewAll = inflater.from(inflater.getContext()).inflate(R.layout.index_manager_test, null);
+        viewAll = inflater.from(inflater.getContext()).inflate(R.layout.index_manage_test, null);
         return viewAll;
     }
 

@@ -248,7 +248,11 @@ public class FocusMoveUtil {
         RectF rectF = new RectF();
 
         int[] location = new int[2];
-        newView.getLocationInWindow(location);
+        try {
+            newView.getLocationInWindow(location);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         if (scaleX == 1 && scaleY == 1) {
             rectF.set(location[0], location[1], location[0] + newView.getWidth(), location[1] + newView.getHeight());
 

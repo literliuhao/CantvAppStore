@@ -49,7 +49,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private final int DURATIONSMALL = 300;
     private final float SCALE = 1.05f;
     private final int OFFSCREENPAGELIMIT = 3;
-    private final int PAGERCURRENTITEM = 0;
+    private final int PAGERCURRENTITEM = 4;
     //滚动中
     private final int SCROLLING = 2;
     //滚动完成

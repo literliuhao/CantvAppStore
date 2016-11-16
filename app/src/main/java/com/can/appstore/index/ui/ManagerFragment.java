@@ -4,33 +4,24 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.widget.GridView;
 
 import com.can.appstore.R;
+import com.can.appstore.index.adapter.GridAdapter;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 
 /**
  * Created by liuhao on 2016/10/21.
  */
 
-public class ManagerFragment extends BaseFragment implements View.OnFocusChangeListener, OnClickListener {
-    public static final String BUNDLE_TITLE = "title";
-    private String mTitle = "DefaultValue";
-    private View viewAll;
-    //    private FocusMoveUtil mFocusUtils;
-//    private FocusScaleUtil mFocusScaleUtils;
+public class ManagerFragment extends BaseFragment {
+    private final int[] NAMES = {R.string.index_manager_text1, R.string.index_manager_text2, R.string.index_manager_text3, R.string.index_manager_text4, R.string.index_manager_text5, R.string.index_manager_text6, R.string.index_manager_text7, R.string.index_manager_text8};
+    private final int[] ICONS = {R.drawable.index_manager_icon1, R.drawable.index_manager_icon2, R.drawable.index_manager_icon3, R.drawable.index_manager_icon4, R.drawable.index_manager_icon5, R.drawable.index_manager_icon6, R.drawable.index_manager_icon7, R.drawable.index_manager_icon8};
+    private final int[] COLORS = {R.drawable.index_item1_shape, R.drawable.index_item2_shape, R.drawable.index_item3_shape, R.drawable.index_item4_shape, R.drawable.index_item5_shape, R.drawable.index_item6_shape, R.drawable.index_item7_shape, R.drawable.index_item8_shape};
+    private GridView gridView;
+    private GridAdapter gridAdapter;
     private IAddFocusListener mFocusListener;
-    private LayoutInflater mInflater;
-    private RelativeLayout mrl_1;
-    private RelativeLayout mrl_2;
-    private RelativeLayout mrl_3;
-    private RelativeLayout mrl_4;
-    private RelativeLayout mrl_5;
-    private RelativeLayout mrl_6;
-    private RelativeLayout mrl_7;
-    private RelativeLayout mrl_8;
 
     public ManagerFragment(IAddFocusListener focusListener) {
         mFocusListener = focusListener;
@@ -38,58 +29,36 @@ public class ManagerFragment extends BaseFragment implements View.OnFocusChangeL
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Bundle arguments = getArguments();
-        mInflater = inflater;
-        if (arguments != null) {
-            mTitle = arguments.getString(BUNDLE_TITLE);
-        }
-        viewAll = inflater.from(inflater.getContext()).inflate(R.layout.index_manager, null);
-        return viewAll;
+        View view = inflater.from(inflater.getContext()).inflate(R.layout.index_manage_grid, container, false);
+        gridView = (GridView) view.findViewById(R.id.manage_grid);
+        gridView.setFocusable(false);
+        gridAdapter = new GridAdapter(inflater.getContext());
+        gridAdapter.setNames(NAMES);
+        gridAdapter.setIcons(ICONS);
+        gridAdapter.setColors(COLORS);
+        gridAdapter.setFocusListener(new IAddFocusListener() {
+            @Override
+            public void addFocusListener(View v, boolean hasFocus) {
+                mFocusListener.addFocusListener(v, hasFocus);
+            }
+        });
+
+        gridAdapter.setClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("ManagerFragment", view.getId() + "");
+            }
+        });
+
+
+        gridView.setAdapter(gridAdapter);
+        return view;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        initViews();
 
-    }
-
-    /**
-     * 管理页面：view初始化
-     */
-    private void initViews() {
-        mrl_1 = (RelativeLayout) getView().findViewById(R.id.rl_item1);
-        mrl_2 = (RelativeLayout) getView().findViewById(R.id.rl_item2);
-        mrl_3 = (RelativeLayout) getView().findViewById(R.id.rl_item3);
-        mrl_4 = (RelativeLayout) getView().findViewById(R.id.rl_item4);
-        mrl_5 = (RelativeLayout) getView().findViewById(R.id.rl_item5);
-        mrl_6 = (RelativeLayout) getView().findViewById(R.id.rl_item6);
-        mrl_7 = (RelativeLayout) getView().findViewById(R.id.rl_item7);
-        mrl_8 = (RelativeLayout) getView().findViewById(R.id.rl_item8);
-        mrl_1.setFocusable(true);
-        mrl_2.setFocusable(true);
-        mrl_3.setFocusable(true);
-        mrl_4.setFocusable(true);
-        mrl_5.setFocusable(true);
-        mrl_6.setFocusable(true);
-        mrl_7.setFocusable(true);
-        mrl_8.setFocusable(true);
-        mrl_1.setOnFocusChangeListener(this);
-        mrl_2.setOnFocusChangeListener(this);
-        mrl_3.setOnFocusChangeListener(this);
-        mrl_4.setOnFocusChangeListener(this);
-        mrl_5.setOnFocusChangeListener(this);
-        mrl_6.setOnFocusChangeListener(this);
-        mrl_7.setOnFocusChangeListener(this);
-        mrl_8.setOnFocusChangeListener(this);
-        mrl_1.setOnClickListener(this);
-        mrl_2.setOnClickListener(this);
-        mrl_3.setOnClickListener(this);
-        mrl_4.setOnClickListener(this);
-        mrl_5.setOnClickListener(this);
-        mrl_6.setOnClickListener(this);
-        mrl_7.setOnClickListener(this);
-        mrl_8.setOnClickListener(this);
     }
 
     @Override
@@ -97,55 +66,15 @@ public class ManagerFragment extends BaseFragment implements View.OnFocusChangeL
         super.onDestroy();
     }
 
-    private void initFocus() {
-//        mFocusUtils = new FocusMoveUtil(mInflater.getContext(), getView(), R.drawable.image_focus);
-//        mFocusScaleUtils = new FocusScaleUtil(300, 300, 1.05f, null, null);
-    }
-
-    /**
-     * 所有焦点移动操作都给IndexActivity
-     * 因此删除许多逻辑代码
-     *
-     * @param view
-     * @param hasFocus
-     */
-    @Override
-    public void onFocusChange(View view, boolean hasFocus) {
-        mFocusListener.addFocusListener(view, hasFocus);
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.rl_item1:
-                Log.i("ManagerFragment", "rl_item1....");
-                break;
-            case R.id.rl_item2:
-                Log.i("ManagerFragment", "rl_item2....");
-                break;
-            case R.id.rl_item3:
-                Log.i("ManagerFragment", "rl_item3....");
-                break;
-            case R.id.rl_item4:
-                Log.i("ManagerFragment", "rl_item4....");
-                break;
-            case R.id.rl_item5:
-                Log.i("ManagerFragment", "rl_item5....");
-                break;
-            case R.id.rl_item6:
-                Log.i("ManagerFragment", "rl_item6....");
-                break;
-            case R.id.rl_item7:
-                Log.i("ManagerFragment", "rl_item7....");
-                break;
-            case R.id.rl_item8:
-                Log.i("ManagerFragment", "rl_item8....");
-                break;
-        }
-    }
-
     @Override
     public View getLastView() {
-        return mrl_4;
+        return gridView.getChildAt(3);
     }
+
+
+//    @Override
+//    public void onItemClick(AdapterView<?> adapterView, View view, int postion, long l) {
+//        Log.i("ManagerFragment", view.getId() + " " + postion);
+//    }
+
 }

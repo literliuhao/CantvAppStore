@@ -229,8 +229,8 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
         TitleBar.this.getViewTreeObserver().addOnGlobalFocusChangeListener(new ViewTreeObserver.OnGlobalFocusChangeListener() {
             @Override
             public void onGlobalFocusChanged(View oldFocus, View newFocus) {
-                Log.i("TitleBar", "onGlobalFocusChanged old " + String.valueOf(oldFocus));
-                Log.i("TitleBar", "onGlobalFocusChanged new " + String.valueOf(newFocus));
+//                Log.i("TitleBar", "onGlobalFocusChanged old " + String.valueOf(oldFocus));
+//                Log.i("TitleBar", "onGlobalFocusChanged new " + String.valueOf(newFocus));
 
                 if (!(oldFocus instanceof TextView) && newFocus instanceof TextView) {
                     newFocus = textViewList.get(mViewPager.getCurrentItem());
