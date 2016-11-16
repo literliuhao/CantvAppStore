@@ -138,9 +138,9 @@ public class UpdateUtils {
                     info.setDownloadUrl("http://172.16.11.65:8080/download/20161018/F1_Launcher_V532_20161018192912.apk");
                 }else if (i == 34) {
                     info.setDownloadUrl("http://172.16.11.65:8080/download/20161018/F2_Launcher_V532_20161018192912.apk");
-                }else if (i == 35) {
+                }/*else if (i == 35) {
                     info.setDownloadUrl("http://172.16.11.65:8080/download/20161018/F2_Launcher_V532_20161018192912.apk");
-                }else{
+                }*/else{
                     info.setDownloadUrl("http://");
                 }
                 // 获取该应用安装包的Intent，用于启动该应用
