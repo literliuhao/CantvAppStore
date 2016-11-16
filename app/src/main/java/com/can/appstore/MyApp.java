@@ -1,9 +1,7 @@
 package com.can.appstore;
 
 import android.app.Application;
-
-import cn.can.downloadlib.DownloadManager;
-import cn.can.downloadlib.DownloadTask;
+import android.content.Context;
 
 /**
  * ================================================
@@ -15,6 +13,8 @@ import cn.can.downloadlib.DownloadTask;
  * ================================================
  */
 public class MyApp extends Application {
+
+    private static Context mContext;
     private static MyApp INSTANCE;
 
     public static MyApp getApplication() {
@@ -25,5 +25,11 @@ public class MyApp extends Application {
     public void onCreate() {
         super.onCreate();
         INSTANCE = this;
+        mContext = getApplicationContext();
     }
+
+    public static Context getContext() {
+        return mContext;
+    }
+
 }

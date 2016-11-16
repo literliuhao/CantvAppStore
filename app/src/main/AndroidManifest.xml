@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.can.appstore">
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"></uses-permission>
@@ -71,6 +73,14 @@
                 <action android:name="com.can.appstore.upgrade.UpgradeService"/>
             </intent-filter>
         </service>
+        <activity android:name="com.can.appstore.message.MessageStartActivity"></activity>
+        <activity android:name="com.can.appstore.message.MessageHomeActivity"></activity>
+        <activity android:name="com.can.appstore.message.MessageActivity">
+        <intent-filter>
+            <action android:name="com.can.appstore.message.ACTION.Message"/>
+            <category android:name="android.intent.category.DEFAULT"/>
+        </intent-filter>
+    </activity>
     </application>
 
 </manifest>

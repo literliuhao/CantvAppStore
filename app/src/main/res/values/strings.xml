@@ -58,4 +58,11 @@
     <string name="installing">"正在安装中，请稍后..."</string>
     <string name="recommend_apps_info">%1$s&#160;|&#160;%2$s</string>
     <string name="back">"返回"</string>
+
+    <!--消息中心文本-->
+    <string name="title_msg">消息中心</string>
+    <string name="btn_tag_msg">全标为已读</string>
+    <string name="btn_clear_msg">清空</string>
+    <string name="txt_empty_msg">暂无消息</string>
+
 </resources>

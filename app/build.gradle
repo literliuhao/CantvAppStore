@@ -26,6 +26,13 @@ apt {
     }
 }
 
+apply plugin: 'org.greenrobot.greendao'
+greendao {
+    schemaVersion 1
+    daoPackage 'com.can.appstore.message.db.dao'
+    targetGenDir 'src/main/java'
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
@@ -33,6 +40,8 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+    compile 'org.greenrobot:greendao:3.0.1'
+    compile 'org.greenrobot:greendao-generator:3.0.0'
     compile project(':lib')
     compile project(':downloadlib')
     compile 'org.greenrobot:eventbus:3.0.0'
