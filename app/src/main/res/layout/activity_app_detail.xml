@@ -118,6 +118,7 @@
             android:layout_width="@dimen/dimen_250px"
             android:layout_height="@dimen/dimen_80px"
             android:max="100"
+            android:nextFocusForward="@id/bt_download"
             android:progressDrawable="@drawable/layer_list_app_detail_download_focus"
             android:textColor="@color/app_name_color"
             android:textSize="@dimen/fontsize_36px"/>
@@ -129,12 +130,15 @@
             android:layout_width="@dimen/dimen_250px"
             android:layout_height="@dimen/dimen_80px"
             android:layout_marginStart="@dimen/dimen_40px"
+            android:focusable="true"
             android:max="100"
-            android:progressDrawable="@drawable/layer_list_app_detail_download_focus"
+            android:nextFocusForward="@id/bt_update"
+            android:nextFocusLeft="@id/bt_download"
+            android:nextFocusUp="@id/bt_update"
+            android:progressDrawable="@drawable/layer_list_app_detail_download"
             android:textColor="@color/app_name_color"
             android:textSize="@dimen/fontsize_36px"
             android:visibility="invisible"/>
-
 
         <Button
             android:id="@+id/bt_Introduction"
@@ -144,9 +148,11 @@
             android:layout_marginTop="@dimen/dimen_6px"
             android:background="@android:color/transparent"
             android:gravity="center"
+            android:nextFocusForward="@id/bt_Introduction"
             android:text="@string/detail_app_Introduction"
             android:textColor="@color/app_name_color"
             android:textSize="@dimen/fontsize_34px"/>
+
 
         <Button
             android:id="@+id/bt_recommend"
@@ -156,6 +162,7 @@
             android:layout_marginTop="@dimen/dimen_6px"
             android:background="@android:color/transparent"
             android:gravity="center"
+            android:nextFocusRight="@id/bt_recommend"
             android:text="@string/detail_app_recommend"
             android:textColor="@color/app_name_color"
             android:textSize="@dimen/fontsize_34px"/>
@@ -225,6 +232,7 @@
                 android:clipToPadding="false"
                 android:descendantFocusability="blocksDescendants"
                 android:focusable="true"
+                android:nextFocusLeft="@id/ll_introduce_text"
                 android:orientation="vertical"
                 android:paddingEnd="@dimen/dimen_20px"
                 android:paddingStart="@dimen/dimen_20px">

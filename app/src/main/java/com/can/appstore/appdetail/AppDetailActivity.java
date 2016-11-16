@@ -51,7 +51,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     private static final int TO_MOVE_LEFT = 1;
     private static final int MESSAGE_TYPE_DOWNLAOD = 2;
     private static final int MESSAGE_TYPE_UPDATE = 3;
-    private static final int LINE_COUNT = 4;
+    private static final int RECOMMEND_LINE_COUNT = 4;
     private View mFocusedListChild;
     private AppDetailActivity.ListFocusMoveRunnable mListFocusMoveRunnable;
     private FocusMoveUtil mFocusMoveUtil;
@@ -76,7 +76,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     private TextView mTvAppIntroduc;
     private TextView mTvAddFuntion;
     private RelativeLayout mRelativeLayuotOperatingEquipment;
-    private List<String> mControlType = new ArrayList<String>();
+    private List<String> mControlType = new ArrayList<>();
     private RecommedGridAdapter mRecommedGridAdapter;
     private IntroducGridAdapter mIntroducGridAdapter;
     private ViewFlipper mViewFlipper;
@@ -197,9 +197,9 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 break;
             case R.id.bt_update:
                 if (hasFocus) {
-                    mButtonDownload.setProgressDrawable(getResources().getDrawable(R.drawable.layer_list_app_detail_download_focus));
+                    mButtonUpdate.setProgressDrawable(getResources().getDrawable(R.drawable.layer_list_app_detail_download_focus));
                 } else {
-                    mButtonDownload.setProgressDrawable(getResources().getDrawable(R.drawable.layer_list_app_detail_download));
+                    mButtonUpdate.setProgressDrawable(getResources().getDrawable(R.drawable.layer_list_app_detail_download));
                 }
                 break;
             case R.id.bt_Introduction:
@@ -396,13 +396,11 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     @Override
     public void refreshDownloadButtonStatus(int status, float progress) {
-        mHandler.removeMessages(MESSAGE_TYPE_UPDATE);
         sendProgressMessage(status, MESSAGE_TYPE_DOWNLAOD, progress);
     }
 
     @Override
     public void refreshUpdateButtonStatus(int status, float progress) {
-        mHandler.removeMessages(MESSAGE_TYPE_DOWNLAOD);
         sendProgressMessage(status, MESSAGE_TYPE_UPDATE, progress);
     }
 
@@ -428,7 +426,6 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         message.arg1 = (int) progress;
         if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_RUN && what == MESSAGE_TYPE_DOWNLAOD) {
             message.obj = getResources().getString(R.string.detail_app_run);
-            mButtonDownload.setBackgroundResource(R.drawable.layer_list_app_detail_run);
         } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_INSTALLING) {
             message.obj = getResources().getString(R.string.detail_app_installing);
         } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_PAUSE) {
@@ -441,6 +438,8 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             message.obj = getResources().getString(R.string.detail_app_click_pause);
         } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_RESTART) {
             message.obj = getResources().getString(R.string.downlaod_restart);
+        } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_UPDATE) {
+            message.obj = getResources().getString(R.string.detail_app_update);
         }
         mHandler.sendMessage(message);
     }
@@ -449,9 +448,11 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         if (mButtonDownload != null && refreshButtonProgress == MESSAGE_TYPE_DOWNLAOD) {
             mButtonDownload.setProgress((int) progress);
             mButtonDownload.setText(buttonText);
+            mHandler.removeMessages(MESSAGE_TYPE_DOWNLAOD);
         } else if (mButtonUpdate != null && refreshButtonProgress == MESSAGE_TYPE_UPDATE) {
             mButtonUpdate.setProgress((int) progress);
             mButtonUpdate.setText(buttonText);
+            mHandler.removeMessages(MESSAGE_TYPE_UPDATE);
         }
     }
 
@@ -460,6 +461,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         if (mButtonUpdate != null) {
             if (isShow) {
                 mButtonUpdate.setVisibility(View.VISIBLE);
+                mButtonDownload.requestFocus();
             } else {
                 mButtonUpdate.setVisibility(View.INVISIBLE);
             }
@@ -469,15 +471,15 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     private void setFocusMoveView(boolean isShow) {
         if (isShow) {
-            mButtonDownload.setNextFocusRightId(R.id.bt_update);
-            mButtonUpdate.setNextFocusRightId(R.id.bt_Introduction);
-            mBtIntroduction.setNextFocusLeftId(R.id.bt_update);
+            mButtonDownload.setNextFocusRightId(mButtonUpdate.getId());
+            mBtIntroduction.setNextFocusLeftId(mButtonUpdate.getId());
+            mButtonUpdate.setNextFocusRightId(mBtIntroduction.getId());
         } else {
-            mButtonDownload.setNextFocusRightId(R.id.bt_Introduction);
-            mBtIntroduction.setNextFocusLeftId(R.id.bt_download);
+            mButtonDownload.setNextFocusRightId(mBtIntroduction.getId());
+            mBtIntroduction.setNextFocusLeftId(mButtonDownload.getId());
         }
-        mBtIntroduction.setNextFocusRightId(R.id.bt_recommend);
-        mBtRecommend.setNextFocusLeftId(R.id.bt_Introduction);
+        mBtIntroduction.setNextFocusRightId(mBtRecommend.getId());
+        mBtRecommend.setNextFocusLeftId(mBtIntroduction.getId());
     }
 
     @Override
@@ -494,7 +496,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             mIntroducGridAdapter = new IntroducGridAdapter(AppDetailActivity.this, mAppinfo.getThumbs());
             addIntroduceGridListener();
             addIntroduceSetting();
-        }else {
+        } else {
             mIntroducGridAdapter.notifyDataSetChanged();
         }
     }
@@ -524,7 +526,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             @Override
             public boolean onItemKeyEvent(int position, View v, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && event.getAction() == KeyEvent.ACTION_DOWN) {
-                    if (position == 4) {
+                    if (position == mAppinfo.getThumbs().size() - 1) {
                         startMoveAnmi(TO_MOVE_RIGHT);
                         recommendGridPositionRequestFocus(500, 0);
                         mScaleUtil.scaleToNormal(v);
@@ -551,7 +553,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 super.onScrollStateChanged(recyclerView, newState);
                 if (isTabLineMoveToRecommend) {
                     int size = mAppinfo.getRecommend().size();
-                    if (size < 4) {
+                    if (size < RECOMMEND_LINE_COUNT) {
                         recommendGridPositionRequestFocus(200, size - 1);
                     } else {
                         recommendGridPositionRequestFocus(300, 3);
@@ -572,7 +574,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             mRecommedGridAdapter = new RecommedGridAdapter(AppDetailActivity.this, mAppinfo.getRecommend());
             addRecommendGridListener();
             addRecommendSetting();
-        }else {
+        } else {
             mRecommedGridAdapter.notifyDataSetChanged();
         }
     }
@@ -597,9 +599,9 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             public boolean onItemKeyEvent(int position, View v, int keyCode, KeyEvent event) {
                 if (mRecommendGrid.isShown()) {
                     if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && event.getAction() == KeyEvent.ACTION_DOWN) {
-                        if (position % LINE_COUNT == 0) {
+                        if (position % RECOMMEND_LINE_COUNT == 0) {
                             startMoveAnmi(TO_MOVE_LEFT);
-                            introduceGridRequestFocus(500, 4);
+                            introduceGridRequestFocus(500, mAppinfo.getThumbs().size() - 1);
                             mScaleUtil.scaleToNormal(v);
                             return true;
                         }
@@ -607,7 +609,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                         int size = mAppinfo.getRecommend().size();
                         if (size - 1 == position) {
                             return true;
-                        } else if (position % LINE_COUNT == 3) {
+                        } else if (position % RECOMMEND_LINE_COUNT == 3) {
                             return true;
                         }
                     } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP && event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -668,7 +670,6 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     @Override
     protected void onStop() {
         super.onStop();
-        mAppDetailPresenter.unRegiestr();
     }
 
     @Override
@@ -677,7 +678,6 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         mFocusMoveUtil.release();
         mAppDetailPresenter.release();
         mIvTabLine.clearAnimation();
-        mAppDetailPresenter.dismissIntroduceDialog();
         mHandler.removeMessages(MESSAGE_TYPE_UPDATE);
         mHandler.removeMessages(MESSAGE_TYPE_DOWNLAOD);
         isRecommendGridFirstRow = false;

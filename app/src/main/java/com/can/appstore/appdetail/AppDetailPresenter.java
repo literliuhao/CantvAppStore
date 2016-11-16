@@ -41,6 +41,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public final static int DOWNLOAD_BUTTON_STATUS_RUN = 6;//运行
     public final static int DOWNLOAD_BUTTON_STATUS_INSTALLING = 5;//安装中
     public final static int DOWNLOAD_BUTTON_STATUS_RESTART = 6;//重试
+    public final static int DOWNLOAD_BUTTON_STATUS_UPDATE = 7;//更新
     public final static float DOWNLOAD_INIT_PROGRESS = 0f;//初始时进度
     public final static float DOWNLOAD_FINISH_PROGRESS = 100f;//完成时进度
     public int downlaodErrorCode = 0;//下载错误
@@ -95,7 +96,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             }
             addDownlaodListener();
         } else {
-            mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, DOWNLOAD_INIT_PROGRESS);
+            mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_UPDATE, DOWNLOAD_INIT_PROGRESS);
         }
     }
 
@@ -167,12 +168,12 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 mPackageName = mAppInfo.getPackageName();
                 Url = mAppInfo.getUrl();
                 initDownloadButtonStatus();
-                mView.loadAppInfoOnSuccess(mAppInfo);
                 if (mAppInfo.getVersionCode() > PackageUtils.getVersionCode(mContext, mPackageName) && ApkUtils.isAvailable(mContext, mPackageName)) {
                     isShowUpdateButton = true;
-                    mView.refreshUpdateButton(true);
                     initUpdateButtonStatus();
+                    mView.refreshUpdateButton(true);
                 }
+                mView.loadAppInfoOnSuccess(mAppInfo);
             }
 
             @Override
@@ -267,17 +268,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         if (downloadTask != null) {
             mDownloadManager.addDownloadListener(downloadTask, AppDetailPresenter.this);
             mDownloadManager.setAppInstallListener(AppDetailPresenter.this);
-        }
-    }
-
-    @Override
-    public void release() {
-        DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(Url));
-        if (downloadTask != null) {
-            mDownloadManager.removeDownloadListener(downloadTask, this);
-        }
-        if (mAppDetailCall != null) {
-            mAppDetailCall.cancel();
         }
     }
 
@@ -427,6 +417,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     /**
      * 进入到图片放大页面
+     *
      * @param currentIndex
      */
     public void enterImageScaleActivity(int currentIndex) {// TODO  进入到图放大页面
@@ -438,6 +429,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     /**
      * 获取当前apk的包名
+     *
      * @return
      */
     public String getCurAppPackageName() {
@@ -496,5 +488,18 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             mContext.unregisterReceiver(mHomeReceivcer);
             mHomeReceivcer = null;
         }
+    }
+
+    @Override
+    public void release() {
+        DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(Url));
+        if (downloadTask != null) {
+            mDownloadManager.removeDownloadListener(downloadTask, this);
+        }
+        if (mAppDetailCall != null) {
+            mAppDetailCall.cancel();
+        }
+        dismissIntroduceDialog();
+        unRegiestr();
     }
 }
