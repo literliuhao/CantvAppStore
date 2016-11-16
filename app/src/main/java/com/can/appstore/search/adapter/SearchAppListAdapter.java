@@ -62,6 +62,7 @@ public class SearchAppListAdapter extends YIBaseCompatFocusAdapter {
                 View view = mLayoutInflater.inflate(R.layout.search_app_item, parent, false);
                 return new SearchViewHolder(view);
         }
+
         return new RecyclerView.ViewHolder(null) {
         };
     }
@@ -74,7 +75,7 @@ public class SearchAppListAdapter extends YIBaseCompatFocusAdapter {
         } else {
             SearchApp app = (SearchApp) mDataList.get(position);
 //            ((SearchViewHolder) holder).mAppIcon.setBackground();
-        ((SearchViewHolder) holder).mAppName.setText(app.mName);
+            ((SearchViewHolder) holder).mAppName.setText(app.mName);
 //            ((SearchViewHolder) holder).mAppSize.setText("");
 //            ((SearchViewHolder) holder).mAppDownloadCount.setText("");
         }

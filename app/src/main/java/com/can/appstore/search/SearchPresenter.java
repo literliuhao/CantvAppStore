@@ -52,7 +52,7 @@ public class SearchPresenter implements SearchContract.Presenter {
         }
 
         for (int i = 0; i < 50; i++) {
-            appList.add(new SearchApp(con + "_App" + i, con + "_" + i));
+            appList.add(new SearchApp(con + "_App" + i+"这是测试数据", con + "_" + i));
         }
         return appList;
     }
