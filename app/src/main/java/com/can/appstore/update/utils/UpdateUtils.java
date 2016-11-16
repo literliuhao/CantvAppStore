@@ -130,6 +130,15 @@ public class UpdateUtils {
                 info.setAppSize(i + "M");
                 Drawable drawable = packageInfo.applicationInfo.loadIcon(pm);
                 info.setIcon(drawable);
+                if (i == 31) {
+                    info.setDownloadUrl("http://app.znds.com/down/20160909/dsj2.0-2.9.1-dangbei.apk");
+                } else if (1 == 32) {
+                    info.setDownloadUrl("http://172.16.11.65:8080/download/20161018/F2_Launcher_V536_20161018191036.apk");
+                }else if (1 == 33) {
+                    info.setDownloadUrl("http://172.16.11.65:8080/download/20161018/F1_Launcher_V532_20161018192912.apk");
+                }else{
+                    info.setDownloadUrl("");
+                }
                 // 获取该应用安装包的Intent，用于启动该应用
                 //info.appIntent = pm.getLaunchIntentForPackage(packageInfo.packageName);
                 appList.add(info);
@@ -179,4 +188,9 @@ public class UpdateUtils {
         int versionCode = packInfo.versionCode;
         return versionCode;
     }
+
+//    http://172.16.11.65:8080/download/20161018/F2_Launcher_V536_20161018191036.apk
+//    http://172.16.11.65:8080/download/20161018/F1_Launcher_V532_20161018192912.apk
+//    http://172.16.11.65:8080/download/20161018/F2_Launcher_V532_20161018192912.apk
+//    http://172.16.11.65:8080/download/20161018/F2_Launcher_V532_20161018192912.apk
 }

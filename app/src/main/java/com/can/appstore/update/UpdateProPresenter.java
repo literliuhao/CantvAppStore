@@ -21,7 +21,7 @@ import cn.can.downloadlib.MD5;
  * Created by shenpx on 2016/11/10 0010.
  */
 
-public class UpdatePresenter implements UpdateContract.Presenter, DownloadTaskListener {
+public class UpdateProPresenter implements UpdateContract.Presenter, DownloadTaskListener {
 
     private static final String TAG = "updatePresenter";
     private UpdateContract.View mView;
@@ -32,57 +32,17 @@ public class UpdatePresenter implements UpdateContract.Presenter, DownloadTaskLi
     private int mSdTotalSize;
     private int mSdSurplusSize;
     private String mSdAvaliableSize;
-    private List<AppInfoBean> mDatas;//已安装应用
 
-    public UpdatePresenter(UpdateContract.View mView, Context mContext) {
-        this.mView = mView;
+    public UpdateProPresenter(UpdateContract.UpdateView mView, Context mContext) {
+        this.mUpdateView = mView;
         this.mContext = mContext;
-        mDatas = new ArrayList<AppInfoBean>();
     }
 
     @Override
-    public void getInstallPkgList(boolean isAutoUpdate) {
-        mDatas.clear();
-        mView.showInstallPkgList(mDatas);
-        if (isAutoUpdate) {
-            mView.hideNoData();
-            mView.showStartAutoUpdate();
-            return;
-        }
-        mView.showLoadingDialog();
-        final List appList = UpdateUtils.getAppList();
-        mDatas.clear();
-        UpdateAppList.list.clear();
-        //进行网络请求获取更新包信息
-        if (appList.size() < 1 || appList == null) {
-            mView.showNoData();
-        } else {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mView.hideLoadingDialog();
-                    mView.hideNoData();
-                    //进行网络请求获取更新包信息
-                    mDatas.addAll(appList);
-                    UpdateAppList.list.addAll(appList);
-                    mView.showInstallPkgList(mDatas);
-                    //setNum(0);
-                }
-            }, 2000);
-        }
-    }
-
-    public List<AppInfoBean> getList(){
-        return mDatas;
-    }
+    public void getInstallPkgList(boolean isAutoUpdate) {}
 
     @Override
-    public void getSDInfo() {
-        mSdTotalSize = UpdateUtils.getSDTotalSize();
-        mSdSurplusSize = UpdateUtils.getSDSurplusSize();
-        mSdAvaliableSize = UpdateUtils.getSDAvaliableSize();
-        mView.showSDProgressbar(mSdSurplusSize, mSdTotalSize, mSdAvaliableSize);
-    }
+    public void getSDInfo() {}
 
     @Override
     public void refreshInstallPkgList() {
@@ -90,45 +50,26 @@ public class UpdatePresenter implements UpdateContract.Presenter, DownloadTaskLi
     }
 
     @Override
-    public void getListSize() {
-        if (mDatas.size() < 1) {
-            mView.showStartAutoUpdate();
-        }
-    }
+    public void getListSize() {}
 
     @Override
-    public void clearList() {
-        mDatas.clear();
-        mView.refreshAll();
-    }
+    public void clearList() {}
 
     @Override
-    public void release() {
-        mView.hideLoadingDialog();
-    }
+    public void release() {}
 
     /**
      * 行数提示
      *
      * @param position
      */
-    public void setNum(int position) {
-        int total = mDatas.size() / 3;
-        if (mDatas.size() % 3 != 0) {
-            total += 1;
-        }
-        int cur = position / 3 + 1;
-        if (total == 0) {
-            cur = 0;
-        }
-        mView.showCurrentNum(cur, total);
-    }
+    public void setNum(int position) {}
 
     /**
      * 初始化更新状态
      */
     public void initUpdateStatus(int position) {
-        String downloadUrl = mDatas.get(position).getDownloadUrl();
+        String downloadUrl = UpdateAppList.list.get(position).getDownloadUrl();
         mDownloadManager = DownloadManager.getInstance(MyApp.mContext);
         DownloadTask curDownloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(downloadUrl));
         if (curDownloadTask != null) {
@@ -144,7 +85,7 @@ public class UpdatePresenter implements UpdateContract.Presenter, DownloadTaskLi
                 mUpdateView.refreshUpdateButton("安装中", true);
                 mUpdateView.refreshUpdateProgress((int) curDownloadTask.getTotalSize(), false);
             }
-            mDownloadManager.addDownloadListener(curDownloadTask, UpdatePresenter.this);
+            mDownloadManager.addDownloadListener(curDownloadTask, UpdateProPresenter.this);
         } else {
             mUpdateView.refreshUpdateButton("", false);
             mUpdateView.refreshUpdateProgress(0, false);
@@ -155,7 +96,7 @@ public class UpdatePresenter implements UpdateContract.Presenter, DownloadTaskLi
      * 添加更新任务
      */
     public void addUpdateTask(int position) {
-        String downloadUrl = mDatas.get(position).getDownloadUrl();
+        String downloadUrl = UpdateAppList.list.get(position).getDownloadUrl();
         mDownloadManager = DownloadManager.getInstance(mContext);
         DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(downloadUrl));
         if (downloadTask != null) {
@@ -176,7 +117,7 @@ public class UpdatePresenter implements UpdateContract.Presenter, DownloadTaskLi
             downloadTask.setId(md5);
             downloadTask.setSaveDirPath(mContext.getExternalCacheDir().getPath() + "/");
             downloadTask.setUrl(downloadUrl);
-            mDownloadManager.addDownloadTask(downloadTask, UpdatePresenter.this);
+            mDownloadManager.addDownloadTask(downloadTask, UpdateProPresenter.this);
         }
     }
 

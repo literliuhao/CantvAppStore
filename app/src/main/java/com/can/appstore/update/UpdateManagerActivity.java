@@ -2,32 +2,39 @@ package com.can.appstore.update;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.DownloadManager;
+
 import android.os.Bundle;
+
 import android.os.Handler;
+import android.os.Message;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
+
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
-import com.can.appstore.installpkg.InstallManagerAdapter;
+
 import com.can.appstore.installpkg.view.LoadingDialog;
 import com.can.appstore.update.model.AppInfoBean;
-import com.can.appstore.update.utils.UpdateUtils;
+
 import com.can.appstore.wights.CanDialog;
 
-import java.util.ArrayList;
+
 import java.util.List;
+
 
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
-import cn.can.tvlib.httpUtils.okhttp.OkHttpUtils;
+import cn.can.downloadlib.MD5;
+
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
@@ -39,7 +46,7 @@ import cn.can.tvlib.utils.PreferencesUtils;
  * Created by shenpx on 2016/10/12 0012.
  */
 
-public class UpdateManagerActivity extends Activity implements UpdateContract.View {
+public class UpdateManagerActivity extends Activity implements UpdateContract.View, DownloadTaskListener {
 
     private CanRecyclerView mRecyclerView;
     private UpdateManagerAdapter mRecyclerAdapter;
@@ -53,7 +60,6 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
     private TextView mCurrentnum;
     private ProgressBar mSizeProgressBar;
     private int i;
-    private ProgressBar mUpdateProgressBar;
     private Dialog mLoadingDialog;
     FocusMoveUtil mFocusMoveUtil;
     FocusScaleUtil mFocusScaleUtil;
@@ -62,6 +68,26 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
     private CanDialog canDialog;
     private cn.can.downloadlib.DownloadManager manager;
     private UpdatePresenter mPresenter;
+    private List<AppInfoBean> mUpdateList;
+    private cn.can.downloadlib.DownloadManager mDownloadManager;
+    private ProgressBar mUpdatePro;
+
+    public Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 1:
+                    if (msg.arg1 > 0 ) {
+                        mUpdatePro.setVisibility(View.VISIBLE);
+                        mUpdatePro.setProgress(msg.arg1);
+                    } else {
+                        mUpdatePro.setVisibility(View.INVISIBLE);
+                    }
+                    Toast.makeText(MyApp.mContext,msg.arg1+"",Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,8 +134,8 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
-                    mFocusMoveUtil.startMoveFocus(mDetectionButton, 1.1f);
-                    mFocusScaleUtil.scaleToLarge(mDetectionButton);
+                    mFocusMoveUtil.startMoveFocus(mDetectionButton, 1.0f);
+                    //mFocusScaleUtil.scaleToLarge(mDetectionButton);
                 } else {
                     mFocusScaleUtil.scaleToNormal(mDetectionButton);
                 }
@@ -120,8 +146,8 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
-                    mFocusMoveUtil.startMoveFocus(mAutoButton, 1.1f);
-                    mFocusScaleUtil.scaleToLarge(mAutoButton);
+                    mFocusMoveUtil.startMoveFocus(mAutoButton, 1.0f);
+                    //mFocusScaleUtil.scaleToLarge(mAutoButton);
                 } else {
                     mFocusScaleUtil.scaleToNormal(mAutoButton);
                 }
@@ -184,13 +210,79 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
         });
 
         mRecyclerAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
+
             @Override
             public void onClick(View view, int position, Object data) {
-               /* Toast.makeText(UpdateManagerActivity.this, position + 1 + "/" + mDatas.size(),
-                        Toast.LENGTH_SHORT).show();*/
                 mCurrentPositon = position;
-                mUpdateProgressBar = (ProgressBar) view.findViewById(R.id.pb_updateapp_progressbar);
-                initProgress();
+                String downloadUrl = mUpdateList.get(position).getDownloadUrl();
+                //mRecyclerView.setTag(downloadUrl);
+                mUpdatePro = (ProgressBar) view.findViewById(R.id.pb_updateapp_progressbar);
+                if (mDownloadManager == null) {
+                    mDownloadManager = cn.can.downloadlib.DownloadManager.getInstance(UpdateManagerActivity.this);
+                }
+                DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(downloadUrl));
+                if (downloadTask == null) {
+                    /*int status = downloadTask.getDownloadStatus();
+
+                    if (status == DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING
+                            || status == DownloadStatus.DOWNLOAD_STATUS_PREPARE
+                            || status == DownloadStatus.DOWNLOAD_STATUS_COMPLETED) {
+                        //mDownloadManager.addDownloadListener(downloadTask, UpdatePresenter.this);
+                        return;
+                    } else if (status == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
+                        mDownloadManager.resume(downloadTask.getId());
+                    }
+                } else {*/
+                    downloadTask = new DownloadTask();
+                    String md5 = MD5.MD5(downloadUrl);
+                    downloadTask.setFileName(md5);
+                    downloadTask.setId(md5);
+                    downloadTask.setSaveDirPath(MyApp.mContext.getExternalCacheDir().getPath() + "/");
+                    downloadTask.setUrl(downloadUrl);
+                    Toast.makeText(MyApp.mContext, downloadUrl, Toast.LENGTH_SHORT).show();
+                    mDownloadManager.addDownloadTask(downloadTask, new DownloadTaskListener() {
+                        @Override
+                        public void onPrepare(DownloadTask downloadTask) {
+                            Log.d("shen", "onPrepare: ");
+                        }
+
+                        @Override
+                        public void onStart(DownloadTask downloadTask) {
+                            Log.d("shen", "onStart: ");
+                        }
+
+                        @Override
+                        public void onDownloading(DownloadTask downloadTask) {
+                            Log.d("shen", "onDownloading: ");
+                            mHandler.removeMessages(1);
+                            Message message = mHandler.obtainMessage();
+                            message.what = 1;
+                            message.arg1 = (int) downloadTask.getPercent();
+                            mHandler.sendMessage(message);
+                        }
+
+                        @Override
+                        public void onPause(DownloadTask downloadTask) {
+                            Log.d("shen", "onPause: ");
+                        }
+
+                        @Override
+                        public void onCancel(DownloadTask downloadTask) {
+                            Log.d("shen", "onCancel: ");
+                        }
+
+                        @Override
+                        public void onCompleted(DownloadTask downloadTask) {
+                            Log.d("shen", "onCompleted: ");
+                        }
+
+                        @Override
+                        public void onError(DownloadTask downloadTask, int errorCode) {
+                            Log.d("shen", "onError: ");
+                        }
+                    });
+                }
+
             }
         });
 
@@ -219,6 +311,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
         mPresenter.getSDInfo();
         mPresenter.getInstallPkgList(mAutoUpdate);
         mPresenter.setNum(0);
+        mUpdateList = mPresenter.getList();
     }
 
     private void initView() {
@@ -308,8 +401,8 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
         @Override
         public void run() {
             if (mFocusedListChild != null) {
-                mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.1f);
-                mFocusScaleUtil.scaleToLarge(mFocusedListChild);
+                mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f);
+                //mFocusScaleUtil.scaleToLarge(mFocusedListChild);
             }
         }
     }
@@ -329,19 +422,65 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
         return super.onKeyDown(keyCode, event);
     }
 
-    public void initProgress() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (i == 100) {
-                    Toast.makeText(UpdateManagerActivity.this, "进度更新完成", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                ++i;
-                mUpdateProgressBar.setProgress(i);
-                initProgress();
+    /*progressbar = (ProgressBar) view.findViewById(R.id.pb_updateapp_progressbar);
+    updatedIcon = (ImageView) view.findViewById(R.id.iv_updateapp_updatedicon);
+    downloading = (TextView) view.findViewById(R.id.tv_updateapp_downloading)*/
+    @Override
+    public void onPrepare(DownloadTask downloadTask) {
+        String url = downloadTask.getUrl();
+        /*for (int i = 0; i < mUpdateList.size(); i++) {
+            String downloadUrl = mUpdateList.get(i).getDownloadUrl();
+            if (downloadUrl.equals(url)) {
+                View view = mRecyclerView.getChildAt(i);
+                ProgressBar progressbar = (ProgressBar) view.findViewById(R.id.pb_updateapp_progressbar);
+
             }
-        }, 500);
+        }*/
     }
 
+    @Override
+    public void onStart(DownloadTask downloadTask) {
+
+    }
+
+    @Override
+    public void onDownloading(DownloadTask downloadTask) {
+        /*mHandler.removeMessages(1);
+        Message message = mHandler.obtainMessage();
+        message.what = 1;
+        message.arg1 = (int) downloadTask.getPercent();
+        mHandler.sendMessage(message);*/
+    }
+
+    @Override
+    public void onPause(DownloadTask downloadTask) {
+
+    }
+
+    @Override
+    public void onCancel(DownloadTask downloadTask) {
+
+    }
+
+    @Override
+    public void onCompleted(DownloadTask downloadTask) {
+
+    }
+
+    @Override
+    public void onError(DownloadTask downloadTask, int errorCode) {
+
+    }
+
+
+    /*GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
+    int firstItemPosition = gridLayoutManager.findFirstVisibleItemPosition();
+    if (i - firstItemPosition >= 0) {
+        //得到要更新的item的view
+        View view = mRecyclerView.getChildAt(i - firstItemPosition);
+        if (null != mRecyclerView.getChildViewHolder(view)) {
+            ProductsViewHolder viewHolder = (ProductsViewHolder) mRecyclerView.getChildViewHolder(view);
+
+        }
+    }*/
 }

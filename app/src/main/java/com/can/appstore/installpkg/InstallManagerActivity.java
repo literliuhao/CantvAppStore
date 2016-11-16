@@ -155,8 +155,8 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
-                    mFocusMoveUtil.startMoveFocus(mDeleteAllButton, 1.1f);
-                    mFocusScaleUtil.scaleToLarge(mDeleteAllButton);
+                    mFocusMoveUtil.startMoveFocus(mDeleteAllButton, 1.0f);
+                    //mFocusScaleUtil.scaleToLarge(mDeleteAllButton);
                 } else {
                     mFocusScaleUtil.scaleToNormal(mDeleteAllButton);
                 }
@@ -167,8 +167,8 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
-                    mFocusMoveUtil.startMoveFocus(mDeleteButton, 1.1f);
-                    mFocusScaleUtil.scaleToLarge(mDeleteButton);
+                    mFocusMoveUtil.startMoveFocus(mDeleteButton, 1.0f);
+                    //mFocusScaleUtil.scaleToLarge(mDeleteButton);
                 } else {
                     mFocusScaleUtil.scaleToNormal(mDeleteButton);
                 }
@@ -179,8 +179,8 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
-                    mFocusMoveUtil.startMoveFocus(mUpdateButton, 1.1f);
-                    mFocusScaleUtil.scaleToLarge(mUpdateButton);
+                    mFocusMoveUtil.startMoveFocus(mUpdateButton, 1.0f);
+                    //mFocusScaleUtil.scaleToLarge(mUpdateButton);
                 } else {
                     mFocusScaleUtil.scaleToNormal(mUpdateButton);
                 }
@@ -318,8 +318,8 @@ public class InstallManagerActivity extends Activity implements InstallContract.
         @Override
         public void run() {
             if (mFocusedListChild != null) {
-                mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.1f);
-                mFocusScaleUtil.scaleToLarge(mFocusedListChild);
+                mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f);
+                //mFocusScaleUtil.scaleToLarge(mFocusedListChild);
             }
         }
     }
