@@ -8,9 +8,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.entity.AppInfo;
+import com.can.appstore.entity.PopularWord;
 import com.can.appstore.search.ToastUtil;
-import com.can.appstore.search.bean.DefaultApp;
-import com.can.appstore.search.bean.SearchApp;
 import com.can.appstore.search.widget.YIBaseCompatFocusAdapter;
 
 import java.util.List;
@@ -42,13 +42,13 @@ public class SearchAppListAdapter extends YIBaseCompatFocusAdapter {
             public void onClick(View view, int position, Object data) {
                 switch (viewType) {
                     case DEFAULT_APPLIST_TYPE:
-                        DefaultApp defaultApp = (DefaultApp) mDataList.get(position);
-                        ToastUtil.toastShort("点击 " + defaultApp.mName);
-                        setInitials(defaultApp.mInitials);
+                        PopularWord defaultApp = (PopularWord) mDataList.get(position);
+                        ToastUtil.toastShort("点击 " + defaultApp.getWord());
+                        setInitials(defaultApp.getPinyin());
                         break;
                     case SEARCH_APPLIST_TYPE:
-                        SearchApp searchApp = (SearchApp) mDataList.get(position);
-                        ToastUtil.toastShort("点击 " + searchApp.mName);
+                        AppInfo searchApp = (AppInfo) mDataList.get(position);
+                        ToastUtil.toastShort("点击 " + searchApp.getName());
                         break;
                 }
             }
@@ -73,11 +73,11 @@ public class SearchAppListAdapter extends YIBaseCompatFocusAdapter {
         if (holder instanceof DefaultSearchViewHolder) {
             ((DefaultSearchViewHolder) holder).setContent(position);
         } else {
-            SearchApp app = (SearchApp) mDataList.get(position);
+            AppInfo app = (AppInfo) mDataList.get(position);
 //            ((SearchViewHolder) holder).mAppIcon.setBackground();
-            ((SearchViewHolder) holder).mAppName.setText(app.mName);
-//            ((SearchViewHolder) holder).mAppSize.setText("");
-//            ((SearchViewHolder) holder).mAppDownloadCount.setText("");
+            ((SearchViewHolder) holder).mAppName.setText(app.getName());
+            ((SearchViewHolder) holder).mAppSize.setText(app.getSizeStr());
+            ((SearchViewHolder) holder).mAppDownloadCount.setText(app.getDownloadCount());
         }
     }
 
@@ -103,8 +103,8 @@ public class SearchAppListAdapter extends YIBaseCompatFocusAdapter {
          * @param position
          */
         public void setContent(int position) {
-            DefaultApp app = (DefaultApp) mDataList.get(position);
-            mAppName.setText(app.mName);
+            PopularWord app = (PopularWord) mDataList.get(position);
+            mAppName.setText(app.getWord());
         }
     }
 
@@ -127,21 +127,12 @@ public class SearchAppListAdapter extends YIBaseCompatFocusAdapter {
             mAppDownloadCount = (TextView) itemView.findViewById(R.id.app_dwoncount_view);
         }
 
-//        /**
-//         * 设置数据
-//         *
-//         * @param position
-//         */
-//        public void setContent(int position) {
-//            SearchApp app = (SearchApp) mDataList.get(position);
-//            mAppName.setText(app.mName);
-//        }
 
     }
 
     @Override
     public int getViewType(int position) {
-        if (mDataList.get(position) instanceof DefaultApp) {
+        if (mDataList.get(position) instanceof PopularWord) {
             return DEFAULT_APPLIST_TYPE;
         } else {
             return SEARCH_APPLIST_TYPE;

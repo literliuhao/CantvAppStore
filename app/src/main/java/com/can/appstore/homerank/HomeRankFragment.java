@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
-import com.can.appstore.homerank.bean.RankBean;
+import com.can.appstore.entity.Ranking;
 import com.can.appstore.search.ToastUtil;
 
 import java.util.List;
@@ -105,7 +105,7 @@ public class HomeRankFragment extends Fragment implements HomeRankContract.View 
             //appList
             RecyclerView recyclerView = (RecyclerView) childView.findViewById(R.id.list_view);
             TextView categoryMore = (TextView) childView.findViewById(R.id.more_view);
-            final RankBean.DataBean mData = (RankBean.DataBean) list.get(i);
+            final Ranking mData= (Ranking) list.get(i);
             categoryTitle.setText(mData.getName());
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             HomeRankAdapter homeRankAdapter = new HomeRankAdapter(mData.getData());

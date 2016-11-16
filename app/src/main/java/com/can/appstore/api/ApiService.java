@@ -75,7 +75,7 @@ public interface ApiService {
     /**
      * 获取搜索页热词
      */
-    @GET
+    @GET("start/hotKeyWord")
     CanCall<ListResult<PopularWord>> getHotKeywords();
 
     /**
@@ -83,6 +83,7 @@ public interface ApiService {
      *
      * @param key 搜索关键字
      */
+//    @GET("application/everyonesearch")
     @GET("start/search")
     CanCall<ListResult<AppInfo>> search(@Query("key") String key);
 

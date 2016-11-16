@@ -14,11 +14,13 @@ public interface SearchContract {
 
         void clearContent();
 
-        void getDefaultList(List defaultList,List hotList);
-
         void getAppList(List list);
 
         void getInitials(String con);   //首字母
+
+        void getHotRecomAppList(List list); //热门推荐
+
+        void getHotKeyList(List list); //大家都在搜
     }
 
     interface Presenter {

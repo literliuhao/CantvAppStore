@@ -213,23 +213,6 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
         resetDefaultList();
     }
 
-    @Override
-    public void getDefaultList(List defaultList, List hotList) {
-        //"大家都在搜"数据
-        mAppListAdapter = new SearchAppListAdapter(defaultList);
-        mSearAppList_recycle.setAdapter(mAppListAdapter);
-        mAppListAdapter.setOnInitialsListener(new SearchAppListAdapter.OnInitialsListener() {
-            @Override
-            public void onInitials(String con) {
-                getInitials(con);
-            }
-        });
-        //"热门推荐"数据
-        mHotRecommendAdapter = new HotRecommendAdapter(hotList);
-        mBottom_re_recycle.setAdapter(mHotRecommendAdapter);
-        mAppListAdapter.setMyOnFocusChangeListener(mScaleFocusChangeListener);
-        mHotRecommendAdapter.setMyOnFocusChangeListener(mScaleFocusChangeListener);
-    }
 
     /**
      * 获取到搜索
@@ -255,6 +238,38 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
     @Override
     public void getInitials(String con) {
         mSearch_con_view.setText(con);
+    }
+
+    /**
+     * 热门推荐
+     *
+     * @param list
+     */
+    @Override
+    public void getHotRecomAppList(List list) {
+        //"热门推荐"数据
+        mHotRecommendAdapter = new HotRecommendAdapter(list);
+        mBottom_re_recycle.setAdapter(mHotRecommendAdapter);
+        mHotRecommendAdapter.setMyOnFocusChangeListener(mScaleFocusChangeListener);
+    }
+
+    /**
+     * 大家都在搜
+     *
+     * @param list
+     */
+    @Override
+    public void getHotKeyList(List list) {
+        //"大家都在搜"数据
+        mAppListAdapter = new SearchAppListAdapter(list);
+        mSearAppList_recycle.setAdapter(mAppListAdapter);
+        mAppListAdapter.setOnInitialsListener(new SearchAppListAdapter.OnInitialsListener() {
+            @Override
+            public void onInitials(String con) {
+                getInitials(con);
+            }
+        });
+        mAppListAdapter.setMyOnFocusChangeListener(mScaleFocusChangeListener);
     }
 
     /**
