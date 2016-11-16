@@ -9,18 +9,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
-import com.can.appstore.myapps.model.AppInfo;
 
 import java.util.List;
 
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
+import cn.can.tvlib.utils.PackageUtil;
+import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 /**
  * Created by wei on 2016/10/31.
  */
 
 public class AddAppsRvAdapter  extends CanRecyclerViewAdapter{
-    List<AppInfo> data ;
+    List<PackageUtil.AppInfo> data ;
 
 
     List<AppInfo> list ;

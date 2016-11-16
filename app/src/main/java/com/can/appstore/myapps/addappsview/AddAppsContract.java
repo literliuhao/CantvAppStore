@@ -1,9 +1,10 @@
 package com.can.appstore.myapps.addappsview;
 
 
-import com.can.appstore.myapps.model.AppInfo;
-
 import java.util.List;
+
+import cn.can.tvlib.utils.PackageUtil;
+import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 /**
  * Created by wei on 2016/11/3.
@@ -25,7 +26,7 @@ public interface AddAppsContract {
 
         void onClickHomeKey();
 
-        void loadAddAppInfoSuccess(List<AppInfo> infoList);
+        void loadAddAppInfoSuccess(List<PackageUtil.AppInfo> infoList);
 
         void showCanSelectCount(int cansel, int alreadyshow);
 

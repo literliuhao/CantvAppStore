@@ -9,18 +9,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
-import com.can.appstore.myapps.model.AppInfo;
 
 import java.util.List;
 
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
+import cn.can.tvlib.utils.PackageUtil;
 
 /**
  * Created by wei on 2016/10/27.
  */
 
 public class AllAppsRecyclerViewAdapter extends CanRecyclerViewAdapter{
- List<AppInfo> list ;
+ List<PackageUtil.AppInfo> list ;
     int[] mItemColors = {
             R.drawable.bj_01,
             R.drawable.bj_02,

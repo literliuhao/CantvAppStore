@@ -1,43 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:id="@+id/allapps_main_page"
+                android:id="@+id/allapps_main_page"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:background="@color/two_page_bg"
-              >
-    <LinearLayout
+    >
 
+    <LinearLayout
+        android:id="@+id/allapps_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_marginEnd="@dimen/px161"
         android:layout_marginStart="@dimen/px161"
         android:layout_marginTop="@dimen/px80"
-        android:layout_marginEnd="@dimen/px161"
-        android:id="@+id/allapps_title"
+        android:orientation="horizontal"
         >
+
+        <ImageView
+            android:layout_width="@dimen/px7"
+            android:layout_height="@dimen/px38"
+            android:layout_marginRight="@dimen/px20"
+            android:background="@drawable/title_line"
+            android:layout_gravity="center_vertical"
+            />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawablePadding="@dimen/px20"
-            android:drawableStart="@drawable/title_line"
+            android:gravity="center_vertical"
             android:text="全部应用"
             android:textColor="@color/tv_cur_rows_color"
-            android:gravity="center_vertical"
             android:textSize="@dimen/fontsize_38"/>
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/px32"
+            android:layout_height="@dimen/px32"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="@dimen/px40"
             android:background="@drawable/menu_icon"/>
+
         <TextView
             android:id="@+id/allapps_Num"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="按菜单键获取更多功能"
-            android:textColor="#ffffff"
+            android:textColor="@color/tv_total_rows_color"
             android:textSize="@dimen/fontsize_32"
             />
 
@@ -45,12 +53,12 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="@dimen/px100"
         android:layout_height="@dimen/px36"
         android:layout_alignParentRight="true"
         android:layout_marginEnd="@dimen/px160"
-        android:layout_marginTop="@dimen/px80"
-        android:id="@+id/linearLayout">
+        android:layout_marginTop="@dimen/px80">
 
         <TextView
             android:id="@+id/allapps_tv_currows"
@@ -72,12 +80,12 @@
         android:id="@+id/allapps_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/px140"
-        android:layout_marginEnd="@dimen/px130"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/allapps_title"
+        android:layout_marginEnd="@dimen/px130"
+        android:layout_marginStart="@dimen/px140"
         android:clipChildren="false"
         android:clipToPadding="false"
         android:paddingLeft="@dimen/px23"
-        android:paddingTop="@dimen/px23"
-        android:layout_alignParentStart="true"/>
+        android:paddingTop="@dimen/px23"/>
 </RelativeLayout>

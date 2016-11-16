@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-import com.can.appstore.myapps.model.AppInfo;
 import com.can.appstore.myapps.model.MyAppsListDataUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.can.tvlib.utils.PackageUtil;
+import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 /**
  * ================================================
@@ -25,13 +27,22 @@ public class MyApp extends Application {
     public static Context mContext;
     //内存维护的全局应用List
     public static List<AppInfo> myAppList = new ArrayList<AppInfo>();
+    /**
+     * 预装APP白名单
+     */
+    public final static List<String> PRE_APPS = new ArrayList<String>();
+
+
 
 
     @Override
     public void onCreate() {
         super.onCreate();
         this.mContext = this;
-        myAppList = new MyAppsListDataUtil(mContext).getAllAppList(myAppList);
+
+        PRE_APPS.add("cn.cibntv.ott");
+        PRE_APPS.add("com.cantv.media");
+        myAppList = PackageUtil.findAllThirdPartyApps(this,myAppList);
         registerInstallReceiver();
     }
 

@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.myapps.adapter.AddAppsRvAdapter;
-import com.can.appstore.myapps.model.AppInfo;
 import com.can.appstore.search.ToastUtil;
 
 import java.util.ArrayList;
@@ -22,6 +21,7 @@ import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
+import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 /**
  * Created by wei on 2016/10/26.
@@ -144,7 +144,7 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View{
     @Override
     public void showCanSelectCount(int cansel, int alreadyshow) {
         this.canSelect = cansel;
-        tv_canSelect.setText("已添加"+alreadyshow+"个，还可以添加"+cansel+"个");
+        tv_canSelect.setText("已添加"+alreadyshow+"个应用，还可以添加"+cansel+"个");
     }
 
     /**
@@ -155,7 +155,6 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View{
     public void saveSelectInfo(List<AppInfo> list) {
         mAddAppsPresenter.saveSelectlist(list);
     }
-
     class MyFocusRunnable implements Runnable {
         @Override
         public void run() {
@@ -181,7 +180,6 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View{
                 if(mSelectAppInfo == null || mSelectAppInfo.size() == 0){
                     ToastUtil.toastShort("您没有选择任何应用");
                 }else{
-                    //TODO 存
                     saveSelectInfo(mSelectAppInfo);
                     finish();
                 }
