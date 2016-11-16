@@ -8,6 +8,9 @@ public class SearchApp {
     public String mName;
     public String mInitials;    //首字母
     public String mUrl;
+    public String mSize;
+    public String mDownloadCount;   //下载量
+
 
     public SearchApp(String mName, String mInitials) {
         this.mName = mName;

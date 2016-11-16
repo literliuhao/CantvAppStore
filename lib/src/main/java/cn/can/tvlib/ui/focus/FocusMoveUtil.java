@@ -19,8 +19,8 @@ import android.os.Handler;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -51,6 +51,8 @@ import java.util.Iterator;
  */
 public class FocusMoveUtil {
 
+    public static final int CANCEL_FACTOR_UNLIMIT = -1;
+
     private boolean mCacheEnable;
     private SparseArray<Drawable> mNinePathcs;
     private SparseArray<Rect> mFocusPaddingRects;
@@ -66,6 +68,7 @@ public class FocusMoveUtil {
     private RectF mStartRect;
     private RectF mDestRect;
     private RectF mCurRect;
+    private Rect mActiveRegion;//focus焦点框可以移动的范围
 
     private HashMap<Animator, RectFEvaluator> mEvaluators;
     private Handler mHandler;
@@ -113,8 +116,8 @@ public class FocusMoveUtil {
         mCurRect = new RectF();
         mDestRect = new RectF();
         mAnimDuration = 300;
-        mAnimInterpolator = new DecelerateInterpolator();
-        mEvaluators = new HashMap<Animator, RectFEvaluator>();
+        mAnimInterpolator = new LinearInterpolator();
+        mEvaluators = new HashMap<>();
     }
 
     private void initCache(int cacheSize) {
@@ -189,12 +192,28 @@ public class FocusMoveUtil {
     }
 
     /**
+     * 限制焦点框可以移动的区域
+     *
+     * @param left
+     * @param top
+     * @param right
+     * @param bottom
+     */
+    public void setFocusActiveRegion(int left, int top, int right, int bottom) {
+        if (mActiveRegion == null) {
+            mActiveRegion = new Rect(left, top, right, bottom);
+        } else {
+            mActiveRegion.set(left, top, right, bottom);
+        }
+    }
+
+    /**
      * 根据指定view设置焦点框位置
      *
      * @param view
      */
     public void setFocusView(View view) {
-        this.setFocusLayoutParams(calculateViewRectF(view, 1, 1, 0, 0));
+        this.setFocusLayoutParams(calculateViewRegion(view, 1, 1, 0, 0));
     }
 
     /**
@@ -203,7 +222,7 @@ public class FocusMoveUtil {
      * @param view
      */
     public void setFocusView(View view, float scale) {
-        this.setFocusLayoutParams(calculateViewRectF(view, scale, scale, 0, 0));
+        this.setFocusLayoutParams(calculateViewRegion(view, scale, scale, 0, 0));
     }
 
     /**
@@ -212,7 +231,7 @@ public class FocusMoveUtil {
      * @param view
      */
     public void setFocusView(View view, float scaleX, float scaleY) {
-        this.setFocusLayoutParams(calculateViewRectF(view, scaleX, scaleY, 0, 0));
+        this.setFocusLayoutParams(calculateViewRegion(view, scaleX, scaleY, 0, 0));
     }
 
     /**
@@ -244,30 +263,31 @@ public class FocusMoveUtil {
     }
 
     // 根据获取焦点的view计算焦点框大小
-    private RectF calculateViewRectF(View newView, float scaleX, float scaleY, int offsetX, int offsetY) {
+    private RectF calculateViewRegion(View newView, float scaleX, float scaleY, int offsetX, int offsetY) {
         RectF rectF = new RectF();
 
         int[] location = new int[2];
         newView.getLocationInWindow(location);
+
+        int viewW = newView.getWidth();
+        int viewH = newView.getHeight();
+
+        float currScaleX = newView.getScaleX();
+        float currScaleY = newView.getScaleY();
+
         if (scaleX == 1 && scaleY == 1) {
-            rectF.set(location[0], location[1], location[0] + newView.getWidth(), location[1] + newView.getHeight());
-
-        } else if (scaleX == 1) {
-            float offsetFactor = (scaleY - 1) / 2;
-            float vertOffset = newView.getHeight() * offsetFactor;
-            rectF.set(location[0], location[1] - vertOffset, location[0] + newView.getWidth(), location[1] + newView.getHeight() + vertOffset);
-
-        } else if (scaleY == 1) {
-            float offsetFactor = (scaleX - 1) / 2;
-            float horiOffset = newView.getWidth() * offsetFactor;
-            rectF.set(location[0] - horiOffset, location[1], location[0] + newView.getWidth() + horiOffset, location[1] + newView.getHeight());
+            int left = (int) (location[0] + viewW * (currScaleX - 1) / 2 + 0.5f);
+            int top = (int) (location[1] + viewH * (currScaleY - 1) / 2 + 0.5f);
+            int right = left + viewW;
+            int bottom = top + viewH;
+            rectF.set(left, top, right, bottom);
 
         } else {
-            float offsetFactorX = (scaleX - 1) / 2;
-            float offsetFactorY = (scaleY - 1) / 2;
-            float xOffsetX = newView.getWidth() * offsetFactorX;
-            float yOffsetY = newView.getHeight() * offsetFactorY;
-            rectF.set(location[0] - xOffsetX, location[1] - yOffsetY, location[0] + newView.getWidth() + xOffsetX, location[1] + newView.getHeight() + yOffsetY);
+            int left = (int) (location[0] + viewW * (currScaleX - scaleX) / 2 + 0.5f);
+            int top = (int) (location[1] + viewH * (currScaleY - scaleY) / 2 + 0.5f);
+            int right = (int) (left + viewW * scaleX + 0.5f);
+            int bottom = (int) (top + viewH * scaleY + 0.5f);
+            rectF.set(left, top, right, bottom);
         }
         if (offsetX != 0) {
             rectF.left += offsetX;
@@ -286,7 +306,7 @@ public class FocusMoveUtil {
      * @param view
      */
     public void startMoveFocus(View view) {
-        this.startMoveFocus(view, 1, 1, 0, 0);
+        this.startMoveFocus(view, 1, 1, 0, CANCEL_FACTOR_UNLIMIT);
     }
 
     /**
@@ -306,7 +326,7 @@ public class FocusMoveUtil {
      * @param scale 缩放比例
      */
     public void startMoveFocus(View view, float scale) {
-        this.startMoveFocus(view, scale, scale, 0, 0, 0);
+        this.startMoveFocus(view, scale, scale, 0, 0, CANCEL_FACTOR_UNLIMIT);
     }
 
     /**
@@ -344,18 +364,29 @@ public class FocusMoveUtil {
      * @param cancelFactor 当前移动动画延迟多少帧后取消
      */
     public void startMoveFocus(View view, float scaleX, float scaleY, int offsetX, int offsetY, int cancelFactor) {
+        RectF destRect = calculateViewRegion(view, scaleX, scaleY, offsetX, offsetY);
+        destRect = validateActiveRegion(destRect);
+        if (destRect == null) {
+            return;
+        }
+
         if (mAnimator != null && mAnimator.isRunning()) {
+            if ((mDestRect != null && mDestRect.equals(destRect))) {
+                return;
+            }
             if (cancelFactor == 0) {
                 mEvaluators.remove(mAnimator);
                 mAnimator.cancel();
-            } else if (cancelFactor > 0) {
+            } else if (cancelFactor != CANCEL_FACTOR_UNLIMIT && cancelFactor > 0) {
                 RectFEvaluator evaluator = mEvaluators.get(mAnimator);
                 evaluator.set(cancelFactor);
                 mEvaluators.remove(mAnimator);
             }
         }
+
+
         mStartRect = mCurRect;
-        mDestRect = calculateViewRectF(view, scaleX, scaleY, offsetX, offsetY);
+        mDestRect = destRect;
         resolveRectPadding(mDestRect, mFocusPaddingRect);
         RectFEvaluator rectFEvaluator = new RectFEvaluator();
         ValueAnimator am = ValueAnimator.ofObject(rectFEvaluator, mStartRect, mDestRect);
@@ -378,6 +409,39 @@ public class FocusMoveUtil {
         am.start();
     }
 
+    private RectF validateActiveRegion(RectF region) {
+        RectF currRect = mCurRect;
+        if (currRect != null && currRect.equals(region)) {
+            return null;
+        }
+
+        Rect activeRegion = this.mActiveRegion;
+        if (activeRegion == null) {
+            return region;
+        }
+        if (region.left < activeRegion.left) {
+            float width = region.width();
+            region.left = activeRegion.left;
+            region.right = region.left + width;
+
+        } else if (region.top < activeRegion.top) {
+            float height = region.height();
+            region.top = activeRegion.top;
+            region.bottom = region.top + height;
+
+        } else if (region.right > activeRegion.right) {
+            float width = region.width();
+            region.right = activeRegion.right;
+            region.left = region.right - width;
+
+        } else if (region.bottom > activeRegion.bottom) {
+            float height = region.height();
+            region.bottom = activeRegion.bottom;
+            region.top = region.bottom - height;
+        }
+        return region;
+    }
+
     // 根据焦点框资源文件的padding（.9图内容区之外的padding）resize焦点框
     private void resolveRectPadding(RectF mDestRect, Rect mFocusPaddingRect) {
         if (mFocusPaddingRect != null) {
@@ -391,9 +455,16 @@ public class FocusMoveUtil {
     // 焦点框在移动过程中每帧的位置计算和移动
     private class RectFEvaluator implements TypeEvaluator<RectF> {
 
+        public static final int MOVE_DIRECTION_LEFT = 1;
+        public static final int MOVE_DIRECTION_TOP = 2;
+        public static final int MOVE_DIRECTION_RIGHT = 3;
+        public static final int MOVE_DIRECTION_BOTTOM = 4;
+
         private boolean cancelFlag;
         private int mCancelFrame;
         private int mMaxCancelFrame;
+        private int mMoveDirectionX;
+        private int mMoveDirectionY;
 
         @Override
         public RectF evaluate(float fraction, RectF startValue, RectF endValue) {
@@ -403,11 +474,36 @@ public class FocusMoveUtil {
                 }
                 mCancelFrame++;
             }
-            mCurRect.left = startValue.left + (endValue.left - startValue.left) * fraction;
-            mCurRect.top = startValue.top + (endValue.top - startValue.top) * fraction;
-            mCurRect.right = startValue.right + (endValue.right - startValue.right) * fraction;
-            mCurRect.bottom = startValue.bottom + (endValue.bottom - startValue.bottom) * fraction;
-            mFocusMoveView.setFocusLayout(mCurRect.left, mCurRect.top, mCurRect.right, mCurRect.bottom);
+
+            if (mMoveDirectionX == 0) {
+                if (endValue.right > startValue.right) {
+                    mMoveDirectionX = MOVE_DIRECTION_RIGHT;
+                } else if (endValue.left < startValue.left) {
+                    mMoveDirectionX = MOVE_DIRECTION_LEFT;
+                }
+
+                if (endValue.top < startValue.top) {
+                    mMoveDirectionY = MOVE_DIRECTION_TOP;
+                } else if (endValue.bottom > startValue.bottom) {
+                    mMoveDirectionY = MOVE_DIRECTION_BOTTOM;
+                }
+            }
+
+            float left = startValue.left + (endValue.left - startValue.left) * fraction;
+            float top = startValue.top + (endValue.top - startValue.top) * fraction;
+            float right = startValue.right + (endValue.right - startValue.right) * fraction;
+            float bottom = startValue.bottom + (endValue.bottom - startValue.bottom) * fraction;
+
+            RectF destRect = FocusMoveUtil.this.mDestRect;
+            if (mMoveDirectionX == MOVE_DIRECTION_LEFT && left < destRect.left
+                    || mMoveDirectionY == MOVE_DIRECTION_TOP && top < destRect.top
+                    || mMoveDirectionX == MOVE_DIRECTION_RIGHT && right > destRect.right
+                    || mMoveDirectionY == MOVE_DIRECTION_BOTTOM && bottom > destRect.bottom) {
+                return null;
+            }
+
+            mCurRect.set(left, top, right, bottom);
+            mFocusMoveView.setFocusLayout(left, top, right, bottom);
             return null;
         }
 

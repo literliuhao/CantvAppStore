@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/px1000"
     android:layout_height="match_parent"
-    android:layout_gravity="center_horizontal"
-    android:orientation="vertical">
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:context="com.can.appstore.MainActivity">
 
     <TextView
         android:id="@+id/tv_joke_title"
@@ -49,5 +50,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="安装包管理" />
+
+        <Button
+            android:id="@+id/bt_custom_viewgroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="自定义ViewGroup"
+            />
+        <Button
+            android:id="@+id/bt_active"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="活动页"
+            />
     </LinearLayout>
 </LinearLayout>

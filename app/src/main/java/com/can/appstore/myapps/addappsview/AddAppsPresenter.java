@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
 
+import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.myapps.model.AppInfo;
 import com.can.appstore.myapps.model.MyAppsListDataUtil;
@@ -30,7 +31,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter{
     MyAppsListDataUtil mMyAppListData;
     List<AppInfo> isShown;
     List<AppInfo> addShowList = new ArrayList<AppInfo>();
-    private List<AppInfo> mAllAppList;
+//    private List<AppInfo> mAllAppList;
 
     private BroadcastReceiver mHomeReceivcer;
 
@@ -52,20 +53,19 @@ public class AddAppsPresenter implements AddAppsContract.Presenter{
             @Override
             protected Void doInBackground(Void... params) {
                 mMyAppListData = new MyAppsListDataUtil(mContext);
-                isShown = mMyAppListData.getShowList();
-                mAllAppList = mMyAppListData.getAllAppList();
+                isShown = mMyAppListData.getShowList(isShown);
                 return null;
             }
 
             //加载完数据
             @Override
             protected void onPostExecute(Void aVoid) {
-                for (AppInfo  app:mAllAppList) {
+                for (AppInfo  app:MyApp.myAppList) {
                     if(!isShown.contains(app)){
                         addShowList.add(app);
                     }
                 }
-                mView.loadAllAppInfoSuccess(addShowList);
+                mView.loadAddAppInfoSuccess(addShowList);
                 mView.hideLoading();
             }
         }.execute();
@@ -81,10 +81,6 @@ public class AddAppsPresenter implements AddAppsContract.Presenter{
     public void release() {
         if(mMyAppListData!=null){
             mMyAppListData = null;
-        }
-        if(mAllAppList!= null){
-            mAllAppList.clear();
-            mAllAppList = null;
         }
         if(isShown!= null){
             isShown.clear();
@@ -178,4 +174,5 @@ public class AddAppsPresenter implements AddAppsContract.Presenter{
         }
         mMyAppListData.saveShowList(isShown);
     }
+
 }

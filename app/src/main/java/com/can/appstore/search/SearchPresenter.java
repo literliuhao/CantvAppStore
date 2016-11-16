@@ -34,12 +34,12 @@ public class SearchPresenter implements SearchContract.Presenter {
     @Override
     public void getDefaultList() {
         List<DefaultApp> defaultApps = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 8; i++) {
 
             defaultApps.add(new DefaultApp("默认数据" + i, "mr" + i));
         }
         ArrayList<SearchApp> appList = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 8; i++) {
             appList.add(new SearchApp("热门App" + i, "rm" + i));
         }
         mView.getDefaultList(defaultApps, appList);

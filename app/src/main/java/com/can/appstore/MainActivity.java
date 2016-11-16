@@ -7,13 +7,12 @@ import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 
-import com.can.appstore.index.Data.JokeData;
+import com.can.appstore.active.ActiveActivity;
 import com.can.appstore.index.IndexActivity;
 import com.can.appstore.installpkg.InstallManagerActivity;
-import com.can.appstore.installpkg.InstallManagerAdapter;
+import com.can.appstore.myapps.ui.CustomFolderIconActivity;
 import com.can.appstore.search.SearchActivity;
-import com.can.appstore.special_detail.SpecialDetailActivity;
-import com.can.appstore.update.UpdateManagerActivity;
+import com.can.appstore.specialdetail.SpecialDetailActivity;
 
 import java.util.Random;
 
@@ -27,7 +26,6 @@ import java.util.Random;
  * ================================================
  */
 public class MainActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
         TextView textViewTitle = (TextView) findViewById(R.id.tv_joke_title);
         textViewTitle.setText("内涵" + (random + 1) + "段：为你提神醒脑！");
 
-        TextView textView = (TextView) findViewById(R.id.tv_joke);
-        textView.setText(JokeData.getJokeList().get(random));
+//        TextView textView = (TextView) findViewById(R.id.tv_joke);
+//        textView.setText(JokeData.getJokeList().get(random));
 
         findViewById(R.id.btn_index).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, SearchActivity.class));
+
             }
         });
 
@@ -65,6 +64,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, InstallManagerActivity.class));
+            }
+        });
+
+        findViewById(R.id.bt_custom_viewgroup).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,CustomFolderIconActivity.class));
+            }
+        });
+        findViewById(R.id.bt_active).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, ActiveActivity.class));
             }
         });
     }

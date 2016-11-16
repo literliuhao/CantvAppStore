@@ -21,5 +21,6 @@ public interface DownloadTaskListener {
     int DOWNLOAD_ERROR_FILE_NOT_FOUND = -1;
     int DOWNLOAD_ERROR_IO_ERROR = -2;
     int DOWNLOAD_ERROR_NETWORK_ERROR = -3;
+    int DOWNLOAD_ERROR_UNKONW_ERROR = -4;
 
 }

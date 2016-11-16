@@ -25,7 +25,7 @@ public interface AddAppsContract {
 
         void onClickHomeKey();
 
-        void loadAllAppInfoSuccess(List<AppInfo> infoList);
+        void loadAddAppInfoSuccess(List<AppInfo> infoList);
 
         void showCanSelectCount(int cansel, int alreadyshow);
 

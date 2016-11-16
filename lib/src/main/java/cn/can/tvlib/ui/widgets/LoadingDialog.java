@@ -15,7 +15,6 @@ import cn.can.tvlib.ui.view.RotateView;
  */
 
 public class LoadingDialog extends Dialog {
-
     private RotateView mLoadingView;
     private TextView mMsgView;
 
@@ -37,6 +36,7 @@ public class LoadingDialog extends Dialog {
         WindowManager.LayoutParams lp = this.getWindow().getAttributes();
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.flags =  WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE ;
         this.getWindow().setAttributes(lp);
     }
 

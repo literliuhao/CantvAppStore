@@ -1,7 +1,9 @@
 package cn.can.tvlib.imageloader;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Looper;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -122,6 +124,27 @@ public class ImageLoader implements ImageLoaderI {
      * @param url
      * @param placeHolder
      * @param errorHolder
+     */
+    @Override
+    public void load(Context context, ImageView view, String url, int placeHolder, int errorHolder) {
+        new GlideLoadTask.Builder()
+                .view(view)
+                .url(url)
+                .placeholder(placeHolder)
+                .errorHolder(errorHolder)
+                .build()
+                .start(context);
+    }
+
+    /**
+     * load network image to ImageView.<br/>
+     * If u want to modify all kinds of Configs, u can invoke the @method{createTask} to obtain a loadTask, then start it after your config finish.
+     *
+     * @param context
+     * @param view
+     * @param url
+     * @param placeHolder
+     * @param errorHolder
      * @param successCallback
      * @param failCallback
      */
@@ -199,22 +222,49 @@ public class ImageLoader implements ImageLoaderI {
 
     @Override
     public void pauseTask(Context context) {
+        if(hasDestroyed(context)){
+            return;
+        }
         Glide.with(context).pauseRequests();
     }
 
     @Override
     public void pauseAllTask(Context context) {
+        if(hasDestroyed(context)){
+            return;
+        }
         Glide.with(context).pauseRequestsRecursive();
     }
 
     @Override
     public void resumeTask(Context context) {
+        if(hasDestroyed(context)){
+            return;
+        }
         Glide.with(context).resumeRequests();
     }
 
     @Override
     public void resumeAllTask(Context context) {
+        if(hasDestroyed(context)){
+            return;
+        }
         Glide.with(context).resumeRequestsRecursive();
+    }
+
+    private boolean hasDestroyed(Context context){
+        if(context instanceof Activity){
+            Activity activity = (Activity) context;
+            if(activity.isFinishing() || activity.isDestroyed()){
+                return true;
+            }
+        } else if(context instanceof FragmentActivity){
+            FragmentActivity activity = (FragmentActivity) context;
+            if(activity.isFinishing() || activity.isDestroyed()){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

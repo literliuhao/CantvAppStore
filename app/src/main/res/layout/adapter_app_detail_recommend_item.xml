@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/dimen_376px"
+    android:layout_height="@dimen/dimen_152px"
+    android:background="@drawable/shape_bg_uninstall_manager_item"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    >
+
+    <ImageView
+        android:id="@+id/iv_recommend_item_icon"
+        android:layout_width="@dimen/dimen_120px"
+        android:layout_height="@dimen/dimen_120px"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/dimen_24px"
+        android:src="@drawable/markettv"
+        />
+
+    <LinearLayout
+        android:id="@+id/ll_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/dimen_24px"
+        android:layout_toRightOf="@+id/iv_recommend_item_icon"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_recommend_item_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/dimen_14px"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:singleLine="true"
+            android:textColor="@color/uninstall_app_name_color"
+            android:textSize="@dimen/fontsize_34px"/>
+
+        <TextView
+            android:id="@+id/tv_recommend_item_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_12px"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:singleLine="true"
+            android:textColor="@color/tv_app_version_color"
+            android:textSize="@dimen/fontsize_26px"/>
+
+    </LinearLayout>
+</RelativeLayout>

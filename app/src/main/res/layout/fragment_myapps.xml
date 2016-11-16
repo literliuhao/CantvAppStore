@@ -3,6 +3,7 @@
                 android:id="@+id/myapps_main_page"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+
     >
 
     <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
