@@ -10,16 +10,15 @@ import android.widget.TextView;
 import com.can.appstore.R;
 import com.can.appstore.search.ToastUtil;
 import com.can.appstore.search.bean.SearchApp;
+import com.can.appstore.search.widget.YIBaseCompatFocusAdapter;
 
 import java.util.List;
-
-import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 /**
  * Created by yibh on 2016/10/14 18:48 .
  */
 
-public class HotRecommendAdapter extends CanRecyclerViewAdapter {
+public class HotRecommendAdapter extends YIBaseCompatFocusAdapter {
     private List mDataList;
 
     public HotRecommendAdapter(List datas) {
@@ -36,9 +35,8 @@ public class HotRecommendAdapter extends CanRecyclerViewAdapter {
                 ToastUtil.toastShort("点击 " + searchApp.mName);
             }
         });
-//        View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_app_item, parent, false);
-//        return new HotViewHolder(inflate);
-        return null;
+        View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_app_item, parent, false);
+        return new HotViewHolder(inflate);
     }
 
     @Override
@@ -53,7 +51,7 @@ public class HotRecommendAdapter extends CanRecyclerViewAdapter {
         public HotViewHolder(View itemView) {
             super(itemView);
             mAppName = (TextView) itemView.findViewById(R.id.app_name_view);
-//            mAppIcon = (ImageView) itemView.findViewById(R.id.app_icon);
+            mAppIcon = (ImageView) itemView.findViewById(R.id.app_icon);
         }
 
         /**

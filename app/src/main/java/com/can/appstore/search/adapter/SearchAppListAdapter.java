@@ -11,17 +11,16 @@ import com.can.appstore.R;
 import com.can.appstore.search.ToastUtil;
 import com.can.appstore.search.bean.DefaultApp;
 import com.can.appstore.search.bean.SearchApp;
+import com.can.appstore.search.widget.YIBaseCompatFocusAdapter;
 
 import java.util.List;
-
-import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 
 /**
  * Created by yibh on 2016/10/13 17:36 .
  */
 
-public class SearchAppListAdapter extends CanRecyclerViewAdapter {
+public class SearchAppListAdapter extends YIBaseCompatFocusAdapter {
     private List mDataList;
     private List mDefaultList;  //"大家都在搜"的数据
     private OnInitialsListener mOnInitialsListener;
@@ -55,14 +54,14 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
             }
         });
         LayoutInflater mLayoutInflater = LayoutInflater.from(parent.getContext());
-//        switch (viewType) {
-//            case DEFAULT_APPLIST_TYPE:
-//                View inflate = mLayoutInflater.inflate(R.layout.search_app_default_item, parent, false);
-//                return new DefaultSearchViewHolder(inflate);
-//            case SEARCH_APPLIST_TYPE:
-//                View view = mLayoutInflater.inflate(R.layout.search_app_item, parent, false);
-//                return new SearchViewHolder(view);
-//        }
+        switch (viewType) {
+            case DEFAULT_APPLIST_TYPE:
+                View inflate = mLayoutInflater.inflate(R.layout.search_app_default_item, parent, false);
+                return new DefaultSearchViewHolder(inflate);
+            case SEARCH_APPLIST_TYPE:
+                View view = mLayoutInflater.inflate(R.layout.search_app_item, parent, false);
+                return new SearchViewHolder(view);
+        }
         return new RecyclerView.ViewHolder(null) {
         };
     }
@@ -73,7 +72,11 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
         if (holder instanceof DefaultSearchViewHolder) {
             ((DefaultSearchViewHolder) holder).setContent(position);
         } else {
-            ((SearchViewHolder) holder).setContent(position);
+            SearchApp app = (SearchApp) mDataList.get(position);
+//            ((SearchViewHolder) holder).mAppIcon.setBackground();
+        ((SearchViewHolder) holder).mAppName.setText(app.mName);
+//            ((SearchViewHolder) holder).mAppSize.setText("");
+//            ((SearchViewHolder) holder).mAppDownloadCount.setText("");
         }
     }
 
@@ -85,10 +88,12 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
     public class DefaultSearchViewHolder extends RecyclerView.ViewHolder {
 
         private TextView mAppName;
+        private View mView;
 
         public DefaultSearchViewHolder(View itemView) {
             super(itemView);
-//            mAppName = (TextView) itemView.findViewById(R.id.default_name_view);
+            mView = itemView;
+            mAppName = (TextView) itemView.findViewById(R.id.default_name_view);
         }
 
         /**
@@ -110,22 +115,26 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
     public class SearchViewHolder extends RecyclerView.ViewHolder {
         TextView mAppName;
         ImageView mAppIcon;
+        TextView mAppSize;  //app大小
+        TextView mAppDownloadCount; //下载量
 
         public SearchViewHolder(View itemView) {
             super(itemView);
+            mAppIcon = (ImageView) itemView.findViewById(R.id.app_icon);
             mAppName = (TextView) itemView.findViewById(R.id.app_name_view);
-//            mAppIcon = (ImageView) itemView.findViewById(R.id.app_icon);
+            mAppSize = (TextView) itemView.findViewById(R.id.app_size_view);
+            mAppDownloadCount = (TextView) itemView.findViewById(R.id.app_dwoncount_view);
         }
 
-        /**
-         * 设置数据
-         *
-         * @param position
-         */
-        public void setContent(int position) {
-            SearchApp app = (SearchApp) mDataList.get(position);
-            mAppName.setText(app.mName);
-        }
+//        /**
+//         * 设置数据
+//         *
+//         * @param position
+//         */
+//        public void setContent(int position) {
+//            SearchApp app = (SearchApp) mDataList.get(position);
+//            mAppName.setText(app.mName);
+//        }
 
     }
 
@@ -171,6 +180,7 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
 
     /**
      * 设置首字母回调
+     *
      * @param con
      */
     private void setInitials(String con) {
