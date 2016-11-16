@@ -38,6 +38,7 @@ public class DownloadTask implements Runnable {
     private long mTotalSize;
     private long mDownloadedSize;
     private String mUrl;
+    private String mIcon;
     private String mSaveDirPath = Environment.getExternalStorageDirectory().getAbsolutePath();
     private RandomAccessFile mRandomAccessFile;
     private int UPDATE_SIZE = 512 * 1024;    // 512k存储一次
@@ -45,7 +46,7 @@ public class DownloadTask implements Runnable {
 
     private String mFileName;
 
-    private List<DownloadTaskListener> mDownloadlisteners = new ArrayList<DownloadTaskListener>();
+    private List<DownloadTaskListener> mDownloadlisteners = new ArrayList<>();
     private AppInstallListener mAppListener;
     public DownloadTask() {
     }
@@ -93,7 +94,7 @@ public class DownloadTask implements Runnable {
                 mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_COMPLETED;
                 mTotalSize = mDownloadedSize = fileLength;
                 mDbEntity = new DownloadDBEntity(mId, mTotalSize, mTotalSize, mUrl, mSaveDirPath,
-                        mFileName, mDownloadStatus);
+                        mFileName, mDownloadStatus, mIcon);
                 mDownloadDao.insertOrReplace(mDbEntity);
                 onCompleted();
                 return;
@@ -115,7 +116,7 @@ public class DownloadTask implements Runnable {
                         /** 下载过程中删除任务，此处mDbEntity为空 xingzl 2016-11-15 15:37:43 start*/
                         if(mDbEntity==null){
                             mDbEntity = new DownloadDBEntity(mId, mTotalSize, mDownloadedSize, mUrl, mSaveDirPath,
-                                    mFileName, mDownloadStatus);
+                                    mFileName, mDownloadStatus, mIcon);
                         }else{
                             mDbEntity.setTotalSize(mTotalSize);
                         }
@@ -134,11 +135,11 @@ public class DownloadTask implements Runnable {
                     inputStream = responseBody.byteStream();
                     bis = new BufferedInputStream(inputStream);
                     byte[] buffer = new byte[256 * 1024];
-                    int length = 0;
+                    int length;
                     int buffOffset = 0;
                     if (mDbEntity == null) {
                         mDbEntity = new DownloadDBEntity(mId, mTotalSize, 0L, mUrl, mSaveDirPath,
-                                mFileName, mDownloadStatus);
+                                mFileName, mDownloadStatus, mIcon);
                         mDownloadDao.insertOrReplace(mDbEntity);
                     }
                     while ((length = bis.read(buffer)) > 0 && mDownloadStatus != DownloadStatus
@@ -151,14 +152,14 @@ public class DownloadTask implements Runnable {
                             // Update download information database
                             buffOffset = 0;
                             //考虑是否需要频繁进行数据库的读取，如果在下载过程程序崩溃的话，程序不会保存最新的下载进度,并且下载过程不会更新进度
-                            if(DownloadStatus.DOWNLOAD_STATUS_CANCEL!=getDownloadStatus()){
+                            if(DownloadStatus.DOWNLOAD_STATUS_CANCEL!=mDownloadStatus){
                                 mDbEntity.setDownloadedSize(mDownloadedSize);
                                 mDownloadDao.update(mDbEntity);
                                 onDownloading();
-                            };
+                            }
                         }
                     }
-                    if(DownloadStatus.DOWNLOAD_STATUS_CANCEL!=getDownloadStatus()){
+                    if(DownloadStatus.DOWNLOAD_STATUS_CANCEL!=mDownloadStatus){
                         mDbEntity.setDownloadedSize(mDownloadedSize);
                         mDownloadDao.update(mDbEntity);
                         onDownloading();
@@ -193,22 +194,31 @@ public class DownloadTask implements Runnable {
             onError(DownloadTaskListener.DOWNLOAD_ERROR_UNKONW_ERROR);
             return;
         } finally {
-            mDbEntity.setDownloadedSize(mDownloadedSize);
-            mDownloadDao.update(mDbEntity);
-            if (bis != null) try {
-                bis.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (mDbEntity != null) {
+                mDbEntity.setDownloadedSize(mDownloadedSize);
+                mDownloadDao.update(mDbEntity);
             }
-            if (inputStream != null) try {
-                inputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+
+            if (bis != null) {
+                try {
+                    bis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            if (mRandomAccessFile != null) try {
-                mRandomAccessFile.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (mRandomAccessFile != null) {
+                try {
+                    mRandomAccessFile.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         if (mTotalSize == mDownloadedSize)
@@ -310,11 +320,19 @@ public class DownloadTask implements Runnable {
         return getSaveDirPath()+File.separator+getFileName();
     }
 
+    public String getIcon() {
+        return mIcon;
+    }
+
+    public void setIcon(String icon) {
+        this.mIcon = icon;
+    }
+
     /**
      * 取消任务，删除下载的文件
      */
     public void cancel() {
-        setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
+        mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_CANCEL;
         File temp = new File(mSaveDirPath + File.separator + mFileName);
         if (temp.exists()) {
             temp.delete();
@@ -322,7 +340,7 @@ public class DownloadTask implements Runnable {
     }
 
     public void pause() {
-        setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_PAUSE);
+        mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_PAUSE;
     }
 
     private void onPrepare() {
@@ -420,6 +438,7 @@ public class DownloadTask implements Runnable {
         if (mId != null ? !mId.equals(that.mId) : that.mId != null) {
             return false;
         }
+
         return (mUrl != null ? mUrl.equals(that.mUrl) : that.mUrl == null);
     }
 
