@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:custom="http://schemas.Android.com/apk/res-auto"
+             android:layout_width="@dimen/dimen_424px"
+             android:layout_height="@dimen/dimen_184px"
+             android:background="@drawable/shape_bg_uninstall_manager_item"
+             android:descendantFocusability="blocksDescendants"
+             android:focusable="true"
+             android:gravity="center_vertical"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        >
+
+        <cn.can.tvlib.ui.view.RoundCornerImageView
+            android:id="@+id/iv_icon"
+            android:layout_width="@dimen/dimen_136px"
+            android:layout_height="@dimen/dimen_136px"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/dimen_24px"
+            android:scaleType="fitXY"
+            custom:cornerSize="@dimen/dimen_24px"
+            />
+
+        <LinearLayout
+            android:id="@+id/ll_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dimen_14px"
+            android:layout_marginStart="@dimen/dimen_24px"
+            android:layout_toRightOf="@+id/iv_icon"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:duplicateParentState="true"
+                android:ellipsize="marquee"
+                android:includeFontPadding="false"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:maxLines="1"
+                android:paddingRight="@dimen/dimen_24px"
+                android:singleLine="true"
+                android:textColor="@color/uninstall_app_name_color"
+                android:textSize="@dimen/fontsize_34px"/>
+
+            <TextView
+                android:id="@+id/tv_version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_12px"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:textColor="@color/tv_app_version_color"
+                android:textSize="@dimen/fontsize_26px"/>
+
+            <TextView
+                android:id="@+id/tv_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_4px"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:textColor="@color/tv_app_version_color"
+                android:textSize="@dimen/fontsize_26px"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/iv_check"
+        android:layout_width="@dimen/dimen_36px"
+        android:layout_height="@dimen/dimen_36px"
+        android:layout_marginStart="@dimen/dimen_4px"
+        android:layout_marginTop="@dimen/dimen_4px"
+        android:src="@drawable/unselect"/>
+
+</FrameLayout>

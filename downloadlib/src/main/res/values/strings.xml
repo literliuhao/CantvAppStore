@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">downloadlib</string>
+    <string name="error_msg">存储空间不足</string>
 </resources>

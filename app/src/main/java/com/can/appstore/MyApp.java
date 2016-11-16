@@ -12,6 +12,9 @@ import com.can.appstore.myapps.model.MyAppsListDataUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.downloadlib.DownloadManager;
+import cn.can.downloadlib.DownloadTask;
+
 /**
  * ================================================
  * 作    者：

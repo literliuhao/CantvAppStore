@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:upgradeprogressbar="http://schemas.android.com/apk/res-auto"
+              android:layout_width="@dimen/px1000"
+              android:layout_height="@dimen/px640"
+              android:orientation="vertical"
+              android:layout_gravity="center"
+              android:layout_margin="@dimen/px26"
+              android:background="@color/color_2D313A"
+              android:gravity="center_horizontal"
+    >
+    <TextView
+        android:id="@+id/tv_upgrade_title"
+        style="@style/NormalText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/px88"
+        android:gravity="center"
+        android:includeFontPadding="true"
+        android:text="检测到新版本"
+        android:textColor="@color/white_opa80"
+        android:textSize="@dimen/px40"
+        />
+    <com.can.appstore.upgrade.UpgradeProgressBar
+        android:id="@+id/pb_upgrade"
+        android:layout_width="@dimen/px722"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/px215"
+        upgradeprogressbar:barwidth = "@dimen/px720"
+        upgradeprogressbar:barheight = "@dimen/px16"
+        upgradeprogressbar:barstroke = "@dimen/px2"
+        upgradeprogressbar:barcorner = "@dimen/px8"
+        upgradeprogressbar:barcolor = "@color/white_opa80"
+        upgradeprogressbar:progresscolor ="@color/color_CC088DBD"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/px40"
+        style="@style/NormalText"
+        android:text="@string/installing"
+        android:textColor="@color/white_opa80"
+        android:textSize="@dimen/px32"
+        />
+</LinearLayout>

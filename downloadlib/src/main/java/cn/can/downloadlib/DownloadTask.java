@@ -19,6 +19,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
+
 /**
  * ================================================
  * 作    者：朱洪龙
@@ -37,7 +38,7 @@ public class DownloadTask implements Runnable {
     private long mTotalSize;
     private long mDownloadedSize;
     private String mUrl;
-    private String mSaveDirPath = Environment.getDownloadCacheDirectory().getPath();
+    private String mSaveDirPath = Environment.getExternalStorageDirectory().getAbsolutePath();
     private RandomAccessFile mRandomAccessFile;
     private int UPDATE_SIZE = 512 * 1024;    // 512k存储一次
     private int mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_INIT;
@@ -45,7 +46,7 @@ public class DownloadTask implements Runnable {
     private String mFileName;
 
     private List<DownloadTaskListener> mDownloadlisteners = new ArrayList<DownloadTaskListener>();
-
+    private AppInstallListener mAppListener;
     public DownloadTask() {
     }
 
@@ -78,7 +79,8 @@ public class DownloadTask implements Runnable {
         BufferedInputStream bis = null;
         try {
             mDbEntity = mDownloadDao.load(mId);
-            mRandomAccessFile = new RandomAccessFile(mSaveDirPath + mFileName, "rwd");
+            String path = mSaveDirPath + File.separator + mFileName;
+            mRandomAccessFile = new RandomAccessFile(path, "rwd");
             if (mDbEntity != null) {
                 mDownloadedSize = mDbEntity.getDownloadedSize();
                 mTotalSize = mDbEntity.getTotalSize();
@@ -110,16 +112,22 @@ public class DownloadTask implements Runnable {
                     mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING;
                     if (mTotalSize <= 0) {
                         mTotalSize = responseBody.contentLength();
-                        mDbEntity.setTotalSize(mTotalSize);
+                        /** 下载过程中删除任务，此处mDbEntity为空 xingzl 2016-11-15 15:37:43 start*/
+                        if(mDbEntity==null){
+                            mDbEntity = new DownloadDBEntity(mId, mTotalSize, mDownloadedSize, mUrl, mSaveDirPath,
+                                    mFileName, mDownloadStatus);
+                        }else{
+                            mDbEntity.setTotalSize(mTotalSize);
+                        }
                         mDownloadDao.update(mDbEntity);
                     }
                     if (TextUtils.isEmpty(response.header("Content-Range"))) {
                         //返回的没有Content-Range 不支持断点下载 需要重新下载
-                        File alreadyDownloadedFile = new File(mSaveDirPath + mFileName);
+                        File alreadyDownloadedFile = new File(path);
                         if (alreadyDownloadedFile.exists()) {
                             alreadyDownloadedFile.delete();
                         }
-                        mRandomAccessFile = new RandomAccessFile(mSaveDirPath + mFileName, "rwd");
+                        mRandomAccessFile = new RandomAccessFile(path, "rwd");
                         mDownloadedSize = 0;
                     }
                     mRandomAccessFile.seek(mDownloadedSize);
@@ -143,14 +151,18 @@ public class DownloadTask implements Runnable {
                             // Update download information database
                             buffOffset = 0;
                             //考虑是否需要频繁进行数据库的读取，如果在下载过程程序崩溃的话，程序不会保存最新的下载进度,并且下载过程不会更新进度
-                            mDbEntity.setDownloadedSize(mDownloadedSize);
-                            mDownloadDao.update(mDbEntity);
-                            onDownloading();
+                            if(DownloadStatus.DOWNLOAD_STATUS_CANCEL!=getDownloadStatus()){
+                                mDbEntity.setDownloadedSize(mDownloadedSize);
+                                mDownloadDao.update(mDbEntity);
+                                onDownloading();
+                            };
                         }
                     }
-                    mDbEntity.setDownloadedSize(mDownloadedSize);
-                    mDownloadDao.update(mDbEntity);
-                    onDownloading();
+                    if(DownloadStatus.DOWNLOAD_STATUS_CANCEL!=getDownloadStatus()){
+                        mDbEntity.setDownloadedSize(mDownloadedSize);
+                        mDownloadDao.update(mDbEntity);
+                        onDownloading();
+                    }
                 }
             } else {
                 mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
@@ -163,16 +175,22 @@ public class DownloadTask implements Runnable {
             onError(DownloadTaskListener.DOWNLOAD_ERROR_FILE_NOT_FOUND);
             return;
         } catch (SocketException e) {
-            Log.d("","*******SocketException*******");
+            Log.d("", "*******SocketException*******");
             e.printStackTrace();
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
             onError(DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR);
             return;
         } catch (IOException e) {
-            Log.d("","*******IOException*******");
+            Log.d("", "*******IOException*******");
             e.printStackTrace();
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
             onError(DownloadTaskListener.DOWNLOAD_ERROR_IO_ERROR);
+            return;
+        } catch (Exception e) {
+            Log.d("", "*******Exception*******");
+            e.printStackTrace();
+            mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
+            onError(DownloadTaskListener.DOWNLOAD_ERROR_UNKONW_ERROR);
             return;
         } finally {
             mDbEntity.setDownloadedSize(mDownloadedSize);
@@ -209,7 +227,7 @@ public class DownloadTask implements Runnable {
                 break;
             case DownloadStatus.DOWNLOAD_STATUS_CANCEL:
                 mDownloadDao.delete(mDbEntity);
-                File temp = new File(mSaveDirPath + mFileName);
+                File temp = new File(mSaveDirPath +File.separator+ mFileName);
                 if (temp.exists()) temp.delete();
                 onCancel();
                 break;
@@ -288,12 +306,16 @@ public class DownloadTask implements Runnable {
         this.mFileName = fileName;
     }
 
+    public String getFilePath(){
+        return getSaveDirPath()+File.separator+getFileName();
+    }
+
     /**
      * 取消任务，删除下载的文件
      */
     public void cancel() {
         setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
-        File temp = new File(mSaveDirPath + mFileName);
+        File temp = new File(mSaveDirPath + File.separator + mFileName);
         if (temp.exists()) {
             temp.delete();
         }
@@ -316,16 +338,30 @@ public class DownloadTask implements Runnable {
     }
 
     private void onDownloading() {
-        Log.d("onDownloading", mId + " listener size:" + mDownloadlisteners.size());
+        Log.d("onDownloading", mId + " listener size:" + mDownloadlisteners.size()+"  total size:"+mTotalSize);
         for (DownloadTaskListener listener : mDownloadlisteners) {
             listener.onDownloading(this);
         }
     }
 
+//    private void installAPK() {
+//        mAppListener.onInstalling(this);
+//        setDownloadStatus(AppInstallListener.APP_INSTALLING);
+//        ShellUtils.CommandResult res = ShellUtils.execCommand("pm install " + mSaveDirPath, false);
+//        if (res.result == 0) {
+//            setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
+//            mAppListener.onInstallSucess(this);
+//        } else {
+//            setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
+//            mAppListener.onInstallFail(this);
+//        }
+//    }
+
     private void onCompleted() {
         for (DownloadTaskListener listener : mDownloadlisteners) {
             listener.onCompleted(this);
         }
+        mAppListener.onInstalling(this);
     }
 
     private void onPause() {
@@ -344,9 +380,13 @@ public class DownloadTask implements Runnable {
         for (DownloadTaskListener listener : mDownloadlisteners) {
             listener.onError(this, errorCode);
             if (DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR == errorCode) {
-                DownloadManager.mErrorTaskQueue.add(this.getId()); // 处理任务异常时，获取异常任务taskId
+                TaskManager.mErrorTaskQueue.add(this.getId()); // 处理任务异常时，获取异常任务taskId
             }
         }
+    }
+
+    public void setAppListener(AppInstallListener listener) {
+        mAppListener = listener;
     }
 
     public void addDownloadListener(DownloadTaskListener listener) {
@@ -386,5 +426,18 @@ public class DownloadTask implements Runnable {
     @Override
     public int hashCode() {
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "DownloadTask{" +
+                "mId='" + mId + '\'' +
+                ", mTotalSize=" + mTotalSize +
+                ", mDownloadedSize=" + mDownloadedSize +
+                ", mUrl='" + mUrl + '\'' +
+                ", mSaveDirPath='" + mSaveDirPath + '\'' +
+                ", mDownloadStatus=" + mDownloadStatus +
+                ", mFileName='" + mFileName + '\'' +
+                '}';
     }
 }

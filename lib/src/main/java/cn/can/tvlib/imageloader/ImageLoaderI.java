@@ -13,6 +13,7 @@ public interface ImageLoaderI {
 
     void load(Context context, ImageView view, String url, GlideLoadTask.SuccessCallback successCallback,
               GlideLoadTask.FailCallback failCallback);
+    void load(Context context, ImageView view, String url, int placeHolder, int errorHolder);
 
     void load(Context context, ImageView view, String url, int placeHolder, int errorHolder,
               GlideLoadTask.SuccessCallback successCallback, GlideLoadTask.FailCallback failCallback);

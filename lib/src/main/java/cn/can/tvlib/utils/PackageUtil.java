@@ -21,6 +21,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
+
 
 /**
  * ================================================
@@ -39,8 +41,10 @@ public class PackageUtil {
     public static final int STATE_HAS_UPDATE = 3;//有更新
 
     // -----------------------------------------------------  应用安装卸载、操作相关  -------------------------------
+
     /**
      * 调用系统安装接口，安装一个apk文件
+     *
      * @param context
      * @param apkFile
      */
@@ -54,6 +58,7 @@ public class PackageUtil {
 
     /**
      * 调用系统安装接口，安装一个apk文件
+     *
      * @param context
      * @param apkFilePath
      */
@@ -67,6 +72,7 @@ public class PackageUtil {
 
     /**
      * 调用系统安装接口，卸载一个app
+     *
      * @param context
      * @param packageName
      */
@@ -90,7 +96,7 @@ public class PackageUtil {
      *
      * @param packageName
      */
-    public static void openApp(Context context, String packageName){
+    public static void openApp(Context context, String packageName) {
         openApp(context, packageName, null);
     }
 
@@ -121,7 +127,7 @@ public class PackageUtil {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             ComponentName cn = new ComponentName(packageName, className);
             intent.setComponent(cn);
-            if(params != null){
+            if (params != null) {
                 intent.putExtras(params);
             }
             context.startActivity(intent);
@@ -140,8 +146,8 @@ public class PackageUtil {
     }
 
 
-
     // -----------------------------------------------------  应用信息相关  -------------------------------
+
     /**
      * 获取当前应用的版本号
      */
@@ -194,15 +200,16 @@ public class PackageUtil {
 
     /**
      * 根据包名获取某个应用的相关信息
+     *
      * @param context
      * @param packageName
      * @return
      */
-    public static AppInfo getAppInfo(Context context, String packageName){
+    public static AppInfo getAppInfo(Context context, String packageName) {
         PackageManager pm = context.getApplicationContext().getPackageManager();
         List<PackageInfo> pList = pm.getInstalledPackages(0);
         for (PackageInfo info : pList) {
-            if(!packageName.equals(info.packageName)){
+            if (!packageName.equals(info.packageName)) {
                 continue;
             }
             final AppInfo app = new AppInfo();
@@ -220,7 +227,7 @@ public class PackageUtil {
             try {
                 Method method = PackageManager.class.getMethod("getPackageSizeInfo", String.class, IPackageStatsObserver.class);
                 method.setAccessible(true);
-                method.invoke(pm, app.packageName, new IPackageStatsObserver.Stub(){
+                method.invoke(pm, app.packageName, new IPackageStatsObserver.Stub() {
                     @Override
                     public void onGetStatsCompleted(PackageStats pStats, boolean succeeded) throws RemoteException {
                         app.size = pStats.codeSize + pStats.dataSize + pStats.cacheSize;
@@ -237,11 +244,12 @@ public class PackageUtil {
 
     /**
      * 获取已安装的所有应用信息
+     *
      * @param context
      * @return
      */
     public static List<AppInfo> findAllApps(Context context, List<AppInfo> appList) {
-        if(appList == null){
+        if (appList == null) {
             appList = new ArrayList<>();
         } else {
             appList.clear();
@@ -264,7 +272,7 @@ public class PackageUtil {
             try {
                 Method method = PackageManager.class.getMethod("getPackageSizeInfo", String.class, IPackageStatsObserver.class);
                 method.setAccessible(true);
-                method.invoke(pm, app.packageName, new IPackageStatsObserver.Stub(){
+                method.invoke(pm, app.packageName, new IPackageStatsObserver.Stub() {
                     @Override
                     public void onGetStatsCompleted(PackageStats pStats, boolean succeeded) throws RemoteException {
                         app.size = pStats.codeSize + pStats.dataSize + pStats.cacheSize;
@@ -281,11 +289,12 @@ public class PackageUtil {
 
     /**
      * 获取已安装的第三方应用信息
+     *
      * @param context
      * @return
      */
     public static List<AppInfo> findAllSystemApps(Context context, List<AppInfo> appList) {
-        if(appList == null){
+        if (appList == null) {
             appList = new ArrayList<>();
         } else {
             appList.clear();
@@ -296,7 +305,7 @@ public class PackageUtil {
             ApplicationInfo applicationInfo = info.applicationInfo;
             // 是否是系统权限
             boolean isSystemApp = (applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM;
-            if(!isSystemApp){
+            if (!isSystemApp) {
                 continue;
             }
             final AppInfo app = new AppInfo();
@@ -312,7 +321,7 @@ public class PackageUtil {
             try {
                 Method method = PackageManager.class.getMethod("getPackageSizeInfo", String.class, IPackageStatsObserver.class);
                 method.setAccessible(true);
-                method.invoke(pm, app.packageName, new IPackageStatsObserver.Stub(){
+                method.invoke(pm, app.packageName, new IPackageStatsObserver.Stub() {
                     @Override
                     public void onGetStatsCompleted(PackageStats pStats, boolean succeeded) throws RemoteException {
                         app.size = pStats.codeSize + pStats.dataSize + pStats.cacheSize;
@@ -329,11 +338,12 @@ public class PackageUtil {
 
     /**
      * 获取已安装的第三方应用信息
+     *
      * @param context
      * @return
      */
     public static List<AppInfo> findAllThirdPartyApps(Context context, List<AppInfo> appList) {
-        if(appList == null){
+        if (appList == null) {
             appList = new ArrayList<>();
         } else {
             appList.clear();
@@ -344,7 +354,7 @@ public class PackageUtil {
             ApplicationInfo applicationInfo = info.applicationInfo;
             // 是否是系统权限
             boolean isSystemApp = (applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM;
-            if(isSystemApp){
+            if (isSystemApp) {
                 continue;
             }
             final AppInfo app = new AppInfo();
@@ -360,7 +370,7 @@ public class PackageUtil {
             try {
                 Method method = PackageManager.class.getMethod("getPackageSizeInfo", String.class, IPackageStatsObserver.class);
                 method.setAccessible(true);
-                method.invoke(pm, app.packageName, new IPackageStatsObserver.Stub(){
+                method.invoke(pm, app.packageName, new IPackageStatsObserver.Stub() {
                     @Override
                     public void onGetStatsCompleted(PackageStats pStats, boolean succeeded) throws RemoteException {
                         app.size = pStats.codeSize + pStats.dataSize + pStats.cacheSize;
@@ -377,11 +387,12 @@ public class PackageUtil {
 
     /**
      * 获取处于白名单中的系统应用 + 第三方应用
+     *
      * @param context
      * @return
      */
     public static List<AppInfo> findAllComplexApps(Context context, List<AppInfo> appList, List<String> appWhiteList) {
-        if(appList == null){
+        if (appList == null) {
             appList = new ArrayList<>();
         } else {
             appList.clear();
@@ -392,7 +403,7 @@ public class PackageUtil {
             ApplicationInfo applicationInfo = info.applicationInfo;
             boolean isSystemApp = (applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM;
             // 排除不在白名单中的系统应用
-            if(isSystemApp && !appWhiteList.contains(info.packageName)){
+            if (isSystemApp && !appWhiteList.contains(info.packageName)) {
                 continue;
             }
             final AppInfo app = new AppInfo();
@@ -409,7 +420,7 @@ public class PackageUtil {
             try {
                 Method method = PackageManager.class.getMethod("getPackageSizeInfo", String.class, IPackageStatsObserver.class);
                 method.setAccessible(true);
-                method.invoke(pm, app.packageName, new IPackageStatsObserver.Stub(){
+                method.invoke(pm, app.packageName, new IPackageStatsObserver.Stub() {
                     @Override
                     public void onGetStatsCompleted(PackageStats pStats, boolean succeeded) throws RemoteException {
                         app.size = pStats.codeSize + pStats.dataSize + pStats.cacheSize;
@@ -424,7 +435,7 @@ public class PackageUtil {
         return appList;
     }
 
-    public static class AppInfo {
+    public static class AppInfo implements CanRecyclerViewAdapter.Selectable {
         public String appName = "";
         public String packageName = "";
         public String versionName = "";
@@ -435,13 +446,32 @@ public class PackageUtil {
         public String installPath = "";   //已经安装的apk文件的路径  在data/app下有   .apk文件
         public String apkPath = "";  // 所有的apk文件的路径
         public long installtime = 0;
+        public boolean isSelect = false;
 
         @Override
         public String toString() {
-            return "AppInfo [appName=" + appName + ", packageName=" + packageName + ", versionName="
-                    + versionName + ", versionCode=" + versionCode + ", appIcon=" + appIcon
-                    + ", isSystemApp=" + isSystemApp + ", size=" + size + ", installPath="
-                    + installPath + ", apkPath=" + apkPath + "]";
+            return "AppInfo{" +
+                    "appName='" + appName + '\'' +
+                    ", packageName='" + packageName + '\'' +
+                    ", versionName='" + versionName + '\'' +
+                    ", versionCode=" + versionCode +
+                    ", appIcon=" + appIcon +
+                    ", isSystemApp=" + isSystemApp +
+                    ", size=" + size +
+                    ", installPath='" + installPath + '\'' +
+                    ", apkPath='" + apkPath + '\'' +
+                    ", isSelect=" + isSelect +
+                    '}';
+        }
+
+        @Override
+        public boolean isSelected() {
+            return isSelect;
+        }
+
+        @Override
+        public void setSelected(boolean selected) {
+            isSelect = selected;
         }
     }
 }

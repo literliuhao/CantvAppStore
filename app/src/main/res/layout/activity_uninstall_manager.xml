@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/two_page_bg">
+
+    <Button
+        android:id="@+id/bt_batch_uninstall"
+        android:layout_width="@dimen/dimen_200px"
+        android:layout_height="@dimen/dimen_72px"
+        android:layout_marginLeft="@dimen/dimen_160px"
+        android:layout_marginTop="@dimen/dimen_150px"
+        android:background="@drawable/shape_bg_batch_uninstall_bt"
+        android:text="@string/bt_batch_uninstall"
+        android:textColor="@color/app_name_color"
+        android:textSize="@dimen/fontsize_34px"/>
+
+    <LinearLayout
+        android:id="@+id/ll_select_app"
+        android:layout_width="@dimen/dimen_200px"
+        android:layout_height="@dimen/dimen_128px"
+        android:layout_alignEnd="@+id/bt_batch_uninstall"
+        android:layout_alignLeft="@+id/bt_batch_uninstall"
+        android:layout_below="@+id/bt_batch_uninstall"
+        android:layout_marginTop="@dimen/dimen_10px"
+        android:background="@drawable/bjs"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="invisible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_27px"
+            android:includeFontPadding="false"
+            android:text="@string/select_app_count"
+            android:textColor="@color/app_name_color"
+            android:textSize="@dimen/fontsize_26px"/>
+
+
+        <TextView
+            android:id="@+id/tv_select_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_11px"
+            android:includeFontPadding="false"
+            android:text="4"
+            android:textColor="@color/select_app_count"
+            android:textSize="@dimen/fontsize_44px"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/dimen_80px"
+        android:layout_toRightOf="@+id/bt_batch_uninstall"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_65px"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="@dimen/dimen_20px"
+                android:drawableStart="@drawable/title_line"
+                android:text="@string/tv_uninstall_manager"
+                android:textColor="@color/tv_cur_rows_color"
+                android:textSize="@dimen/fontsize_38px"/>
+
+            <com.can.appstore.appdetail.custom.TextProgressBar
+                android:id="@+id/progress_stroage"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="@dimen/dimen_340px"
+                android:layout_height="@dimen/dimen_24px"
+                android:layout_marginStart="@dimen/dimen_40px"
+                android:max="100"
+                android:progressDrawable="@drawable/layer_list_progress_drawable"
+                />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/bt_batch_uninstall">
+
+            <TextView
+                android:id="@+id/tv_no_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/not_uinstall_data"
+                android:layout_gravity="center"
+                android:visibility="invisible"
+                android:textColor="@color/uninstall_app_name_color"
+                android:textSize="@dimen/dimen_36px"
+                android:textStyle="bold"/>
+
+
+            <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
+                android:id="@+id/crlv_grid"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/dimen_142px"
+                android:layout_marginStart="@dimen/dimen_42px"
+                android:layout_marginTop="@dimen/dimen_f7px"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:paddingLeft="@dimen/dimen_23px"
+                android:paddingTop="@dimen/dimen_23px"
+                />
+
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="@dimen/dimen_160px"
+        android:layout_marginTop="@dimen/dimen_86px">
+
+        <TextView
+            android:id="@+id/tv_cur_rows"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tv_cur_rows_color"
+            android:textSize="@dimen/fontsize_32px"/>
+
+        <TextView
+            android:id="@+id/tv_total_rows"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tv_total_rows_color"
+            android:textSize="@dimen/fontsize_32px"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

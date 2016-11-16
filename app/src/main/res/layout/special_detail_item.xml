@@ -2,9 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/px240"
     android:layout_height="@dimen/px276"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/specail_detail_item_shape"
-    android:descendantFocusability="beforeDescendants"
+    android:descendantFocusability="blocksDescendants"
     android:focusable="true"
     android:orientation="vertical"
     android:gravity="center_horizontal"
@@ -24,6 +23,11 @@
         android:id="@+id/special_detail_item_appname"
         android:textSize="@dimen/px32"
         android:textColor="@color/color_80_ffffff"
+        android:maxLines="1"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+        android:duplicateParentState="true"
         android:includeFontPadding="false"/>
 
     <LinearLayout
@@ -38,8 +42,7 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/px26"
             android:textColor="@color/color_50_ffffff"
-            android:includeFontPadding="false"
-            tools:text="19.25MB"/>
+            android:includeFontPadding="false"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -47,15 +50,14 @@
             android:textSize="@dimen/px26"
             android:textColor="@color/color_50_ffffff"
             android:includeFontPadding="false"
-            tools:text="  |  "/>
+            android:text="  |  "/>
         <TextView
             android:id="@+id/special_detail_item_appdownloadnum"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/px26"
             android:textColor="@color/color_50_ffffff"
-            android:includeFontPadding="false"
-            tools:text="2万+"/>
+            android:includeFontPadding="false"/>
 
     </LinearLayout>
 </LinearLayout>
