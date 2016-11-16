@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.entity.AppInfo;
-
 import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.update.utils.UpdateUtils;
 
@@ -18,7 +17,6 @@ import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
-
 
 /**
  * Created by shenpx on 2016/11/10 0010.

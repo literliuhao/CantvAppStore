@@ -48,7 +48,7 @@ import cn.can.tvlib.utils.PreferencesUtils;
  * Created by shenpx on 2016/10/12 0012.
  */
 
-public class UpdateManagerActivity extends Activity implements UpdateContract.View, DownloadTaskListener {
+public class UpdateManagerActivity extends Activity implements UpdateContract.View,DownloadTaskListener {
 
     private CanRecyclerView mRecyclerView;
     private UpdateManagerAdapter mRecyclerAdapter;
