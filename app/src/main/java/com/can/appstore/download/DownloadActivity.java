@@ -231,6 +231,10 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
 
             @Override
             public boolean onItemContentKeyListener(View view, int keyCode, KeyEvent event, int pos, DownloadTask downloadTask) {
+                if(KeyEvent.KEYCODE_DPAD_LEFT==keyCode&&KeyEvent.ACTION_DOWN==event.getAction()){
+                    mPauseAllBtn.requestFocus();
+                    return true;
+                }
                 return false;
             }
         });
@@ -242,7 +246,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
     }
 
     @Override
-    public void refreshRowNumber(String formatRow) {
+    public void refreshRowNumber(CharSequence formatRow) {
         mRowTv.setText(formatRow);
     }
 

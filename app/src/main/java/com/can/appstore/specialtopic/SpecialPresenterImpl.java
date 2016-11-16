@@ -87,7 +87,7 @@ public class SpecialPresenterImpl implements SpecialContract.SpecialPresenter {
         int pos = rowFmt.indexOf("/");
         SpannableString spanString = new SpannableString(rowFmt);
         spanString.setSpan(new ForegroundColorSpan(Color.parseColor("#EAEAEA")), 0, pos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        mView.refreshRowNum(rowFmt);
+        mView.refreshRowNum(spanString);
         isFocusedLastRow(position);
     }
 

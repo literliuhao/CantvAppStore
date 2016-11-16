@@ -24,20 +24,22 @@ import cn.can.tvlib.utils.SystemUtil;
 
 public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter {
 
-
-    public static final String TAG_DOWNLOAD_UPDATA_STATUS = "download_update_status";
-
+    private static final String TAG = "DownloadPresenterImpl";
+    public static final String TAG_DOWNLOAD_UPDATA__STATUS = "download_update_status";
     private DownloadContract.DownloadView mView;
 
     private DownloadManager mDownLoadManager;
 
     private List<DownloadTask> mTasks;
 
-    private static final String TAG = "DownloadPresenterImpl";
+    private AppInstallListener mAppInstallListener;
+
 
     public DownloadPresenterImpl(DownloadContract.DownloadView view) {
         mView = view;
+        mAppInstallListener=new AppInstallListenerImpl();
         mDownLoadManager = DownloadManager.getInstance(mView.getContext());
+        mDownLoadManager.setAppInstallListener(mAppInstallListener);
         mView.setPresenter(this);
     }
 
@@ -72,8 +74,8 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
 
     @Override
     public void release() {
+        mDownLoadManager.removeAppInstallListener(mAppInstallListener);
         mView = null;
-        mDownLoadManager.release();
     }
 
     @Override
@@ -92,7 +94,7 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
         int pos = rowFmt.indexOf("/");
         SpannableString ss = new SpannableString(rowFmt);
         ss.setSpan(new ForegroundColorSpan(Color.parseColor("#EAEAEA")), 0, pos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        mView.refreshRowNumber(rowFmt);
+        mView.refreshRowNumber(ss);
     }
 
     @Override
@@ -129,7 +131,7 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
         }
 
         if (pauseSize > 0) {
-            DownloadDispatcher.getInstance().postUpdateStatusEvent(TAG, TAG_DOWNLOAD_UPDATA_STATUS);
+            DownloadDispatcher.getInstance().postDownloadStatusEvent(TAG, TAG_DOWNLOAD_UPDATA__STATUS);
             return true;
         }
         return false;
@@ -156,10 +158,28 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
             pauseSize++;
         }
         if (pauseSize > 0) {
-            DownloadDispatcher.getInstance().postUpdateStatusEvent(TAG, TAG_DOWNLOAD_UPDATA_STATUS);
+            DownloadDispatcher.getInstance().postDownloadStatusEvent(TAG, TAG_DOWNLOAD_UPDATA__STATUS);
             return true;
         }
         return false;
+    }
+
+    private class AppInstallListenerImpl implements AppInstallListener {
+
+        @Override
+        public void onInstalling(DownloadTask downloadTask) {
+            DownloadDispatcher.getInstance().postInstallStatusEvent(downloadTask.getId(),TAG,TAG_DOWNLOAD_UPDATA__STATUS );
+        }
+
+        @Override
+        public void onInstallSucess(String id) {
+            DownloadDispatcher.getInstance().postInstallStatusEvent(id,TAG,TAG_DOWNLOAD_UPDATA__STATUS );
+        }
+
+        @Override
+        public void onInstallFail(String id) {
+            DownloadDispatcher.getInstance().postInstallStatusEvent(id,TAG,TAG_DOWNLOAD_UPDATA__STATUS );
+        }
     }
 
 }
