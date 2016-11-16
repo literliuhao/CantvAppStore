@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="@dimen/px116"
+               >
+<LinearLayout
+    android:id="@+id/ll_focus_msg"
+    android:layout_width="@dimen/px1224"
+    android:layout_height="@dimen/px115"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:focusable="true"
+    android:clickable="true"
+    android:descendantFocusability="blocksDescendants"
+    >
+    <ImageView
+        android:id="@+id/green_dot"
+        android:layout_width="@dimen/px16"
+        android:layout_height="@dimen/px16"
+        android:src="@drawable/green_dot"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/px16"
+        android:layout_marginLeft="@dimen/px16"
+        android:onClick="true"
+        android:visibility="invisible"
+        ></ImageView>
+
+    <TextView
+        android:id="@+id/item_tv_title"
+        android:layout_width="@dimen/px860"
+        android:layout_height="wrap_content"
+        android:textColor="@color/msg_white_80"
+        android:textSize="@dimen/fontsize_36"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/green_dot"
+        android:layout_marginRight="@dimen/px120"
+        android:includeFontPadding="false"
+        android:singleLine="true"
+        />
+
+    <TextView
+        android:id="@+id/item_tv_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/msg_white_50"
+        android:textSize="@dimen/fontsize_34"
+        android:text="2016-10-20"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:includeFontPadding="false"
+        />
+</LinearLayout>
+
+    <ImageView
+        android:id="@+id/iv_btn_delete"
+        android:layout_width="@dimen/px48"
+        android:layout_height="@dimen/px48"
+        android:src="@drawable/msg_del"
+        android:layout_marginRight="@dimen/px16"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:focusable="true"
+        android:visibility="gone"
+        />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/msg_item_line"
+        android:layout_alignParentBottom="true"
+        android:paddingRight="@dimen/px5"
+        android:paddingLeft="@dimen/px5"
+        ></ImageView>
+
+</RelativeLayout>

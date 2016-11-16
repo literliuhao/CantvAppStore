@@ -20,11 +20,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class TaskManager {
     private static final int MAX_TASKS = 50;
     // 工作队列
-    private Map<String, DownloadTask> mCurrentTaskMap = new HashMap<String, DownloadTask>(MAX_TASKS);
+    private Map<String, DownloadTask> mCurrentTaskMap = new HashMap<>(MAX_TASKS);
     // 工作队列FIFO
     private BlockingQueue<String> mWorkTaskQueue = new LinkedBlockingQueue<>(MAX_TASKS);
     // 异常任务队列
-    public static BlockingQueue<String> mErrorTaskQueue = new LinkedBlockingQueue<>(MAX_TASKS);
+    public volatile static BlockingQueue<String> mErrorTaskQueue = new LinkedBlockingQueue<>(MAX_TASKS);
 
     public DownloadTask get(String taskId) {
         return mCurrentTaskMap.get(taskId);
@@ -32,16 +32,20 @@ public class TaskManager {
 
     /**
      * 从任务队列中取出任务FIFO
-     * @return
+     * @return DownloadTask
      */
-    public DownloadTask poll() {
+    public synchronized DownloadTask poll() {
+        String taskId = null;
         // 从异常队列中取异常任务重试
-        String taskId = mErrorTaskQueue.poll();
-        if (TextUtils.isEmpty(taskId)) {
+        if (mErrorTaskQueue != null) {
+            taskId = mErrorTaskQueue.poll();
+        }
+
+        if (TextUtils.isEmpty(taskId) && mWorkTaskQueue != null) {
             // 从工作队列中取任务
             taskId = mWorkTaskQueue.poll();
         }
-        if (taskId != null) {
+        if (taskId != null && mCurrentTaskMap != null) {
             // 从任务池中取任务
             return mCurrentTaskMap.get(taskId);
         }
@@ -57,7 +61,7 @@ public class TaskManager {
      * @param task
      * @return
      */
-    public boolean put(DownloadTask task) {
+    public synchronized boolean put(DownloadTask task) {
         boolean flg =  mWorkTaskQueue.offer(task.getId());
         if (flg) {
             mCurrentTaskMap.put(task.getId(), task);
@@ -65,7 +69,7 @@ public class TaskManager {
         return flg;
     }
 
-    public void remove(String taskId) {
+    public synchronized void remove(String taskId) {
         mCurrentTaskMap.remove(taskId);
         mWorkTaskQueue.remove(taskId);
     }
@@ -73,13 +77,11 @@ public class TaskManager {
     public void release(){
         for (String key : mCurrentTaskMap.keySet()) {
             mCurrentTaskMap.get(key).removeAllDownloadListener();
+            mCurrentTaskMap.get(key).cancel();
             mCurrentTaskMap.get(key).pause();
         }
         mCurrentTaskMap.clear();
-        mCurrentTaskMap = null;
         mWorkTaskQueue.clear();
-        mWorkTaskQueue = null;
         mErrorTaskQueue.clear();
-        mErrorTaskQueue = null;
     }
 }

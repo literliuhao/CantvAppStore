@@ -7,7 +7,6 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyManagementException;
@@ -177,7 +176,9 @@ public class DownloadManager implements AppInstallListener {
     public static DownloadManager getInstance(Context context, InputStream sslKey) {
         if (mInstance == null) {
             synchronized (DownloadManager.class) {
-                mInstance = new DownloadManager(context, sslKey);
+                if(mInstance==null){
+                    mInstance = new DownloadManager(context, sslKey);
+                }
             }
         }
         return mInstance;
@@ -263,6 +264,7 @@ public class DownloadManager implements AppInstallListener {
         long space = SdcardUtils.getSDCardAvailableSpace() / 1014 / 1024;
         if (space < mLimitSpace) {
             ToastUtils.showMessageLong(mContext.getApplicationContext(), R.string.error_msg);
+            task.setDownloadStatus(DownloadStatus.SPACE_NOT_ENOUGH);
             return false;
         }
         DownloadTask downloadTask = mTaskManager.get(task.getId());
@@ -280,7 +282,7 @@ public class DownloadManager implements AppInstallListener {
         if (getDBTaskById(task.getId()) == null) {
             DownloadDBEntity dbEntity = new DownloadDBEntity(task.getId(), task.getTotalSize(),
                     task.getCompletedSize(), task.getUrl(), task.getSaveDirPath(), task
-                    .getFileName(), task.getDownloadStatus());
+                    .getFileName(), task.getDownloadStatus(), task.getIcon());
             mDownloadDao.insertOrReplace(dbEntity);
         }
         mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
@@ -352,10 +354,20 @@ public class DownloadManager implements AppInstallListener {
      * @param task
      */
     public void cancel(DownloadTask task) {
+        mTaskManager.remove(task.getId());
         task.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
         task.cancel();
-        mTaskManager.remove(task.getId());
         mDownloadDao.deleteByKey(task.getId());
+    }
+
+    /**
+     * 取消所有任务
+     *
+     */
+    public void cancelAll() {
+        mDownloadDao.deleteAll();
+        mTaskManager.release();
+        mHander.removeCallbacksAndMessages(null);
     }
 
     /**
@@ -409,7 +421,7 @@ public class DownloadManager implements AppInstallListener {
         List<DownloadDBEntity> list = loadAllDownloadEntityFromDB();
         List<DownloadTask> downloadTaskList = null;
         if (list != null && !list.isEmpty()) {
-            downloadTaskList = new ArrayList<DownloadTask>();
+            downloadTaskList = new ArrayList<>();
             for (DownloadDBEntity entity : list) {
                 downloadTaskList.add(DownloadTask.parse(entity));
             }
@@ -425,7 +437,7 @@ public class DownloadManager implements AppInstallListener {
     public List<DownloadTask> loadAllTask() {
         List<DownloadTask> list = loadAllDownloadTaskFromDB();
         Map<String, DownloadTask> currentTaskMap = getCurrentTaskList();
-        List<DownloadTask> currentList = new ArrayList<DownloadTask>();
+        List<DownloadTask> currentList = new ArrayList<>();
         if (currentTaskMap != null) {
             currentList.addAll(currentTaskMap.values());
         }
@@ -563,7 +575,7 @@ public class DownloadManager implements AppInstallListener {
         if (getDBTaskById(task.getId()) == null) {
             DownloadDBEntity dbEntity = new DownloadDBEntity(task.getId(), task.getTotalSize(),
                     task.getCompletedSize(), task.getUrl(), task.getSaveDirPath(), task
-                    .getFileName(), task.getDownloadStatus());
+                    .getFileName(), task.getDownloadStatus(), task.getIcon());
             mDownloadDao.insertOrReplace(dbEntity);
         }
         new Thread(task).start();
@@ -579,7 +591,7 @@ public class DownloadManager implements AppInstallListener {
         Message msg = new Message();
         msg.what = MSG_APP_INSTALL;
         Bundle bundle = new Bundle();
-        bundle.putString("path", downloadTask.getSaveDirPath() + File.separator + downloadTask.getFileName());
+        bundle.putString("path", downloadTask.getFilePath());
         bundle.putString("id", downloadTask.getId());
         msg.setData(bundle);
         mHander.sendMessage(msg);
@@ -595,7 +607,10 @@ public class DownloadManager implements AppInstallListener {
 
     @Override
     public void onInstallSucess(String id) {
-        getCurrentTaskById(id).setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
+        DownloadTask task= getCurrentTaskById(id);
+        if(task!=null){
+            task.setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
+        }
         if (mAppInstallListeners != null) {
             Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
             while (iter.hasNext()) {
@@ -608,9 +623,12 @@ public class DownloadManager implements AppInstallListener {
 
     @Override
     public void onInstallFail(String id) {
-        getCurrentTaskById(id).setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
-        Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
+        DownloadTask task= getCurrentTaskById(id);
+        if(task!=null){
+            task.setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
+        }
         if (mAppInstallListeners != null) {
+            Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
             while (iter.hasNext()) {
                 AppInstallListener listener = iter.next();
                 listener.onInstallFail(id);

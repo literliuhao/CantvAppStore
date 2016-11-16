@@ -43,6 +43,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
     private List<DownloadTask> data;
     private ItemEventListener mHolderItemEventListener;
     private LayoutInflater mLayoutInflater;
+    private RecyclerView mRecyclerView;
 
     public DownloadAdapter(List<DownloadTask> datas) {
         super(datas);
@@ -64,7 +65,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
 
     @Override
     protected void bindContentData(DownloadTask task, RecyclerView.ViewHolder holder, int position) {
-        Log.i(TAG, "bindContentData: " + task.toString());
+        Log.i(TAG, "bindContentData: task=" + task.toString());
         DownloadViewHolder viewHolder = (DownloadViewHolder) holder;
         viewHolder.appNameTv.setText(task.getFileName());
         viewHolder.position = position;
@@ -73,6 +74,12 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
         viewHolder.appControlBtn.setTag(viewHolder);
         viewHolder.appDeleteBtn.setTag(viewHolder);
         viewHolder.refreshStatus();
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        mRecyclerView = recyclerView;
     }
 
     /**
@@ -110,29 +117,12 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
             initListener();
             initView();
             initRunnable();
-            itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
-                @Override
-                public void onViewAttachedToWindow(View v) {
-                    setDownloadListener();
-                    eventBus.register(DownloadViewHolder.this);
-                    appDownloadStatusImgVi.startRotate();
-                    DownloadManager.getInstance(v.getContext()).setAppInstallListener(appInstallListener);
-                }
-
-                @Override
-                public void onViewDetachedFromWindow(View v) {
-                    if (downloadTask != null) {
-                        downloadTask.removeDownloadListener(downloadListener);
-                    }
-                    DownloadManager.getInstance(v.getContext()).removeAppInstallListener(appInstallListener);
-                    v.removeCallbacks(showControlViewRunnable);
-                    v.removeCallbacks(selectedViewRunnable);
-                    eventBus.unregister(DownloadViewHolder.this);
-                    appDownloadStatusImgVi.stopRotate();
-                }
-            });
+            initItemAttachStateListener();
         }
 
+        /**
+         * 初始化downloadListener appintallslistener
+         */
         private void initListener() {
             downloadListener = new DownloadListener() {
                 @Override
@@ -145,6 +135,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     postRefreshStatus();
                 }
             };
+            //app下载listener 后期考虑用EventBus 免去在viewholder 持有appInstallInstaller引用 xzl
             appInstallListener = new AppInstallListener() {
                 @Override
                 public void onInstalling(DownloadTask downloadTask) {
@@ -155,13 +146,17 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                 @Override
                 public void onInstallSucess(String id) {
                     Log.i(TAG, "onInstallSucess: ");
-                    postRefreshStatus();
+                    if (downloadTask.getId().equals(id)) {
+                        postRefreshStatus();
+                    }
                 }
 
                 @Override
                 public void onInstallFail(String id) {
                     Log.i(TAG, "onInstallFail: ");
-                    postRefreshStatus();
+                    if (downloadTask.getId().equals(id)) {
+                        postRefreshStatus();
+                    }
                 }
             };
 
@@ -190,13 +185,28 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
             appContentLayout.setOnKeyListener(eventListener);
         }
 
-        public void setDownloadListener() {
-            if (downloadTask != null) {
-                downloadTask.removeDownloadListener(downloadListener);
-                downloadTask.addDownloadListener(downloadListener);
-            }
-        }
+        private void initItemAttachStateListener() {
 
+            itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View v) {
+                    setDownloadListener();
+                    eventBus.register(DownloadViewHolder.this);
+                    appDownloadStatusImgVi.startRotate();
+                    DownloadManager.getInstance(v.getContext().getApplicationContext()).setAppInstallListener(appInstallListener);
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+                    removeDownloadListener();
+                    DownloadManager.getInstance(v.getContext().getApplicationContext()).removeAppInstallListener(appInstallListener);
+                    v.removeCallbacks(showControlViewRunnable);
+                    v.removeCallbacks(selectedViewRunnable);
+                    eventBus.unregister(DownloadViewHolder.this);
+                    appDownloadStatusImgVi.stopRotate();
+                }
+            });
+        }
 
         private void initRunnable() {
 
@@ -210,8 +220,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
             refreshStatusRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    refreshControlButtonStatus();
-                    refreshDownloadStatus();
+                    refreshStatus();
                 }
             };
 
@@ -221,6 +230,18 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     appContentLayout.setSelected(true);
                 }
             };
+        }
+
+        private void setDownloadListener() {
+            if (downloadTask != null) {
+                downloadTask.addDownloadListener(downloadListener);
+            }
+        }
+
+        private void removeDownloadListener(){
+            if (downloadTask != null) {
+                downloadTask.removeDownloadListener(downloadListener);
+            }
         }
 
         /**
@@ -289,10 +310,10 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     appControlBtn.setText("安装中");
                     break;
                 case AppInstallListener.APP_INSTALL_FAIL:
-                    appDownloadStatusTv.setText("重新安装");
+                    appControlBtn.setText("重新安装");
                     break;
                 case AppInstallListener.APP_INSTALL_SUCESS:
-                    appDownloadStatusTv.setText("打开");
+                    appControlBtn.setText("打开");
                     break;
             }
         }
@@ -423,8 +444,10 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                         break;
                     case AppInstallListener.APP_INSTALL_SUCESS:
                         //TODO
+
                         break;
                     case AppInstallListener.APP_INSTALL_FAIL:
+                        // TODO: 2016/11/15
                         File apkFile = new File(holder.downloadTask.getSaveDirPath() + File.separator + holder.downloadTask.getFileName());
                         ApkUtils.install(v.getContext(), apkFile);
                         break;
@@ -435,6 +458,11 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     mOnItemEventListener.onControlButtonClick(v, holder.position, holder.downloadTask);
                 }
             } else if (v.getId() == holder.appDeleteBtn.getId()) {
+                if (AppInstallListener.APP_INSTALLING == holder.downloadTask.getDownloadStatus()
+                        || AppInstallListener.APP_INSTALL_SUCESS == holder.downloadTask.getDownloadStatus()) {
+                    //安装中 安装成功 删除按钮不可点击
+                    return;
+                }
                 DownloadManager.getInstance(v.getContext().getApplicationContext()).cancel(holder.downloadTask);
                 boolean deleteSuccessful = data.remove(holder.downloadTask);
                 if (deleteSuccessful) {
