@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.can.appstore.R;
-import com.can.appstore.homerank.bean.AppInfo;
+import com.can.appstore.entity.AppInfo;
 
 import java.util.List;
 

@@ -1,9 +1,16 @@
 package com.can.appstore.homerank;
 
-import com.can.appstore.homerank.bean.RankBean;
-import com.can.appstore.homerank.utils.GsonUtil;
+import com.can.appstore.entity.ListResult;
+import com.can.appstore.entity.Ranking;
+import com.can.appstore.http.CanCall;
+import com.can.appstore.http.CanCallback;
+import com.can.appstore.http.CanErrorWrapper;
+import com.can.appstore.http.HttpManager;
+import com.can.appstore.search.ToastUtil;
 
 import java.util.List;
+
+import retrofit2.Response;
 
 /**
  * Created by yibh on 2016/10/17 10:41 .
@@ -19,17 +26,33 @@ public class HomeRankPresenter implements HomeRankContract.Presenter {
     @Override
     public void loadingData() {
         mView.startLoading();
-        mView.getData(getData());
+
+        HttpManager.getApiService().getAppsRankingList().enqueue(new CanCallback<ListResult<Ranking>>() {
+            @Override
+            public void onResponse(CanCall<ListResult<Ranking>> call, Response<ListResult<Ranking>> response) throws Exception {
+                ListResult<Ranking> body = response.body();
+                List<Ranking> data = body.getData();
+                mView.getData(data);
+            }
+
+            @Override
+            public void onFailure(CanCall<ListResult<Ranking>> call, CanErrorWrapper errorWrapper) {
+                ToastUtil.toastShort("加载数据失败,请稍后再试!");
+            }
+        });
+
+//        mView.getData(getData());
     }
 
-    public List getData(){
-        RankBean rankBean = GsonUtil.jsonToBean(mTestData, RankBean.class);
-        List<RankBean.DataBean> dataList = rankBean.getData();
-        return dataList;
-    }
+
+//    public List getData() {
+//        RankBean rankBean = GsonUtil.jsonToBean(mTestData, RankBean.class);
+//        List<RankBean.DataBean> dataList = rankBean.getData();
+//        return dataList;
+//    }
 
 
-    private String mTestData="{\n" +
+    private String mTestData = "{\n" +
             "    \"status\": 0,\n" +
             "    \"message\": \"成功\",\n" +
             "    \"data\": [\n" +
