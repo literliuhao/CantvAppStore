@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -155,8 +156,8 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
-                    mFocusMoveUtil.startMoveFocus(mDeleteAllButton, 1.1f);
-                    mFocusScaleUtil.scaleToLarge(mDeleteAllButton);
+                    mFocusMoveUtil.startMoveFocus(mDeleteAllButton, 1.0f);
+                    //mFocusScaleUtil.scaleToLarge(mDeleteAllButton);
                 } else {
                     mFocusScaleUtil.scaleToNormal(mDeleteAllButton);
                 }
@@ -167,8 +168,8 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
-                    mFocusMoveUtil.startMoveFocus(mDeleteButton, 1.1f);
-                    mFocusScaleUtil.scaleToLarge(mDeleteButton);
+                    mFocusMoveUtil.startMoveFocus(mDeleteButton, 1.0f);
+                    //mFocusScaleUtil.scaleToLarge(mDeleteButton);
                 } else {
                     mFocusScaleUtil.scaleToNormal(mDeleteButton);
                 }
@@ -179,8 +180,8 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
-                    mFocusMoveUtil.startMoveFocus(mUpdateButton, 1.1f);
-                    mFocusScaleUtil.scaleToLarge(mUpdateButton);
+                    mFocusMoveUtil.startMoveFocus(mUpdateButton, 1.0f);
+                    //mFocusScaleUtil.scaleToLarge(mUpdateButton);
                 } else {
                     mFocusScaleUtil.scaleToNormal(mUpdateButton);
                 }
@@ -199,6 +200,18 @@ public class InstallManagerActivity extends Activity implements InstallContract.
                 } else {
                     mFocusScaleUtil.scaleToNormal();
                 }
+            }
+        });
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                myFocusRunnable.run();
             }
         });
 
@@ -318,8 +331,8 @@ public class InstallManagerActivity extends Activity implements InstallContract.
         @Override
         public void run() {
             if (mFocusedListChild != null) {
-                mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.1f);
-                mFocusScaleUtil.scaleToLarge(mFocusedListChild);
+                mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f);
+                //mFocusScaleUtil.scaleToLarge(mFocusedListChild);
             }
         }
     }

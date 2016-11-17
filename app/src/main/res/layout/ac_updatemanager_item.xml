@@ -26,6 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="24px"
             android:layout_marginTop="34px"
+            android:clickable="true"
             android:layout_toRightOf="@id/iv_updateapp_icon"
             android:singleLine="true"
             android:text="@string/update_title"

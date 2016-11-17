@@ -65,10 +65,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".update.UpdateManagerActivity">
-
+            <intent-filter>
+                <action android:name="com.can.appstore.ACTION.ACTIVITY_UPDATE"/>
+            </intent-filter>
         </activity>
         <activity android:name=".installpkg.InstallManagerActivity">
-
+            <intent-filter>
+                <action android:name="com.can.appstore.ACTION.ACTIVITY_INSTALL"/>
+            </intent-filter>
         </activity>
         <activity android:name=".myapps.ui.SystemAppsActivity">
             <intent-filter>
