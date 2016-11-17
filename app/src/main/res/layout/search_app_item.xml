@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="228px"
-    android:layout_height="240px"
-    android:layout_marginBottom="25px"
-    android:layout_marginLeft="15px"
-    android:layout_marginRight="15px"
-    android:layout_marginTop="15px"
-    android:background="@drawable/search_keyboard_shape"
-    android:clickable="true"
-    android:focusable="true"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:paddingTop="20px">
+              android:layout_width="228px"
+              android:layout_height="240px"
+              android:layout_marginBottom="25px"
+              android:layout_marginLeft="15px"
+              android:layout_marginRight="15px"
+              android:layout_marginTop="15px"
+              android:background="@drawable/search_keyboard_shape"
+              android:clickable="true"
+              android:descendantFocusability="blocksDescendants"
+              android:focusable="true"
+              android:gravity="center_horizontal"
+              android:orientation="vertical"
+              android:padding="@dimen/px20">
 
     <ImageView
         android:id="@+id/app_icon"
         android:layout_width="120px"
         android:layout_height="120px"
-        android:background="@mipmap/ic_launcher" />
+        android:background="@mipmap/ic_launcher"/>
 
     <TextView
         android:id="@+id/app_name_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:duplicateParentState="true"
+        android:ellipsize="marquee"
+        android:focusable="true"
         android:gravity="center"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
         android:text="app名称"
         android:textColor="#D9DADC"
-        android:textSize="30px" />
+        android:textSize="30px"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -41,7 +47,7 @@
             android:layout_height="wrap_content"
             android:text="20.16M"
             android:textColor="#D9DADC"
-            android:textSize="24px" />
+            android:textSize="24px"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -49,7 +55,7 @@
             android:gravity="center"
             android:text=" | "
             android:textColor="@android:color/darker_gray"
-            android:textSize="22px" />
+            android:textSize="22px"/>
 
         <TextView
             android:id="@+id/app_dwoncount_view"
@@ -57,6 +63,6 @@
             android:layout_height="wrap_content"
             android:text="100万+"
             android:textColor="#D9DADC"
-            android:textSize="24px" />
+            android:textSize="24px"/>
     </LinearLayout>
 </LinearLayout>

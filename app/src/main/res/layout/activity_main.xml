@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/px1000"
-    android:layout_height="match_parent"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    tools:context="com.can.appstore.MainActivity">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="@dimen/px1000"
+              android:layout_height="match_parent"
+              android:gravity="center_horizontal"
+              android:orientation="vertical"
+              tools:context="com.can.appstore.MainActivity">
 
     <TextView
         android:id="@+id/tv_joke_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/black_opa85"
-        android:textSize="@dimen/px30" />
+        android:textSize="@dimen/px30"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,31 +25,37 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black_opa60"
-            android:textSize="@dimen/px26" />
+            android:textSize="@dimen/px26"/>
 
         <Button
             android:id="@+id/btn_index"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="首 页" />
+            android:text="首 页"/>
 
         <Button
             android:id="@+id/btn_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="搜 索" />
+            android:text="搜 索"/>
+
+        <Button
+            android:id="@+id/btn_homerank"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="首页排行榜"/>
 
         <Button
             android:id="@+id/bt_specail_detail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="专题详情" />
+            android:text="专题详情"/>
 
         <Button
             android:id="@+id/bt_install"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="安装包管理" />
+            android:text="安装包管理"/>
 
         <Button
             android:id="@+id/bt_custom_viewgroup"
@@ -57,6 +63,7 @@
             android:layout_height="wrap_content"
             android:text="自定义ViewGroup"
             />
+
         <Button
             android:id="@+id/bt_active"
             android:layout_width="wrap_content"

@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<<<<<<< HEAD
 <merger version="3"><dataSet config="main"><source path="E:\WorkSpace\android_workspace\CANAppStore\downloadlib\src\main\shaders"/></dataSet><dataSet config="debug"><source path="E:\WorkSpace\android_workspace\CANAppStore\downloadlib\src\debug\shaders"/></dataSet></merger>
+=======
+<merger version="3"><dataSet config="main"><source path="/ydev/a_work/YCANAppStore/CANAppStore/downloadlib/src/main/shaders"/></dataSet><dataSet config="debug"><source path="/ydev/a_work/YCANAppStore/CANAppStore/downloadlib/src/debug/shaders"/></dataSet></merger>
+>>>>>>> c068d36bac90331281c83b860d108e6da3fb3ea1

@@ -56,7 +56,7 @@ public interface ApiService {
      * 应用列表
      */
     @GET("topic/topiclist")
-    CanCall<Result<AppInfoContainer>> getAppinfos(@Query("topicId") String topicId,@Query("typeId") String typeId, @Query("pageNumber") int page, @Query("pageSize") int pageSize);
+    CanCall<Result<AppInfoContainer>> getAppinfos(@Query("topicId") String topicId, @Query("typeId") String typeId, @Query("pageNumber") int page, @Query("pageSize") int pageSize);
 
     /**
      * 获取应用详情
@@ -75,7 +75,7 @@ public interface ApiService {
     /**
      * 获取搜索页热词
      */
-    @GET
+    @GET("application/everyonesearch")
     CanCall<ListResult<PopularWord>> getHotKeywords();
 
     /**

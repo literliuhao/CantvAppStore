@@ -1,12 +1,16 @@
 package com.can.appstore.search;
 
-import android.os.Handler;
+import com.can.appstore.entity.AppInfo;
+import com.can.appstore.entity.ListResult;
+import com.can.appstore.entity.PopularWord;
+import com.can.appstore.http.CanCall;
+import com.can.appstore.http.CanCallback;
+import com.can.appstore.http.CanErrorWrapper;
+import com.can.appstore.http.HttpManager;
 
-import com.can.appstore.search.bean.DefaultApp;
-import com.can.appstore.search.bean.SearchApp;
-
-import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Response;
 
 /**
  * Created by yibh on 2016/10/12 14:39 .
@@ -22,39 +26,58 @@ public class SearchPresenter implements SearchContract.Presenter {
     @Override
     public void getSearchList(final String searCon) {
         mView.startSearch();
-        new Handler().postDelayed(new Runnable() {
+
+        HttpManager.getApiService().search(searCon).enqueue(new CanCallback<ListResult<AppInfo>>() {
             @Override
-            public void run() {
-                List list = simulatedAppList(searCon);
-                mView.getAppList(list);
+            public void onResponse(CanCall<ListResult<AppInfo>> call, Response<ListResult<AppInfo>> response) throws Exception {
+                ListResult<AppInfo> body = response.body();
+                List<AppInfo> data = body.getData();
+                mView.getAppList(data);
             }
-        }, 2000);
+
+            @Override
+            public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
+                ToastUtil.toastShort("加载数据失败,请稍后再试!");
+            }
+        });
+
     }
 
     @Override
     public void getDefaultList() {
-        List<DefaultApp> defaultApps = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
 
-            defaultApps.add(new DefaultApp("默认数据" + i, "mr" + i));
-        }
-        ArrayList<SearchApp> appList = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
-            appList.add(new SearchApp("热门App" + i, "rm" + i));
-        }
-        mView.getDefaultList(defaultApps, appList);
-    }
 
-    public List simulatedAppList(String con) {
-        ArrayList<SearchApp> appList = new ArrayList<>();
-        if (con.equalsIgnoreCase("xx")) {
-            return appList;
-        }
+        //热门推荐
+        HttpManager.getApiService().recommend().enqueue(new CanCallback<ListResult<AppInfo>>() {
+            @Override
+            public void onResponse(CanCall<ListResult<AppInfo>> call, Response<ListResult<AppInfo>> response) throws Exception {
+                ListResult<AppInfo> body = response.body();
+                List<AppInfo> appInfoList = body.getData();
+                mView.getHotRecomAppList(appInfoList);
+                ToastUtil.toastShort("加载数据成功!" + body.getMessage());
+            }
 
-        for (int i = 0; i < 50; i++) {
-            appList.add(new SearchApp(con + "_App" + i, con + "_" + i));
-        }
-        return appList;
+            @Override
+            public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
+                ToastUtil.toastShort("加载数据失败,请稍后再试!");
+            }
+        });
+
+        //大家都在搜
+        HttpManager.getApiService().getHotKeywords().enqueue(new CanCallback<ListResult<PopularWord>>() {
+            @Override
+            public void onResponse(CanCall<ListResult<PopularWord>> call, Response<ListResult<PopularWord>> response) throws Exception {
+                ListResult<PopularWord> body = response.body();
+                List<PopularWord> popularWordList = body.getData();
+                mView.getHotKeyList(popularWordList);
+            }
+
+            @Override
+            public void onFailure(CanCall<ListResult<PopularWord>> call, CanErrorWrapper errorWrapper) {
+                ToastUtil.toastShort("加载数据失败,请稍后再试!");
+            }
+        });
+
     }
 
 }
