@@ -105,13 +105,6 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
             @Override
             public void onllMsgClick(View view, int position) {
                 MessageInfo msg = msgList.get(position);
-                if (msg.getStatus()) {
-                    msg.setStatus(false);
-                    msgList.set(position, msg);
-                    dbManager.updateStatus(msg.getMsgId());
-                    mAdapter.setMsgList(msgList);
-                    mAdapter.notifyItemChanged(position);
-                }
                 switch (msg.getAction()) {
                     case ActionConstants.ACTION_NOTHIN:
                         ToastUtils.showMessage(MessageActivity.this , "无反应");
@@ -136,25 +129,26 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                 }
             }
         });
-        mAdapter.setOnMsgDeleteClickListener(new MessageAdapter.OnMsgDeleteClickListener() {
+        mAdapter.setOnItemRemoveListener(new MessageAdapter.OnItemRemoveListener() {
             @Override
-            public void onDeleteClick(View view, final int position) {
-                dbManager.deleteMsg(msgList.get(position));
+            public void onRemoveItem(int position) {
                 int msgCount = msgList.size();
-                msgList.remove(position);
-                mAdapter.setMsgList(msgList);
-                mAdapter.notifyItemRemoved(position);
-                if (msgCount == 1) {
+                refreshTotalText(msgCount);
+                if (msgCount == 0) {
                     itemTotal.setVisibility(View.INVISIBLE);
                     itemPos.setVisibility(View.INVISIBLE);
                     mRecyclerView.setVisibility(View.INVISIBLE);
                     empty.setVisibility(View.VISIBLE);
                     return;
                 }
-                refreshTotalText(msgCount - 1);
+                //删除最后一行情况
+                if (position > msgCount - 1) {
+                    focusMsgItem(position - 1);
+                    return;
+                }
                 int first = llManager.findFirstVisibleItemPosition();
                 int last = llManager.findLastVisibleItemPosition();
-                if (first != 0 && last == msgCount - 1) {
+                if (first != 0 && last == msgCount) {
                     focusMsgItem(position - 1);
                     return;
                 }

@@ -79,17 +79,6 @@ public class GreenDaoManager {
     }
 
     /**
-     * 删除数据库单条数据
-     * 通过对象删除
-     * @param msg
-     * */
-    public void deleteMsg(MessageInfo msg) {
-        if (msg != null ){
-            msgDao.delete(msg);
-        }
-    }
-
-    /**
      * 删除过期数据
      *
      * @param timestamp

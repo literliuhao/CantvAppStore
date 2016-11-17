@@ -47,4 +47,12 @@ public class MessageManager {
         return new GreenDaoManager().existUnreadMsg();
     }
 
+    public static void  deleteMsg(String msgId){
+        new GreenDaoManager().deleteMsg(msgId);
+    }
+
+    public static  void updateStatus(String msgId){
+        new GreenDaoManager().updateStatus(msgId);
+    }
+
 }
