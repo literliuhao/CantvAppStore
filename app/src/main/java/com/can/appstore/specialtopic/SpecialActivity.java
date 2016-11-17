@@ -193,7 +193,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     }
 
     @Override
-    public void refreshRowNum(String row) {
+    public void refreshRowNum(CharSequence row) {
         mRowTv.setText(row);
     }
 

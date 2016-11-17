@@ -11,6 +11,9 @@ import android.util.TypedValue;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
+
+import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 
 /**
  * Created by liuhao on 2016/10/18.
@@ -44,6 +47,7 @@ public class MyImageView extends ImageView {
 
     /**
      * 设置颜色
+     *
      * @param color
      */
     public void setColour(int color) {
@@ -52,6 +56,7 @@ public class MyImageView extends ImageView {
 
     /**
      * 设置边框宽度
+     *
      * @param width
      */
     public void setBorder(int width) {
@@ -60,6 +65,7 @@ public class MyImageView extends ImageView {
 
     /**
      * 简单加入边框，后续做view扩展
+     *
      * @param canvas
      */
     @Override
@@ -79,7 +85,6 @@ public class MyImageView extends ImageView {
         canvas.clipPath(path);
     }
 
-
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         mRect.right = w;
@@ -88,9 +93,14 @@ public class MyImageView extends ImageView {
 
     /**
      * 简单使用Glide加载图片，后续扩展
+     *
      * @param s
      */
     public void setImageURI(String s) {
-        Glide.with(mContext).load(s).into(this);
+        RequestManager glideRequest;
+        glideRequest = Glide.with(mContext);
+        glideRequest.load(s).transform(new GlideRoundTransform(mContext,20)).into(this);
+
+//        Glide.with(mContext).load(s).transform(new GlideRoundTransform(mContext, 25)).into(this);
     }
 }

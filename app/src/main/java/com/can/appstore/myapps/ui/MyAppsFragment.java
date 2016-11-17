@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.util.Log;
 import android.view.Gravity;
@@ -21,28 +20,29 @@ import android.widget.Button;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
-import com.can.appstore.index.interfaces.ICallBack;
+import com.can.appstore.index.interfaces.IAddFocusListener;
+import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.myapps.adapter.MyAppsRvAdapter;
 import com.can.appstore.myapps.addappsview.AddAppsActivity;
 import com.can.appstore.myapps.allappsview.AllAppsActivity;
-import com.can.appstore.myapps.model.AppInfo;
 import com.can.appstore.myapps.myappsfragmview.MyAppsFragPresenter;
 import com.can.appstore.myapps.myappsfragmview.MyAppsFramentContract;
 import com.can.appstore.search.ToastUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter.OnFocusChangeListener;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
+import cn.can.tvlib.utils.PackageUtil;
+import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 /**
  * Created by wei on 2016/10/13.
  */
 
-public class MyAppsFragment extends Fragment implements MyAppsFramentContract.View {
+public class MyAppsFragment extends BaseFragment implements MyAppsFramentContract.View {
 
     MyAppsFragPresenter mMyAppsFramPresenter;
 
@@ -55,7 +55,7 @@ public class MyAppsFragment extends Fragment implements MyAppsFramentContract.Vi
 
     //焦点的监听和主Activity处理焦点框的回调
     private OnFocusChangeListener mFocusChangeListener;
-    private ICallBack mICallBack;
+    private IAddFocusListener mFocusListener;
 
 
     //浮层对话框的按钮
@@ -63,10 +63,10 @@ public class MyAppsFragment extends Fragment implements MyAppsFramentContract.Vi
     private Button mRemoveAppBtn;
 
     //显示的list数据
-    public List<AppInfo> mShowList;
+    public List<PackageUtil.AppInfo> mShowList;
 
-    public MyAppsFragment(ICallBack iCallBack) {
-        this.mICallBack = iCallBack;
+    public MyAppsFragment(IAddFocusListener focusListener) {
+        this.mFocusListener = focusListener;
     }
 
     @Override
@@ -92,37 +92,25 @@ public class MyAppsFragment extends Fragment implements MyAppsFramentContract.Vi
         super.onResume();
     }
 
-
     @Override
-    public void loadAddAppInfoSuccess(List<AppInfo> infoList) {
+    public void loadAddAppInfoSuccess(List<AppInfo> infoList,List<Drawable> mDrawbleList) {
         mShowList = infoList;
         if(infoList.size()-2 < MyApp.myAppList.size() && infoList.size() < 18 && !infoList.get(infoList.size()-1).packageName .isEmpty()){
             infoList.add(new AppInfo("添加应用", getActivity().getResources().getDrawable(R.drawable.addapp_icon)));
         }
         if (mMyAppsRvAdapter == null) {
             mMyAppsRvAdapter = new MyAppsRvAdapter(infoList);
-            baseSetting();
+            baseSetting(mDrawbleList);
         } else {
-          mMyAppsRvAdapter.notifyDataSetChanged();
+            mMyAppsRvAdapter.notifyDataSetChanged();
         }
     }
 
-    private void baseSetting() {
-        Drawable d1 = getResources().getDrawable(R.drawable.bj_02);
-        Drawable d2 = getResources().getDrawable(R.drawable.bj_04);
-        Drawable d3 = getResources().getDrawable(R.drawable.bj_03);
-        Drawable d4 = getResources().getDrawable(R.drawable.bj_04);
-        Drawable d5 = getResources().getDrawable(R.drawable.bj_05);
 
-        ArrayList<Drawable> list = new ArrayList<Drawable>();
-        list.add(d1);
-        list.add(d2);
-                list.add(d3);
-                list.add(d4);
-                list.add(d5);
-
+    private void baseSetting(List<Drawable> mDrawbleList) {
         mAppsRecyclerView.setAdapter(mMyAppsRvAdapter);
-        mMyAppsRvAdapter.setCustomData(list);
+        //系统应用的图标集合
+        mMyAppsRvAdapter.setCustomData(mDrawbleList);
         addItemListener();
     }
 
@@ -134,7 +122,7 @@ public class MyAppsFragment extends Fragment implements MyAppsFramentContract.Vi
         mFocusChangeListener = new OnFocusChangeListener() {
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
-                mICallBack.onSuccess(view, hasFocus);
+                mFocusListener.addFocusListener(view, hasFocus);
             }
         };
         //添加焦点移动的监听,要在adapter里设置
@@ -211,7 +199,7 @@ public class MyAppsFragment extends Fragment implements MyAppsFramentContract.Vi
 
     //显示浮层，有置顶或移除操作
     private void editItem(final int position, final View item) {
-
+        mTopAppBtn.requestFocus();
         //浮层按钮的点击事件
         mTopAppBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -293,4 +281,7 @@ public class MyAppsFragment extends Fragment implements MyAppsFramentContract.Vi
     }
 
 
+    public View getLastView() {
+        return null;
+    }
 }

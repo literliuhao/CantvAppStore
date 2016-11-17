@@ -4,14 +4,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.can.appstore.myapps.model.AppInfo;
 import com.can.appstore.myapps.model.MyAppsListDataUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
@@ -28,10 +30,13 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
     AppInstallReceiver mAppInstallReceiver;
 
 
-    //本地全部的第三方应用
-    List<AppInfo> mAppsList = new ArrayList<AppInfo>();
+//    //本地全部的第三方应用
+//    List<PackageUtil.AppInfo> mAppsList = new ArrayList<AppInfo>();
     //主页显示的第三方应用
     List<AppInfo> mShowList = new ArrayList<AppInfo>(18);
+    //系统应用的icon
+    List<Drawable> mDrawables = new ArrayList<Drawable>();
+
 
     public MyAppsFragPresenter(MyAppsFramentContract.View view, Context context) {
         this.mView = view;
@@ -46,6 +51,13 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
                 //初始化数据
                 mMyAppsListDataUtil = new MyAppsListDataUtil(mContext);
                 mShowList = mMyAppsListDataUtil.getShowList(mShowList);
+                List<AppInfo> systemApp = mMyAppsListDataUtil.getSystemApp(null);
+                if(mDrawables.size()!= 0){
+                    mDrawables.clear();
+                }
+                for (int i = 0; i < systemApp.size(); i++) {
+                    mDrawables.add(systemApp.get(i).appIcon);
+                }
                 Log.i("MYSHOWLIST","------"+mShowList.size());
                 return null;
             }
@@ -58,7 +70,7 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                mView.loadAddAppInfoSuccess(mShowList);
+                mView.loadAddAppInfoSuccess(mShowList,mDrawables);
             }
         }.execute();
 
@@ -117,10 +129,10 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
             mShowList.clear();
             mShowList = null;
         }
-        if (mAppsList != null) {
-            mAppsList.clear();
-            mShowList = null;
-        }
+//        if (mAppsList != null) {
+//            mAppsList.clear();
+//            mShowList = null;
+//        }
     }
 
     @Override
@@ -133,14 +145,14 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
         AppInfo appInfo = mShowList.get(position);
         mShowList.remove(position);
         mShowList.add(2, appInfo);
-        mView.loadAddAppInfoSuccess(mShowList);
+        mView.loadAddAppInfoSuccess(mShowList,mDrawables);
         mMyAppsListDataUtil.saveShowList(mShowList);
     }
 
     public void removeApp(int position) {
         mShowList.remove(position);
         mMyAppsListDataUtil.saveShowList(mShowList);
-        mView.loadAddAppInfoSuccess(mShowList);
+        mView.loadAddAppInfoSuccess(mShowList,mDrawables);
     }
 
     public void unRegiestr() {

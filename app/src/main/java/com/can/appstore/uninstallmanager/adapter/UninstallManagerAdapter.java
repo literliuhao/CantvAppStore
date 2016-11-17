@@ -2,6 +2,7 @@ package com.can.appstore.uninstallmanager.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,10 +44,12 @@ public class UninstallManagerAdapter extends CanRecyclerViewAdapter<PackageUtil.
     @Override
     protected void bindContentData(PackageUtil.AppInfo mDatas, RecyclerView.ViewHolder holder, int position) {
         PackageUtil.AppInfo appInfo = mInfos.get(position);
-        ((UninstallViewHolder) holder).imgIcon.setImageDrawable(appInfo.appIcon);
-        ((UninstallViewHolder) holder).tvName.setText(appInfo.appName);
-        ((UninstallViewHolder) holder).tvSize.setText(StringUtils.formatFileSize(appInfo.size, false));
-        ((UninstallViewHolder) holder).tvVersion.setText(appInfo.versionName);
+        Log.d("fjm", "bindContentData: " + appInfo.toString());
+        UninstallViewHolder uninstallViewHolder = ((UninstallViewHolder) holder);
+        uninstallViewHolder.imgIcon.setImageDrawable(appInfo.appIcon);
+        uninstallViewHolder.tvName.setText(appInfo.appName);
+        uninstallViewHolder.tvSize.setText(StringUtils.formatFileSize(appInfo.size, false));
+        uninstallViewHolder.tvVersion.setText(appInfo.versionName);
     }
 
     class UninstallViewHolder extends TagViewHolder {

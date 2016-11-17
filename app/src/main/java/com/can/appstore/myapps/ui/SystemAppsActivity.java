@@ -5,23 +5,20 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.myapps.adapter.SystemAppsRvAdapter;
-import com.can.appstore.myapps.model.AppInfo;
 import com.can.appstore.myapps.model.MyAppsListDataUtil;
-import com.can.appstore.search.ToastUtil;
 
 import java.util.List;
 
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
-import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
+import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 /**
  * 预置的有系统权限的应用，如：微信相册，文件管理器..等等
@@ -36,10 +33,11 @@ public class SystemAppsActivity extends Activity {
     SystemAppsRvAdapter  mSystemAppsRvAdapter;
 
     MyAppsListDataUtil dataUtils;
-    List<AppInfo> allAppList;
+    List<AppInfo> systemAppList;
+
 
     FocusMoveUtil mFocusMoveUtils;
-    FocusScaleUtil mFocusScaleUtil;
+//    FocusScaleUtil mFocusScaleUtil;
     View mFocusChild;
     MyFocusRunnable  mFocusRunnable;
 
@@ -47,8 +45,8 @@ public class SystemAppsActivity extends Activity {
         @Override
         public void run() {
             if(mFocusChild != null){
-                mFocusMoveUtils.startMoveFocus(mFocusChild,1.1f);
-                mFocusScaleUtil.scaleToLarge(mFocusChild);
+                mFocusMoveUtils.startMoveFocus(mFocusChild);
+//                mFocusScaleUtil.scaleToLarge(mFocusChild);
             }
         }
     }
@@ -72,7 +70,7 @@ public class SystemAppsActivity extends Activity {
                     mSystemRecyclerView.postDelayed(mFocusRunnable,50);
                     systemCurRows.setText(position / 5 + 1  + "/");
                 }else{
-                    mFocusScaleUtil.scaleToNormal();
+//                    mFocusScaleUtil.scaleToNormal();
                 }
             }
         });
@@ -82,45 +80,34 @@ public class SystemAppsActivity extends Activity {
         mSystemAppsRvAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, int position, Object data) {
-                AppInfo appInfo = allAppList.get(position);
+                AppInfo appInfo = systemAppList.get(position);
                 PackageManager pm =getPackageManager();
                 Intent intent = pm.getLaunchIntentForPackage(appInfo.packageName);//获取启动的包名
                 startActivity(intent);
             }
         });
 
-        mSystemAppsRvAdapter.setItemKeyEventListener(new CanRecyclerViewAdapter.OnItemKeyEventListener() {
-            @Override
-            public boolean onItemKeyEvent(int position, View v, int keyCode, KeyEvent event) {
-                if(keyCode == KeyEvent.KEYCODE_MENU){
-                    ToastUtil.toastShort("gao--"+v.getHeight()+"kuan--"+v.getWidth());
-                    return true;
-                }
-                return false;
-            }
-        });
     }
 
     private void initData() {
         dataUtils = new MyAppsListDataUtil(this);
-        allAppList = dataUtils.getAllAppList(null);
-
+        systemAppList = dataUtils.getSystemApp(systemAppList);
     }
 
 
     private void initView() {
         systemCurRows = (TextView) findViewById(R.id.systemapps_tv_currows);
         systemTotalRows = (TextView) findViewById(R.id.systemapps_tv_totalrows);
-        int total = allAppList.size()/5 + 1;
+        int total = systemAppList.size()/5 + 1;
         systemTotalRows.setText(""+total+"行");
         mSystemRecyclerView = (CanRecyclerView) findViewById(R.id.systemapps_recyclerview);
         mSystemRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(this,5, LinearLayoutManager.VERTICAL,false));
         mSystemRecyclerView.addItemDecoration(new CanRecyclerViewDivider(android.R.color.transparent,40,62));
-        mSystemAppsRvAdapter = new SystemAppsRvAdapter(allAppList);
+        mSystemAppsRvAdapter = new SystemAppsRvAdapter(systemAppList);
         mSystemRecyclerView.setAdapter(mSystemAppsRvAdapter);
 
         mFocusMoveUtils = new FocusMoveUtil(this,getWindow().getDecorView(),R.drawable.btn_focus);
-        mFocusScaleUtil = new FocusScaleUtil();
+//        mFocusScaleUtil = new FocusScaleUtil();
         mFocusRunnable = new MyFocusRunnable();
     }
 

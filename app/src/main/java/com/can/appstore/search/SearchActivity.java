@@ -213,23 +213,6 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
         resetDefaultList();
     }
 
-    @Override
-    public void getDefaultList(List defaultList, List hotList) {
-        //"大家都在搜"数据
-        mAppListAdapter = new SearchAppListAdapter(defaultList);
-        mSearAppList_recycle.setAdapter(mAppListAdapter);
-        mAppListAdapter.setOnInitialsListener(new SearchAppListAdapter.OnInitialsListener() {
-            @Override
-            public void onInitials(String con) {
-                getInitials(con);
-            }
-        });
-        //"热门推荐"数据
-        mHotRecommendAdapter = new HotRecommendAdapter(hotList);
-        mBottom_re_recycle.setAdapter(mHotRecommendAdapter);
-        mAppListAdapter.setMyOnFocusChangeListener(mScaleFocusChangeListener);
-        mHotRecommendAdapter.setMyOnFocusChangeListener(mScaleFocusChangeListener);
-    }
 
     /**
      * 获取到搜索
@@ -258,6 +241,38 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
     }
 
     /**
+     * 热门推荐
+     *
+     * @param list
+     */
+    @Override
+    public void getHotRecomAppList(List list) {
+        //"热门推荐"数据
+        mHotRecommendAdapter = new HotRecommendAdapter(list);
+        mBottom_re_recycle.setAdapter(mHotRecommendAdapter);
+        mHotRecommendAdapter.setMyOnFocusChangeListener(mScaleFocusChangeListener);
+    }
+
+    /**
+     * 大家都在搜
+     *
+     * @param list
+     */
+    @Override
+    public void getHotKeyList(List list) {
+        //"大家都在搜"数据
+        mAppListAdapter = new SearchAppListAdapter(list);
+        mSearAppList_recycle.setAdapter(mAppListAdapter);
+        mAppListAdapter.setOnInitialsListener(new SearchAppListAdapter.OnInitialsListener() {
+            @Override
+            public void onInitials(String con) {
+                getInitials(con);
+            }
+        });
+        mAppListAdapter.setMyOnFocusChangeListener(mScaleFocusChangeListener);
+    }
+
+    /**
      * 在清空搜索时,右侧重置为默认数据
      */
     public void resetDefaultList() {
@@ -274,8 +289,8 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
         public void run() {
             if (mFocusedListChild != null) {
                 mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f);
-                //1f,1f不就行缩放
-                mFocusScaleUtil.scaleToLarge(mFocusedListChild,1f,1f);
+                //1f,1f不缩放
+                mFocusScaleUtil.scaleToLarge(mFocusedListChild, 1f, 1f);
             }
         }
     }
@@ -292,6 +307,7 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
             } else {
                 mFocusScaleUtil.scaleToNormal();
             }
+            view.setSelected(hasFocus);
         }
     }
 

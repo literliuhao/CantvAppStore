@@ -8,8 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.entity.AppInfo;
 import com.can.appstore.search.ToastUtil;
-import com.can.appstore.search.bean.SearchApp;
 import com.can.appstore.search.widget.YIBaseCompatFocusAdapter;
 
 import java.util.List;
@@ -31,8 +31,8 @@ public class HotRecommendAdapter extends YIBaseCompatFocusAdapter {
         setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onClick(View view, int position, Object data) {
-                SearchApp searchApp = (SearchApp) mDataList.get(position);
-                ToastUtil.toastShort("点击 " + searchApp.mName);
+                AppInfo searchApp = (AppInfo) mDataList.get(position);
+                ToastUtil.toastShort("点击 " + searchApp.getName());
             }
         });
         View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_app_item, parent, false);
@@ -60,8 +60,8 @@ public class HotRecommendAdapter extends YIBaseCompatFocusAdapter {
          * @param position
          */
         public void setContent(int position) {
-            SearchApp app = (SearchApp) mDataList.get(position);
-            mAppName.setText(app.mName);
+            AppInfo app = (AppInfo) mDataList.get(position);
+            mAppName.setText(app.getName());
         }
 
     }

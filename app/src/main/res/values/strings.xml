@@ -16,7 +16,11 @@
 
     <!--首页排行榜-->
     <string name="rank_more_str">更多</string>
-
+    <!--首页导航-->
+    <string name="index_top">排行</string>
+    <string name="index_manager">管理</string>
+    <string name="index_myapp">我的应用</string>
+    <!--首页管理-->
     <string name="index_manager_text1">一键加速</string>
     <string name="index_manager_text2">更新管理</string>
     <string name="index_manager_text3">文件管理</string>
@@ -64,16 +68,21 @@
     <string name="download_pause_all">全部暂停</string>
     <string name="download_resume_all">全部继续</string>
     <string name="download_no_task">当前暂无下载任务！</string>
+    <string name="download_installing">正在安装</string>
+    <string name="download_installed">安装完成</string>
+
 
     <!--卸载管理-->
     <string name="bt_batch_uninstall">批量卸载</string>
     <string name="tv_uninstall_manager">卸载管理</string>
-    <string name="uninsatll_manager_free_storage">可用内存&#160;:&#160;</string>
+    <string name="uninsatll_manager_free_storage">可用空间&#160;:&#160;</string>
     <string name="downloaded">下载</string>
     <string name="select_app_count">已选择应用数</string>
     <string name="loading">加载中,请稍后</string>
     <string name="not_uinstall_data">暂无应用!</string>
-    <string name="rows_str">/%d行</string>
+    <string name="uninstall_success">卸载成功</string>
+    <string name="uninstall_fail">卸载失败</string>
+    <string name="rows_str">%1$d/%2$d行</string>
 
     <!--应用详情页-->
     <string name="detail_app_name">%1$s&#160;V%2$s</string>
@@ -115,4 +124,11 @@
     <string name="installing">"正在安装中，请稍后..."</string>
     <string name="recommend_apps_info">%1$s&#160;|&#160;%2$s</string>
     <string name="back">"返回"</string>
+
+    <!--消息中心文本-->
+    <string name="title_msg">消息中心</string>
+    <string name="btn_tag_msg">全标为已读</string>
+    <string name="btn_clear_msg">清空</string>
+    <string name="txt_empty_msg">暂无消息</string>
+
 </resources>

@@ -1,7 +1,5 @@
 package com.can.appstore.http;
 
-import com.can.appstore.BuildConfig;
-
 import java.io.IOException;
 
 import okhttp3.HttpUrl;
@@ -18,12 +16,22 @@ public class RequestParamsInterceptor implements Interceptor {
                 .newBuilder()
                 .addQueryParameter("channelId", "12")
                 .addQueryParameter("internalModel", "neibu")
-                .addQueryParameter("commercialModel", "f55")
+                .addQueryParameter("commercialModel", "rrrr")
                 .addQueryParameter("mac", "1:2:3")
                 .addQueryParameter("versionId", "1.0")
                 .build();
         request = request.newBuilder().url(url)
                 .build();
+//        HttpUrl url = request.url()
+//                .newBuilder()
+//                .addQueryParameter("channelId", "13")
+//                .addQueryParameter("internalModel", "1")
+//                .addQueryParameter("commercialModel", "f66")
+//                .addQueryParameter("mac", "1")
+//                .addQueryParameter("versionId", "1")
+//                .build();
+//        request = request.newBuilder().url(url)
+//                .build();
         return chain.proceed(request);
     }
 }

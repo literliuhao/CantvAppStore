@@ -40,6 +40,7 @@
     </style>
 
     <style name="index_manager_textstyle">
+
         <item name="android:textColor">@color/white_opa80</item>
         <item name="android:textSize">@dimen/px32</item>
         <item name="android:layout_marginTop">@dimen/px220</item>
@@ -47,6 +48,7 @@
 
     <style name="index_manager_padding">
         <item name="android:padding">@dimen/px5</item>
+        <item name="android:layout_marginTop">@dimen/px5</item>
     </style>
 
     <style name="index_manager_icon_top">

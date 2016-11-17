@@ -6,9 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
 
-import com.can.appstore.MyApp;
 import com.can.appstore.R;
-import com.can.appstore.myapps.model.AppInfo;
 import com.can.appstore.myapps.model.MyAppsListDataUtil;
 import com.can.appstore.search.ToastUtil;
 
@@ -16,13 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.tvlib.ui.widgets.LoadingDialog;
+import cn.can.tvlib.utils.PackageUtil;
+import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 /**
  * Created by wei on 2016/11/3.
  */
 
-public class AddAppsPresenter implements AddAppsContract.Presenter{
-    AddAppsContract.View  mView;
+public class AddAppsPresenter implements AddAppsContract.Presenter {
+    AddAppsContract.View mView;
     Context mContext;
 
     private LoadingDialog mLoadingDialog;
@@ -31,18 +31,18 @@ public class AddAppsPresenter implements AddAppsContract.Presenter{
     MyAppsListDataUtil mMyAppListData;
     List<AppInfo> isShown;
     List<AppInfo> addShowList = new ArrayList<AppInfo>();
-//    private List<AppInfo> mAllAppList;
+    private List<AppInfo> mAllAppList;
 
     private BroadcastReceiver mHomeReceivcer;
 
-    public AddAppsPresenter(AddAppsContract.View  view, Context context){
+    public AddAppsPresenter(AddAppsContract.View view, Context context) {
         this.mView = view;
         this.mContext = context;
     }
 
     @Override
     public void startLoad() {
-        new AsyncTask<Void,Void,Void>(){
+        new AsyncTask<Void, Void, Void>() {
             //加载数据之前
             @Override
             protected void onPreExecute() {
@@ -54,17 +54,25 @@ public class AddAppsPresenter implements AddAppsContract.Presenter{
             protected Void doInBackground(Void... params) {
                 mMyAppListData = new MyAppsListDataUtil(mContext);
                 isShown = mMyAppListData.getShowList(isShown);
+                mAllAppList = PackageUtil.findAllThirdPartyApps(mContext, mAllAppList);
+                for (AppInfo app : mAllAppList) {
+                    boolean inShown = false;
+                    for (AppInfo appInfo : isShown) {
+                        if (app.packageName.equals(appInfo.packageName)) {
+                            inShown= true;
+                            break ;
+                        }
+                    }
+                    if(!inShown){
+                        addShowList.add(app);
+                    }
+                }
                 return null;
             }
 
             //加载完数据
             @Override
             protected void onPostExecute(Void aVoid) {
-                for (AppInfo  app:MyApp.myAppList) {
-                    if(!isShown.contains(app)){
-                        addShowList.add(app);
-                    }
-                }
                 mView.loadAddAppInfoSuccess(addShowList);
                 mView.hideLoading();
             }
@@ -79,14 +87,14 @@ public class AddAppsPresenter implements AddAppsContract.Presenter{
 
     @Override
     public void release() {
-        if(mMyAppListData!=null){
+        if (mMyAppListData != null) {
             mMyAppListData = null;
         }
-        if(isShown!= null){
+        if (isShown != null) {
             isShown.clear();
             isShown = null;
         }
-        if(addShowList != null){
+        if (addShowList != null) {
             addShowList.clear();
             addShowList = null;
         }
@@ -130,13 +138,14 @@ public class AddAppsPresenter implements AddAppsContract.Presenter{
     public int calculateCurRows(int position) {
         return position / 4 + 1;
     }
+
     /**
      * 计算可添加的个数
      */
-    public void  canSelectCount(){
-        int canSelect = 18 - isShown.size()+1;
-        int alreadyShown= isShown.size()-3;
-        mView.showCanSelectCount(canSelect,alreadyShown);
+    public void canSelectCount() {
+        int canSelect = 18 - isShown.size();
+        int alreadyShown = isShown.size() - 2;
+        mView.showCanSelectCount(canSelect, alreadyShown);
     }
 
     /**
@@ -167,9 +176,9 @@ public class AddAppsPresenter implements AddAppsContract.Presenter{
 
     public void saveSelectlist(List<AppInfo> list) {
         boolean b = isShown.addAll(list);
-        if(b){
+        if (b) {
             ToastUtil.toastShort("添加成功");
-        }else{
+        } else {
             ToastUtil.toastShort("添加失败");
         }
         mMyAppListData.saveShowList(isShown);

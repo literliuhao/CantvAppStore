@@ -1,5 +1,8 @@
 package com.can.appstore.uninstallmanager;
 
+import android.support.v4.app.LoaderManager;
+import android.text.SpannableStringBuilder;
+
 import com.can.appstore.appdetail.AppDetailContract;
 import com.can.appstore.base.BasePresenter;
 import com.can.appstore.base.BaseView;
@@ -15,9 +18,11 @@ import cn.can.tvlib.utils.PackageUtil;
 public interface UninstallManagerContract {
 
     interface Presenter extends BasePresenter {
-        void startLoad();
+        void startLoad(LoaderManager loaderManager);
 
         void addListener();
+
+        void onItemFocus(int position);
     }
 
     interface View extends BaseView<AppDetailContract.Presenter> {
@@ -26,5 +31,7 @@ public interface UninstallManagerContract {
         void showCurStorageProgress(int progress, String storage);
 
         void refreshSelectCount(int count);
+
+        void refreshRows(SpannableStringBuilder rows);
     }
 }

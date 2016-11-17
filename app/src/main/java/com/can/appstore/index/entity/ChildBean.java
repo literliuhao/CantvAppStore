@@ -5,21 +5,18 @@ package com.can.appstore.index.entity;
  */
 
 public class ChildBean {
-    private static final long serialVersionUID = 1L;
     private int id;
-    private String bg;
     private String action;
     private int x;
     private int y;
     private int width;
     private int height;
+    private String title;
+    private String actionData;
+    private String icon;
 
     public int getId() {
         return id;
-    }
-
-    public String getBg() {
-        return bg;
     }
 
     public String getAction() {
@@ -46,10 +43,6 @@ public class ChildBean {
         this.id = id;
     }
 
-    public void setBg(String bg) {
-        this.bg = bg;
-    }
-
     public void setAction(String action) {
         this.action = action;
     }
@@ -69,5 +62,30 @@ public class ChildBean {
     public void setHeight(int height) {
         this.height = height;
     }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setActionData(String actionData) {
+        this.actionData = actionData;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getActionData() {
+        return actionData;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
 
 }

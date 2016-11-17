@@ -20,6 +20,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
@@ -256,7 +257,9 @@ public class PackageUtil {
         }
         PackageManager pm = context.getApplicationContext().getPackageManager();
         List<PackageInfo> pList = pm.getInstalledPackages(0);
+        final AtomicInteger index = new AtomicInteger();
         for (PackageInfo info : pList) {
+            index.incrementAndGet();
             final AppInfo app = new AppInfo();
             app.packageName = info.packageName;
             app.versionName = info.versionName;
@@ -276,6 +279,7 @@ public class PackageUtil {
                     @Override
                     public void onGetStatsCompleted(PackageStats pStats, boolean succeeded) throws RemoteException {
                         app.size = pStats.codeSize + pStats.dataSize + pStats.cacheSize;
+                        int i = index.decrementAndGet();
                     }
                 });
             } catch (Exception e) {
@@ -284,12 +288,18 @@ public class PackageUtil {
             }
             appList.add(app);
         }
+        while (index.get() > 0) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         return appList;
     }
 
     /**
-     * 获取已安装的第三方应用信息
-     *
+     * 获取所有的系统应用
      * @param context
      * @return
      */
@@ -301,6 +311,7 @@ public class PackageUtil {
         }
         PackageManager pm = context.getApplicationContext().getPackageManager();
         List<PackageInfo> pList = pm.getInstalledPackages(0);
+        final AtomicInteger index = new AtomicInteger();
         for (PackageInfo info : pList) {
             ApplicationInfo applicationInfo = info.applicationInfo;
             // 是否是系统权限
@@ -308,6 +319,7 @@ public class PackageUtil {
             if (!isSystemApp) {
                 continue;
             }
+            index.incrementAndGet();
             final AppInfo app = new AppInfo();
             app.isSystemApp = isSystemApp;
             app.packageName = info.packageName;
@@ -325,6 +337,7 @@ public class PackageUtil {
                     @Override
                     public void onGetStatsCompleted(PackageStats pStats, boolean succeeded) throws RemoteException {
                         app.size = pStats.codeSize + pStats.dataSize + pStats.cacheSize;
+                        int i = index.decrementAndGet();
                     }
                 });
             } catch (Exception e) {
@@ -332,6 +345,13 @@ public class PackageUtil {
                 app.size = apk.length();// apk包文件大小
             }
             appList.add(app);
+        }
+        while (index.get() > 0) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         return appList;
     }
@@ -350,6 +370,7 @@ public class PackageUtil {
         }
         PackageManager pm = context.getApplicationContext().getPackageManager();
         List<PackageInfo> pList = pm.getInstalledPackages(0);
+        final AtomicInteger index = new AtomicInteger();
         for (PackageInfo info : pList) {
             ApplicationInfo applicationInfo = info.applicationInfo;
             // 是否是系统权限
@@ -357,6 +378,7 @@ public class PackageUtil {
             if (isSystemApp) {
                 continue;
             }
+            index.incrementAndGet();
             final AppInfo app = new AppInfo();
             app.isSystemApp = isSystemApp;
             app.packageName = info.packageName;
@@ -374,6 +396,7 @@ public class PackageUtil {
                     @Override
                     public void onGetStatsCompleted(PackageStats pStats, boolean succeeded) throws RemoteException {
                         app.size = pStats.codeSize + pStats.dataSize + pStats.cacheSize;
+                        int i = index.decrementAndGet();
                     }
                 });
             } catch (Exception e) {
@@ -382,6 +405,13 @@ public class PackageUtil {
             }
             appList.add(app);
         }
+//        while (index.get() > 0) {
+//            try {
+//                Thread.sleep(20);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
         return appList;
     }
 
@@ -399,6 +429,7 @@ public class PackageUtil {
         }
         PackageManager pm = context.getApplicationContext().getPackageManager();
         List<PackageInfo> pList = pm.getInstalledPackages(0);
+        final AtomicInteger index = new AtomicInteger();
         for (PackageInfo info : pList) {
             ApplicationInfo applicationInfo = info.applicationInfo;
             boolean isSystemApp = (applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM;
@@ -406,6 +437,7 @@ public class PackageUtil {
             if (isSystemApp && !appWhiteList.contains(info.packageName)) {
                 continue;
             }
+            index.incrementAndGet();
             final AppInfo app = new AppInfo();
             app.isSystemApp = isSystemApp;
             app.packageName = info.packageName;
@@ -424,6 +456,7 @@ public class PackageUtil {
                     @Override
                     public void onGetStatsCompleted(PackageStats pStats, boolean succeeded) throws RemoteException {
                         app.size = pStats.codeSize + pStats.dataSize + pStats.cacheSize;
+                        int i = index.decrementAndGet();
                     }
                 });
             } catch (Exception e) {
@@ -431,6 +464,13 @@ public class PackageUtil {
                 app.size = apk.length();// apk包文件大小
             }
             appList.add(app);
+        }
+        while (index.get() > 0) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         return appList;
     }
@@ -472,6 +512,59 @@ public class PackageUtil {
         @Override
         public void setSelected(boolean selected) {
             isSelect = selected;
+        }
+
+
+        public AppInfo(String appName, Drawable appIcon) {
+            this.appName = appName;
+            this.appIcon = appIcon;
+        }
+
+        public AppInfo() {   }
+
+
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
+
+            AppInfo appInfo = (AppInfo) o;
+
+            if (versionCode != appInfo.versionCode)
+                return false;
+            if (isSystemApp != appInfo.isSystemApp)
+                return false;
+            if (size != appInfo.size)
+                return false;
+            if (installtime != appInfo.installtime)
+                return false;
+            if (appName != null ? !appName.equals(appInfo.appName) : appInfo.appName != null)
+                return false;
+            if (packageName != null ? !packageName.equals(appInfo.packageName) : appInfo.packageName != null)
+                return false;
+            if (versionName != null ? !versionName.equals(appInfo.versionName) : appInfo.versionName != null)
+                return false;
+            if (installPath != null ? !installPath.equals(appInfo.installPath) : appInfo.installPath != null)
+                return false;
+            return apkPath != null ? apkPath.equals(appInfo.apkPath) : appInfo.apkPath == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = appName != null ? appName.hashCode() : 0;
+            result = 31 * result + (packageName != null ? packageName.hashCode() : 0);
+            result = 31 * result + (versionName != null ? versionName.hashCode() : 0);
+            result = 31 * result + versionCode;
+            result = 31 * result + (isSystemApp ? 1 : 0);
+            result = 31 * result + (int) (size ^ (size >>> 32));
+            result = 31 * result + (installPath != null ? installPath.hashCode() : 0);
+            result = 31 * result + (apkPath != null ? apkPath.hashCode() : 0);
+            result = 31 * result + (int) (installtime ^ (installtime >>> 32));
+            return result;
         }
     }
 }
