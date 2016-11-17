@@ -1,6 +1,7 @@
 package com.can.appstore.myapps.addappsview;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -180,6 +181,11 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View{
                     ToastUtil.toastShort("您没有选择任何应用");
                 }else{
                     saveSelectInfo(mSelectAppInfo);
+                    Intent intent = new Intent();
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean("isAdd",true);
+                    intent.putExtras(bundle);
+                    setResult(RESULT_OK, intent);
                     finish();
                 }
             }
@@ -268,5 +274,11 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View{
         if(mFocusMoveUtil!= null){
             mFocusMoveUtil.release();
         }
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
