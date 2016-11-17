@@ -288,12 +288,7 @@ public class PackageUtil {
     }
 
     /**
-<<<<<<< HEAD
-     * 获取已安装的第三方应用信息
-     *
-=======
      * 获取所有系统应用信息
->>>>>>> canStore_v1.0_wmf
      * @param context
      * @return
      */

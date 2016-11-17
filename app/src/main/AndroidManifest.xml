@@ -53,7 +53,9 @@
 
         </activity>
         <activity android:name=".myapps.allappsview.AllAppsActivity">
-
+            <intent-filter>
+                <action android:name="com.can.appstore.applist.ACTION.ACTIVITY_ALLAPPS"/>
+            </intent-filter>
         </activity>
         <activity android:name=".update.UpdateManagerActivity">
 
@@ -62,7 +64,9 @@
 
         </activity>
         <activity android:name=".myapps.ui.SystemAppsActivity">
-
+            <intent-filter>
+                <action android:name="com.can.appstore.applist.ACTION.ACTIVITY_SYSTEMAPPS"/>
+            </intent-filter>
         </activity>
         <activity android:name=".myapps.ui.CustomFolderIconActivity">
 
