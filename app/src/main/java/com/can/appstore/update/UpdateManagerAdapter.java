@@ -18,7 +18,6 @@ import com.can.appstore.update.model.AppInfoBean;
 import java.util.List;
 
 import cn.can.downloadlib.AppInstallListener;
-
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
@@ -246,6 +245,7 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                 status.setText("等待中");
                 break;
             case DownloadStatus.DOWNLOAD_STATUS_COMPLETED:
+            case AppInstallListener.APP_INSTALLING:
                 status.setVisibility(View.VISIBLE);
                 status.setText("安装中");
                 break;
