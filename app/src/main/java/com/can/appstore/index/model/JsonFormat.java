@@ -20,7 +20,10 @@ public class JsonFormat {
         PageBean pageBean = null;
         try {
             pageBean = new PageBean();
-            JSONArray jsonArray = new JSONArray(DataUtils.indexData);
+            JSONObject mainObject = new JSONObject(DataUtils.indexData);
+
+
+            JSONArray jsonArray = mainObject.getJSONArray("data");
             LayoutBean layoutBean;
             List<LayoutBean> layoutLists = new ArrayList<>();
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -28,6 +31,9 @@ public class JsonFormat {
                 layoutBean = new LayoutBean();
                 layoutBean.setId(childObject.getInt("id"));
                 layoutBean.setTitle(childObject.getString("title"));
+                layoutBean.setBaseWidth(childObject.getInt("baseWidth"));
+                layoutBean.setBaseHeight(childObject.getInt("baseHeight"));
+                layoutBean.setLineSpace(childObject.getInt("lineSpace"));
                 JSONArray childArray = childObject.getJSONArray("layout");
                 List<ChildBean> beanList = null;
                 beanList = new ArrayList<>();
@@ -35,11 +41,14 @@ public class JsonFormat {
                     JSONObject layoutObject = new JSONObject(childArray.get(j).toString());
                     ChildBean childBean = new ChildBean();
                     childBean.setId(layoutObject.getInt("id"));
-                    childBean.setBg(layoutObject.getString("bg"));
                     childBean.setX(layoutObject.getInt("x"));
                     childBean.setY(layoutObject.getInt("y"));
                     childBean.setWidth(layoutObject.getInt("width"));
                     childBean.setHeight(layoutObject.getInt("height"));
+                    childBean.setTitle(layoutObject.getString("title"));
+                    childBean.setAction(layoutObject.getString("action"));
+                    childBean.setActionData(layoutObject.getString("actionData"));
+                    childBean.setIcon(layoutObject.getString("icon"));
                     beanList.add(childBean);
                 }
                 layoutBean.setPages(beanList);

@@ -25,7 +25,9 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
     private IAddFocusListener mFocusListener;
     private int bodeColor = 0x782A2B2B;
     private View lastView = null;
-    private FrameLayout frameLayout;
+    private int baseW = 270;
+    private int baseH = 180;
+    private int lineSpace = 8;
 
     public FragmentBody(IAddFocusListener focusListener, LayoutBean layoutBean) {
         mFocusListener = focusListener;
@@ -47,7 +49,7 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
             mTitle = arguments.getString(BUNDLE_TITLE);
             Log.i("onCreateView", mTitle);
         }
-        return drawView(inflater.getContext(), measureZoom(inflater.getContext()));
+        return drawView(inflater.getContext(), this.converPosition(mLayoutBean, measureZoom(inflater.getContext())));
     }
 
     @Override
@@ -68,14 +70,16 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
     /**
      * 根据服务器配置文件动态生成界面
      *
-     * @param scaleX 当前缩放比例
+     * @param context
+     * @param mLayoutBean
+     * @return
      */
-    private View drawView(Context context, float scaleX) {
+    private View drawView(Context context, LayoutBean mLayoutBean) {
         HorizontalScrollView horizontalScrollView = new HorizontalScrollView(context);
         horizontalScrollView.setFocusable(false);
         ViewGroup.LayoutParams scrollParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         horizontalScrollView.setLayoutParams(scrollParams);
-        frameLayout = new FrameLayout(context);
+        FrameLayout frameLayout = new FrameLayout(context);
         frameLayout.setFocusable(false);
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         frameLayout.setLayoutParams(params);
@@ -85,8 +89,8 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
             final ChildBean childBean = mLayoutBean.getPages().get(j);
             MyImageView myImageView = new MyImageView(getActivity());
             myImageView.setId(j);
-            int[] rect = scaleXY(childBean, scaleX);
-            myImageView.setImageURI(childBean.getBg());
+//            int[] rect = scaleXY(childBean, scaleX);
+            myImageView.setImageURI(childBean.getIcon());
 //            myImageView.setColour(bodeColor);
 //            myImageView.setBorder(2);
             myImageView.setFocusable(true);
@@ -97,17 +101,17 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
                 @Override
                 public void onClick(View view) {
                     Log.i("FragmentBody", String.valueOf(childBean.getId()));
-                    Log.i("FragmentBody", String.valueOf(childBean.getBg()));
+                    Log.i("FragmentBody", String.valueOf(childBean.getIcon()));
                 }
             });
 
             layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            myImageView.setLeft(rect[0]);
-            myImageView.setTop(rect[1]);
-            layoutParams.leftMargin = rect[0];
-            layoutParams.topMargin = rect[1];
-            layoutParams.width = rect[2];
-            layoutParams.height = rect[3];
+            myImageView.setLeft(childBean.getX());
+            myImageView.setTop(childBean.getY());
+            layoutParams.leftMargin = (childBean.getX() + 10);
+            layoutParams.topMargin = childBean.getY();
+            layoutParams.width = childBean.getWidth();
+            layoutParams.height = childBean.getHeight();
             myImageView.setLayoutParams(layoutParams);
             markLastView(myImageView);
             frameLayout.addView(myImageView);
@@ -118,12 +122,24 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
         return horizontalScrollView;
     }
 
+    private LayoutBean converPosition(LayoutBean mLayoutBean, float scale) {
+        LayoutBean converBean = mLayoutBean;
+        for (int i = 0; i < converBean.getPages().size(); i++) {
+            ChildBean childBean = mLayoutBean.getPages().get(i);
+            childBean.setX((int) ((baseW * childBean.getX() * scale) + (lineSpace * scale) * childBean.getX()));
+            Log.i("FragmentBody", "childBean X " + childBean.getX());
+            childBean.setY((int) ((baseH * childBean.getY() * scale) + (lineSpace * scale) * childBean.getY()));
+            childBean.setWidth((int) (((baseW * childBean.getWidth()) * scale) + (((childBean.getWidth() - 1) * lineSpace) * scale)));
+            childBean.setHeight((int) (((baseH * childBean.getHeight()) * scale) + (((childBean.getHeight() - 1) * lineSpace) * scale)));
+        } return converBean;
+    }
+
     private void markLastView(MyImageView mView) {
         if (null == lastView) {
             lastView = mView;
         } else {
             if (mView.getTop() <= lastView.getTop() && mView.getLeft() >= lastView.getLeft()) {
-                lastView = frameLayout.getChildAt(frameLayout.getChildCount() - 1);
+                lastView = mView;
                 Log.i("FragmentBody", "return lastView " + lastView.getId());
             }
         }
@@ -137,10 +153,10 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
      * @return
      */
     private int[] scaleXY(ChildBean childBean, float percentage) {
-        int x = (int) (childBean.getX() * percentage);
-        int y = (int) (childBean.getY() * percentage);
-        int width = (int) (childBean.getWidth() * percentage);
-        int height = (int) (childBean.getHeight() * percentage);
+        int x = (int) (childBean.getX());
+        int y = (int) (childBean.getY());
+        int width = (int) (childBean.getWidth());
+        int height = (int) (childBean.getHeight());
         return new int[]{x, y, width, height};
     }
 
@@ -151,9 +167,9 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
      */
     private float measureZoom(Context context) {
         //得到当前分辨率
-        float currentH = DisplayUtil.getScreenWidth(context);
+        float currentH = DisplayUtil.getScreenHeight(context);
         //已知后端配置为1080p
-        float serviceH = 1920f;
+        float serviceH = 1080f;
         return currentH / serviceH;
     }
 

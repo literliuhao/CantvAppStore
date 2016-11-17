@@ -10,6 +10,10 @@ public class LayoutBean {
     private static final long serialVersionUID = 1L;
     private int id;
     private String title;
+    private int baseWidth;
+    private int baseHeight;
+    private int lineSpace;
+
     private List<ChildBean> pages;
 
     public int getId() {
@@ -24,7 +28,6 @@ public class LayoutBean {
         this.id = id;
     }
 
-
     public void setTitle(String title) {
         this.title = title;
     }
@@ -37,4 +40,27 @@ public class LayoutBean {
         this.pages = pages;
     }
 
+    public void setBaseWidth(int baseWidth) {
+        this.baseWidth = baseWidth;
+    }
+
+    public void setBaseHeight(int baseHeight) {
+        this.baseHeight = baseHeight;
+    }
+
+    public void setLineSpace(int lineSpace) {
+        this.lineSpace = lineSpace;
+    }
+
+    public int getBaseWidth() {
+        return baseWidth;
+    }
+
+    public int getBaseHeight() {
+        return baseHeight;
+    }
+
+    public int getLineSpace() {
+        return lineSpace;
+    }
 }

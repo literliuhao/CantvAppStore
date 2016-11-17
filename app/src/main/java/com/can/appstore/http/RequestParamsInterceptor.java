@@ -22,6 +22,16 @@ public class RequestParamsInterceptor implements Interceptor {
                 .build();
         request = request.newBuilder().url(url)
                 .build();
+//        HttpUrl url = request.url()
+//                .newBuilder()
+//                .addQueryParameter("channelId", "13")
+//                .addQueryParameter("internalModel", "1")
+//                .addQueryParameter("commercialModel", "f66")
+//                .addQueryParameter("mac", "1")
+//                .addQueryParameter("versionId", "1")
+//                .build();
+//        request = request.newBuilder().url(url)
+//                .build();
         return chain.proceed(request);
     }
 }

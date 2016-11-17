@@ -16,6 +16,7 @@ import com.can.appstore.index.entity.LayoutBean;
 import com.can.appstore.index.entity.PageBean;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.interfaces.IOnPagerListener;
+import com.can.appstore.index.model.DataUtils;
 import com.can.appstore.index.model.JsonFormat;
 import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.index.ui.FragmentBody;
@@ -100,6 +101,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mTitleBar = (TitleBar) findViewById(R.id.id_indicator);
         mTitleBar.initTitle(this);
         mViewPager = (ViewPager) findViewById(R.id.id_vp);
+
     }
 
     /**
@@ -204,6 +206,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mViewPager.setOffscreenPageLimit(OFFSCREENPAGELIMIT);
         mViewPager.setCurrentItem(PAGERCURRENTITEM);
         mTitleBar.setViewPager(mViewPager, PAGERCURRENTITEM);
+
+        DataUtils.getNavigation();
     }
 
     /**
