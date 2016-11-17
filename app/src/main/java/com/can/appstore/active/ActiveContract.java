@@ -9,6 +9,8 @@ public class ActiveContract {
         void clickBtnDownload();
 
         void removeAllListener();
+
+        void requestActiveData(String id);
     }
 
     interface OperationView{
@@ -21,5 +23,7 @@ public class ActiveContract {
         void loadwebview(String url);
 
         void setNativeLayout(String url);
+
+        void showNetworkRetryView(boolean isRetry, boolean isWebView);
     }
 }

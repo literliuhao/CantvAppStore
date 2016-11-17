@@ -22,8 +22,16 @@
 
         </activity>
         <activity android:name=".search.SearchActivity"></activity>
-        <activity android:name=".specialdetail.SpecialDetailActivity"></activity>
-        <activity android:name=".active.ActiveActivity"></activity>
+        <activity android:name=".specialdetail.SpecialDetailActivity">
+            <intent-filter>
+                <action android:name="com.can.appstore.ACTION.TOPIC_DETAIL"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".active.ActiveActivity">
+            <intent-filter>
+                <action android:name="com.can.appstore.ACTION.ACTIVITY_DETAIL"/>
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:theme="@style/AppTheme.Translucent.FadeIn">
