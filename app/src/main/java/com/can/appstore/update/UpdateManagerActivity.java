@@ -10,11 +10,13 @@ import android.os.Message;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +24,7 @@ import android.widget.Toast;
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
 
+import com.can.appstore.installpkg.utils.InstallPkgUtils;
 import com.can.appstore.installpkg.view.LoadingDialog;
 import com.can.appstore.update.model.AppInfoBean;
 
@@ -31,6 +34,7 @@ import com.can.appstore.wights.CanDialog;
 import java.util.List;
 
 
+import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
@@ -71,19 +75,20 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
     private List<AppInfoBean> mUpdateList;
     private cn.can.downloadlib.DownloadManager mDownloadManager;
     private ProgressBar mUpdatePro;
+    private String mCurrentId;
 
     public Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
-                    if (msg.arg1 > 0 ) {
+                    if (msg.arg1 > 0) {
                         mUpdatePro.setVisibility(View.VISIBLE);
                         mUpdatePro.setProgress(msg.arg1);
                     } else {
                         mUpdatePro.setVisibility(View.INVISIBLE);
                     }
-                    Toast.makeText(MyApp.mContext,msg.arg1+"",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MyApp.mContext, msg.arg1 + "", Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -168,6 +173,18 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
             }
 
         });
+        /*mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                myFocusRunnable.run();
+            }
+        });*/
     }
 
     private void initClick() {
@@ -215,8 +232,10 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
             public void onClick(View view, int position, Object data) {
                 mCurrentPositon = position;
                 String downloadUrl = mUpdateList.get(position).getDownloadUrl();
-                //mRecyclerView.setTag(downloadUrl);
-                mUpdatePro = (ProgressBar) view.findViewById(R.id.pb_updateapp_progressbar);
+
+                final ProgressBar progress = (ProgressBar) view.findViewById(R.id.pb_updateapp_progressbar);
+                final TextView status = (TextView) view.findViewById(R.id.tv_updateapp_downloading);
+                final ImageView updatedIcon = (ImageView) view.findViewById(R.id.iv_updateapp_updatedicon);
                 if (mDownloadManager == null) {
                     mDownloadManager = cn.can.downloadlib.DownloadManager.getInstance(UpdateManagerActivity.this);
                 }
@@ -239,31 +258,65 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                     downloadTask.setId(md5);
                     downloadTask.setSaveDirPath(MyApp.mContext.getExternalCacheDir().getPath() + "/");
                     downloadTask.setUrl(downloadUrl);
+                    //mCurrentId = downloadTask.getId();
                     Toast.makeText(MyApp.mContext, downloadUrl, Toast.LENGTH_SHORT).show();
                     mDownloadManager.addDownloadTask(downloadTask, new DownloadTaskListener() {
                         @Override
                         public void onPrepare(DownloadTask downloadTask) {
                             Log.d("shen", "onPrepare: ");
+                            progress.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    status.setVisibility(View.VISIBLE);
+                                    status.setText("等待中");
+                                    progress.setVisibility(View.INVISIBLE);
+                                }
+                            });
                         }
 
                         @Override
                         public void onStart(DownloadTask downloadTask) {
                             Log.d("shen", "onStart: ");
+                            progress.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    status.setVisibility(View.VISIBLE);
+                                    status.setText("等待中");
+                                    //refreshDownliadStatus(downloadTask.getDownloadStatus(), status);
+                                    progress.setVisibility(View.INVISIBLE);
+                                    //progress.setProgress((int) downloadTask.getPercent());
+                                }
+                            });
                         }
 
                         @Override
-                        public void onDownloading(DownloadTask downloadTask) {
+                        public void onDownloading(final DownloadTask downloadTask) {
                             Log.d("shen", "onDownloading: ");
-                            mHandler.removeMessages(1);
-                            Message message = mHandler.obtainMessage();
-                            message.what = 1;
-                            message.arg1 = (int) downloadTask.getPercent();
-                            mHandler.sendMessage(message);
+                            progress.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    status.setVisibility(View.VISIBLE);
+                                    status.setText("下载中");
+                                    //refreshDownliadStatus(downloadTask.getDownloadStatus(), status);
+                                    progress.setVisibility(View.VISIBLE);
+                                    progress.setProgress((int) downloadTask.getPercent());
+                                }
+                            });
                         }
 
                         @Override
                         public void onPause(DownloadTask downloadTask) {
                             Log.d("shen", "onPause: ");
+                            progress.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    status.setVisibility(View.VISIBLE);
+                                    status.setText("等待中");
+                                    //refreshDownliadStatus(downloadTask.getDownloadStatus(), status);
+                                    progress.setVisibility(View.INVISIBLE);
+                                    //progress.setProgress((int) downloadTask.getPercent());
+                                }
+                            });
                         }
 
                         @Override
@@ -272,15 +325,94 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                         }
 
                         @Override
-                        public void onCompleted(DownloadTask downloadTask) {
+                        public void onCompleted(final DownloadTask downloadTask) {
                             Log.d("shen", "onCompleted: ");
+                            progress.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    status.setVisibility(View.VISIBLE);
+                                    status.setText("安装中");
+                                    progress.setVisibility(View.INVISIBLE);
+                                    int result = InstallPkgUtils.installApp(downloadTask.getSaveDirPath());
+                                    if(result == 0){
+                                        //status.setText("安装成功");
+                                        updatedIcon.setVisibility(View.VISIBLE);
+                                    }else{
+                                        status.setText("安装失败");
+                                        updatedIcon.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            });
                         }
 
                         @Override
                         public void onError(DownloadTask downloadTask, int errorCode) {
                             Log.d("shen", "onError: ");
+                            switch (errorCode) {
+                                case DOWNLOAD_ERROR_FILE_NOT_FOUND:
+                                    Log.i("shen", "未找到下载文件: ");
+                                    break;
+                                case DOWNLOAD_ERROR_IO_ERROR:
+                                    Log.i("shen", "IO异常: ");
+                                    break;
+                                case DOWNLOAD_ERROR_NETWORK_ERROR:
+                                    Log.i("shen", "网络异常，请重试！");
+                                    break;
+                                case DOWNLOAD_ERROR_UNKONW_ERROR:
+                                    Log.i("shen", "未知错误: ");
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     });
+
+                    /*mDownloadManager.setAppInstallListener(new AppInstallListener() {
+                        @Override
+                        public void onInstalling(DownloadTask downloadTask) {
+                            String crurrentId = downloadTask.getId();
+                            if (mCurrentId.equals(crurrentId)) {
+                                progress.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        status.setVisibility(View.VISIBLE);
+                                        status.setText("安装中");
+                                        progress.setVisibility(View.INVISIBLE);
+                                        updatedIcon.setVisibility(View.INVISIBLE);
+                                    }
+                                });
+                            }
+                        }
+
+                        @Override
+                        public void onInstallSucess(String id) {
+                            if (mCurrentId.equals(id)) {
+                                progress.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        status.setVisibility(View.INVISIBLE);
+                                        progress.setVisibility(View.INVISIBLE);
+                                        updatedIcon.setVisibility(View.VISIBLE);
+                                    }
+                                });
+                            }
+                        }
+
+                        @Override
+                        public void onInstallFail(String id) {
+                            if (mCurrentId.equals(id)) {
+                                progress.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        status.setVisibility(View.VISIBLE);
+                                        status.setText("安装失败");
+                                        progress.setVisibility(View.INVISIBLE);
+                                        updatedIcon.setVisibility(View.VISIBLE);
+                                    }
+                                });
+                            }
+                        }
+                    });*/
                 }
 
             }
@@ -305,6 +437,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 canDialog.dismiss();
             }
         });
+        canDialog.show();
     }
 
     protected void initData() {
@@ -422,9 +555,6 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
         return super.onKeyDown(keyCode, event);
     }
 
-    /*progressbar = (ProgressBar) view.findViewById(R.id.pb_updateapp_progressbar);
-    updatedIcon = (ImageView) view.findViewById(R.id.iv_updateapp_updatedicon);
-    downloading = (TextView) view.findViewById(R.id.tv_updateapp_downloading)*/
     @Override
     public void onPrepare(DownloadTask downloadTask) {
         String url = downloadTask.getUrl();

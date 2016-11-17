@@ -20,6 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import cn.can.downloadlib.utils.SdcardUtils;
+import cn.can.downloadlib.utils.ShellUtils;
+import cn.can.downloadlib.utils.ToastUtils;
+
 import static android.content.pm.PackageManager.GET_ACTIVITIES;
 
 /**
@@ -200,4 +204,22 @@ public class InstallPkgUtils {
         }
     }
 
+    /**
+     * 静默安装
+     */
+    public static int installApp(String path){
+
+        long space = SdcardUtils.getSDCardAvailableSpace() / 1014 / 1024;
+        if (space < 50) {
+            ToastUtils.showMessageLong(MyApp.mContext, cn.can.downloadlib.R.string.error_msg);
+            return 50;
+        }
+        ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r" + path, false);
+        //成功
+        if (res.result == 0) {
+            return 0;
+        } else {
+            return res.result;
+        }
+    }
 }

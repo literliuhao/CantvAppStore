@@ -5,6 +5,12 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.can.appstore.MyApp;
+import com.can.appstore.entity.AppInfo;
+import com.can.appstore.entity.ListResult;
+import com.can.appstore.http.CanCall;
+import com.can.appstore.http.CanCallback;
+import com.can.appstore.http.CanErrorWrapper;
+import com.can.appstore.http.HttpManager;
 import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.update.utils.UpdateUtils;
 
@@ -16,6 +22,7 @@ import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
+import retrofit2.Response;
 
 /**
  * Created by shenpx on 2016/11/10 0010.
@@ -33,16 +40,19 @@ public class UpdatePresenter implements UpdateContract.Presenter, DownloadTaskLi
     private int mSdSurplusSize;
     private String mSdAvaliableSize;
     private List<AppInfoBean> mDatas;//已安装应用
+    private List<AppInfo> date;
 
     public UpdatePresenter(UpdateContract.View mView, Context mContext) {
         this.mView = mView;
         this.mContext = mContext;
         mDatas = new ArrayList<AppInfoBean>();
+        date = new ArrayList<AppInfo>();
     }
 
     @Override
     public void getInstallPkgList(boolean isAutoUpdate) {
         mDatas.clear();
+        date.clear();
         mView.showInstallPkgList(mDatas);
         if (isAutoUpdate) {
             mView.hideNoData();
@@ -54,6 +64,32 @@ public class UpdatePresenter implements UpdateContract.Presenter, DownloadTaskLi
         mDatas.clear();
         UpdateAppList.list.clear();
         //进行网络请求获取更新包信息
+        /*AppInfo appInfo1 = new AppInfo();
+        appInfo1.setPackageName("cn.cibntv.ott");
+        appInfo1.setVersionCode(4);
+        AppInfo appInfo2 = new AppInfo();
+        appInfo2.setPackageName("打怪");
+        appInfo2.setVersionCode(4);
+        date.add(appInfo1);
+        date.add(appInfo2);
+        CanCall<ListResult<AppInfo>> listResultCanCall = HttpManager.getApiService().checkUpdate(date);
+        listResultCanCall.enqueue(new CanCallback<ListResult<AppInfo>>() {
+            @Override
+            public void onResponse(CanCall<ListResult<AppInfo>> call, Response<ListResult<AppInfo>> response) throws Exception {
+                Log.i("shen",response.body().toString());
+                Log.i("shen",response.body()+"");
+                List<AppInfo> data = response.body().getData();
+                String url = data.get(0).getUrl();
+                Log.i("shen",data.toString());
+                Log.i("shen",data+"");
+                Log.i("shen",url+"");
+            }
+
+            @Override
+            public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
+
+            }
+        });*/
         if (appList.size() < 1 || appList == null) {
             mView.showNoData();
         } else {
