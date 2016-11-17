@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.applist.AppListActivity;
 import com.can.appstore.download.DownloadLeadAcitivity;
+import com.can.appstore.message.MessageStartActivity;
 import com.can.appstore.uninstallmanager.UninstallManagerActivity;
 
 import java.util.ArrayList;
@@ -60,7 +61,9 @@ public class PortalActivity extends Activity {
                 list.add("卸载管理");
             } else if (i == 5) {
                 list.add("应用详情3");
-            } else {
+            } else if (i == 6){
+                list.add("消息中心");
+            }else {
                 list.add(i + "");
             }
         }
@@ -103,6 +106,9 @@ public class PortalActivity extends Activity {
                 } else if (position == 5) {
                     Intent intent = new Intent(PortalActivity.this, AppDetailActivity.class);
                     intent.putExtra("appID", "3");
+                    startActivity(intent);
+                }else if(position == 6){
+                    Intent intent = new Intent(PortalActivity.this, MessageStartActivity.class);
                     startActivity(intent);
                 }
             }

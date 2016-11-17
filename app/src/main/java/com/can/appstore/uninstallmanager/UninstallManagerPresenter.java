@@ -4,14 +4,22 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.AsyncTask;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 
 import com.can.appstore.R;
+import com.can.appstore.uninstallmanager.csutom.CustomAsyncTaskLoader;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.downloadlib.utils.ShellUtils;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.SystemUtil;
@@ -20,42 +28,27 @@ import cn.can.tvlib.utils.SystemUtil;
  * Created by JasonF on 2016/10/17.
  */
 
-public class UninstallManagerPresenter implements UninstallManagerContract.Presenter {
+public class UninstallManagerPresenter implements UninstallManagerContract.Presenter, LoaderManager.LoaderCallbacks<List<PackageUtil.AppInfo>> {
     private static final String TAG = "UninstallManagerPresen";
+    private static final int LOADER_ID = 0;
+    private static final int COLUMN_COUNT = 3;
     private UninstallManagerContract.View mView;
     private Context mContext;
     private static List<PackageUtil.AppInfo> mAppInfoList;
     private AppInstallReceiver mInstalledReceiver;
-    private ArrayList<String> mSelectPackageName = new ArrayList<String>();
+    private ArrayList<String> mSelectPackageName = new ArrayList<>();
+    private LoaderManager mLoaderManager;
 
     public UninstallManagerPresenter(UninstallManagerContract.View view, Context context) {
         this.mView = view;
         this.mContext = context;
+        addListener();
     }
 
     @Override
-    public void startLoad() {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected void onPreExecute() {
-                mView.showLoadingDialog();
-            }
-
-            @Override
-            protected Void doInBackground(Void... voids) {
-                if (mAppInfoList != null) {
-                    mAppInfoList.clear();
-                }
-                mAppInfoList = PackageUtil.findAllThirdPartyApps(mContext, mAppInfoList);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                mView.loadAllAppInfoSuccess(mAppInfoList);
-                mView.hideLoadingDialog();
-            }
-        }.execute();
+    public void startLoad(LoaderManager loaderManager) {
+        this.mLoaderManager = loaderManager;
+        mLoaderManager.initLoader(LOADER_ID, null, this);
     }
 
     @Override
@@ -80,27 +73,33 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
 
     /**
      * 计算当前的内存进度
-     *
-     * @return
      */
-    public void calculateCurStoragePropgress() {
+    void calculateCurStoragePropgress() {
         long freeSize = SystemUtil.getSDCardAvailableSpace();
         long totalSize = SystemUtil.getSDCardTotalSpace();
-        int progress = (int) ((freeSize * 100) / totalSize);
-        Log.d(TAG, "freeSize : " + freeSize + "  totalSize : " + totalSize + "  progress : " + progress);
+        int progress = (int) (((totalSize - freeSize) * 100) / totalSize);
         String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + StringUtils.formatFileSize(freeSize, false);
         mView.showCurStorageProgress(progress, freeStorage);
     }
 
+    @Override
+    public void onItemFocus(int position) {
+        int rowNum = calculateCurRows(position);
+        int total = calculateCurTotalRows();
+        String rowFmt = String.format(mContext.getResources().getString(R.string.rows_str), rowNum, total);
+        int pos = rowFmt.indexOf("/");
+        SpannableStringBuilder spanString = new SpannableStringBuilder(rowFmt);
+        spanString.setSpan(new ForegroundColorSpan(Color.parseColor("#CCFFFFFF")), 0, pos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        mView.refreshRows(spanString);
+    }
+
     /**
      * 计算当前总行数
-     *
-     * @return
      */
-    public int calculateCurTotalRows() {
+    private int calculateCurTotalRows() {
         int totalCount = mAppInfoList.size();
-        int totalRows = totalCount / 3;
-        if (totalCount % 3 != 0) {
+        int totalRows = totalCount / COLUMN_COUNT;
+        if (totalCount % COLUMN_COUNT != 0) {
             totalRows = totalRows + 1;
         }
         return totalRows;
@@ -108,12 +107,35 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
 
     /**
      * 计算当前行数
-     *
-     * @param position
-     * @return
      */
-    public int calculateCurRows(int position) {
-        return position / 3 + 1;
+    private int calculateCurRows(int position) {
+        return position / COLUMN_COUNT + 1;
+    }
+
+    @Override
+    public Loader<List<PackageUtil.AppInfo>> onCreateLoader(int id, Bundle args) {
+        Log.d(TAG, "onCreateLoader: " + " id : " + id);
+        mView.showLoadingDialog();
+        return new CustomAsyncTaskLoader(mContext, CustomAsyncTaskLoader.FILTER_THIRD_APP);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<PackageUtil.AppInfo>> loader, List<PackageUtil.AppInfo> data) {
+        Log.d(TAG, "onLoadFinished: " + "data :" + data.size());
+        mView.hideLoadingDialog();
+        if (mAppInfoList == null) {
+            mAppInfoList = new ArrayList<>();
+        } else {
+            mAppInfoList.clear();
+        }
+        mAppInfoList.addAll(data);
+        mView.loadAllAppInfoSuccess(mAppInfoList);
+    }
+
+
+    @Override
+    public void onLoaderReset(Loader<List<PackageUtil.AppInfo>> loader) {
+        Log.d(TAG, "onLoaderReset: ");
     }
 
     class AppInstallReceiver extends BroadcastReceiver {
@@ -124,17 +146,16 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
             if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)) {
                 String packageName = intent.getDataString().substring(8);
                 Log.d(TAG, "install packageName : " + packageName);
-                startLoad();
+                mLoaderManager.restartLoader(LOADER_ID, null, UninstallManagerPresenter.this);
             } else if (intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)) {
                 String packageName = intent.getData().getSchemeSpecificPart();
                 Log.d(TAG, "uninstall packageName : " + packageName);
+                calculateCurStoragePropgress();
+                refreshItemInListPosition(packageName);
                 if (mSelectPackageName != null) {
-                    refreshItemInListPosition(packageName);
                     if (mSelectPackageName.size() > 0) {
                         continueUninstall1();
                     }
-                } else {
-                    startLoad();
                 }
             }
         }
@@ -160,7 +181,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
         }
     }
 
-    public void unRegiestr() {
+    void unRegiestr() {
         if (mInstalledReceiver != null) {
             mContext.unregisterReceiver(mInstalledReceiver);
             mInstalledReceiver = null;
@@ -169,8 +190,6 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
 
     /**
      * 批量卸载
-     *
-     * @param selectPackageList
      */
     public void batchUninstallApp(ArrayList<String> selectPackageList) {
         this.mSelectPackageName = selectPackageList;
@@ -186,6 +205,21 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
         if (mSelectPackageName != null) {
             mSelectPackageName.clear();
             mSelectPackageName = null;
+        }
+        mLoaderManager.destroyLoader(LOADER_ID);
+    }
+
+    /**
+     * 静默卸载
+     *
+     * @param packageName
+     */
+    public void silentUninstall(String appName, String packageName) {
+        ShellUtils.CommandResult res = ShellUtils.execCommand("pm uninstall -k " + packageName, false);
+        if (res.result == 0) {
+            mView.showToast(appName + mContext.getResources().getString(R.string.uninstall_success));
+        } else {
+            mView.showToast(appName + mContext.getResources().getString(R.string.uninstall_fail));
         }
     }
 }

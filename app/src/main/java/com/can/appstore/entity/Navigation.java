@@ -21,6 +21,12 @@ public class Navigation {
     private String id;
     @SerializedName("title")
     private String title;
+    @SerializedName("baseWidth")
+    private int baseWidth;
+    @SerializedName("baseHeight")
+    private int baseHeight;
+    @SerializedName("lineSpace")
+    private int lineSpace;
     @SerializedName("layout")
     private List<Layout> layout;
 
@@ -40,6 +46,30 @@ public class Navigation {
         this.title = title;
     }
 
+    public int getBaseWidth() {
+        return baseWidth;
+    }
+
+    public void setBaseWidth(int baseWidth) {
+        this.baseWidth = baseWidth;
+    }
+
+    public int getBaseHeight() {
+        return baseHeight;
+    }
+
+    public void setBaseHeight(int baseHeight) {
+        this.baseHeight = baseHeight;
+    }
+
+    public int getLineSpace() {
+        return lineSpace;
+    }
+
+    public void setLineSpace(int lineSpace) {
+        this.lineSpace = lineSpace;
+    }
+
     public List<Layout> getLayout() {
         return CollectionUtil.emptyIfNull(layout);
     }
@@ -53,6 +83,9 @@ public class Navigation {
         final StringBuffer sb = new StringBuffer("Navigation{");
         sb.append("id='").append(id).append('\'');
         sb.append(", title='").append(title).append('\'');
+        sb.append(", baseWidth=").append(baseWidth);
+        sb.append(", baseHeight=").append(baseHeight);
+        sb.append(", lineSpace=").append(lineSpace);
         sb.append(", layout=").append(layout);
         sb.append('}');
         return sb.toString();

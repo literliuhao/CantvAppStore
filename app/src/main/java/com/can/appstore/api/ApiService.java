@@ -89,7 +89,7 @@ public interface ApiService {
     /**
      * 获取隐藏应用列表
      */
-    @GET("start/hidenApps")
+    @GET("application/gethideapp")
     CanCall<ListResult<String>> getHiddenApps();
 
     /**
@@ -100,21 +100,16 @@ public interface ApiService {
     @POST("application/updateapp")
     CanCall<ListResult<AppInfo>> checkUpdate(@Body List<AppInfo> apps);
 
-    /**
-     * 自升级检查
-     */
-    @GET
-    CanCall<Result<AppInfo>> checkUpdateSelf();
 
     /**
      * 首页导航
      */
     @GET("homepage/homepage")
-    CanCall<Result<Navigation>> getNavigations();
+    CanCall<ListResult<Navigation>> getNavigations();
 
     /**
      * 获取消息
      */
-    @GET
+    @GET("application/getmessage")
     CanCall<Result<MessageContainer>> getMessages();
 }

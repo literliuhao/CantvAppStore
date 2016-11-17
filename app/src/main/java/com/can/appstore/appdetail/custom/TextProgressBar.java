@@ -52,6 +52,7 @@ public class TextProgressBar extends ProgressBar {
     }
 
     // 初始化，画笔
+    @SuppressWarnings("deprecation")
     private void initPaint() {
         this.mPaint = new Paint();
         this.mPaint.setAntiAlias(true);// 设置抗锯齿

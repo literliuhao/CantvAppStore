@@ -18,6 +18,7 @@ public interface DownloadContract {
         void loadData();
         void calculateRowNum(int focusedPos);
         void deleteAllTasks();
+        void caculateStorage();
         boolean pauseAllTasks();
         boolean resumeAllTasks();
     }
@@ -25,9 +26,10 @@ public interface DownloadContract {
     interface DownloadView extends BaseView<DownloadPresenter>{
 
         void onDataLoaded(List<DownloadTask> tasks);
-        void refreshRowNumber(String formatRow);
+        void refreshRowNumber(CharSequence formatRow);
         void showNoDataView();
         void hideNoDataView();
+        void showStorageView(int progress, String storage);
 
     }
 

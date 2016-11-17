@@ -11,8 +11,6 @@ import com.can.appstore.myapps.model.MyAppsListDataUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.can.downloadlib.DownloadManager;
-import cn.can.downloadlib.DownloadTask;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
@@ -27,14 +25,13 @@ import cn.can.tvlib.utils.PackageUtil.AppInfo;
  */
 public class MyApp extends Application {
     public static Context mContext;
+    private static MyApp INSTANCE;
     //内存维护的全局应用List
     public static List<AppInfo> myAppList = new ArrayList<AppInfo>();
     /**
      * 预装APP白名单
      */
     public final static List<String> PRE_APPS = new ArrayList<String>();
-
-
 
 
     @Override
@@ -48,7 +45,7 @@ public class MyApp extends Application {
         registerInstallReceiver();
     }
 
-    public Context getContext() {
+    public static Context getContext() {
         return mContext;
     }
 
