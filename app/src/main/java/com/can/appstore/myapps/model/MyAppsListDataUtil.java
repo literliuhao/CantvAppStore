@@ -5,6 +5,11 @@ import android.text.TextUtils;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
+import com.can.appstore.entity.ListResult;
+import com.can.appstore.http.CanCall;
+import com.can.appstore.http.CanCallback;
+import com.can.appstore.http.CanErrorWrapper;
+import com.can.appstore.http.HttpManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +19,7 @@ import java.util.List;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
 import cn.can.tvlib.utils.PreferencesUtils;
+import retrofit2.Response;
 
 
 /**
@@ -57,6 +63,8 @@ public  class MyAppsListDataUtil {
           }
           saveShowList(mShowList);
       }
+
+
         mShowList.add(0,new AppInfo("全部应用", context.getResources().getDrawable(R.drawable.allapp)));
         mShowList.add(1,new AppInfo("系统应用", context.getResources().getDrawable(R.drawable.ic_launcher)));
         return mShowList;
@@ -166,12 +174,56 @@ public  class MyAppsListDataUtil {
         }else{
             list.clear();
         }
+
+
         return list;
     }
 
     /**
-     * 获取 两个集合的差集
+     * 获取 隐藏应用
      */
+    public static List<String> hideList = new ArrayList<>();
+    public void getHideApps(){
+        CanCall<ListResult<String>> hiddenApps = HttpManager.getApiService().getHiddenApps();
+        hiddenApps.enqueue(new CanCallback<ListResult<String>>() {
+            @Override
+            public void onResponse(CanCall<ListResult<String>> call, Response<ListResult<String>> response) throws Exception {
+                ListResult<String> body = response.body();
+                hideList = (List<String>)body;
+            }
+
+            @Override
+            public void onFailure(CanCall<ListResult<String>> call, CanErrorWrapper errorWrapper) {
+
+            }
+        });
+    }
+
+    /**
+     * 从列表里删除隐藏应用
+     */
+    public List<AppInfo> removeHideApp(List<AppInfo> appList){
+        if(appList == null){
+            return null;
+        }
+        if(hideList == null || hideList.size() == 0){
+            return appList;
+        }
+        List<AppInfo> hideAppList = new ArrayList<>();
+        for (AppInfo appInfo : appList) {
+            boolean isHide = false;
+            for(String s: hideList){
+                if(appInfo.packageName.equals(s)){
+                    isHide = true;
+                }
+            }
+            if(isHide){
+                hideAppList.add(appInfo);
+            }
+        }
+        appList.removeAll(hideAppList);
+        return appList;
+    }
 
 
 }

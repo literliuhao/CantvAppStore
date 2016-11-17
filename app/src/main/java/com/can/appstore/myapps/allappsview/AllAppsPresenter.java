@@ -53,6 +53,7 @@ public class AllAppsPresenter implements AllAppsContract.Presenter {
             protected Void doInBackground(Void... params) {
                 mMyAppsListDataUtil = new MyAppsListDataUtil(mContext);
                 allAppsList = mMyAppsListDataUtil.getAllAppList(allAppsList);
+                allAppsList = mMyAppsListDataUtil.removeHideApp(allAppsList);
                 return null;
             }
 

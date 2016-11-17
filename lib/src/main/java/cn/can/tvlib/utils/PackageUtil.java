@@ -23,8 +23,6 @@ import java.util.List;
 
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
-import static com.android.volley.Request.Method.HEAD;
-
 
 /**
  * ================================================
@@ -388,6 +386,7 @@ public class PackageUtil {
             }
             appList.add(app);
         }
+
         return appList;
     }
 
