@@ -38,9 +38,10 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public final static int DOWNLOAD_BUTTON_STATUS_WAIT = 2;//等待中
     public final static int DOWNLOAD_BUTTON_STATUS_DOWNLAODING = 3;//"点击暂停下载"
     public final static int DOWNLOAD_BUTTON_STATUS_PAUSE = 4;//点击继续下载
-    public final static int DOWNLOAD_BUTTON_STATUS_RUN = 6;//运行
     public final static int DOWNLOAD_BUTTON_STATUS_INSTALLING = 5;//安装中
-    public final static int DOWNLOAD_BUTTON_STATUS_RESTART = 6;//重试
+    public final static int DOWNLOAD_BUTTON_STATUS_RUN = 6;//运行
+    public final static int DOWNLOAD_BUTTON_STATUS_RESTART = 7;//重试
+    public final static int DOWNLOAD_BUTTON_STATUS_UPDATE = 8;//更新
     public final static float DOWNLOAD_INIT_PROGRESS = 0f;//初始时进度
     public final static float DOWNLOAD_FINISH_PROGRESS = 100f;//完成时进度
     public int downlaodErrorCode = 0;//下载错误
@@ -95,7 +96,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             }
             addDownlaodListener();
         } else {
-            mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, DOWNLOAD_INIT_PROGRESS);
+            mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_UPDATE, DOWNLOAD_INIT_PROGRESS);
         }
     }
 
@@ -167,12 +168,14 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 mPackageName = mAppInfo.getPackageName();
                 Url = mAppInfo.getUrl();
                 initDownloadButtonStatus();
-                mView.loadAppInfoOnSuccess(mAppInfo);
                 if (mAppInfo.getVersionCode() > PackageUtils.getVersionCode(mContext, mPackageName) && ApkUtils.isAvailable(mContext, mPackageName)) {
                     isShowUpdateButton = true;
-                    mView.refreshUpdateButton(true);
                     initUpdateButtonStatus();
+                    mView.refreshUpdateButton(true);
+                } else {
+                    mView.refreshUpdateButton(false);
                 }
+                mView.loadAppInfoOnSuccess(mAppInfo);
             }
 
             @Override
@@ -224,13 +227,12 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
             clickRefreshButtonStatus(isClickUpdateButton, per);
             mDownloadManager.resume(MD5.MD5(Url));
+        } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {//TODO
+            if (downlaodErrorCode != DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR) {//重试
+                clickRefreshButtonStatus(isClickUpdateButton, per);
+                mDownloadManager.resume(MD5.MD5(Url));
+            }
         }
-        //        else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {//TODO
-        //            if (downlaodErrorCode != DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR) {//重试
-        //                clickRefreshButtonStatus(isClickUpdateButton, per);
-        //                mDownloadManager.resume(MD5.MD5(Url));
-        //            }
-        //        }
     }
 
     public void clickRefreshButtonStatus(boolean isClickUpdateButton, float per) {
@@ -267,17 +269,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         if (downloadTask != null) {
             mDownloadManager.addDownloadListener(downloadTask, AppDetailPresenter.this);
             mDownloadManager.setAppInstallListener(AppDetailPresenter.this);
-        }
-    }
-
-    @Override
-    public void release() {
-        DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(Url));
-        if (downloadTask != null) {
-            mDownloadManager.removeDownloadListener(downloadTask, this);
-        }
-        if (mAppDetailCall != null) {
-            mAppDetailCall.cancel();
         }
     }
 
@@ -425,17 +416,30 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         return drawableID;
     }
 
-    public void enterImageScaleActivity(int currentIndex) {// TODO  进入到图放大页面
+    /**
+     * 进入到图片放大页面
+     *
+     * @param currentIndex
+     */
+    public void enterImageScaleActivity(int currentIndex) {
         Intent intent = new Intent(mContext, ImageScaleActivity.class);
         intent.putExtra("imageUrl", (Serializable) mAppInfo.getThumbs());
         intent.putExtra("currentIndex", currentIndex);
         mContext.startActivity(intent);
     }
 
+    /**
+     * 获取当前apk的包名
+     *
+     * @return
+     */
     public String getCurAppPackageName() {
         return mPackageName;
     }
 
+    /**
+     * 显示推荐对话框
+     */
     public void showIntroduceDialog() {
         CustomDialog.Builder builder = new CustomDialog.Builder(mContext);
         builder.setUpdatelogText(mAppInfo.getUpdateLog());
@@ -444,6 +448,9 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         mCustomDialog.show();
     }
 
+    /**
+     * 隐藏推荐对话框
+     */
     public void dismissIntroduceDialog() {
         if (mCustomDialog != null) {
             mCustomDialog.dismiss();
@@ -460,6 +467,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 String action = intent.getAction();
                 if (action.equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)) {
                     mView.onClickHomeKey();
+                    dismissIntroduceDialog();
                     return;
                 }
             }
@@ -469,6 +477,9 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         mContext.registerReceiver(mHomeReceivcer, filter);
     }
 
+    /**
+     * 取消注册监听
+     */
     public void unRegiestr() {
         if (mInstalledReceiver != null) {
             mContext.unregisterReceiver(mInstalledReceiver);
@@ -478,5 +489,19 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             mContext.unregisterReceiver(mHomeReceivcer);
             mHomeReceivcer = null;
         }
+    }
+
+    @Override
+    public void release() {
+        DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(Url));
+        if (downloadTask != null) {
+            mDownloadManager.removeDownloadListener(downloadTask, this);
+            mDownloadManager.removeAppInstallListener(this);
+        }
+        if (mAppDetailCall != null) {
+            mAppDetailCall.cancel();
+        }
+        dismissIntroduceDialog();
+        unRegiestr();
     }
 }

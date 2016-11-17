@@ -21,7 +21,7 @@ public interface SpecialContract {
 
     public static interface SubjectView extends BaseView<SpecialPresenter>{
         void refreshData(List<SpecialTopic> datas);
-        void refreshRowNum(String formatRow);
+        void refreshRowNum(CharSequence formatRow);
         void showNoDataView();
         void showRetryView();
         void hideRetryView();

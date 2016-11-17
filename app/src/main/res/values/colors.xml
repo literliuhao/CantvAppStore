@@ -76,4 +76,11 @@
     <color name="tv_menu_guanli_color">#80FFFFFF</color>
     <color name="myapps_custom_item_textbg">#E6CB8021</color>
     <color name="myapps_custom_item_iconsbg">#99FFFFFF</color>
+    <!--消息中心色值-->
+    <color name="msg_bg">#2D313A</color>
+    <color name="msg_yellow">#F0D625</color>
+    <color name="msg_rect_gray">#42464E</color>
+    <color name="msg_white_80">#CCFFFFFF</color>
+    <color name="msg_white_50">#80FFFFFF</color>
+
 </resources>
