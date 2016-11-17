@@ -15,7 +15,6 @@ import com.can.appstore.myapps.model.MyAppsListDataUtil;
 import java.util.List;
 
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
-import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
@@ -38,7 +37,7 @@ public class SystemAppsActivity extends Activity {
 
 
     FocusMoveUtil mFocusMoveUtils;
-    FocusScaleUtil mFocusScaleUtil;
+//    FocusScaleUtil mFocusScaleUtil;
     View mFocusChild;
     MyFocusRunnable  mFocusRunnable;
 
@@ -46,8 +45,8 @@ public class SystemAppsActivity extends Activity {
         @Override
         public void run() {
             if(mFocusChild != null){
-                mFocusMoveUtils.startMoveFocus(mFocusChild,1.1f);
-                mFocusScaleUtil.scaleToLarge(mFocusChild);
+                mFocusMoveUtils.startMoveFocus(mFocusChild);
+//                mFocusScaleUtil.scaleToLarge(mFocusChild);
             }
         }
     }
@@ -71,7 +70,7 @@ public class SystemAppsActivity extends Activity {
                     mSystemRecyclerView.postDelayed(mFocusRunnable,50);
                     systemCurRows.setText(position / 5 + 1  + "/");
                 }else{
-                    mFocusScaleUtil.scaleToNormal();
+//                    mFocusScaleUtil.scaleToNormal();
                 }
             }
         });
@@ -108,7 +107,7 @@ public class SystemAppsActivity extends Activity {
         mSystemRecyclerView.setAdapter(mSystemAppsRvAdapter);
 
         mFocusMoveUtils = new FocusMoveUtil(this,getWindow().getDecorView(),R.drawable.btn_focus);
-        mFocusScaleUtil = new FocusScaleUtil();
+//        mFocusScaleUtil = new FocusScaleUtil();
         mFocusRunnable = new MyFocusRunnable();
     }
 

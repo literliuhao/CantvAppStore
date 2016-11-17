@@ -89,7 +89,7 @@ public interface ApiService {
     /**
      * 获取隐藏应用列表
      */
-    @GET
+    @GET("start/hidenApps")
     CanCall<ListResult<String>> getHiddenApps();
 
     /**

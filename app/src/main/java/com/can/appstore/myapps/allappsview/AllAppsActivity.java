@@ -16,7 +16,6 @@ import com.can.appstore.myapps.adapter.AllAppsRecyclerViewAdapter;
 import java.util.List;
 
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
-import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
@@ -38,7 +37,7 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
 
     //焦点框
     FocusMoveUtil focusMoveUtil;
-    FocusScaleUtil focusScaleUtil;
+//    FocusScaleUtil focusScaleUtil;
     private View mFocusedListChild;
     private MyFocusRunnable myFocusRunnable;
     private boolean focusSearchFailed;
@@ -70,7 +69,7 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
 
     private void initView() {
         focusMoveUtil = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
-        focusScaleUtil = new FocusScaleUtil();
+//        focusScaleUtil = new FocusScaleUtil();
         myFocusRunnable = new MyFocusRunnable();
         mAllAppsRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(this, 5, GridLayoutManager.VERTICAL, false), new CanRecyclerView.OnFocusSearchCallback() {
             @Override
@@ -198,11 +197,11 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
         @Override
         public void run() {
             if (mFocusedListChild != null) {
-                focusScaleUtil.scaleToLarge(mFocusedListChild);
+//                focusScaleUtil.scaleToLarge(mFocusedListChild);
                 if (focusSearchFailed) {
-                    focusMoveUtil.startMoveFocus(mFocusedListChild, 1.1f);
+                    focusMoveUtil.startMoveFocus(mFocusedListChild);
                 } else {
-                    focusMoveUtil.startMoveFocus(mFocusedListChild, 1.1f, 0);
+                    focusMoveUtil.startMoveFocus(mFocusedListChild, 0);
                 }
             }
         }
@@ -219,7 +218,7 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
                     int cur = mAllAppsPresenter.calculateCurRows(position);
                     tvCurRows.setText(cur + "/");
                 } else {
-                    focusScaleUtil.scaleToNormal();
+//                    focusScaleUtil.scaleToNormal();
                 }
             }
         };

@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
-import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
@@ -37,7 +36,7 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View{
 
     //焦点框
     FocusMoveUtil mFocusMoveUtil ;
-    FocusScaleUtil mFocusScaleUtil;
+//    FocusScaleUtil mFocusScaleUtil;
     View mFocusChild;
     MyFocusRunnable  mFocusRunnable;
     private boolean focusSearchFailed;
@@ -57,7 +56,7 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View{
         setContentView(R.layout.activity_myapps_addapps);
 
         mFocusMoveUtil = new FocusMoveUtil(this,getWindow().getDecorView(),R.drawable.btn_focus);
-        mFocusScaleUtil = new FocusScaleUtil();
+//        mFocusScaleUtil = new FocusScaleUtil();
         mFocusRunnable = new MyFocusRunnable();
 
         mAddAppsPresenter = new AddAppsPresenter(this,AddAppsActivity.this);
@@ -159,11 +158,11 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View{
         @Override
         public void run() {
             if(mFocusChild != null){
-                mFocusScaleUtil.scaleToLarge(mFocusChild);
+//                mFocusScaleUtil.scaleToLarge(mFocusChild);
                 if(focusSearchFailed){
-                    mFocusMoveUtil.startMoveFocus(mFocusChild,1.1f);
+                    mFocusMoveUtil.startMoveFocus(mFocusChild);
                 }else{
-                    mFocusMoveUtil.startMoveFocus(mFocusChild,1.1F,0);
+                    mFocusMoveUtil.startMoveFocus(mFocusChild,0);
                 }
             }
         }
@@ -190,11 +189,11 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View{
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    mFocusMoveUtil.startMoveFocus(addBut, 1.1f);
-                    mFocusScaleUtil.scaleToLarge(addBut);
+                    mFocusMoveUtil.startMoveFocus(addBut);
+//                    mFocusScaleUtil.scaleToLarge(addBut);
                     tv_curRows.setText("0");
                 } else {
-                    mFocusScaleUtil.scaleToNormal(addBut);
+//                    mFocusScaleUtil.scaleToNormal(addBut);
                 }
             }
         });
@@ -236,7 +235,7 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View{
                     int curRows =  mAddAppsPresenter.calculateCurRows(position);
                     tv_curRows.setText(""+curRows);
                 }else{
-                    mFocusScaleUtil.scaleToNormal();
+//                    mFocusScaleUtil.scaleToNormal();
                 }
             }
         });

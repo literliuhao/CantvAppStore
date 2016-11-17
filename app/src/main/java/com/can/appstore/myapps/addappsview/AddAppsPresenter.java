@@ -67,7 +67,6 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
                         addShowList.add(app);
                     }
                 }
-
                 return null;
             }
 
