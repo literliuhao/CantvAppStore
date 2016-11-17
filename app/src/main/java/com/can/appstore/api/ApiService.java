@@ -105,7 +105,7 @@ public interface ApiService {
      * 首页导航
      */
     @GET("homepage/homepage")
-    CanCall<Result<Navigation>> getNavigations();
+    CanCall<ListResult<Navigation>> getNavigations();
 
     /**
      * 获取消息
