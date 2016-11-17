@@ -38,6 +38,8 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * Created by wei on 2016/10/13.
  */
@@ -78,7 +80,7 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         mAppsRecyclerView.addItemDecoration(new CanRecyclerViewDivider(Color.TRANSPARENT, 10, 0));
 
         mMyAppsFramPresenter = new MyAppsFragPresenter(this, getContext());
-
+        mMyAppsFramPresenter.startLoad();
         return view;
     }
 
@@ -87,13 +89,13 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         Log.i("myappfragment","----onResume()");
         if (mMyAppsFramPresenter != null) {
             mMyAppsFramPresenter.addListener();
-            mMyAppsFramPresenter.startLoad();
         }
+
         super.onResume();
     }
 
     @Override
-    public void loadAddAppInfoSuccess(List<AppInfo> infoList,List<Drawable> mDrawbleList) {
+    public void loadAppInfoSuccess(List<AppInfo> infoList,List<Drawable> mDrawbleList) {
         mShowList = infoList;
         if(infoList.size()-2 < MyApp.myAppList.size() && infoList.size() < 18 && !infoList.get(infoList.size()-1).packageName .isEmpty()){
             infoList.add(new AppInfo("添加应用", getActivity().getResources().getDrawable(R.drawable.addapp_icon)));
@@ -175,6 +177,18 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         });
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(0 == requestCode && resultCode == RESULT_OK ){
+            Bundle bundle = data.getExtras();
+            boolean isAdd = bundle.getBoolean("isAdd");
+            if(isAdd){
+                mMyAppsFramPresenter.startLoad();
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
     public void showEditView(int position, View item) {
         if (dialog == null) {
