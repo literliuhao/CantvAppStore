@@ -10,7 +10,6 @@ package com.can.appstore;
  * ================================================
  */
 public class AppConstants {
-
 //    public static final String BASE_URL = "http://192.168.0.104:8088/CanAppStoreServer/";
     public static final String BASE_URL = "http://172.16.11.32:8011/api/";
 //    public static final String BASE_URL = "http://192.168.0.2:8088/CanAppStoreServer/";  //本地测试地址

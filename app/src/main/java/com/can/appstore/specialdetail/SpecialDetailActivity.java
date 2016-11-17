@@ -6,8 +6,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+
 import java.util.List;
 import com.can.appstore.R;
 import retrofit2.Response;
@@ -32,9 +36,11 @@ public class SpecialDetailActivity extends Activity {
     private ImageView mDetailImgBg;
     private View mCurrFocusView;
     private FocusMoveUtil mFocusMoveUtil;
-    private FocusScaleUtil mFocusScaleUtil;
     private Handler mHandler = new Handler();
     private List<AppInfo> mRecommdList;
+    private RelativeLayout mNetworkLayout;
+    private Button mRetryBtn;
+    private String mTopicId;
 
     public static void startAc(Context context) {
         Intent intent = new Intent(context, SpecialDetailActivity.class);
@@ -45,13 +51,32 @@ public class SpecialDetailActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_special_detail);
-        mCanRecyclerView = (CanRecyclerView) findViewById(R.id.special_detail_crview);
-        mDetailImgBg = (ImageView) findViewById(R.id.special_detail_img);
+        Intent intent = getIntent();
+        if(intent != null){
+            mTopicId = intent.getStringExtra("topicId");
+        }
+        mTopicId = TextUtils.isEmpty(mTopicId)?"14":mTopicId;
+        initView();
 
         //焦点工具初始化
         mFocusMoveUtil = new FocusMoveUtil(SpecialDetailActivity.this, getWindow().getDecorView(), R.mipmap.btn_focus);
-        mFocusScaleUtil = new FocusScaleUtil();
-        getAPPData();
+
+        requestTopicDetail();
+    }
+
+    private void initView() {
+        mNetworkLayout = (RelativeLayout) findViewById(R.id.network_retry_layout);
+        mCanRecyclerView = (CanRecyclerView) findViewById(R.id.special_detail_crview);
+        mDetailImgBg = (ImageView) findViewById(R.id.special_detail_img);
+        mRetryBtn = (Button) findViewById(R.id.network_retry_btn);
+        mRetryBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(v.getId()==R.id.network_retry_btn){
+                    requestTopicDetail();
+                }
+            }
+        });
     }
 
 
@@ -59,8 +84,7 @@ public class SpecialDetailActivity extends Activity {
         @Override
         public void run() {
             if (mCurrFocusView != null && mCurrFocusView.isFocused()) {
-                mFocusMoveUtil.startMoveFocus(mCurrFocusView, 1.1f);
-                mFocusScaleUtil.scaleToLarge(mCurrFocusView);
+                mFocusMoveUtil.startMoveFocus(mCurrFocusView);
             }
         }
     };
@@ -70,7 +94,7 @@ public class SpecialDetailActivity extends Activity {
      * 为 CanRecycleView 设置数据，适配器，布局
      */
     private void setRecyclerViewData() {
-
+        showNetworkRetryView(false);
         //设置 LayoutManager
         mCanRecyclerView.addItemDecoration(new CanRecyclerViewDivider(32));
         CanRecyclerView.CanLinearLayoutManager layoutManager = new CanRecyclerView.CanLinearLayoutManager(SpecialDetailActivity.this, CanRecyclerView.HORIZONTAL, false);
@@ -89,15 +113,14 @@ public class SpecialDetailActivity extends Activity {
 
     }
 
-    private void getAPPData() {
-        String specialId = "123";
-        mSpecialTopic = HttpManager.getApiService().getSpecialTopic(specialId);
+    private void requestTopicDetail() {
+        mSpecialTopic = HttpManager.getApiService().getSpecialTopic(mTopicId);
         mSpecialTopic.enqueue(new CanCallback<Result<SpecialTopic>>() {
             @Override
             public void onResponse(CanCall<Result<SpecialTopic>> call, Response<Result<SpecialTopic>> response) throws Exception {
                 Result<SpecialTopic> info = response.body();
                 if (info.getData() == null) {
-
+//                    showNetworkRetryView(true);
                     return;
                 }
                 ImageLoader.getInstance().load(SpecialDetailActivity.this, mDetailImgBg, info.getData().getBackground());
@@ -112,8 +135,16 @@ public class SpecialDetailActivity extends Activity {
                     mRecommdList = null;
                 }
                 //添加网络重试
+                showNetworkRetryView(true);
             }
         });
+    }
+
+    private void showNetworkRetryView(boolean isRetry){
+        mCanRecyclerView.setVisibility(isRetry?View.GONE:View.VISIBLE);
+        mDetailImgBg.setVisibility(isRetry?View.GONE:View.VISIBLE);
+        mNetworkLayout.setVisibility(isRetry?View.VISIBLE:View.GONE);
+
     }
 
     /**
@@ -136,8 +167,6 @@ public class SpecialDetailActivity extends Activity {
                     mCurrFocusView = view;
                     mHandler.removeCallbacks(mfocusMoveRunnable);
                     mHandler.postDelayed(mfocusMoveRunnable, 50);
-                } else {
-                    mFocusScaleUtil.scaleToNormal(view);
                 }
                 view.setSelected(hasFocus);
             }
@@ -162,6 +191,10 @@ public class SpecialDetailActivity extends Activity {
         super.onStop();
         if(mSpecialTopic!=null){
             mSpecialTopic.cancel();
+        }
+        if(mFocusMoveUtil != null){
+            mFocusMoveUtil.release();
+            mFocusMoveUtil = null;
         }
     }
 
