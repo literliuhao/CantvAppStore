@@ -73,12 +73,13 @@ public class MessageStartActivity extends AppCompatActivity {
                         msgInfo.setMsgExpires(msg.getExpires());
                         msgInfo.setMsgTitle(msg.getTitle());
                         msgInfo.setStatus(true);
-                        if (TextUtils.isEmpty(msg.getAction())){
+                        //异常数据处理
+                        if (TextUtils.isEmpty(msg.getAction()) || TextUtils.isEmpty(msg.getActionData())){
                             msgInfo.setAction("action_nothing");
                         }else{
-                            msgInfo.setAction(msg.getAction().trim());
+                            msgInfo.setAction(msg.getAction().trim());  //处理数据首尾空格（经测试会出现首尾有空格情况）
+                            msgInfo.setActionData(msg.getActionData());
                         }
-                        msgInfo.setActionData(msg.getActionData());
                         msgInfo.setUserId(NetworkUtils.getMac());
                         msgList.add(msgInfo);
                     }
@@ -91,36 +92,6 @@ public class MessageStartActivity extends AppCompatActivity {
                 Log.w(TAG, errorWrapper.getReason(), errorWrapper.getThrowable());
             }
         });
-
-     /*   //获取假数据
-        new Thread(){
-            @Override
-            public void run() {
-                try {
-                    sleep(4000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                final List<MessageInfo> msgList = new ArrayList<MessageInfo>();
-                MessageInfo msg;
-                for (int i = 1; i <= 20; i++) {
-                    msg = new MessageInfo();
-                    msg.setMsgId(System.currentTimeMillis() + i + "");
-                    msg.setMsgDate("2016-10-0"+i);
-                    msg.setMsgExpires(System.currentTimeMillis() / 1000 + 3600);  // 有效期一分钟
-                    msg.setMsgTitle("【下载专区】新版本发布，赶快升级体验");
-                    msg.setStatus(true);
-                    msg.setAction("action_nothing");
-                    msg.setActionData("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-                    msg.setUserId(NetworkUtils.getMac());
-                    msgList.add(msg);
-                }
-
-                final long timestamp = System.currentTimeMillis() / 1000;
-                MessageManager.deleteExceedMsg(timestamp); // 删除过期数据
-                MessageManager.insert(msgList);  //插入数据
-            }
-        }.start();*/
     }
 
     @Override

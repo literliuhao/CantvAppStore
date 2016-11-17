@@ -138,7 +138,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         });
         mAdapter.setOnMsgDeleteClickListener(new MessageAdapter.OnMsgDeleteClickListener() {
             @Override
-            public void onDeleteClick(View view, int position) {
+            public void onDeleteClick(View view, final int position) {
                 dbManager.deleteMsg(msgList.get(position));
                 int msgCount = msgList.size();
                 msgList.remove(position);
