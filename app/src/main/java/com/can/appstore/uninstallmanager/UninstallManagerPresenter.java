@@ -19,6 +19,7 @@ import com.can.appstore.uninstallmanager.csutom.CustomAsyncTaskLoader;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.downloadlib.utils.ShellUtils;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.SystemUtil;
@@ -41,32 +42,13 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     public UninstallManagerPresenter(UninstallManagerContract.View view, Context context) {
         this.mView = view;
         this.mContext = context;
+        addListener();
     }
 
     @Override
-    public void startLoad(LoaderManager supportLoaderManager) {
-        this.mLoaderManager = supportLoaderManager;
+    public void startLoad(LoaderManager loaderManager) {
+        this.mLoaderManager = loaderManager;
         mLoaderManager.initLoader(LOADER_ID, null, this);
-    }
-
-    @Override
-    public Loader<List<PackageUtil.AppInfo>> onCreateLoader(int id, Bundle args) {
-        Log.d(TAG, "onCreateLoader: " + " id : " + id);
-        mView.showLoadingDialog();
-        return new CustomAsyncTaskLoader(mContext, CustomAsyncTaskLoader.FILTER_THIRD_APP);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<PackageUtil.AppInfo>> loader, List<PackageUtil.AppInfo> data) {
-        Log.d(TAG, "onLoadFinished: " + "data :" + data.size());
-        mView.hideLoadingDialog();
-        mAppInfoList = data;
-        mView.loadAllAppInfoSuccess(mAppInfoList);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<List<PackageUtil.AppInfo>> loader) {
-        Log.d(TAG, "onLoaderReset: ");
     }
 
     @Override
@@ -130,6 +112,32 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
         return position / COLUMN_COUNT + 1;
     }
 
+    @Override
+    public Loader<List<PackageUtil.AppInfo>> onCreateLoader(int id, Bundle args) {
+        Log.d(TAG, "onCreateLoader: " + " id : " + id);
+        mView.showLoadingDialog();
+        return new CustomAsyncTaskLoader(mContext, CustomAsyncTaskLoader.FILTER_THIRD_APP);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<PackageUtil.AppInfo>> loader, List<PackageUtil.AppInfo> data) {
+        Log.d(TAG, "onLoadFinished: " + "data :" + data.size());
+        mView.hideLoadingDialog();
+        if (mAppInfoList == null) {
+            mAppInfoList = new ArrayList<>();
+        } else {
+            mAppInfoList.clear();
+        }
+        mAppInfoList.addAll(data);
+        mView.loadAllAppInfoSuccess(mAppInfoList);
+    }
+
+
+    @Override
+    public void onLoaderReset(Loader<List<PackageUtil.AppInfo>> loader) {
+        Log.d(TAG, "onLoaderReset: ");
+    }
+
     class AppInstallReceiver extends BroadcastReceiver {
 
         @Override
@@ -142,13 +150,12 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
             } else if (intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)) {
                 String packageName = intent.getData().getSchemeSpecificPart();
                 Log.d(TAG, "uninstall packageName : " + packageName);
+                calculateCurStoragePropgress();
+                refreshItemInListPosition(packageName);
                 if (mSelectPackageName != null) {
-                    refreshItemInListPosition(packageName);
                     if (mSelectPackageName.size() > 0) {
                         continueUninstall1();
                     }
-                } else {
-                    mLoaderManager.restartLoader(LOADER_ID, null, UninstallManagerPresenter.this);
                 }
             }
         }
@@ -200,5 +207,19 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
             mSelectPackageName = null;
         }
         mLoaderManager.destroyLoader(LOADER_ID);
+    }
+
+    /**
+     * 静默卸载
+     *
+     * @param packageName
+     */
+    public void silentUninstall(String appName, String packageName) {
+        ShellUtils.CommandResult res = ShellUtils.execCommand("pm uninstall -k " + packageName, false);
+        if (res.result == 0) {
+            mView.showToast(appName + mContext.getResources().getString(R.string.uninstall_success));
+        } else {
+            mView.showToast(appName + mContext.getResources().getString(R.string.uninstall_fail));
+        }
     }
 }

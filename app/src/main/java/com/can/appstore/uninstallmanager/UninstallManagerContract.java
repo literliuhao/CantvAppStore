@@ -1,7 +1,6 @@
 package com.can.appstore.uninstallmanager;
 
 import android.support.v4.app.LoaderManager;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 
 import com.can.appstore.appdetail.AppDetailContract;
@@ -19,7 +18,7 @@ import cn.can.tvlib.utils.PackageUtil;
 public interface UninstallManagerContract {
 
     interface Presenter extends BasePresenter {
-        void startLoad(LoaderManager supportLoaderManager);
+        void startLoad(LoaderManager loaderManager);
 
         void addListener();
 

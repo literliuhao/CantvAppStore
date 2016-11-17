@@ -227,13 +227,12 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
             clickRefreshButtonStatus(isClickUpdateButton, per);
             mDownloadManager.resume(MD5.MD5(Url));
+        } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {//TODO
+            if (downlaodErrorCode != DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR) {//重试
+                clickRefreshButtonStatus(isClickUpdateButton, per);
+                mDownloadManager.resume(MD5.MD5(Url));
+            }
         }
-        //        else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {//TODO
-        //            if (downlaodErrorCode != DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR) {//重试
-        //                clickRefreshButtonStatus(isClickUpdateButton, per);
-        //                mDownloadManager.resume(MD5.MD5(Url));
-        //            }
-        //        }
     }
 
     public void clickRefreshButtonStatus(boolean isClickUpdateButton, float per) {
@@ -422,7 +421,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
      *
      * @param currentIndex
      */
-    public void enterImageScaleActivity(int currentIndex) {// TODO  进入到图放大页面
+    public void enterImageScaleActivity(int currentIndex) {
         Intent intent = new Intent(mContext, ImageScaleActivity.class);
         intent.putExtra("imageUrl", (Serializable) mAppInfo.getThumbs());
         intent.putExtra("currentIndex", currentIndex);
@@ -497,6 +496,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(Url));
         if (downloadTask != null) {
             mDownloadManager.removeDownloadListener(downloadTask, this);
+            mDownloadManager.removeAppInstallListener(this);
         }
         if (mAppDetailCall != null) {
             mAppDetailCall.cancel();

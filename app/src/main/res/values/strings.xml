@@ -25,6 +25,8 @@
     <string name="select_app_count">已选择应用数</string>
     <string name="loading">加载中,请稍后</string>
     <string name="not_uinstall_data">暂无应用!</string>
+    <string name="uninstall_success">卸载成功</string>
+    <string name="uninstall_fail">卸载失败</string>
     <string name="rows_str">%1$d/%2$d行</string>
 
     <!--应用详情页-->

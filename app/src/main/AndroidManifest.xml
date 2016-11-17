@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.GET_PACKAGE_SIZE"/>
+    <uses-permission android:name="android.permission.DELETE_PACKAGES"/>
 
     <application
         android:name=".MyApp"
@@ -60,6 +61,7 @@
 
         <activity
             android:name=".uninstallmanager.UninstallManagerActivity"
+            android:theme="@style/AppTheme.Translucent.FadeIn"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.can.appstore.action.UNINSTALL_MANAGER"/>
@@ -70,6 +72,7 @@
 
         <activity
             android:name=".appdetail.AppDetailActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.can.appstore.action.APP_DETAIL"/>

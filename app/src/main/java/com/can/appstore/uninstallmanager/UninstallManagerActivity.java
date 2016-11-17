@@ -36,7 +36,6 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     public static final String TAG = "UninstallManagerActivi";
 
     private CanRecyclerView mCanRecyclerView;
-    private CanRecyclerView.LayoutManager mLayoutManager;
     private FocusMoveUtil mFocusMoveUtil;
     private FocusScaleUtil mScaleUtil;
     private UninstallManagerAdapter mUninstallManagerAdapter;
@@ -56,6 +55,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "===onCreate===");
         setContentView(R.layout.activity_uninstall_manager);
         mFocusMoveUtil = new FocusMoveUtil(UninstallManagerActivity.this, getWindow().getDecorView(), R.mipmap.btn_focus);
         mScaleUtil = new FocusScaleUtil();
@@ -69,9 +69,6 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     protected void onResume() {
         Log.d(TAG, "===onResume===");
         super.onResume();
-        if (mPresenter != null) {
-            mPresenter.addListener();
-        }
     }
 
     private void initView() {
@@ -252,7 +249,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
                 Log.d(TAG, "onSelectChanged = " + position + ",    " + selected);
                 PackageUtil.AppInfo info = (PackageUtil.AppInfo) data;
                 if (mSelectPackageName == null) {
-                    mSelectPackageName = new ArrayList<String>();
+                    mSelectPackageName = new ArrayList<>();
                 }
                 if (selected) {
                     mSelectPackageName.add(info.packageName);
@@ -272,7 +269,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             public void onClick(View view, int position, Object data) {
                 //进入普通点击事件  点击弹出卸载对话框 // TODO: 2016/11/14
                 PackageUtil.AppInfo info = (PackageUtil.AppInfo) data;
-                PackageUtil.unInstall(UninstallManagerActivity.this, info.packageName);
+                mPresenter.silentUninstall(info.appName, info.packageName);
             }
         });
 
