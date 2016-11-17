@@ -82,18 +82,6 @@
         android:visibility="gone"
         />
 
-    <ProgressBar
-        android:id="@+id/loading"
-        android:layout_width="@dimen/px136"
-        android:layout_height="@dimen/px136"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:layout_centerInParent="true"
-        android:indeterminateDrawable="@drawable/msg_loading_rotate"
-        android:indeterminateOnly="true"
-        android:indeterminateBehavior="repeat"
-        />
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/id_recyclerview"
         android:layout_width="match_parent"

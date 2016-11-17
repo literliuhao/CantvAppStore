@@ -3,6 +3,7 @@ package com.can.appstore.message;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -15,6 +16,7 @@ import com.can.appstore.message.manager.MessageManager;
  */
 public class MessageHomeActivity extends Activity implements View.OnClickListener {
 
+    private final String TAG = "MessageHomeActivity";
     private ImageView   btnMsg ;
     private ImageView   dotMsg ;
 
@@ -24,6 +26,7 @@ public class MessageHomeActivity extends Activity implements View.OnClickListene
         setContentView(R.layout.activity_msg_home);
         initView();
         initData();
+        initMsgListener();
     }
 
     @Override
@@ -38,9 +41,24 @@ public class MessageHomeActivity extends Activity implements View.OnClickListene
         btnMsg.setOnClickListener(this);
     }
 
+    /**
+     * 消息更新回调
+     * */
+    private void  initMsgListener(){
+        MessageManager.setCallMsgDataUpdate(new MessageManager.CallMsgDataUpdate() {
+            @Override
+            public void onUpdate() {
+                Log.i(TAG , "有新的消息数据了");
+                dotMsg.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
     private void initData(){
-        if (!MessageManager.existUnreadMsg()){
-            dotMsg.setVisibility(View.GONE);
+        if (MessageManager.existUnreadMsg()){
+            dotMsg.setVisibility(View.VISIBLE);
+        }else {
+            dotMsg.setVisibility(View.INVISIBLE);
         }
     }
 
