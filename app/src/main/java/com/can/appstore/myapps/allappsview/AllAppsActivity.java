@@ -1,6 +1,7 @@
 package com.can.appstore.myapps.allappsview;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.myapps.adapter.AllAppsRecyclerViewAdapter;
+import com.can.appstore.widgets.CanDialog;
 
 import java.util.List;
 
@@ -37,7 +39,7 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
 
     //焦点框
     FocusMoveUtil focusMoveUtil;
-//    FocusScaleUtil focusScaleUtil;
+    //    FocusScaleUtil focusScaleUtil;
     private View mFocusedListChild;
     private MyFocusRunnable myFocusRunnable;
     private boolean focusSearchFailed;
@@ -69,7 +71,7 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
 
     private void initView() {
         focusMoveUtil = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
-//        focusScaleUtil = new FocusScaleUtil();
+        //        focusScaleUtil = new FocusScaleUtil();
         myFocusRunnable = new MyFocusRunnable();
         mAllAppsRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(this, 5, GridLayoutManager.VERTICAL, false), new CanRecyclerView.OnFocusSearchCallback() {
             @Override
@@ -116,8 +118,10 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
             }
         }, 50);
     }
+
     Button butStrartapp;
-    Button  butUninstall;
+    Button butUninstall;
+
     private void editItem(final View item, final int position) {
 
         butStrartapp.requestFocus();
@@ -131,8 +135,8 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
         butStrartapp.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int keyCode, KeyEvent event) {
-                if(butUninstall.getVisibility() == View.GONE){
-                    if(keyCode == KeyEvent.KEYCODE_DPAD_DOWN){
+                if (butUninstall.getVisibility() == View.GONE) {
+                    if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
                         return true;
                     }
                 }
@@ -150,8 +154,7 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
         butUninstall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CanD
-                mAllAppsPresenter.uninstallApp(position);
+                mAllAppsPresenter.getUninstallAppInfo(position);
                 hideEditView(item);
             }
         });
@@ -168,6 +171,47 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
                 return false;
             }
         });
+    }
+
+    CanDialog mCanDialog;
+
+    @Override
+    public void showUninstallDialog(AppInfo app) {
+        String ok = "确定";
+        String cancle = "取消";
+        String makesureUninstall = "您确定删除该应用吗？";
+        Drawable mIcon = app.appIcon;
+        final String mName = app.appName;
+        final String mPackName = app.packageName;
+        mCanDialog = new CanDialog(this);
+        mCanDialog.setmIvDialogTitle(mIcon)
+                .setmTvDialogTitle(mName)
+                .setmTvDialogTopLeftContent(makesureUninstall)
+                .setmBtnDialogNegative(cancle)
+                .setmBtnDialogPositive(ok)
+                .setOnCanBtnClickListener(new CanDialog.OnCanBtnClickListener() {
+                    @Override
+                    public void onClickPositive() {
+                        silentUninstall(mName, mPackName);
+                        dismissUninstallDialog();
+                    }
+
+                    @Override
+                    public void onClickNegative() {
+                        dismissUninstallDialog();
+                    }
+                });
+        mCanDialog.show();
+    }
+
+    private void dismissUninstallDialog() {
+        if (mCanDialog != null) {
+            mCanDialog.dismiss();
+        }
+    }
+
+    private void silentUninstall(String name, String packname) {
+
     }
 
 
@@ -198,7 +242,7 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
         @Override
         public void run() {
             if (mFocusedListChild != null) {
-//                focusScaleUtil.scaleToLarge(mFocusedListChild);
+                //                focusScaleUtil.scaleToLarge(mFocusedListChild);
                 if (focusSearchFailed) {
                     focusMoveUtil.startMoveFocus(mFocusedListChild);
                 } else {
@@ -219,7 +263,7 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
                     int cur = mAllAppsPresenter.calculateCurRows(position);
                     tvCurRows.setText(cur + "/");
                 } else {
-//                    focusScaleUtil.scaleToNormal();
+                    //                    focusScaleUtil.scaleToNormal();
                 }
             }
         };
@@ -236,9 +280,9 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
                 butStrartapp = (Button) ll_edit.findViewById(R.id.allapps_but_startapp);
                 butUninstall = (Button) ll_edit.findViewById(R.id.allapps_but_uninstallapp);
                 ll_edit.setVisibility(View.VISIBLE);
-                if(allAppList.get(position).isSystemApp){
+                if (allAppList.get(position).isSystemApp) {
                     butUninstall.setVisibility(View.GONE);
-                }else{
+                } else {
                     butUninstall.setVisibility(View.VISIBLE);
                 }
                 editItem(v, position);

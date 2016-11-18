@@ -2,7 +2,7 @@ package com.can.appstore.widgets;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.text.TextUtils;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -121,9 +121,9 @@ public class CanDialog extends Dialog {
         return this;
     }
 
-    public CanDialog setmIvDialogTitle(int imgResId) {
+    public CanDialog setmIvDialogTitle(Drawable drawable) {
         this.mIvDialogTitle.setVisibility(View.VISIBLE);
-        this.mIvDialogTitle.setImageResource(imgResId);
+        this.mIvDialogTitle.setImageDrawable(drawable);
         return this;
     }
 

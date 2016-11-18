@@ -133,8 +133,10 @@ public class AllAppsPresenter implements AllAppsContract.Presenter {
         }
     }
 
+
+
     class AppInstallReceiver extends BroadcastReceiver {
-        @Override
+
         public void onReceive(Context context, Intent intent) {
             // 接收广播：设备上新安装了一个应用程序包后自动启动新安装应用程序。
             if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)) {
@@ -156,6 +158,10 @@ public class AllAppsPresenter implements AllAppsContract.Presenter {
                 mView.loadAllAppInfoSuccess(allAppsList);
             }
         }
+    }
+
+    public void getUninstallAppInfo(int position){
+        mView.showUninstallDialog(allAppsList.get(position));
     }
 
     /**
