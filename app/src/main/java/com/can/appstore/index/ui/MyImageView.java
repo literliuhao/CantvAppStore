@@ -33,7 +33,7 @@ public class MyImageView extends ImageView {
     public MyImageView(Context context) {
         super(context);
         mContext = context;
-        setScaleType(ScaleType.FIT_XY);
+        setScaleType(ScaleType.CENTER_CROP);
         cornerRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, 40, context.getResources().getDisplayMetrics());
         mRect = new RectF();
         path = new Path();
@@ -103,13 +103,12 @@ public class MyImageView extends ImageView {
         ImageLoader.getInstance().buildTask(this, s).bitmapTransformation(new GlideRoundTransform(mContext, 25)).placeholder(R.mipmap.icon_load_default).errorHolder(R.mipmap.icon_loading_fail).successCallback(new GlideLoadTask.SuccessCallback() {
             @Override
             public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-//                finalImageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 MyImageView.this.setImageDrawable(resource);
+//                MyImageView.this.setScaleType(ScaleType.CENTER_CROP);
                 return true;
             }
         }).build().start(mContext);
 
-//        ImageLoader.getInstance().buildTask(viewHolder.mAppImgView, appInfo.getIcon()).bitmapTransformation(new GlideRoundTransform(mContext, 12)).build().start(mContext);
 
     }
 }

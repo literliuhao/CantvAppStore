@@ -13,8 +13,6 @@ import com.can.appstore.entity.Layout;
 import com.can.appstore.entity.Navigation;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 
-import cn.can.tvlib.imageloader.ImageLoader;
-import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 import cn.can.tvlib.utils.DisplayUtil;
 
 /**
@@ -86,9 +84,9 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
         FrameLayout.LayoutParams layoutParams;
         for (int j = 0; j < mNavigation.getLayout().size(); j++) {
             final Layout childBean = mNavigation.getLayout().get(j);
-            MyImageView myImageView = new MyImageView(getActivity());
+            final MyImageView myImageView = new MyImageView(getActivity());
             myImageView.setId(j);
-//            myImageView.setImageURI(childBean.getIcon());
+            myImageView.setImageURI(childBean.getIcon());
             myImageView.setColour(bodeColor);
             myImageView.setBorder(2);
             myImageView.setFocusable(true);
@@ -103,9 +101,16 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
                 }
             });
 
+//            ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, 25)).build().start(context);
 
-            ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, 25)).build().start(context);
-
+//            ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, 25)).placeholder(R.mipmap.icon_load_default).errorHolder(R.mipmap.icon_loading_fail).successCallback(new GlideLoadTask.SuccessCallback() {
+//                @Override
+//                public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+////                    myImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+//                    myImageView.setImageDrawable(resource);
+//                    return true;
+//                }
+//            }).build().start(context);
 
             layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             myImageView.setLeft(childBean.getX());
@@ -131,7 +136,8 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
             layoutBean.setY((int) ((converNavigation.getBaseHeight() * layoutBean.getY() * scale) + (converNavigation.getLineSpace() * scale) * layoutBean.getY()));
             layoutBean.setWidth((int) (((converNavigation.getBaseWidth() * layoutBean.getWidth()) * scale) + (((layoutBean.getWidth() - 1) * converNavigation.getLineSpace()) * scale)));
             layoutBean.setHeight((int) (((converNavigation.getBaseHeight() * layoutBean.getHeight()) * scale) + (((layoutBean.getHeight() - 1) * converNavigation.getLineSpace()) * scale)));
-        } return converNavigation;
+        }
+        return converNavigation;
     }
 
     private void markLastView(MyImageView mView) {

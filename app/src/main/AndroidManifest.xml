@@ -27,7 +27,11 @@
         <activity android:name=".PortalActivity">
 
         </activity>
-        <activity android:name=".search.SearchActivity"></activity>
+        <activity android:name=".search.SearchActivity">
+            <intent-filter>
+                <action android:name="com.can.appstore.ACTION.ACTIVITY_SEARCH"/>
+            </intent-filter>
+        </activity>
         <activity android:name=".specialdetail.SpecialDetailActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION.TOPIC_DETAIL"/>

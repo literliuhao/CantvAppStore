@@ -43,7 +43,6 @@ public class SpecialDetailAdapter extends CanRecyclerViewAdapter<AppInfo>{
     @Override
     protected void bindContentData(AppInfo appInfo, RecyclerView.ViewHolder holder, int position) {
         MyViewHolder viewHolder = (MyViewHolder) holder;
-        ImageLoader.getInstance().load(mContext, viewHolder.mAppImgView, appInfo.getIcon());
         ImageLoader.getInstance().buildTask(viewHolder.mAppImgView, appInfo.getIcon()).bitmapTransformation(new
                 GlideRoundTransform(mContext,12)).build().start(mContext);
         viewHolder.mAppNameView.setText(appInfo.getName());
