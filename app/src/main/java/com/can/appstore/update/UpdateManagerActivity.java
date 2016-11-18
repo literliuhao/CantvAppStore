@@ -2,20 +2,15 @@ package com.can.appstore.update;
 
 import android.app.Activity;
 import android.app.Dialog;
-
 import android.os.Bundle;
-
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
-
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -23,22 +18,16 @@ import android.widget.Toast;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
-
 import com.can.appstore.installpkg.utils.InstallPkgUtils;
 import com.can.appstore.installpkg.view.LoadingDialog;
 import com.can.appstore.update.model.AppInfoBean;
-
-import com.can.appstore.wights.CanDialog;
-
+import com.can.appstore.widgets.CanDialog;
 
 import java.util.List;
 
-
-import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
-
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
@@ -422,21 +411,21 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
 
     private void initDialog(String str) {
         canDialog = new CanDialog(UpdateManagerActivity.this);
-        canDialog.showDialogForUpdateSetting("更新设置", "开启后将自动更新", str, "", "开启", "关闭", new CanDialog.OnCanBtnClickListener() {
-            @Override
-            public void onClickPositive() {
-                PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", true);
-                mAutoUpdate = true;
-                canDialog.dismiss();
-            }
-
-            @Override
-            public void onClickNegative() {
-                PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", false);
-                mAutoUpdate = false;
-                canDialog.dismiss();
-            }
-        });
+//        canDialog.showDialogForUpdateSetting("更新设置", "开启后将自动更新", str, "", "开启", "关闭", new CanDialog.OnCanBtnClickListener() {
+//            @Override
+//            public void onClickPositive() {
+//                PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", true);
+//                mAutoUpdate = true;
+//                canDialog.dismiss();
+//            }
+//
+//            @Override
+//            public void onClickNegative() {
+//                PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", false);
+//                mAutoUpdate = false;
+//                canDialog.dismiss();
+//            }
+//        });
         canDialog.show();
     }
 
