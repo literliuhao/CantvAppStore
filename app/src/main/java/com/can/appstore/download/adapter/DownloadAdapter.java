@@ -45,7 +45,6 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
     private List<DownloadTask> data;
     private ItemEventListener mHolderItemEventListener;
     private LayoutInflater mLayoutInflater;
-    private RecyclerView mRecyclerView;
 
     public DownloadAdapter(List<DownloadTask> datas) {
         super(datas);
@@ -81,7 +80,6 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
-        mRecyclerView = recyclerView;
     }
 
 
@@ -90,7 +88,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
      */
     public static class DownloadViewHolder extends RecyclerView.ViewHolder {
 
-        public static final int DELAY_MILLIS = 50;
+        public static final int DELAY_MILLIS = 100;
 
         TextView appNameTv, appSizeTv, appDownloadStatusTv;
         ImageView appIconImgVi;

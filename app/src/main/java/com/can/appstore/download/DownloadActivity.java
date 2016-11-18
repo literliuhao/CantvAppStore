@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -20,6 +21,8 @@ import cn.can.downloadlib.DownloadTask;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
+
+import static com.can.appstore.applist.AppListActivity.MIN_DOWN_INTERVAL;
 
 public class DownloadActivity extends BaseActivity implements DownloadContract.DownloadView {
 
@@ -47,6 +50,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
 
     private boolean focusMoveEnable = true;
     private int focusResolvePos = 0;
+    private long mTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -350,5 +354,23 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
                 mFocusMoveUtil.setFocusView(mPauseAllBtn);
             }
         });
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            long time = System.currentTimeMillis();
+            if (mTime == 0) {
+                mTime = System.currentTimeMillis();
+                return super.dispatchKeyEvent(event);
+            } else if (time - mTime < MIN_DOWN_INTERVAL) {
+                Log.d(TAG, "dispatchKeyEvent: " + System.currentTimeMillis());
+                return true;
+            } else {
+                mTime = System.currentTimeMillis();
+            }
+        }
+        return super.dispatchKeyEvent(event);
     }
 }

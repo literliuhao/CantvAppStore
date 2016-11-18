@@ -43,7 +43,7 @@ public class SpecialPresenterImpl implements SpecialContract.SpecialPresenter {
     public SpecialPresenterImpl(SpecialContract.SubjectView view) {
         mView = view;
         mView.setPresenter(this);
-        mHandler=new Handler();
+        mHandler = new Handler();
     }
 
     @Override
@@ -88,7 +88,7 @@ public class SpecialPresenterImpl implements SpecialContract.SpecialPresenter {
                         mView.hideLoadingDialog();
                         mView.showRetryView();
                     }
-                },DELAY_MILLIS);
+                }, DELAY_MILLIS);
             }
         });
     }
@@ -121,7 +121,7 @@ public class SpecialPresenterImpl implements SpecialContract.SpecialPresenter {
     @Override
     public void remindNoData() {
         if (isFocusedLastRow && !hasMoreData()) {
-           mView.showToast(R.string.no_more_data);
+            mView.showToast(R.string.no_more_data);
         }
     }
 
@@ -158,7 +158,7 @@ public class SpecialPresenterImpl implements SpecialContract.SpecialPresenter {
                             mView.onLoadMore(lastVisiablePos + 1, mSpecialTopics.size() - 1);
                             pageNumber++;
                         }
-                    },DELAY_MILLIS);
+                    }, DELAY_MILLIS);
                 }
 
                 @Override
@@ -169,7 +169,7 @@ public class SpecialPresenterImpl implements SpecialContract.SpecialPresenter {
                             mView.hideLoadingDialog();
                             mView.showToast(R.string.load_data_faild);
                         }
-                    },DELAY_MILLIS);
+                    }, DELAY_MILLIS);
                 }
             });
         }
