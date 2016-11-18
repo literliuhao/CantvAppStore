@@ -5,15 +5,6 @@ android {
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
 
-    signingConfigs {
-        appstore {
-            keyAlias = '828'
-            storePassword = 'launcher.cantv.cn'
-            keyPassword = 'launcher.cantv.cn'
-            storeFile = project.file('H:\\签名包和jar包\\launcher.jks')
-        }
-    }
-
     defaultConfig {
         applicationId "com.can.appstore"
         minSdkVersion 19
@@ -25,8 +16,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            debuggable true
-            signingConfig signingConfigs.appstore
         }
     }
 

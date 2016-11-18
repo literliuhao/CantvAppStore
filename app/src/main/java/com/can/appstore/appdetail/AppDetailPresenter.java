@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.CustomDialog;
+import com.can.appstore.appdetail.tempfile.CanDialog;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.Result;
 import com.can.appstore.http.CanCall;
@@ -26,16 +27,12 @@ import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
 import cn.can.downloadlib.utils.SdcardUtils;
-import cn.can.downloadlib.utils.ShellUtils;
 import cn.can.tvlib.utils.ApkUtils;
 import cn.can.tvlib.utils.MD5Util;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtils;
-import cn.can.tvlib.utils.ToastUtils;
 import retrofit2.Response;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 /**
  * Created by JasonF on 2016/10/25.
@@ -72,6 +69,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     private String mInstallApkFileMD5 = "";
     private String mInstallApkPath = "";
     private boolean isInstalling = false;
+    private CanDialog mCanDialog;
 
     public AppDetailPresenter(AppDetailContract.View view, Context context, Intent intent) {
         this.mView = view;
@@ -158,6 +156,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, DOWNLOAD_INIT_PROGRESS);
             } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {
                 mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
+            } else if (downloadStatus == AppInstallListener.APP_INSTALLING) {
+                mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
             } else if (downloadStatus == AppInstallListener.APP_INSTALL_FAIL) {  //安装失败  重试
                 mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, DOWNLOAD_INIT_PROGRESS);
             }
@@ -192,12 +192,14 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, per);
             } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {
                 mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
+            } else if (downloadStatus == AppInstallListener.APP_INSTALLING) {
+                mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
             } else if (downloadStatus == AppInstallListener.APP_INSTALL_FAIL) {//安装失败  重试
                 mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, DOWNLOAD_INIT_PROGRESS);
+                addDownlaodListener();
+            } else {
+                mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_UPDATE, DOWNLOAD_INIT_PROGRESS);
             }
-            addDownlaodListener();
-        } else {
-            mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_UPDATE, DOWNLOAD_INIT_PROGRESS);
         }
     }
 
@@ -208,6 +210,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
      * @param totalSize
      * @return
      */
+
     public float calculatorPercent(long completedSize, long totalSize) {
         float per = totalSize == 0 ? 0 : (float) (completedSize * 100f / totalSize);
         return per;
@@ -239,7 +242,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             return;
         } else if (isInstalling) { //任务不存在，但安装包还存在，任务正在安装
             return;
-        } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_COMPLETED && !ApkUtils.isAvailable(mContext, mPackageName)) {//完成 , 并且正在安装时不能点击
+        } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_COMPLETED || downloadStatus == AppInstallListener.APP_INSTALLING) {//完成 , 并且正在安装时不能点击
             return;
         } else if (!NetworkUtils.isNetworkConnected(mContext)) { // 网络连接断开时不能点击
             mView.showToast(mContext.getResources().getString(R.string.network_connection_disconnect));
@@ -250,7 +253,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 return;
             } else {
                 mView.showToast(mContext.getResources().getString(R.string.pares_install_apk_fail));
-                //                mDownloadManager.removeTask(mTaskId);
+                //                mDownloadManager.removeTask(mTaskId);  // 应该需要从任务中移除
                 downloadStatus = DownloadStatus.DOWNLOAD_STATUS_INIT;
             }
         }
@@ -388,6 +391,16 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     @Override
     public void onInstallFail(String id) {
         Log.d(TAG, "onInstallFail: " + id);
+    }
+
+    @Override
+    public void onUninstallSucess(String id) {
+
+    }
+
+    @Override
+    public void onUninstallFail(String id) {
+
     }
 
 
@@ -550,6 +563,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             mAppDetailCall.cancel();
         }
         dismissIntroduceDialog();
+        dismissInsufficientStorageSpaceDialog();
         unRegiestr();
     }
 
@@ -558,25 +572,42 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
      *
      * @param appName
      */
-    public void silentInstall(final String appName) {
-        isInstalling = true;
-        mInstallApkPath = INSTALL_PATH + mTaskId;
+    public void silentInstall(String appName) {
+        Log.d(TAG, "silentInstall ");
         if (SdcardUtils.getApkInstallDirSzie(mContext) <= (mLimitInstallSace + mAppInfo.getSize() * 1.5)) {  // 安装内存不足
-            String msg = String.format(mContext.getResources().getString(R.string.install_faild_memory_lack), appName);
-            ToastUtils.showMessage(mContext, msg);
+            showInsufficientStorageSpaceDialog();
             return;
         }
-        Log.d(TAG, "silentInstall: installing");
+        isInstalling = true;
         refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
-        new Thread() {
+        mDownloadManager.install(mDownloadManager.getCurrentTaskById(mTaskId));
+    }
+
+    /**
+     * 显示内存不足安装失败的提示框
+     */
+    public void showInsufficientStorageSpaceDialog() {
+        String title = mContext.getResources().getString(R.string.space_inequacy);
+        String ok = mContext.getResources().getString(R.string.ok);
+        String hint = mContext.getResources().getString(R.string.space_inequacy_hint);
+        mCanDialog = new CanDialog(mContext);
+        mCanDialog.setmTvDialogTitle(title).setmTvDialogTopLeftContent(hint).setmBtnDialogPositive(ok).setOnCanBtnClickListener(new CanDialog.OnCanBtnClickListener() {
             @Override
-            public void run() {
-                ShellUtils.CommandResult res = ShellUtils.execCommand("pm install " + mInstallApkPath, false);
-                if (res.result == 0) {
-                    ToastUtils.showMessage(mContext, appName + mContext.getResources().getString(R.string.install_success));
-                } else
-                    ToastUtils.showMessage(mContext, appName + mContext.getResources().getString(R.string.install_fail));
+            public void onClickPositive() {
+                dismissInsufficientStorageSpaceDialog();
             }
-        }.start();
+
+            @Override
+            public void onClickNegative() {
+
+            }
+        });
+        mCanDialog.show();
+    }
+
+    public void dismissInsufficientStorageSpaceDialog() {
+        if (mCanDialog != null) {
+            mCanDialog.dismiss();
+        }
     }
 }
