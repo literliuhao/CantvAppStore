@@ -28,6 +28,8 @@
             android:gravity="center_horizontal"
             android:textSize="@dimen/fontsize_32"
             android:textColor="@color/app_name_color"
+            android:singleLine="true"
+            android:ellipsize="end"
             />
 
     </LinearLayout>
