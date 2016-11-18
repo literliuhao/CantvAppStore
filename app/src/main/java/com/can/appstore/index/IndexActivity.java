@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.can.appstore.R;
 import com.can.appstore.entity.ListResult;
 import com.can.appstore.entity.Navigation;
+import com.can.appstore.homerank.HomeRankFragment;
 import com.can.appstore.http.CanCall;
 import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
@@ -23,7 +24,6 @@ import com.can.appstore.index.interfaces.IOnPagerListener;
 import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.index.ui.FragmentBody;
 import com.can.appstore.index.ui.ManagerFragment;
-import com.can.appstore.index.ui.ManagerFragmentTest;
 import com.can.appstore.index.ui.TitleBar;
 import com.can.appstore.myapps.ui.MyAppsFragment;
 
@@ -137,12 +137,14 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 //            fragment.setTargetFragment(fragment, i);
             mFragmentLists.add(fragment);
         }
+
+        HomeRankFragment homeRankFragment = new HomeRankFragment(this);
         //排行、管理、我的应用、不受服务器后台配置，因此手动干预位置
-        ManagerFragmentTest topFragment = new ManagerFragmentTest(this);
+//        ManagerFragmentTest topFragment = new ManagerFragmentTest(this);
         if (mFragmentLists.size() > 0) {
-            mFragmentLists.add(TOP_INDEX, topFragment);
+            mFragmentLists.add(TOP_INDEX, homeRankFragment);
         } else {
-            mFragmentLists.add(topFragment);
+            mFragmentLists.add(homeRankFragment);
         }
         ManagerFragment managerFragment = new ManagerFragment(this);
         mFragmentLists.add(managerFragment);

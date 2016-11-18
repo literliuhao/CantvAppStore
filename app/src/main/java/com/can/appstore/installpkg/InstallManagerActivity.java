@@ -26,6 +26,7 @@ import com.can.appstore.installpkg.view.LoadingDialog;
 import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.update.UpdateManagerActivity;
 import com.can.appstore.update.utils.UpdateUtils;
+import com.can.appstore.widgets.CanDialog;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
+import cn.can.tvlib.utils.PreferencesUtils;
 
 
 /**
@@ -69,6 +71,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
     private String mCurPackageName = "";//当前包名
     private String mCurVersionCode = "";//当前版本号
     private InstallPresenter mPresenter;
+    private CanDialog canDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +113,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
                         String packageName = intent.getDataString().substring(8);
                         //刷新图标（可能多重版本）通过广播获取安装完成刷新ui  +&& bean.getVersionCode().equals(String.valueOf(versonCode))
                         int versonCode = UpdateUtils.getVersonCode(MyApp.mContext, packageName);
-                        mPresenter.isInstalled(packageName,versonCode);
+                        mPresenter.isInstalled(packageName);
                         Toast.makeText(MyApp.mContext, packageName + "安装成功", Toast.LENGTH_LONG).show();
                     } else if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
                         Toast.makeText(MyApp.mContext, "安装失败", Toast.LENGTH_LONG).show();
@@ -239,7 +242,8 @@ public class InstallManagerActivity extends Activity implements InstallContract.
                 /*Toast.makeText(InstallManagerActivity.this, position + 1 + "/" + mDatas.size(),
                         Toast.LENGTH_SHORT).show();*/
                 //mCurrentPositon = position;
-                showMenu(view, position);
+                //showMenu(view, position);
+                initDialog(view,position);
             }
         });
     }
@@ -355,52 +359,10 @@ public class InstallManagerActivity extends Activity implements InstallContract.
      * @param position
      */
     private void showMenu(final View view, final int position) {
-        deleteLayout = (RelativeLayout) view.findViewById(R.id.rl_installpkg_delete);
-        final TextView mInstalling = (TextView) view.findViewById(R.id.tv_install_installing);
-        if (deleteLayout != null) {
-            if (deleteLayout.getVisibility() != View.VISIBLE) {
-                isVisibility = true;
-                deleteLayout.setVisibility(View.VISIBLE);
-            } else if (deleteLayout.getVisibility() == View.VISIBLE) {
-                isVisibility = false;
-                deleteLayout.setVisibility(View.INVISIBLE);
-                return;
-            }
 
-        }
         final Button start = (Button) view.findViewById(R.id.bt_installpkg_start);
         final Button delete = (Button) view.findViewById(R.id.bt_installpkg_delete);
-        start.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus) {
-                    mFocusMoveUtil.startMoveFocus(start, 1.1f);
-                    mFocusScaleUtil.scaleToLarge(start);
-                } else {
-                    mFocusScaleUtil.scaleToNormal(start);
-                }
-            }
-        });
-        delete.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus) {
-                    mFocusMoveUtil.startMoveFocus(delete, 1.1f);
-                    mFocusScaleUtil.scaleToLarge(delete);
-                } else {
-                    mFocusScaleUtil.scaleToNormal(delete);
-                }
-            }
-        });
-        start.requestFocus();
-        start.setNextFocusDownId(R.id.bt_installpkg_delete);
-        start.setNextFocusUpId(R.id.bt_installpkg_start);
-        start.setNextFocusLeftId(R.id.bt_installpkg_start);
-        start.setNextFocusRightId(R.id.bt_installpkg_start);
-        delete.setNextFocusUpId(R.id.bt_installpkg_start);
-        delete.setNextFocusDownId(R.id.bt_installpkg_delete);
-        delete.setNextFocusRightId(R.id.bt_installpkg_delete);
-        delete.setNextFocusLeftId(R.id.bt_installpkg_delete);
+
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -415,7 +377,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             public void onClick(View view) {
                 deleteLayout.setVisibility(View.INVISIBLE);
                 //开始安装应用，安装键
-                mInstalling.setVisibility(View.VISIBLE);
+                //mInstalling.setVisibility(View.VISIBLE);
                 isVisibility = false;
                 mPresenter.installApk(position);
             }
@@ -435,7 +397,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (isVisibility) {
                 deleteLayout.setVisibility(View.INVISIBLE);
-                isVisibility = false;
+                //isVisibility = false;
                 //mRecyclerView.requestFocus();
                 return true;
             } else {
@@ -454,4 +416,38 @@ public class InstallManagerActivity extends Activity implements InstallContract.
         startActivity(new Intent(this, UpdateManagerActivity.class));
     }
 
+    private void initDialog(final View view,final int position) {
+        canDialog = new CanDialog(InstallManagerActivity.this);
+        AppInfoBean bean = mPresenter.getItem(position);
+        if (bean != null) {
+            //int imageId,String title,String positive,String cancel   .setmIvDialogTitle(bean.getIcon())
+            canDialog.setmTvDialogTitle(bean.getAppName()).setmBtnDialogNegative("删除").setmBtnDialogPositive("安装");
+            canDialog.setOnCanBtnClickListener(new CanDialog.OnCanBtnClickListener() {
+                @Override
+                public void onClickPositive() {
+                    //开始安装应用，安装键
+                    //isVisibility = false;
+                    /*int result = InstallPkgUtils.installApp("");
+                    if (result == 0) {
+
+                    } else {
+                    }*/
+                    //mInstalling.setVisibility(View.VISIBLE);
+                    final TextView mInstalling = (TextView) view.findViewById(R.id.tv_install_installing);
+                    //mInstalling.setVisibility(View.VISIBLE);
+                    //mPresenter.installApk(position);
+                    //mPresenter.installApp(position);
+                    canDialog.dismiss();
+                }
+
+                @Override
+                public void onClickNegative() {
+                    //删除键
+                    mPresenter.deleteOne(mCurrentPositon);
+                    canDialog.dismiss();
+                }
+            });
+            canDialog.show();
+        }
+    }
 }

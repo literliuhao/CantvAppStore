@@ -1,9 +1,6 @@
 package com.can.appstore.update;
 
-import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
+
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,11 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
-import com.can.appstore.installpkg.InstallManagerAdapter;
 import com.can.appstore.installpkg.utils.InstallPkgUtils;
 import com.can.appstore.update.model.AppInfoBean;
 
@@ -28,10 +23,8 @@ import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
-import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
-import static com.can.appstore.R.string.active_app_installing;
 
 /**
  * Created by shenpx on 2016/10/12 0012.
@@ -152,6 +145,7 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                         public void run() {
                             int result = InstallPkgUtils.installApp(downloadTask.getSaveDirPath());
                             if(result == 0){
+                                updateHolder.updatedIcon.setVisibility(View.INVISIBLE);
                                 //status.setText("安装成功");
                                 updateHolder.updatedIcon.setVisibility(View.VISIBLE);
                             }else{

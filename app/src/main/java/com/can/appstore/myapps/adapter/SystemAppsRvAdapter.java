@@ -21,16 +21,8 @@ import cn.can.tvlib.utils.PackageUtil;
 
 public class SystemAppsRvAdapter  extends CanRecyclerViewAdapter {
     List<PackageUtil.AppInfo> list;
-    int[] mItemColors = {
-            R.drawable.bj_01,
-            R.drawable.bj_02,
-            R.drawable.bj_03,
-            R.drawable.bj_04,
-            R.drawable.bj_05,
-            R.drawable.bj_06,
-            R.drawable.bj_07,
-            R.drawable.bj_08,
-    };
+    private final int[] COLORS = {R.drawable.index_item1_shape, R.drawable.index_item2_shape, R.drawable.index_item3_shape, R.drawable.index_item4_shape,  R.drawable.index_item6_shape, R.drawable.index_item7_shape,R.drawable.index_item5_shape, R.drawable.index_item8_shape};
+
     public SystemAppsRvAdapter(List datas) {
         super(datas);
         this.list = datas;
@@ -38,7 +30,7 @@ public class SystemAppsRvAdapter  extends CanRecyclerViewAdapter {
 
     @Override
     protected RecyclerView.ViewHolder generateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.systemapps_list_item,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.myapps_list_item,parent,false);
         MyViewHolder viewHolder = new MyViewHolder(view);
         return viewHolder;
     }
@@ -48,7 +40,7 @@ public class SystemAppsRvAdapter  extends CanRecyclerViewAdapter {
         MyViewHolder myViewHolder = (MyViewHolder)holder;
         myViewHolder.imgIcon.setImageDrawable(list.get(position).appIcon);
         myViewHolder.tvName.setText(list.get(position).appName);
-        myViewHolder.llbg.setBackgroundResource(mItemColors[position % 8]);
+        myViewHolder.llbg.setBackgroundResource(COLORS[position % 8]);
     }
 
     private class MyViewHolder extends RecyclerView.ViewHolder{
@@ -58,9 +50,9 @@ public class SystemAppsRvAdapter  extends CanRecyclerViewAdapter {
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            imgIcon = (ImageView)itemView.findViewById(R.id.systemapps_item_ivicon);
-            tvName = (TextView)itemView.findViewById(R.id.systemapps_item_tvname);
-            llbg = (LinearLayout) itemView.findViewById(R.id.systemapps_llbg);
+            imgIcon = (ImageView)itemView.findViewById(R.id.myapp_ivicon);
+            tvName = (TextView)itemView.findViewById(R.id.myapp_tvname);
+            llbg = (LinearLayout) itemView.findViewById(R.id.myapps_item_rlbg);
         }
 
 

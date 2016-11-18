@@ -21,16 +21,8 @@ import cn.can.tvlib.utils.PackageUtil;
 
 public class AllAppsRecyclerViewAdapter extends CanRecyclerViewAdapter{
  List<PackageUtil.AppInfo> list ;
-    int[] mItemColors = {
-            R.drawable.bj_01,
-            R.drawable.bj_02,
-            R.drawable.bj_03,
-            R.drawable.bj_04,
-            R.drawable.bj_05,
-            R.drawable.bj_06,
-            R.drawable.bj_07,
-            R.drawable.bj_08,
-    };
+    private final int[] COLORS = {R.drawable.index_item1_shape, R.drawable.index_item2_shape, R.drawable.index_item3_shape, R.drawable.index_item4_shape,  R.drawable.index_item6_shape, R.drawable.index_item7_shape,R.drawable.index_item5_shape, R.drawable.index_item8_shape};
+
 
     public AllAppsRecyclerViewAdapter(List datas) {
         super(datas);
@@ -52,7 +44,7 @@ public class AllAppsRecyclerViewAdapter extends CanRecyclerViewAdapter{
         AllAppsViewHolder viewHolder = (AllAppsViewHolder) holder;
         viewHolder.mImageView.setImageDrawable(list.get(position).appIcon);
         viewHolder.mTextView.setText(list.get(position).appName);
-        viewHolder.mLinearLayout.setBackgroundResource(mItemColors[position % 8]);
+        viewHolder.mLinearLayout.setBackgroundResource(COLORS[position % 8]);
     }
 
     private  class AllAppsViewHolder extends RecyclerView.ViewHolder{

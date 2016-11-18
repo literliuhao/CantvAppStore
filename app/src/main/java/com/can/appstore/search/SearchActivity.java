@@ -222,7 +222,7 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
     @Override
     public void getAppList(List list) {
         mleft_top.setText(R.string.search_left_top_prompt2);
-        if (list.size() > 0) {
+        if (null != list && list.size() > 0) {
             showGoneView(TAG_S_TOP_APPLIST_G_BOTTOM);
             mAppListAdapter.setDataList(list);
         } else {

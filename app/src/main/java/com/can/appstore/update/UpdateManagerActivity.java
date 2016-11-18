@@ -39,7 +39,7 @@ import cn.can.tvlib.utils.PreferencesUtils;
  * Created by shenpx on 2016/10/12 0012.
  */
 
-public class UpdateManagerActivity extends Activity implements UpdateContract.View, DownloadTaskListener {
+public class UpdateManagerActivity extends Activity implements UpdateContract.View,DownloadTaskListener {
 
     private CanRecyclerView mRecyclerView;
     private UpdateManagerAdapter mRecyclerAdapter;
@@ -202,13 +202,13 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 if (mAutoUpdate) {
                     PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", false);
                     mAutoUpdate = false;
-                    //initDialog("已开启");
+                    initDialog("已开启");
                     mReminder.setVisibility(View.INVISIBLE);
                     Toast.makeText(UpdateManagerActivity.this, R.string.update_end_autoupdate, Toast.LENGTH_SHORT).show();
                 } else {
                     PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", true);
                     mAutoUpdate = true;
-                    //initDialog("未开启");
+                    initDialog("已关闭");
                     mPresenter.getListSize();
                     Toast.makeText(UpdateManagerActivity.this, R.string.update_start_autoupdate, Toast.LENGTH_SHORT).show();
                 }
@@ -243,7 +243,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 } else {*/
                     downloadTask = new DownloadTask();
                     String md5 = MD5.MD5(downloadUrl);
-                    downloadTask.setFileName(md5);
+                    downloadTask.setFileName(md5+".apk");
                     downloadTask.setId(md5);
                     downloadTask.setSaveDirPath(MyApp.mContext.getExternalCacheDir().getPath() + "/");
                     downloadTask.setUrl(downloadUrl);
@@ -324,6 +324,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                                     progress.setVisibility(View.INVISIBLE);
                                     int result = InstallPkgUtils.installApp(downloadTask.getSaveDirPath());
                                     if(result == 0){
+                                        status.setVisibility(View.INVISIBLE);
                                         //status.setText("安装成功");
                                         updatedIcon.setVisibility(View.VISIBLE);
                                     }else{
@@ -411,21 +412,22 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
 
     private void initDialog(String str) {
         canDialog = new CanDialog(UpdateManagerActivity.this);
-//        canDialog.showDialogForUpdateSetting("更新设置", "开启后将自动更新", str, "", "开启", "关闭", new CanDialog.OnCanBtnClickListener() {
-//            @Override
-//            public void onClickPositive() {
-//                PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", true);
-//                mAutoUpdate = true;
-//                canDialog.dismiss();
-//            }
-//
-//            @Override
-//            public void onClickNegative() {
-//                PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", false);
-//                mAutoUpdate = false;
-//                canDialog.dismiss();
-//            }
-//        });
+        canDialog.setmTvDialogTitle("更新设置").setmTvDialogTopLeftContent("自动更新").setmTvDialogBelowContent("应用需要更新时，自动开始下载安装").setmTvDialogTopRightContent(str).setmBtnDialogNegative("关闭").setmBtnDialogPositive("开启");
+        canDialog.setOnCanBtnClickListener(new CanDialog.OnCanBtnClickListener() {
+            @Override
+            public void onClickPositive() {
+                PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", true);
+                mAutoUpdate = true;
+                canDialog.dismiss();
+            }
+
+            @Override
+            public void onClickNegative() {
+                PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", false);
+                mAutoUpdate = false;
+                canDialog.dismiss();
+            }
+        });
         canDialog.show();
     }
 

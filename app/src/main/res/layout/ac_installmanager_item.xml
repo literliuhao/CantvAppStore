@@ -22,11 +22,16 @@
 
         <TextView
             android:id="@+id/tv_installpkg_name"
-            android:layout_width="wrap_content"
+            android:layout_width="180px"
             android:layout_height="wrap_content"
             android:layout_marginLeft="24px"
             android:layout_marginTop="34px"
             android:layout_toRightOf="@id/iv_installpkg_icon"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:ellipsize="marquee"
+            android:scrollHorizontally="true"
             android:singleLine="true"
             android:text="@string/install_title"
             android:textColor="#ccffffff"

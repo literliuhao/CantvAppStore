@@ -62,12 +62,6 @@
             android:text="安装包管理"
             android:textSize="@dimen/px32"/>
 
-        <Button
-            android:id="@+id/bt_custom_viewgroup"
-            android:layout_width="@dimen/px300"
-            android:layout_height="wrap_content"
-            android:text="自定义ViewGroup"
-            android:textSize="@dimen/px28"/>
 
         <Button
             android:id="@+id/bt_active"

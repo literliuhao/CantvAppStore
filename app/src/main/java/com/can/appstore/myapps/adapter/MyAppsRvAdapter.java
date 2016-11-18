@@ -45,16 +45,8 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<PackageUtil.AppInfo>
     int CUSTOM_TYPE = 0X002;
 
 
-    int[] mItemColors = {
-            R.drawable.bj_01,
-            R.drawable.bj_02,
-            R.drawable.bj_03,
-            R.drawable.bj_04,
-            R.drawable.bj_05,
-            R.drawable.bj_06,
-            R.drawable.bj_07,
-            R.drawable.bj_08,
-    };
+    private final int[] COLORS = {R.drawable.index_item1_shape, R.drawable.index_item2_shape, R.drawable.index_item3_shape, R.drawable.index_item4_shape,  R.drawable.index_item6_shape, R.drawable.index_item7_shape,R.drawable.index_item5_shape, R.drawable.index_item8_shape};
+
 
     @Override
     protected RecyclerView.ViewHolder generateViewHolder(ViewGroup parent, int viewType) {
@@ -83,7 +75,7 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<PackageUtil.AppInfo>
             if(position == (mList.size()-1) && mDatas.packageName.isEmpty()){
                 myAppsViewHolder.mLinearLayout.setBackgroundResource(R.drawable.addapp_bj);
             }else{
-                myAppsViewHolder.mLinearLayout.setBackgroundResource(mItemColors[position % 8]);
+                myAppsViewHolder.mLinearLayout.setBackgroundResource(COLORS[position % 8]);
             }
         }
 

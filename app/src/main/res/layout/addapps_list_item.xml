@@ -16,7 +16,7 @@
             android:layout_width="@dimen/px80"
             android:layout_height="@dimen/px80"
             android:id="@+id/addapps_item_ivicon"
-            android:layout_marginTop="@dimen/px12"
+            android:layout_marginTop="@dimen/px22"
             android:layout_gravity="center"
             />
         <TextView
