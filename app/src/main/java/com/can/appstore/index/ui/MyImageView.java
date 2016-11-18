@@ -11,7 +11,6 @@ import android.util.TypedValue;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
 
 import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 
@@ -97,10 +96,10 @@ public class MyImageView extends ImageView {
      * @param s
      */
     public void setImageURI(String s) {
-        RequestManager glideRequest;
-        glideRequest = Glide.with(mContext);
-        glideRequest.load(s).transform(new GlideRoundTransform(mContext,20)).into(this);
+//        RequestManager glideRequest;
+//        glideRequest = Glide.with(mContext);
+//        glideRequest.load(s).transform(new GlideRoundTransform(mContext,20)).into(this);
 
-//        Glide.with(mContext).load(s).transform(new GlideRoundTransform(mContext, 25)).into(this);
+        Glide.with(mContext).load(s).bitmapTransformation(new GlideRoundTransform(mContext, 25)).into(this);
     }
 }

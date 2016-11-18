@@ -11,13 +11,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.entity.ListResult;
+import com.can.appstore.entity.Navigation;
+import com.can.appstore.http.CanCall;
+import com.can.appstore.http.CanCallback;
+import com.can.appstore.http.CanErrorWrapper;
+import com.can.appstore.http.HttpManager;
 import com.can.appstore.index.adapter.IndexPagerAdapter;
-import com.can.appstore.index.entity.LayoutBean;
-import com.can.appstore.index.entity.PageBean;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.interfaces.IOnPagerListener;
-import com.can.appstore.index.model.DataUtils;
-import com.can.appstore.index.model.JsonFormat;
 import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.index.ui.FragmentBody;
 import com.can.appstore.index.ui.ManagerFragment;
@@ -30,13 +32,13 @@ import java.util.List;
 
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
+import retrofit2.Response;
 
 /**
  * Created by liuhao on 2016/10/15.
  */
 public class IndexActivity extends FragmentActivity implements IAddFocusListener,View.OnClickListener{
     private List<BaseFragment> mFragmentLists;
-    private PageBean mPageBeans;
     private IndexPagerAdapter mAdapter;
     private ViewPager mViewPager;
     private TitleBar mTitleBar;
@@ -55,17 +57,15 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private final int SCROLLING = 2;
     //滚动完成
     private final int SCROLLED = 0;
-    //存储焦点
-//    private
+    private static CanCall<ListResult<Navigation>> mNavigationCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle();
         initView();
-        initData();
         initFocus();
-        bindData();
+        getNavigation();
     }
 
     /**
@@ -74,6 +74,25 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private void setStyle() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.index);
+    }
+
+    public void getNavigation() {
+        mNavigationCall = HttpManager.getApiService().getNavigations();
+        mNavigationCall.enqueue(new CanCallback<ListResult<Navigation>>() {
+            @Override
+            public void onResponse(CanCall<ListResult<Navigation>> call, Response<ListResult<Navigation>> response) throws Exception {
+                ListResult<Navigation> info = response.body();
+                if (null != info.getData()) {
+                    initData(info);
+                    bindData(info);
+                }
+            }
+
+            @Override
+            public void onFailure(CanCall<ListResult<Navigation>> call, CanErrorWrapper errorWrapper) {
+                Log.i("DataUtils",errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
+            }
+        });
     }
 
     /**
@@ -107,14 +126,14 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     /**
      * 首页数据初始化
      */
-    private void initData() {
+    private void initData(ListResult<Navigation> navigationListResult) {
         mFragmentLists = new ArrayList<>();
-        mPageBeans = JsonFormat.parseJson("");
-        if (null == mPageBeans) return;
+//        mPageBeans = JsonFormat.parseJson("");
+        if (null == navigationListResult.getData()) return;
         //根据服务器配置文件生成不同样式加入Fragment列表中
         FragmentBody fragment;
-        for (int i = 0; i < mPageBeans.getPageLists().size(); i++) {
-            fragment = new FragmentBody(this, mPageBeans.getPageLists().get(i));
+        for (int i = 0; i < navigationListResult.getData().size(); i++) {
+            fragment = new FragmentBody(this, navigationListResult.getData().get(i));
 //            fragment.setTargetFragment(fragment, i);
             mFragmentLists.add(fragment);
         }
@@ -137,11 +156,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      *
      * @param mPage 导航栏数据
      */
-    private void bindTtile(PageBean mPage) {
+    private void bindTtile(ListResult<Navigation> mPage) {
         List<String> mDatas = new ArrayList<>();
-        for (int i = 0; i < mPage.getPageLists().size(); i++) {
-            LayoutBean layoutBean = mPage.getPageLists().get(i);
-            mDatas.add(layoutBean.getTitle());
+        for (int i = 0; i < mPage.getData().size(); i++) {
+            Navigation navigation = mPage.getData().get(i);
+            mDatas.add(navigation.getTitle());
         }
         //排行、管理、我的应用不受服务器后台配置，因此手动干预位置
         if (mDatas.size() > 0) {
@@ -166,8 +185,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     /**
      * mViewPager、mTitleBar 数据绑定与页面绑定
      */
-    private void bindData() {
-        bindTtile(mPageBeans);
+    private void bindData(ListResult<Navigation> listResult) {
+        bindTtile(listResult);
         mAdapter = new IndexPagerAdapter(this.getSupportFragmentManager(), mViewPager, mFragmentLists);
         mAdapter.setOnExtraPageChangeListener(new IOnPagerListener() {
             @Override
@@ -207,7 +226,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mViewPager.setCurrentItem(PAGERCURRENTITEM);
         mTitleBar.setViewPager(mViewPager, PAGERCURRENTITEM);
 
-        DataUtils.getNavigation();
+
     }
 
     /**

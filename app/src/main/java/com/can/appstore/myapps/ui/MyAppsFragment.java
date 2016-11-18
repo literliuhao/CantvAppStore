@@ -78,7 +78,7 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         mAppsRecyclerView.addItemDecoration(new CanRecyclerViewDivider(Color.TRANSPARENT, 10, 0));
 
         mMyAppsFramPresenter = new MyAppsFragPresenter(this, getContext());
-
+        mMyAppsFramPresenter.startLoad();
         return view;
     }
 
@@ -87,7 +87,7 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         Log.i("myappfragment","----onResume()");
         if (mMyAppsFramPresenter != null) {
             mMyAppsFramPresenter.addListener();
-            mMyAppsFramPresenter.startLoad();
+
         }
         super.onResume();
     }
