@@ -37,6 +37,9 @@
     <string name="detail_app_free_stroage">可用空间&#160;:&#160;%s</string>
     <string name="detail_app_operating_equipment">操作设备&#160;:</string>
     <string name="detail_app_download">下载</string>
+    <string name="detail_app_install">安装</string>
+    <string name="install_success">安装成功</string>
+    <string name="install_fail">安装失败</string>
     <string name="detail_app_run">运行</string>
     <string name="detail_app_update">更新</string>
     <string name="detail_app_Introduction">简介</string>
@@ -46,7 +49,8 @@
     <string name="detail_app_click_pause">点击暂停下载</string>
     <string name="detail_app_click_continue">点击继续下载</string>
     <string name="download_faild_memory_lack">内存不足%s下载失败</string>
-    <string name="install_faild_memory_lack">内存不足%s安装失败</string>
+    <string name="install_faild_memory_lack">安装内存不足%s安装失败</string>
+    <string name="pares_install_apk_fail">解析安装包失败</string>
     <string name="network_connection_error">网络连接异常</string>
     <string name="unkonw_error">发生未知错误</string>
     <string name="network_connection_disconnect">网络连接已断开</string>

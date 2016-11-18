@@ -23,6 +23,7 @@ import cn.can.downloadlib.utils.ShellUtils;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.SystemUtil;
+import cn.can.tvlib.utils.ToastUtils;
 
 /**
  * Created by JasonF on 2016/10/17.
@@ -217,9 +218,9 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     public void silentUninstall(String appName, String packageName) {
         ShellUtils.CommandResult res = ShellUtils.execCommand("pm uninstall -k " + packageName, false);
         if (res.result == 0) {
-            mView.showToast(appName + mContext.getResources().getString(R.string.uninstall_success));
+            ToastUtils.showMessage(mContext, appName + mContext.getResources().getString(R.string.uninstall_success));
         } else {
-            mView.showToast(appName + mContext.getResources().getString(R.string.uninstall_fail));
+            ToastUtils.showMessage(mContext, appName + mContext.getResources().getString(R.string.uninstall_fail));
         }
     }
 }

@@ -389,6 +389,13 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             mRelativeLayuotOperatingEquipment.addView(conTypePic, controllerTypePic);
             int selectOperationPic = mAppDetailPresenter.getOperationPic(type.get(i));
             conTypePic.setImageResource(selectOperationPic);
+            //            ImageLoader.getInstance().load(AppDetailActivity.this, conTypePic, type.get(i), new GlideLoadTask.SuccessCallback() {
+            //                @Override
+            //                public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+            //                    conTypePic.setImageDrawable(resource);
+            //                    return true;
+            //                }
+            //            }, null);
         }
     }
 
@@ -444,12 +451,12 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     public void refreshButtonProgress(int refreshButtonProgress, String buttonText, float progress) {
         if (mButtonDownload != null && refreshButtonProgress == MESSAGE_TYPE_DOWNLAOD) {
-            mButtonDownload.setProgress((int) progress);
-            mButtonDownload.setText(buttonText);
-            mHandler.removeMessages(MESSAGE_TYPE_DOWNLAOD);
             if (!buttonText.equals(getResources().getString(R.string.detail_app_run))) {
                 mButtonDownload.setProgressDrawable(getResources().getDrawable(R.drawable.layer_list_app_detail_download));
             }
+            mButtonDownload.setProgress((int) progress);
+            mButtonDownload.setText(buttonText);
+            mHandler.removeMessages(MESSAGE_TYPE_DOWNLAOD);
         } else if (mButtonUpdate != null && refreshButtonProgress == MESSAGE_TYPE_UPDATE) {
             mButtonUpdate.setProgress((int) progress);
             mButtonUpdate.setText(buttonText);
