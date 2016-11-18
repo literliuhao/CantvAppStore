@@ -145,6 +145,7 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                         public void run() {
                             int result = InstallPkgUtils.installApp(downloadTask.getSaveDirPath());
                             if(result == 0){
+                                updateHolder.updatedIcon.setVisibility(View.INVISIBLE);
                                 //status.setText("安装成功");
                                 updateHolder.updatedIcon.setVisibility(View.VISIBLE);
                             }else{

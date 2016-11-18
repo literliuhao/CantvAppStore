@@ -72,10 +72,10 @@ public class InstallPkgUtils {
                     bean.setFliePath(file.getAbsolutePath());
                     bean.setAppSize(new File(file.getAbsolutePath()).length() / 1024 / 1024 + "M");
                     /**获取文件名*/
-                    //bean.setAppName(new File(file.getAbsolutePath()).getName());
+                    bean.setAppName(getFileNameNoEx(new File(file.getAbsolutePath()).getName()));
                     /**由包名获取应用名*/
-                    String appName = UpdateUtils.getAppName(MyApp.mContext, packageName);
-                    bean.setAppName(appName);
+                    /*String appName = UpdateUtils.getAppName(MyApp.mContext, packageName);
+                    bean.setAppName(appName);*/
                     /** apk的版本名称 */
                     String versionName = packageInfo.versionName;
                     bean.setVersionName(versionName);
@@ -207,7 +207,7 @@ public class InstallPkgUtils {
     /**
      * 静默安装
      */
-    public static int installApp(String path){
+    public static int installApp(String path) {
 
         long space = SdcardUtils.getSDCardAvailableSpace() / 1014 / 1024;
         if (space < 50) {
@@ -221,5 +221,18 @@ public class InstallPkgUtils {
         } else {
             return res.result;
         }
+    }
+
+    /*
+ * Java文件操作 获取不带扩展名的文件名
+ */
+    public static String getFileNameNoEx(String filename) {
+        if ((filename != null) && (filename.length() > 0)) {
+            int dot = filename.lastIndexOf('.');
+            if ((dot > -1) && (dot < (filename.length()))) {
+                return filename.substring(0, dot);
+            }
+        }
+        return filename;
     }
 }
