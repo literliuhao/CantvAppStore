@@ -150,6 +150,7 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
         butUninstall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                CanD
                 mAllAppsPresenter.uninstallApp(position);
                 hideEditView(item);
             }

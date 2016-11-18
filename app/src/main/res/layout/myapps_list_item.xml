@@ -30,6 +30,8 @@
             android:text="APP-NAME"
             android:textColor="@color/app_name_color"
             android:textSize="@dimen/fontsize_32"
+            android:singleLine="true"
+            android:ellipsize="end"
             />
     </LinearLayout>
 
