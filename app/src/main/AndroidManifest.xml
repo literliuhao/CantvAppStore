@@ -74,11 +74,13 @@
         <activity android:name=".update.UpdateManagerActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION.ACTIVITY_UPDATE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity android:name=".installpkg.InstallManagerActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION.ACTIVITY_INSTALL"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity android:name=".myapps.ui.SystemAppsActivity">
