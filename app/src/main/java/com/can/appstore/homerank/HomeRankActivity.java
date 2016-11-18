@@ -2,12 +2,11 @@ package com.can.appstore.homerank;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.FrameLayout;
 
 import com.can.appstore.R;
-import com.can.appstore.search.SearchActivity;
 
 public class HomeRankActivity extends AppCompatActivity {
 
@@ -25,12 +24,12 @@ public class HomeRankActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home_rank);
         mFrameLayout = (FrameLayout) findViewById(R.id.rank_framelayout);
 
-        if (null == savedInstanceState) {
-            HomeRankFragment homeRankFragment = HomeRankFragment.newInstance("", "");
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.rank_framelayout, homeRankFragment, TAG)
-                    .commit();
-        }
+//        if (null == savedInstanceState) {
+////            HomeRankFragment homeRankFragment = HomeRankFragment.newInstance("", "");
+//            getSupportFragmentManager().beginTransaction()
+//                    .add(R.id.rank_framelayout, homeRankFragment, TAG)
+//                    .commit();
+//        }
 
     }
 }
