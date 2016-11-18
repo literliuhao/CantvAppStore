@@ -52,13 +52,9 @@ public class ApkUtils {
      * @param packageName
      */
     public static void uninstall(Context context, String packageName) {
-        //通过程序的包名创建URI
         Uri packageURI = Uri.parse("package:" + packageName);
-        //创建Intent意图
         Intent intent = new Intent(Intent.ACTION_DELETE, packageURI);
-
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        //执行卸载程序
         context.startActivity(intent);
     }
 

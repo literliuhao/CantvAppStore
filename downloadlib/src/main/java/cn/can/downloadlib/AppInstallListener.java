@@ -14,6 +14,8 @@ public interface AppInstallListener {
     void onInstalling(DownloadTask downloadTask);
     void onInstallSucess(String id);
     void onInstallFail(String id);
+    void onUninstallSucess(String id);
+    void onUninstallFail(String id);
 
     public static final int APP_INSTALLING = 8;
     public static final int APP_INSTALL_SUCESS = 9;
