@@ -4,33 +4,34 @@
                 android:layout_height="@dimen/px180"
                 android:focusable="true"
                 android:descendantFocusability="beforeDescendants"
-
     >
 
-    <LinearLayout
-        android:id="@+id/systemapps_llbg"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_centerInParent="true"
-        >
-        <ImageView
-            android:layout_width="@dimen/px80"
-            android:layout_height="@dimen/px80"
-            android:id="@+id/systemapps_item_ivicon"
-            android:layout_marginTop="@dimen/px10"
-            android:layout_gravity="center"
-            />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/systemapps_item_tvname"
-            android:layout_marginTop="@dimen/px10"
-            android:textColor="@color/app_name_color"
-            android:textSize="@dimen/fontsize_32"
-            android:gravity="center"
-            />
+    <!--<LinearLayout-->
+        <!--android:id="@+id/systemapps_llbg"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="vertical"-->
+        <!--android:layout_centerInParent="true"-->
+        <!--&gt;-->
+        <!--<ImageView-->
+            <!--android:layout_width="@dimen/px80"-->
+            <!--android:layout_height="@dimen/px80"-->
+            <!--android:id="@+id/systemapps_item_ivicon"-->
+            <!--android:layout_marginTop="@dimen/px10"-->
+            <!--android:layout_gravity="center"-->
+            <!--/>-->
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/systemapps_item_tvname"-->
+            <!--android:layout_marginTop="@dimen/px10"-->
+            <!--android:textColor="@color/app_name_color"-->
+            <!--android:textSize="@dimen/fontsize_32"-->
+            <!--android:gravity="center"-->
+            <!--/>-->
 
-    </LinearLayout>
+    <!--</LinearLayout>-->
+
+
 
 </RelativeLayout>
