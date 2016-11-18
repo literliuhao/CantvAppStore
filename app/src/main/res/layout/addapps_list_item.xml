@@ -26,6 +26,8 @@
             android:layout_marginTop="@dimen/px12"
             android:textColor="@color/app_name_color"
             android:textSize="@dimen/fontsize_32"
+            android:singleLine="true"
+            android:ellipsize="end"
             android:gravity="center"
             />
 
