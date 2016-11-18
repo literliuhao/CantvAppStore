@@ -6,6 +6,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.View;
 
 /**
@@ -22,7 +23,12 @@ import android.view.View;
  */
 public class CanRecyclerView extends RecyclerView {
 
+    public static final int KEYCODE_EFFECT_INTERVAL_UNLIMIT = 0;
+    public static final int KEYCODE_EFFECT_INTERVAL_NORMAL = 150;
+
     private CanGridLayoutManager mCanGridLayoutManager;
+    private long mLastKeyCodeTimePoint;
+    private int keyCodeEffectInterval = KEYCODE_EFFECT_INTERVAL_UNLIMIT;
 
 
 
@@ -84,6 +90,26 @@ public class CanRecyclerView extends RecyclerView {
 
     public void setAdapter(CanRecyclerViewAdapter adapter) {
         super.setAdapter(adapter);
+    }
+
+    public void setKeyCodeEffectInterval(int keyCodeEffectInterval) {
+        this.keyCodeEffectInterval = keyCodeEffectInterval;
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN && keyCodeEffectInterval != KEYCODE_EFFECT_INTERVAL_UNLIMIT) {
+            long time = System.currentTimeMillis();
+            if (mLastKeyCodeTimePoint == 0) {
+                mLastKeyCodeTimePoint = System.currentTimeMillis();
+                return super.dispatchKeyEvent(event);
+            } else if (time - mLastKeyCodeTimePoint < keyCodeEffectInterval) {
+                return true;
+            } else {
+                mLastKeyCodeTimePoint = System.currentTimeMillis();
+            }
+        }
+        return super.dispatchKeyEvent(event);
     }
 
     public static class CanGridLayoutManager extends GridLayoutManager {

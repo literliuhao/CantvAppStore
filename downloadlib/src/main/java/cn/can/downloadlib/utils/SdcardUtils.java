@@ -134,7 +134,15 @@ public class SdcardUtils {
     }
 
 
-
+    /**
+     * 获取系统安装剩余空间
+     * @param context
+     * @return
+     */
+    public static long getApkInstallDirSzie(Context context) {
+        long usableSpace = context.getFilesDir().getAbsoluteFile().getUsableSpace();
+        return usableSpace;
+    }
 
 
 
