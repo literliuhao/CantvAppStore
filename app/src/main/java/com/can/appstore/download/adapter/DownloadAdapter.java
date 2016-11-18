@@ -29,6 +29,7 @@ import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.utils.ApkUtils;
+import cn.can.tvlib.utils.FileUtils;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.StringUtils;
@@ -424,6 +425,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                                 addDownloadTask(holder.downloadTask, holder.downloadListener);
                         break;
                     case DownloadStatus.SPACE_NOT_ENOUGH:
+                        holder.downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_PAUSE);
                         DownloadManager.getInstance(v.getContext().
                                 getApplicationContext()).resume(holder.downloadTask.getId());
                         break;
@@ -432,7 +434,6 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                         ToastUtils.showMessage(v.getContext(), v.getContext().getString(R.string.download_installing));
                         break;
                     case AppInstallListener.APP_INSTALL_SUCESS:
-                        //TODO
                         String pacageName = ApkUtils.getPkgNameFromApkFile(v.getContext().getApplicationContext(), holder.downloadTask.getFilePath());
                         boolean isAvailable = ApkUtils.isAvailable(v.getContext().getApplicationContext(), pacageName);
                         if (isAvailable) {
@@ -442,8 +443,15 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                         }
                         break;
                     case AppInstallListener.APP_INSTALL_FAIL:
-                        holder.downloadTask.setDownloadStatus(AppInstallListener.APP_INSTALLING);
-
+                        //TODO 安装失败的重试 待改。
+                        if(FileUtils.isFileExist(holder.downloadTask.getFilePath())){
+                            DownloadManager.getInstance(v.getContext().getApplicationContext()).onInstalling(holder.downloadTask);
+                        }else{
+                            //如果文件被删除，重新下载。
+                            PromptUtils.toastShort(v.getContext(),v.getContext().getString(R.string.bt_batch_uninstall));
+                            holder.downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
+                            DownloadManager.getInstance(v.getContext().getApplicationContext()).addDownloadTask(holder.downloadTask,holder.downloadListener);
+                        }
                         break;
                 }
                 //考虑到未执行的任务从init状态调pause状态时不会回掉，故此时手动刷新一次UI
