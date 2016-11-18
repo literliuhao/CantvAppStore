@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.can.appstore">
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
@@ -50,15 +51,6 @@
         <activity android:name=".PortalActivity">
 
         </activity>
-        <!--<activity android:name=".specialdetail.SpecialDetailActivity">-->
-
-        <!--</activity>-->
-        <!--<activity android:name=".active.ActiveActivity">-->
-
-        <!--</activity>-->
-        <!--<activity android:name=".homerank.HomeRankActivity">-->
-
-        <!--</activity>-->
         <activity
             android:name=".index.IndexActivity"
             android:label="@string/app_name"
@@ -121,8 +113,8 @@
 
         <activity
             android:name=".uninstallmanager.UninstallManagerActivity"
-            android:theme="@style/AppTheme.Translucent.FadeIn"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/AppTheme.Translucent.FadeIn">
             <intent-filter>
                 <action android:name="com.can.appstore.action.UNINSTALL_MANAGER"/>
 
@@ -132,8 +124,8 @@
 
         <activity
             android:name=".appdetail.AppDetailActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@android:style/Theme.Black.NoTitleBar">
             <intent-filter>
                 <action android:name="com.can.appstore.action.APP_DETAIL"/>
 
@@ -151,14 +143,15 @@
                 <action android:name="com.can.appstore.upgrade.UpgradeService"/>
             </intent-filter>
         </service>
+
         <activity android:name="com.can.appstore.message.MessageStartActivity"></activity>
         <activity android:name="com.can.appstore.message.MessageHomeActivity"></activity>
         <activity android:name="com.can.appstore.message.MessageActivity">
-        <intent-filter>
-            <action android:name="com.can.appstore.message.ACTION.Message"/>
-            <category android:name="android.intent.category.DEFAULT"/>
-        </intent-filter>
-    </activity>
+            <intent-filter>
+                <action android:name="com.can.appstore.message.ACTION.Message"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
