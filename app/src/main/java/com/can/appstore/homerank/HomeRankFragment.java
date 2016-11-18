@@ -160,24 +160,25 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
      * @param position
      */
     private void setBG(View view, int position) {
-        int defaultColor = R.color.h_rank_tiem_bg1;
+        int defaultColor = R.drawable.shape_homerank_item_bg1;
         switch (position) {
             case 0:
                 break;
             case 1:
-                defaultColor = R.color.h_rank_tiem_bg2;
+                defaultColor = R.drawable.shape_homerank_item_bg2;
                 break;
             case 2:
-                defaultColor = R.color.h_rank_tiem_bg3;
+                defaultColor = R.drawable.shape_homerank_item_bg3;
                 break;
             case 3:
-                defaultColor = R.color.h_rank_tiem_bg4;
+                defaultColor = R.drawable.shape_homerank_item_bg4;
                 break;
             case 4:
-                defaultColor = R.color.h_rank_tiem_bg5;
+                defaultColor = R.drawable.shape_homerank_item_bg5;
                 break;
         }
-        view.setBackgroundColor(getResources().getColor(defaultColor));
+        view.setBackgroundResource(defaultColor);
+//        view.setBackgroundColor(getResources().getColor(defaultColor));
     }
 
 
@@ -185,6 +186,7 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
 
         @Override
         public void onFocusChange(View view, boolean hasFocus) {
+            view.setSelected(hasFocus);
             mFocusListener.addFocusListener(view, hasFocus);
         }
     }

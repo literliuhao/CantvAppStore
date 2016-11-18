@@ -3,6 +3,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="104px"
                 android:clickable="true"
+                android:descendantFocusability="blocksDescendants"
                 android:focusable="true">
 
     <ImageView
@@ -20,7 +21,12 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@id/icon_view"
+        android:duplicateParentState="true"
+        android:ellipsize="end"
+        android:focusable="true"
         android:gravity="center"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
         android:text="测试名称"
         android:textColor="#ffffff"
         android:textSize="32px"/>
