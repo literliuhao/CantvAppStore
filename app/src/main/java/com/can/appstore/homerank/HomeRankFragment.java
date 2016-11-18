@@ -117,7 +117,8 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
                 //"更多" 布局
                 View ll_more_view = childView.findViewById(R.id.load_more_veiw);
                 //设置布局背景
-                setBG(recyclerView, ll_more_view, i);
+//                setBG(recyclerView, ll_more_view, i);
+                setBG(childView, ll_more_view, i);
 
                 TextView categoryMore = (TextView) childView.findViewById(R.id.more_textview);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -181,7 +182,7 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
                 break;
             case 4:
                 recy_defaultColor = R.drawable.shape_homerank_item_bg5;
-//                moreView_defaultColor = R.drawable.homerank_bottom_bg5;
+                moreView_defaultColor = R.drawable.homerank_bottom_bg5;
                 break;
         }
         recyview.setBackgroundResource(recy_defaultColor);
