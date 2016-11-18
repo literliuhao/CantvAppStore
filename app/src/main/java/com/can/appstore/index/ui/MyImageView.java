@@ -108,6 +108,8 @@ public class MyImageView extends ImageView {
                 return true;
             }
         }).build().start(mContext);
-        ;
+
+//        ImageLoader.getInstance().buildTask(viewHolder.mAppImgView, appInfo.getIcon()).bitmapTransformation(new GlideRoundTransform(mContext, 12)).build().start(mContext);
+
     }
 }

@@ -13,6 +13,8 @@ import com.can.appstore.entity.Layout;
 import com.can.appstore.entity.Navigation;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 
+import cn.can.tvlib.imageloader.ImageLoader;
+import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 import cn.can.tvlib.utils.DisplayUtil;
 
 /**
@@ -86,7 +88,7 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
             final Layout childBean = mNavigation.getLayout().get(j);
             MyImageView myImageView = new MyImageView(getActivity());
             myImageView.setId(j);
-            myImageView.setImageURI(childBean.getIcon());
+//            myImageView.setImageURI(childBean.getIcon());
             myImageView.setColour(bodeColor);
             myImageView.setBorder(2);
             myImageView.setFocusable(true);
@@ -100,6 +102,10 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
                     Log.i("FragmentBody", String.valueOf(childBean.getIcon()));
                 }
             });
+
+
+            ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, 25)).build().start(context);
+
 
             layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             myImageView.setLeft(childBean.getX());
