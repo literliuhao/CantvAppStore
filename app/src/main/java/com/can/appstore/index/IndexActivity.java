@@ -26,6 +26,7 @@ import com.can.appstore.index.ui.FragmentBody;
 import com.can.appstore.index.ui.ManagerFragment;
 import com.can.appstore.index.ui.TitleBar;
 import com.can.appstore.myapps.ui.MyAppsFragment;
+import com.can.appstore.search.SearchActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -264,6 +265,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         switch (view.getId()){
             case R.id.rl_search:
                 Log.i("IndexActivity", "onClick...." + view.getId());
+                SearchActivity.startAc(this);
                 break;
             case R.id.rl_message:
                 Log.i("IndexActivity", "onClick...." + view.getId());

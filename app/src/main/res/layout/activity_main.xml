@@ -41,12 +41,6 @@
             android:text="搜 索"
             android:textSize="@dimen/px32"/>
 
-        <Button
-            android:id="@+id/btn_homerank"
-            android:layout_width="@dimen/px300"
-            android:layout_height="wrap_content"
-            android:text="首页排行榜"
-            android:textSize="@dimen/px32"/>
 
         <Button
             android:id="@+id/bt_specail_detail"
