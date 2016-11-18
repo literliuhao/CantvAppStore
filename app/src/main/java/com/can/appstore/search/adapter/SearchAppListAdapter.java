@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.PopularWord;
@@ -14,6 +15,8 @@ import com.can.appstore.search.ToastUtil;
 import com.can.appstore.search.widget.YIBaseCompatFocusAdapter;
 
 import java.util.List;
+
+import cn.can.tvlib.imageloader.ImageLoader;
 
 
 /**
@@ -74,7 +77,7 @@ public class SearchAppListAdapter extends YIBaseCompatFocusAdapter {
             ((DefaultSearchViewHolder) holder).setContent(position);
         } else {
             AppInfo app = (AppInfo) mDataList.get(position);
-//            ((SearchViewHolder) holder).mAppIcon.setBackground();
+            ImageLoader.getInstance().load(MyApp.mContext, ((SearchViewHolder) holder).mAppIcon, app.getIcon());
             ((SearchViewHolder) holder).mAppName.setText(app.getName());
             ((SearchViewHolder) holder).mAppSize.setText(app.getSizeStr());
             ((SearchViewHolder) holder).mAppDownloadCount.setText(app.getDownloadCount());
