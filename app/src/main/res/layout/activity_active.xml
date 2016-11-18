@@ -34,5 +34,6 @@
 
     </RelativeLayout>
 
-
+    <include layout="@layout/network_retry"
+        android:visibility="gone"/>
 </RelativeLayout>

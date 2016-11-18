@@ -10,9 +10,12 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.target.Target;
+import com.can.appstore.R;
 
+import cn.can.tvlib.imageloader.GlideLoadTask;
+import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 
 /**
@@ -97,10 +100,16 @@ public class MyImageView extends ImageView {
      * @param s
      */
     public void setImageURI(String s) {
-        RequestManager glideRequest;
-        glideRequest = Glide.with(mContext);
-        glideRequest.load(s).transform(new GlideRoundTransform(mContext,20)).into(this);
+        ImageLoader.getInstance().buildTask(this, s).bitmapTransformation(new GlideRoundTransform(mContext, 25)).placeholder(R.mipmap.icon_load_default).errorHolder(R.mipmap.icon_loading_fail).successCallback(new GlideLoadTask.SuccessCallback() {
+            @Override
+            public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+//                finalImageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                MyImageView.this.setImageDrawable(resource);
+                return true;
+            }
+        }).build().start(mContext);
 
-//        Glide.with(mContext).load(s).transform(new GlideRoundTransform(mContext, 25)).into(this);
+//        ImageLoader.getInstance().buildTask(viewHolder.mAppImgView, appInfo.getIcon()).bitmapTransformation(new GlideRoundTransform(mContext, 12)).build().start(mContext);
+
     }
 }

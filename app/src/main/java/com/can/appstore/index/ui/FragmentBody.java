@@ -9,10 +9,12 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 
-import com.can.appstore.index.entity.ChildBean;
-import com.can.appstore.index.entity.LayoutBean;
+import com.can.appstore.entity.Layout;
+import com.can.appstore.entity.Navigation;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 
+import cn.can.tvlib.imageloader.ImageLoader;
+import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 import cn.can.tvlib.utils.DisplayUtil;
 
 /**
@@ -21,17 +23,14 @@ import cn.can.tvlib.utils.DisplayUtil;
 public class FragmentBody extends BaseFragment implements View.OnFocusChangeListener {
     public static final String BUNDLE_TITLE = "title";
     private String mTitle = "DefaultValue";
-    private LayoutBean mLayoutBean;
+    private Navigation mNavigation;
     private IAddFocusListener mFocusListener;
     private int bodeColor = 0x782A2B2B;
     private View lastView = null;
-    private int baseW = 270;
-    private int baseH = 180;
-    private int lineSpace = 8;
 
-    public FragmentBody(IAddFocusListener focusListener, LayoutBean layoutBean) {
+    public FragmentBody(IAddFocusListener focusListener, Navigation navigation) {
         mFocusListener = focusListener;
-        mLayoutBean = layoutBean;
+        mNavigation = navigation;
     }
 
     /**
@@ -49,7 +48,7 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
             mTitle = arguments.getString(BUNDLE_TITLE);
             Log.i("onCreateView", mTitle);
         }
-        return drawView(inflater.getContext(), this.converPosition(mLayoutBean, measureZoom(inflater.getContext())));
+        return drawView(inflater.getContext(), this.converPosition(mNavigation, measureZoom(inflater.getContext())));
     }
 
     @Override
@@ -71,10 +70,10 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
      * 根据服务器配置文件动态生成界面
      *
      * @param context
-     * @param mLayoutBean
+     * @param mNavigation
      * @return
      */
-    private View drawView(Context context, LayoutBean mLayoutBean) {
+    private View drawView(Context context, Navigation mNavigation) {
         HorizontalScrollView horizontalScrollView = new HorizontalScrollView(context);
         horizontalScrollView.setFocusable(false);
         ViewGroup.LayoutParams scrollParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -85,14 +84,13 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
         frameLayout.setLayoutParams(params);
 
         FrameLayout.LayoutParams layoutParams;
-        for (int j = 0; j < mLayoutBean.getPages().size(); j++) {
-            final ChildBean childBean = mLayoutBean.getPages().get(j);
+        for (int j = 0; j < mNavigation.getLayout().size(); j++) {
+            final Layout childBean = mNavigation.getLayout().get(j);
             MyImageView myImageView = new MyImageView(getActivity());
             myImageView.setId(j);
-//            int[] rect = scaleXY(childBean, scaleX);
-            myImageView.setImageURI(childBean.getIcon());
-//            myImageView.setColour(bodeColor);
-//            myImageView.setBorder(2);
+//            myImageView.setImageURI(childBean.getIcon());
+            myImageView.setColour(bodeColor);
+            myImageView.setBorder(2);
             myImageView.setFocusable(true);
             myImageView.setScaleType(MyImageView.ScaleType.CENTER_CROP);
 //            myImageView.setBackground(getResources().getDrawable(R.drawable.index_recommend, null));
@@ -105,10 +103,14 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
                 }
             });
 
+
+            ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, 25)).build().start(context);
+
+
             layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             myImageView.setLeft(childBean.getX());
             myImageView.setTop(childBean.getY());
-            layoutParams.leftMargin = (childBean.getX() + 10);
+            layoutParams.leftMargin = (childBean.getX());
             layoutParams.topMargin = childBean.getY();
             layoutParams.width = childBean.getWidth();
             layoutParams.height = childBean.getHeight();
@@ -117,21 +119,19 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
             frameLayout.addView(myImageView);
         }
         horizontalScrollView.addView(frameLayout);
-//        horizontalScrollView.setId(container.getId());
-
         return horizontalScrollView;
     }
 
-    private LayoutBean converPosition(LayoutBean mLayoutBean, float scale) {
-        LayoutBean converBean = mLayoutBean;
-        for (int i = 0; i < converBean.getPages().size(); i++) {
-            ChildBean childBean = mLayoutBean.getPages().get(i);
-            childBean.setX((int) ((baseW * childBean.getX() * scale) + (lineSpace * scale) * childBean.getX()));
-            Log.i("FragmentBody", "childBean X " + childBean.getX());
-            childBean.setY((int) ((baseH * childBean.getY() * scale) + (lineSpace * scale) * childBean.getY()));
-            childBean.setWidth((int) (((baseW * childBean.getWidth()) * scale) + (((childBean.getWidth() - 1) * lineSpace) * scale)));
-            childBean.setHeight((int) (((baseH * childBean.getHeight()) * scale) + (((childBean.getHeight() - 1) * lineSpace) * scale)));
-        } return converBean;
+    private Navigation converPosition(Navigation mNavigation, float scale) {
+        Navigation converNavigation = mNavigation;
+        for (int i = 0; i < converNavigation.getLayout().size(); i++) {
+            Layout layoutBean = mNavigation.getLayout().get(i);
+            layoutBean.setX((int) ((converNavigation.getBaseWidth() * layoutBean.getX() * scale) + (converNavigation.getLineSpace() * scale) * layoutBean.getX()));
+            Log.i("FragmentBody", "childBean X " + layoutBean.getX());
+            layoutBean.setY((int) ((converNavigation.getBaseHeight() * layoutBean.getY() * scale) + (converNavigation.getLineSpace() * scale) * layoutBean.getY()));
+            layoutBean.setWidth((int) (((converNavigation.getBaseWidth() * layoutBean.getWidth()) * scale) + (((layoutBean.getWidth() - 1) * converNavigation.getLineSpace()) * scale)));
+            layoutBean.setHeight((int) (((converNavigation.getBaseHeight() * layoutBean.getHeight()) * scale) + (((layoutBean.getHeight() - 1) * converNavigation.getLineSpace()) * scale)));
+        } return converNavigation;
     }
 
     private void markLastView(MyImageView mView) {
@@ -143,21 +143,6 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
                 Log.i("FragmentBody", "return lastView " + lastView.getId());
             }
         }
-    }
-
-    /**
-     * 根据分辨率计算当前缩放
-     *
-     * @param childBean
-     * @param percentage
-     * @return
-     */
-    private int[] scaleXY(ChildBean childBean, float percentage) {
-        int x = (int) (childBean.getX());
-        int y = (int) (childBean.getY());
-        int width = (int) (childBean.getWidth());
-        int height = (int) (childBean.getHeight());
-        return new int[]{x, y, width, height};
     }
 
     /**
