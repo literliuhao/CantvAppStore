@@ -21,7 +21,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.File;
 import java.util.List;
 
 import cn.can.downloadlib.AppInstallListener;
@@ -30,6 +29,8 @@ import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.utils.ApkUtils;
+import cn.can.tvlib.utils.PackageUtil;
+import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.ToastUtils;
 
@@ -82,6 +83,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
         super.onAttachedToRecyclerView(recyclerView);
         mRecyclerView = recyclerView;
     }
+
 
     /**
      * DownloadViewHolder create by laifrog
@@ -227,7 +229,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
         /**
          * item隐藏右侧controlview
          */
-        public void hidecotrolView() {
+        public void hidecontrolView() {
             itemView.removeCallbacks(showControlViewRunnable);
             appControlLayout.setVisibility(View.INVISIBLE);
         }
@@ -369,6 +371,9 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
         this.mOnItemEventListener = listener;
     }
 
+    /**
+     * 外部回调接口
+     */
     public interface OnItemEventListener {
         void onItemContentFocusChanged(View view, boolean hasFocus, int pos);
 
@@ -387,7 +392,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
 
     /**
      * @author laiforg
-     *         item  View.OnFocusChangeListener,View.OnClickListener的实现类
+     *         item  View.OnFocusChangeListener,View.OnClickListener的实现类，view.OnKeyListener
      */
     public class ItemEventListener implements View.OnFocusChangeListener, View.OnClickListener, View.OnKeyListener {
 
@@ -430,12 +435,17 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                         break;
                     case AppInstallListener.APP_INSTALL_SUCESS:
                         //TODO
-
+                        String pacageName = ApkUtils.getPkgNameFromApkFile(v.getContext().getApplicationContext(), holder.downloadTask.getFilePath());
+                        boolean isAvailable = ApkUtils.isAvailable(v.getContext().getApplicationContext(), pacageName);
+                        if (isAvailable) {
+                            PackageUtil.openApp(v.getContext().getApplicationContext(), pacageName);
+                        } else {
+                            PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string.download_open_app_error));
+                        }
                         break;
                     case AppInstallListener.APP_INSTALL_FAIL:
-                        // TODO: 2016/11/15
-                        File apkFile = new File(holder.downloadTask.getSaveDirPath() + File.separator + holder.downloadTask.getFileName());
-                        ApkUtils.install(v.getContext(), apkFile);
+                        holder.downloadTask.setDownloadStatus(AppInstallListener.APP_INSTALLING);
+
                         break;
                 }
                 //考虑到未执行的任务从init状态调pause状态时不会回掉，故此时手动刷新一次UI
@@ -449,15 +459,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     ToastUtils.showMessage(v.getContext(), v.getContext().getString(R.string.download_installing));
                     return;
                 }
-                if (AppInstallListener.APP_INSTALL_SUCESS == holder.downloadTask.getDownloadStatus()) {
-                    ToastUtils.showMessage(v.getContext(), v.getContext().getString(R.string.download_installed));
-                    return;
-                }
                 DownloadManager.getInstance(v.getContext().getApplicationContext()).cancel(holder.downloadTask);
-                boolean deleteSuccessful = data.remove(holder.downloadTask);
-                if (deleteSuccessful) {
-                    notifyItemRemoved(holder.position);
-                }
                 if (mOnItemEventListener != null) {
                     mOnItemEventListener.onDeleteButtonClick(v, holder.position, holder.downloadTask);
                 }
@@ -473,7 +475,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
             if (!holder.appContentLayout.hasFocus()
                     && !holder.appDeleteBtn.hasFocus()
                     && !holder.appControlBtn.hasFocus()) {
-                holder.hidecotrolView();
+                holder.hidecontrolView();
             }
             if (v.getId() == holder.appContentLayout.getId()) {
                 if (hasFocus) {

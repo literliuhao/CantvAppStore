@@ -34,7 +34,7 @@ public class RotateView extends ImageView {
     }
 
     private void init() {
-        setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        setScaleType(ScaleType.CENTER_INSIDE);
         mRotateAnim = new ValueAnimator().ofFloat(0, 1);
         mRotateAnim.setDuration(1000);
         mRotateAnim.setInterpolator(new LinearInterpolator());
