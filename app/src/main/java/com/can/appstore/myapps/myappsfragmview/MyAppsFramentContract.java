@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 
 import java.util.List;
 
-import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 /**
@@ -21,12 +20,12 @@ public interface MyAppsFramentContract {
 
         void release();
 
-        void  saveShowList(List<PackageUtil.AppInfo>  list);
+//        void  saveShowList(List<PackageUtil.AppInfo>  list);
     }
 
     interface View{
 
-        void loadAddAppInfoSuccess(List<AppInfo> showList, List<Drawable> mDraebleList);
+        void loadAppInfoSuccess(List<AppInfo> showList, List<Drawable> mDraebleList);
     }
 
 }

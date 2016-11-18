@@ -23,6 +23,20 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+        <activity android:name=".PortalActivity">
+
+        </activity>
+        <activity android:name=".search.SearchActivity"></activity>
+        <activity android:name=".specialdetail.SpecialDetailActivity">
+            <intent-filter>
+                <action android:name="com.can.appstore.ACTION.TOPIC_DETAIL"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".active.ActiveActivity">
+            <intent-filter>
+                <action android:name="com.can.appstore.ACTION.ACTIVITY_DETAIL"/>
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:hardwareAccelerated="false"
@@ -36,18 +50,15 @@
         <activity android:name=".PortalActivity">
 
         </activity>
-        <activity android:name=".search.SearchActivity">
+        <!--<activity android:name=".specialdetail.SpecialDetailActivity">-->
 
-        </activity>
-        <activity android:name=".specialdetail.SpecialDetailActivity">
+        <!--</activity>-->
+        <!--<activity android:name=".active.ActiveActivity">-->
 
-        </activity>
-        <activity android:name=".active.ActiveActivity">
+        <!--</activity>-->
+        <!--<activity android:name=".homerank.HomeRankActivity">-->
 
-        </activity>
-        <activity android:name=".homerank.HomeRankActivity">
-
-        </activity>
+        <!--</activity>-->
         <activity
             android:name=".index.IndexActivity"
             android:label="@string/app_name"

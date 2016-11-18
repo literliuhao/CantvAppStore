@@ -70,7 +70,7 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                mView.loadAddAppInfoSuccess(mShowList,mDrawables);
+                mView.loadAppInfoSuccess(mShowList,mDrawables);
             }
         }.execute();
 
@@ -135,24 +135,21 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
 //        }
     }
 
-    @Override
-    public void saveShowList(List<AppInfo> list) {
 
-    }
 
 
     public void topApp(int position) {
         AppInfo appInfo = mShowList.get(position);
         mShowList.remove(position);
         mShowList.add(2, appInfo);
-        mView.loadAddAppInfoSuccess(mShowList,mDrawables);
+        mView.loadAppInfoSuccess(mShowList,mDrawables);
         mMyAppsListDataUtil.saveShowList(mShowList);
     }
 
     public void removeApp(int position) {
         mShowList.remove(position);
         mMyAppsListDataUtil.saveShowList(mShowList);
-        mView.loadAddAppInfoSuccess(mShowList,mDrawables);
+        mView.loadAppInfoSuccess(mShowList,mDrawables);
     }
 
     public void unRegiestr() {

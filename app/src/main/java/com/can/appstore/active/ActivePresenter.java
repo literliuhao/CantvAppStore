@@ -21,6 +21,7 @@ import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
+import cn.can.tvlib.utils.ApkUtils;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.StringUtils;
 import retrofit2.Response;
@@ -42,44 +43,15 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
     private DownloadManager mDownloadManger;
     private Context mContext;
     private long mLastClickTime;
-
-    private Activity mActive;
+    private String mPkgName;
+    private String mDownloadUrl;
 
     public ActivePresenter(ActiveContract.OperationView operationView, Context context) {
         this.mOperationView = operationView;
-        this.mContext = context;
-
-        requestActiveData();
+        this.mContext = context.getApplicationContext();
 
     }
 
-    private void requestActiveData(){
-        final CanCall<Result<Activity>> mActiveData = HttpManager.getApiService().getActivityInfo("234");
-        mActiveData.enqueue(new CanCallback<Result<Activity>>() {
-            @Override
-            public void onResponse(CanCall<Result<Activity>> call, Response<Result<Activity>> response) throws Exception {
-                Result<Activity> info = response.body();
-                if (info.getData() == null){
-                    return;
-                }
-                mActive = info.getData();
-                mActive.getRecommend().getPackageName();
-                if (StringUtils.isEmpty(mActive.getUrl())) {
-                    mOperationView.setNativeLayout(mActive.getBackground());
-                    initDownloadTask(mActive.getRecommend().getUrl());
-                } else {
-                    mOperationView.loadwebview(mActive.getUrl());
-                }
-            }
-
-            @Override
-            public void onFailure(CanCall<Result<Activity>> call, CanErrorWrapper errorWrapper) {
-
-            }
-        });
-    }
-
-    //---------------------------- ActiveContract.TaskPresenter ----------------------------------
     private void initDownloadTask(String downloadUrl) {
         mDownloadManger = DownloadManager.getInstance(mContext);
         DownloadTask downloadTask = mDownloadManger.getCurrentTaskById(MD5.MD5(downloadUrl));
@@ -119,12 +91,41 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
         }
     }
 
+    //---------------------------- ActiveContract.TaskPresenter ----------------------------------
+    @Override
+    public void requestActiveData(String activeId){
+        final CanCall<Result<Activity>> mActiveData = HttpManager.getApiService().getActivityInfo(activeId);
+        mActiveData.enqueue(new CanCallback<Result<Activity>>() {
+            @Override
+            public void onResponse(CanCall<Result<Activity>> call, Response<Result<Activity>> response) throws Exception {
+                Result<Activity> info = response.body();
+                if (info.getData() == null){
+//                    mOperationView.showNetworkRetryView(true,false);
+                    return;
+                }
+                Activity active = info.getData();
+                boolean isWebView = StringUtils.isEmpty(active.getUrl());
+                mOperationView.showNetworkRetryView(false,isWebView);
+                if (isWebView) {
+                    mPkgName = active.getRecommend().getPackageName();
+                    mDownloadUrl = active.getRecommend().getUrl();
+                    mOperationView.setNativeLayout(active.getBackground());
+                    initDownloadTask(mDownloadUrl);
+                } else {
+                    mOperationView.loadwebview(active.getUrl());
+                }
+            }
+
+            @Override
+            public void onFailure(CanCall<Result<Activity>> call, CanErrorWrapper errorWrapper) {
+                mOperationView.showNetworkRetryView(true,false);
+            }
+        });
+    }
+
     @Override
     public void clickBtnDownload() {
-        if (!NetworkUtils.isNetworkConnected(mContext)) {
-            mOperationView.showToast(mContext.getString(R.string.network_connection_disconnect));
-        }
-        String downloadUrl = mActive.getRecommend().getUrl();
+        String downloadUrl = mDownloadUrl;
         if(TextUtils.isEmpty(downloadUrl)){
             mOperationView.showToast("下载地址异常");
         }
@@ -136,9 +137,9 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
         DownloadTask downloadTask = mDownloadManger.getCurrentTaskById(MD5.MD5(downloadUrl));
         if (downloadTask != null) {
             int status = downloadTask.getDownloadStatus();
-            if(status == AppInstallListener.APP_INSTALL_SUCESS){
+            if(status == AppInstallListener.APP_INSTALL_SUCESS || ApkUtils.isAvailable(mContext,mPkgName)){
                 mOperationView.showToast("安装成功");
-                startApk(mActive.getRecommend().getPackageName());
+                startApk();
                 return;
             }
             if(status == AppInstallListener.APP_INSTALL_FAIL){
@@ -146,7 +147,7 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
                 return;
             }
             if(status == AppInstallListener.APP_INSTALLING){
-                mOperationView.showToast("正在安装");
+                mOperationView.showToast("正在安装,请稍后");
                 return;
             }
 
@@ -199,9 +200,9 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
     public void onStart(DownloadTask downloadTask) {
         Log.d(TAG, "onStart: " + downloadTask.getCompletedSize());
         if (downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_START) {
+            mOperationView.refreshTextProgressbarTextStatus("");
             float downloadProgress = calculatePercent(downloadTask.getCompletedSize(), downloadTask.getTotalSize());
-           if(downloadProgress < 2){
-               mOperationView.refreshTextProgressbarTextStatus("");
+            if(downloadProgress < 2){
                mOperationView.refreshProgressbarProgress(2);
            }
         }
@@ -281,11 +282,12 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
         return totalSize == 0 ? 0 : (float) (completedSize * 100 / totalSize);
     }
 
-    private void startApk(String packageName){
+    private void startApk(){
+        String packageName = mPkgName;
         PackageManager pm = mContext.getPackageManager();
         Intent intent=pm.getLaunchIntentForPackage(packageName);
         if(intent == null){
-            mOperationView.showToast("包名有误");
+            mOperationView.showToast("未找到该应用");
             return;
         }
         mContext.startActivity(intent);
