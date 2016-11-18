@@ -8,6 +8,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.tencent.bugly.beta.Beta;
+import com.tencent.bugly.beta.UpgradeInfo;
+
+import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
@@ -24,11 +28,10 @@ public class UpgradeService extends IntentService {
     public static final int SHOW_UPGRADE_INSTALL_COMPLETE = 2;
     public static final int SHOW_UPGRADE_PROGRESSBAR_DIALOG = 3;
     public static final int SHOW_UPGRADE_FAIL_DIALOG = 4;
-    private UpgradeProgressBarDialog mProgressBarDialog;
     private int mLocalVersion;
-    private UpgradeInfo mUpgradeInfo;
     private String mUpdatePath;
     private String mFileName;
+    private UpgradeInfo mUpgradeInfo;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -36,37 +39,31 @@ public class UpgradeService extends IntentService {
             super.handleMessage(msg);
             switch (msg.what) {
                 case SHOW_UPGRADE_INFO_DIALOG:
-                    UpgradeInfo upgradeInfo = (UpgradeInfo) msg.obj;
                     UpgradeInFoDialog.OnUpgradeClickListener listener = new UpgradeInFoDialog.OnUpgradeClickListener() {
                         @Override
                         public void onClick() {
-                            mHandler.sendEmptyMessage(SHOW_UPGRADE_PROGRESSBAR_DIALOG);
+                            installApk();
                         }
                     };
-                    UpgradeInFoDialog dialog = new UpgradeInFoDialog(UpgradeService.this, "系统升级", upgradeInfo.getVersionName(), upgradeInfo.getUpdateLog(), "安装", listener);
+                    UpgradeInFoDialog dialog = new UpgradeInFoDialog(UpgradeService.this, "系统升级", mUpgradeInfo
+                            .versionName, mUpgradeInfo.newFeature, "安装", listener);
                     dialog.show();
                     break;
                 case SHOW_UPGRADE_INSTALL_COMPLETE:
-                    if (mProgressBarDialog != null) {
-                        mProgressBarDialog.dismiss();
-                    }
-                    UpgradeInfo installCompleteInfo = (UpgradeInfo) msg.obj;
-                    UpgradeInFoDialog.OnUpgradeClickListener listener1 = new UpgradeInFoDialog.OnUpgradeClickListener() {
+                    UpgradeInFoDialog.OnUpgradeClickListener listener1 = new UpgradeInFoDialog.OnUpgradeClickListener
+                            () {
                         @Override
                         public void onClick() {
                             ToastUtils.showMessage(UpgradeService.this, "运行apk");
                         }
                     };
-                    UpgradeInFoDialog upgradeInfoDialog = new UpgradeInFoDialog(UpgradeService.this, "系统升级", installCompleteInfo.getVersionName(), installCompleteInfo.getUpdateLog(), "运行", listener1);
+                    UpgradeInFoDialog upgradeInfoDialog = new UpgradeInFoDialog(UpgradeService.this, "已经是最新版本了",
+                            mUpgradeInfo.versionName, mUpgradeInfo.newFeature, "运行", listener1);
                     upgradeInfoDialog.show();
                     break;
                 case SHOW_UPGRADE_PROGRESSBAR_DIALOG:
-                    mProgressBarDialog = new UpgradeProgressBarDialog(UpgradeService.this);
-                    mProgressBarDialog.show();
-                    Message msg1 = Message.obtain();
-                    msg1.what = SHOW_UPGRADE_INSTALL_COMPLETE;
-                    msg1.obj = mUpgradeInfo;
-                    mHandler.sendMessageDelayed(msg1, 5000);
+                    //                    mProgressBarDialog = new UpgradeProgressBarDialog(UpgradeService.this);
+                    //                    mProgressBarDialog.show();
                     break;
                 case SHOW_UPGRADE_FAIL_DIALOG:
                     String content = (String) msg.obj;
@@ -90,16 +87,10 @@ public class UpgradeService extends IntentService {
 
     private void requsetInfo() {
         // TODO: 2016/11/2  联网获取数据
-        //假数据
-        mUpgradeInfo = new UpgradeInfo();
-        mUpgradeInfo.setVersionCode(2);
-        mUpgradeInfo.setVersionName("CAN UI1.0");
-        mUpgradeInfo.setMd5("");
-        mUpgradeInfo.setUpdateLog("1、 解决已知bug \n2、 添加新功能 \n3、 添加新功能\n3、 添加新功能\n3、 添加新功能\n3、 添加新功能\n3、 添加新功能\n3、 添加新功能");
-        //String url = "http://cdn.can.cibntv.net/02/mam/Public/Picture/moviepost/16-11/01/01/fuji.jpg";
-        String url = "http://app.znds.com/down/20160909/dsj2.0-2.9.1-dangbei.apk ";
-        mUpgradeInfo.setUrl(url);
-
+        mUpgradeInfo = Beta.getUpgradeInfo();
+        if (mUpgradeInfo == null) {
+            return;
+        }
         checkUpgradeInfo();
     }
 
@@ -107,34 +98,31 @@ public class UpgradeService extends IntentService {
      * 检测更新信息并作出逻辑判断
      */
     private void checkUpgradeInfo() {
-        // 下载到本地的更新的APK的地址
-        // TODO: 2016/11/11  地址  名称
         mUpdatePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/updateapk";
         if (!Util.isFileExist(mUpdatePath)) {
             Util.creatDir(mUpdatePath);
         }
-        mFileName = mUpdatePath + "/" + mUpgradeInfo.getVersionCode() + ".apk";
+        mFileName = mUpdatePath + "/" + mUpgradeInfo.versionCode + ".apk";
         //获取本地的版本号
         try {
-            mLocalVersion = getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), PackageManager.GET_CONFIGURATIONS).versionCode;
+            mLocalVersion = getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext()
+                    .getPackageName(), PackageManager.GET_CONFIGURATIONS).versionCode;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        // TODO: 2016/11/11 完善log
-        Log.d(TAG, "获取到版本号=" + mLocalVersion);
-        // TODO: 2016/11/3  对比版本号是否下载
-        if (mUpgradeInfo.getVersionCode() <= mLocalVersion) {
+        Log.d(TAG, "LocalVersionCode=" + mLocalVersion + ",UpGradeVersionCode=" + mUpgradeInfo.versionCode);
+        if (mUpgradeInfo.versionCode <= mLocalVersion) {
             return;
         }
         if (checkIsExistApk()) {
             Message msg = Message.obtain();
             msg.what = SHOW_UPGRADE_INFO_DIALOG;
-            msg.obj = mUpgradeInfo;
             mHandler.sendMessage(msg);
         } else {
             //先清空本地存放Apk的空间
+            // TODO: 2016/11/16 要不要清空
             Util.delAllDateFile(mUpdatePath);
-            downLoadApk(mUpgradeInfo.getUrl());
+            downLoadApk(mUpgradeInfo.apkUrl);
         }
     }
 
@@ -144,8 +132,7 @@ public class UpgradeService extends IntentService {
     private boolean checkIsExistApk() {
         if (Util.isFileExist(mFileName)) {
             String localMD5 = Util.getFileMD5(mFileName);
-            //if(mUpgradeInfo.getMd5().equalsIgnoreCase(localMD5)){
-            if (true) {
+            if (mUpgradeInfo.apkMd5.equalsIgnoreCase(localMD5)) {
                 Log.d(TAG, "存在已下载未安装的apk");
                 return true;
             }
@@ -161,9 +148,36 @@ public class UpgradeService extends IntentService {
     private void downLoadApk(String url) {
         DownloadManager manager = DownloadManager.getInstance(this);
         DownloadTask task = new DownloadTask(url);
-        // TODO: 2016/11/7  名称修改为mVersion+.apk
-        task.setFileName("2.apk");
+        task.setFileName(mUpgradeInfo.versionCode + ".apk");
         task.setSaveDirPath(mUpdatePath);
+
+        /**
+         * 调用监听，阻止下载完成自动静默安装，不可删除
+         */
+        task.setAppListener(new AppInstallListener() {
+            @Override
+            public void onInstalling(DownloadTask downloadTask) {
+            }
+
+            @Override
+            public void onInstallSucess(String id) {
+            }
+
+            @Override
+            public void onInstallFail(String id) {
+            }
+
+            @Override
+            public void onUninstallSucess(String id) {
+
+            }
+
+            @Override
+            public void onUninstallFail(String id) {
+
+            }
+        });
+
         manager.singleTask(task, new DownloadTaskListener() {
             @Override
             public void onPrepare(DownloadTask downloadTask) {
@@ -201,19 +215,36 @@ public class UpgradeService extends IntentService {
                 Log.d(TAG, "DownloadManager=onError===" + errorCode);
                 onLoadingError();
             }
+
+        });
+    }
+
+
+    private void installApk() {
+        Util.install(this, mFileName, mUpgradeInfo.fileSize, new InstallApkListener() {
+
+            @Override
+            public void onInstallSuccess() {
+                Log.d(TAG, "onInstallSuccess: ");
+                onInstallComplete();
+            }
+
+            @Override
+            public void onInstallFail(String reason) {
+                Log.d(TAG, "onInstallFail: ");
+                onInstallError(reason);
+            }
         });
     }
 
     private void onLoadingCompleted() {
         String localMD5 = Util.getFileMD5(mFileName);
-        //if(!mUpgradeInfo.getMd5().equalsIgnoreCase(localMD5)){
-        if (false) {
+        if (!mUpgradeInfo.apkMd5.equalsIgnoreCase(localMD5)) {
             Util.delAllDateFile(mUpdatePath);
         } else {
             //显示安装apk对话框
             Message msg = Message.obtain();
             msg.what = SHOW_UPGRADE_INFO_DIALOG;
-            msg.obj = mUpgradeInfo;
             mHandler.sendMessage(msg);
         }
     }
@@ -226,15 +257,15 @@ public class UpgradeService extends IntentService {
     }
 
     private void onInstallComplete() {
-        Message msg = Message.obtain();
-        msg.what = SHOW_UPGRADE_INFO_DIALOG;
-        mHandler.sendMessage(msg);
+        mHandler.sendEmptyMessage(SHOW_UPGRADE_INSTALL_COMPLETE);
     }
 
-    private void onInstallError() {
+    private void onInstallError(String reason) {
         Message msg = Message.obtain();
         msg.what = SHOW_UPGRADE_FAIL_DIALOG;
-        msg.obj = "系统内存不足，升级失败";
+        msg.obj = reason;
         mHandler.sendMessage(msg);
+        //安装失败，清空文件夹
+        Util.delAllDateFile(mUpdatePath);
     }
 }

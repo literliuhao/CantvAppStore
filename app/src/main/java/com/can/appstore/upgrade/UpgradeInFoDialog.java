@@ -2,12 +2,12 @@ package com.can.appstore.upgrade;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.can.appstore.R;
-import com.can.appstore.applist.AppListContract;
 
 import cn.can.tvlib.utils.ToastUtils;
 
@@ -26,7 +26,7 @@ public class UpgradeInFoDialog extends Dialog {
     private UpgradeInfoNoticeCursor mUserNoticeCursor;
     private OnUpgradeClickListener mOnUpgradeClickListener;
 
-    interface OnUpgradeClickListener {
+    public interface OnUpgradeClickListener {
         void onClick();
     }
 
@@ -67,5 +67,13 @@ public class UpgradeInFoDialog extends Dialog {
         mTvUpgradeInfoVersion.setText("新版本：" + version);
         mTvUpgradeInfoContent.setText(content);
         tv_upgrade_install.setText(buttonText);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

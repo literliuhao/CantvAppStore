@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 
+import com.can.appstore.R;
+import com.can.appstore.applist.AppListActivity;
+
 import cn.can.tvlib.utils.PromptUtils;
 
 public abstract class BaseActivity extends FragmentActivity {
@@ -47,7 +50,15 @@ public abstract class BaseActivity extends FragmentActivity {
 
     public void showLoadingDialog() {
         if (mLoadingDialog == null) {
-            mLoadingDialog = PromptUtils.showLoadingDialog(this);
+
+            //如果是列表页，添加loading的偏移量，如果不是，正常创建loading
+            if (this instanceof AppListActivity) {
+                mLoadingDialog = PromptUtils.showLoadingDialog(this, -2, getResources().getDimensionPixelSize(R.dimen
+                        .px132));
+            } else {
+                mLoadingDialog = PromptUtils.showLoadingDialog(this);
+            }
+
         } else if (mLoadingDialog.isShowing()) {
             return;
         } else {
@@ -59,6 +70,10 @@ public abstract class BaseActivity extends FragmentActivity {
         if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
             mLoadingDialog.dismiss();
         }
+    }
+
+    public boolean isLoadingDialogShowing() {
+        return mLoadingDialog != null && mLoadingDialog.isShowing();
     }
 
     public Context getContext() {

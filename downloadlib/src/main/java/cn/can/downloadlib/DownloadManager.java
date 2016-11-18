@@ -117,15 +117,18 @@ public class DownloadManager implements AppInstallListener {
     public DownloadManager(OkHttpClient client, Context context) {
         this.mOkHttpClient = client;
         this.mContext = context;
+        mAppInstallListeners = new ArrayList<>();
     }
 
     private DownloadManager() {
         init();
+        mAppInstallListeners = new ArrayList<>();
     }
 
     private DownloadManager(Context context, InputStream in) {
         this.mContext = context;
         init(in, null);
+        mAppInstallListeners = new ArrayList<>();
     }
 
     /**
@@ -447,7 +450,6 @@ public class DownloadManager implements AppInstallListener {
 
     /**
      * 获取所有任务（执行中与未执行）
-     *
      * @return
      */
     public List<DownloadTask> loadAllTask() {

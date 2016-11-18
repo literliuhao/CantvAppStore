@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -355,7 +356,8 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
             if (mTime == 0) {
                 mTime = System.currentTimeMillis();
                 return super.dispatchKeyEvent(event);
-            } else if (time - mTime < MIN_DOWN_INTERVAL) {
+            } else if (time - mTime < 150) {
+                Log.d(TAG, "dispatchKeyEvent: " + System.currentTimeMillis());
                 return true;
             } else {
                 mTime = System.currentTimeMillis();

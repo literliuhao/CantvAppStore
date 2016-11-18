@@ -61,11 +61,11 @@ public class PortalActivity extends Activity {
                 list.add("卸载管理");
             } else if (i == 5) {
                 list.add("应用详情3");
-            } else if (i == 6){
+            } else if (i == 6) {
                 list.add("消息中心");
-            } else if (i == 7){
+            } else if (i == 7) {
                 list.add("首页");
-            }else {
+            } else {
                 list.add(i + "");
             }
         }
@@ -87,9 +87,9 @@ public class PortalActivity extends Activity {
                 // TODO: 2016/11/4  添加跳转页面点击事件
                 if (position == 0) {
                     Intent intent = new Intent(PortalActivity.this, AppListActivity.class);
-                    intent.putExtra(AppListActivity.PAGE_TYPE, AppListActivity.APPLICATION);
-                    intent.putExtra(AppListActivity.TOPIC_ID, "");
-                    intent.putExtra(AppListActivity.TYPE_ID, "");
+                    intent.putExtra(AppListActivity.ENTRY_KEY_SRC_TYPE, AppListActivity.PAGE_TYPE_APP_LIST);
+                    intent.putExtra(AppListActivity.ENTRY_KEY_TOPIC_ID, "");
+                    intent.putExtra(AppListActivity.ENTRY_KEY_TYPE_ID, "");
                     PortalActivity.this.startActivity(intent);
                 } else if (position == 1) {
                     Intent intent = new Intent(PortalActivity.this, DownloadLeadAcitivity.class);
@@ -109,10 +109,10 @@ public class PortalActivity extends Activity {
                     Intent intent = new Intent(PortalActivity.this, AppDetailActivity.class);
                     intent.putExtra("appID", "3");
                     startActivity(intent);
-                }else if(position == 6){
+                } else if (position == 6) {
                     Intent intent = new Intent(PortalActivity.this, MessageStartActivity.class);
                     startActivity(intent);
-                }else if(position==7){
+                } else if (position == 7) {
                     Intent intent = new Intent(PortalActivity.this, MainActivity.class);
                     startActivity(intent);
                 }

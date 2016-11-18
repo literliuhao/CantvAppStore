@@ -17,20 +17,8 @@
         android:layout_marginBottom="@dimen/px24"
         android:background="@drawable/shap_app_list_icon_bg"
         android:scaleType="fitXY"
-        roundCornerImage:cornerSize="@dimen/dimen_24px"
+        roundCornerImage:cornerSize="@dimen/px24"
         />
-    <ImageView
-        android:id="@+id/iv_app_list_error"
-        android:layout_width="@dimen/px136"
-        android:layout_height="@dimen/px136"
-        android:layout_marginTop="@dimen/px24"
-        android:layout_marginLeft="@dimen/px24"
-        android:layout_marginBottom="@dimen/px24"
-        android:scaleType="centerInside"
-        android:src="@mipmap/cibn_icon"
-        android:visibility="gone"
-        />
-
     <TextView
         android:id="@+id/tv_app_list_name"
         android:layout_width="@dimen/px240"
