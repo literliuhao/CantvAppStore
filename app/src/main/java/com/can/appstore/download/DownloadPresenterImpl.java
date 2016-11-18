@@ -120,7 +120,6 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
         for (DownloadTask task : mTasks) {
             if (DownloadStatus.DOWNLOAD_STATUS_COMPLETED == task.getDownloadStatus()
                     || DownloadStatus.DOWNLOAD_STATUS_CANCEL == task.getDownloadStatus()
-                    || DownloadStatus.DOWNLOAD_STATUS_ERROR == task.getDownloadStatus()
                     || AppInstallListener.APP_INSTALL_FAIL == task.getDownloadStatus()
                     || AppInstallListener.APP_INSTALL_SUCESS == task.getDownloadStatus()
                     || AppInstallListener.APP_INSTALLING == task.getDownloadStatus()) {
@@ -148,7 +147,6 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
         for (DownloadTask task : mTasks) {
             if (DownloadStatus.DOWNLOAD_STATUS_COMPLETED == task.getDownloadStatus()
                     || DownloadStatus.DOWNLOAD_STATUS_CANCEL == task.getDownloadStatus()
-                    || DownloadStatus.DOWNLOAD_STATUS_ERROR == task.getDownloadStatus()
                     || AppInstallListener.APP_INSTALL_FAIL == task.getDownloadStatus()
                     || AppInstallListener.APP_INSTALLING == task.getDownloadStatus()
                     || AppInstallListener.APP_INSTALL_SUCESS == task.getDownloadStatus()) {
@@ -193,3 +191,4 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
     }
 
 }
+

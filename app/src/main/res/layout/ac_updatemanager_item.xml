@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="424px"
+    android:layout_height="185px"
+    android:layout_margin="18px"
+    android:background="@drawable/selector_updateitem"
+    android:focusable="true">
+
+    <RelativeLayout
+        android:id="@+id/rl_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/iv_updateapp_icon"
+            android:layout_width="136px"
+            android:layout_height="136px"
+            android:layout_marginLeft="24px"
+            android:layout_marginTop="24px"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/tv_updateapp_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24px"
+            android:layout_marginTop="34px"
+            android:clickable="true"
+            android:layout_toRightOf="@id/iv_updateapp_icon"
+            android:singleLine="true"
+            android:text="@string/update_title"
+            android:textColor="#ccffffff"
+            android:textSize="32px" />
+
+        <TextView
+            android:id="@+id/tv_updateapp_versioncode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_updateapp_name"
+            android:layout_marginLeft="24px"
+            android:layout_marginTop="6px"
+            android:layout_toRightOf="@id/iv_updateapp_icon"
+            android:singleLine="true"
+            android:text="@string/update_app_versionname"
+            android:textColor="#80ffffff"
+            android:textSize="24px" />
+
+        <TextView
+            android:id="@+id/tv_updateapp_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_updateapp_versioncode"
+            android:layout_marginLeft="24px"
+            android:layout_marginTop="1px"
+            android:layout_toRightOf="@id/iv_updateapp_icon"
+            android:text="@string/update_app_size"
+            android:textColor="#80ffffff"
+            android:textSize="24px" />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/iv_updateapp_updatedicon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/update_ready"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_updateapp_downloading"
+        android:layout_width="76px"
+        android:layout_height="36px"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="28px"
+        android:layout_marginRight="24px"
+        android:background="@drawable/button_installing"
+        android:gravity="center"
+        android:text="@string/update_downloading"
+        android:textColor="#cc0e0f12"
+        android:textSize="22px"
+        android:visibility="gone" />
+
+    <ProgressBar
+        android:id="@+id/pb_updateapp_progressbar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="10px"
+        android:layout_alignParentBottom="true"
+        android:progressDrawable="@drawable/progress_updateapp" />
+</RelativeLayout>

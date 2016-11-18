@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/myapps_main_page"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+    >
+
+    <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
+        android:id="@+id/cr_myapps"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/px640"
+        android:layout_centerHorizontal="true"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:paddingLeft="@dimen/px20"
+        android:paddingTop="@dimen/px20"
+        ></cn.can.tvlib.ui.view.recyclerview.CanRecyclerView>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@id/cr_myapps"
+        android:layout_below="@+id/cr_myapps"
+        android:layout_marginRight="@dimen/px10"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:layout_width="@dimen/px32"
+            android:layout_height="@dimen/px32"
+            android:layout_marginTop="@dimen/px8"
+            android:background="@drawable/menu_icon"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/px8"
+            android:text="按菜单可管理应用排序"
+            android:textColor="@color/tv_menu_guanli_color"
+            android:textSize="@dimen/fontsize_32"
+            />
+
+    </LinearLayout>
+
+</RelativeLayout>

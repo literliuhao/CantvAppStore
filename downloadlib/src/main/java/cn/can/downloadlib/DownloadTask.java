@@ -362,7 +362,7 @@ public class DownloadTask implements Runnable {
     }
 
     private void onDownloading() {
-        Log.d("onDownloading", mId + " listener size:" + mDownloadlisteners.size());
+        Log.d("onDownloading", mId + " listener size:" + mDownloadlisteners.size()+"  total size:"+mTotalSize);
         for (DownloadTaskListener listener : mDownloadlisteners) {
             listener.onDownloading(this);
         }
@@ -468,3 +468,5 @@ public class DownloadTask implements Runnable {
                 '}';
     }
 }
+
+

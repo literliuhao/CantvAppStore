@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="@dimen/px270"
+                android:layout_height="@dimen/px180"
+                android:focusable="true"
+                android:descendantFocusability="beforeDescendants"
+    >
+    <LinearLayout
+        android:id="@+id/allapps_ll_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        >
+        <ImageView
+            android:layout_width="@dimen/px80"
+            android:layout_height="@dimen/px80"
+            android:id="@+id/allapps_iv_icon"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/px8"
+            />
+        <TextView
+            android:id="@+id/allapps_tv_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/px12"
+            android:text="应用名称"
+            android:gravity="center_horizontal"
+            android:textSize="@dimen/fontsize_32"
+            android:textColor="@color/app_name_color"
+            android:singleLine="true"
+            android:ellipsize="end"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:id="@+id/allapps_ll_edit"
+        android:background="@color/black_opa80"
+        android:visibility="gone"
+
+        >
+        <Button
+            android:id="@+id/allapps_but_startapp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/px54"
+            android:text="启动"
+            android:textSize="@dimen/fontsize_30"
+            android:textColor="@drawable/edit_buttn_textcolor_delector"
+            android:background="@drawable/edit_button_selector"
+            android:focusable="true"
+            />
+        <Button
+            android:id="@+id/allapps_but_uninstallapp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/px54"
+            android:text="卸载"
+            android:textSize="@dimen/fontsize_30"
+            android:textColor="@drawable/edit_buttn_textcolor_delector"
+            android:background="@drawable/edit_button_selector"
+            android:focusable="true"
+            />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

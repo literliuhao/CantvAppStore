@@ -30,6 +30,8 @@ public class CanRecyclerView extends RecyclerView {
     private long mLastKeyCodeTimePoint;
     private int keyCodeEffectInterval = KEYCODE_EFFECT_INTERVAL_UNLIMIT;
 
+
+
     public interface OnFocusSearchCallback {
 
         public void onSuccess(View view, View focused, int focusDirection, Recycler recycler, State state);
