@@ -47,6 +47,7 @@ public class InstallPresenter implements InstallContract.Presenter {
         List appList = InstallPkgUtils.FindAllAPKFile(mPath);
         mDatas.clear();
         if (appList.size() < 1) {
+            mView.hideLoadingDialog();
             mView.showNoData();
         } else {
             mView.hideLoadingDialog();

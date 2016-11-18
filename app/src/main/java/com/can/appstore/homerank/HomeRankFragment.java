@@ -114,10 +114,11 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
                 //分类标签
                 //appList
                 RecyclerView recyclerView = (RecyclerView) childView.findViewById(R.id.list_view);
-                //设置布局背景
-                setBG(recyclerView, i);
                 //"更多" 布局
                 View ll_more_view = childView.findViewById(R.id.load_more_veiw);
+                //设置布局背景
+//                setBG(recyclerView, ll_more_view, i);
+                setBG(childView, ll_more_view, i);
 
                 TextView categoryMore = (TextView) childView.findViewById(R.id.more_textview);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -156,28 +157,36 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
     /**
      * 设置每列排行的背景色
      *
-     * @param view
+     * @param recyview
+     * @param moreView
      * @param position
      */
-    private void setBG(View view, int position) {
-        int defaultColor = R.color.h_rank_tiem_bg1;
+    private void setBG(View recyview, View moreView, int position) {
+        int recy_defaultColor = R.drawable.shape_homerank_item_bg1;
+        int moreView_defaultColor = R.drawable.homerank_bottom_bg1;
+
         switch (position) {
             case 0:
                 break;
             case 1:
-                defaultColor = R.color.h_rank_tiem_bg2;
+                recy_defaultColor = R.drawable.shape_homerank_item_bg2;
+                moreView_defaultColor = R.drawable.homerank_bottom_bg2;
                 break;
             case 2:
-                defaultColor = R.color.h_rank_tiem_bg3;
+                recy_defaultColor = R.drawable.shape_homerank_item_bg3;
+                moreView_defaultColor = R.drawable.homerank_bottom_bg3;
                 break;
             case 3:
-                defaultColor = R.color.h_rank_tiem_bg4;
+                recy_defaultColor = R.drawable.shape_homerank_item_bg4;
+                moreView_defaultColor = R.drawable.homerank_bottom_bg4;
                 break;
             case 4:
-                defaultColor = R.color.h_rank_tiem_bg5;
+                recy_defaultColor = R.drawable.shape_homerank_item_bg5;
+                moreView_defaultColor = R.drawable.homerank_bottom_bg5;
                 break;
         }
-        view.setBackgroundColor(getResources().getColor(defaultColor));
+        recyview.setBackgroundResource(recy_defaultColor);
+        moreView.setBackgroundResource(moreView_defaultColor);
     }
 
 
@@ -185,6 +194,7 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
 
         @Override
         public void onFocusChange(View view, boolean hasFocus) {
+            view.setSelected(hasFocus);
             mFocusListener.addFocusListener(view, hasFocus);
         }
     }
