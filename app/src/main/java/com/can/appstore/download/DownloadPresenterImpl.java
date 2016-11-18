@@ -178,6 +178,16 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
         public void onInstallFail(String id) {
             DownloadDispatcher.getInstance().postInstallStatusEvent(id,TAG,TAG_DOWNLOAD_UPDATA__STATUS );
         }
+
+        @Override
+        public void onUninstallSucess(String id) {
+
+        }
+
+        @Override
+        public void onUninstallFail(String id) {
+
+        }
     }
 
 }
