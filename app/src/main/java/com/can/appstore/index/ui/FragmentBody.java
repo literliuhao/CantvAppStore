@@ -8,12 +8,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.target.Target;
+import com.can.appstore.R;
 import com.can.appstore.entity.Layout;
 import com.can.appstore.entity.Navigation;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 
+import cn.can.tvlib.imageloader.ImageLoader;
+import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 import cn.can.tvlib.utils.DisplayUtil;
+
+import static cn.can.tvlib.imageloader.GlideLoadTask.SuccessCallback;
 
 /**
  * Created by liuhao on 2016/10/17.
@@ -86,11 +94,11 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
             final Layout childBean = mNavigation.getLayout().get(j);
             final MyImageView myImageView = new MyImageView(getActivity());
             myImageView.setId(j);
-            myImageView.setImageURI(childBean.getIcon());
+//            myImageView.setImageURI(childBean.getIcon());
             myImageView.setColour(bodeColor);
             myImageView.setBorder(2);
             myImageView.setFocusable(true);
-            myImageView.setScaleType(MyImageView.ScaleType.CENTER_CROP);
+//            myImageView.setScaleType(MyImageView.ScaleType.CENTER_CROP);
 //            myImageView.setBackground(getResources().getDrawable(R.drawable.index_recommend, null));
             myImageView.setOnFocusChangeListener(FragmentBody.this);
             myImageView.setOnClickListener(new View.OnClickListener() {
@@ -103,14 +111,14 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
 
 //            ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, 25)).build().start(context);
 
-//            ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, 25)).placeholder(R.mipmap.icon_load_default).errorHolder(R.mipmap.icon_loading_fail).successCallback(new GlideLoadTask.SuccessCallback() {
-//                @Override
-//                public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-////                    myImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//                    myImageView.setImageDrawable(resource);
-//                    return true;
-//                }
-//            }).build().start(context);
+            ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, 25)).placeholder(R.mipmap.icon_load_default).errorHolder(R.mipmap.icon_loading_fail).successCallback(new SuccessCallback() {
+                @Override
+                public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                    myImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    myImageView.setImageDrawable(resource);
+                    return true;
+                }
+            }).build().start(context);
 
             layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             myImageView.setLeft(childBean.getX());

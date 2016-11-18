@@ -51,8 +51,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private final int DURATIONLARGE = 300;
     private final int DURATIONSMALL = 300;
     private final float SCALE = 1.05f;
-    private final int OFFSCREENPAGELIMIT = 6;
-    private final int PAGERCURRENTITEM = 4;
+    private final int OFFSCREENPAGELIMIT = 3;
+    private final int PAGERCURRENTITEM = 0;
     //滚动中
     private final int SCROLLING = 2;
     //滚动完成
@@ -134,13 +134,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         FragmentBody fragment;
         for (int i = 0; i < navigationListResult.getData().size(); i++) {
             fragment = new FragmentBody(this, navigationListResult.getData().get(i));
-//            fragment.setTargetFragment(fragment, i);
             mFragmentLists.add(fragment);
         }
 
-        HomeRankFragment homeRankFragment = new HomeRankFragment(this);
         //排行、管理、我的应用、不受服务器后台配置，因此手动干预位置
-//        ManagerFragmentTest topFragment = new ManagerFragmentTest(this);
+        HomeRankFragment homeRankFragment = new HomeRankFragment(this);
         if (mFragmentLists.size() > 0) {
             mFragmentLists.add(TOP_INDEX, homeRankFragment);
         } else {
