@@ -49,18 +49,17 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public final static int DOWNLOAD_BUTTON_STATUS_UPDATE = 8;//更新
     public final static float DOWNLOAD_INIT_PROGRESS = 0f;//初始时进度
     public final static float DOWNLOAD_FINISH_PROGRESS = 100f;//完成时进度
-    private final static String INSTALL_PATH = Environment.getExternalStorageDirectory().getPath() + "/downloadApk/";
+    private final static String INSTALL_PATH = Environment.getExternalStorageDirectory().getPath() + "/can_downloadApk/";
     public int downlaodErrorCode = 0;//下载错误
     private Context mContext;
     private AppDetailContract.View mView;
     private DownloadManager mDownloadManager;
-    private BroadcastReceiver mHomeReceivcer;
     private AppDetailPresenter.AppInstallReceiver mInstalledReceiver;
     public static String Url = "";
     private boolean isShowUpdateButton = false;
-    public String mAppId = "1";
+    public String mAppId = "";
     public String mTaskId = "";
-    private String mTopicId = "54";
+    private String mTopicId = "";
     private CanCall<Result<AppInfo>> mAppDetailCall;
     private AppInfo mAppInfo;
     private String mPackageName = "";
@@ -81,7 +80,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public void getData(Intent intent) {
         if (intent != null) {
             mAppId = intent.getStringExtra("appID");
-            //            topicId = intent.getStringExtra("topicID");
+            mTopicId = intent.getStringExtra("topicID");
         }
     }
 
@@ -292,7 +291,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     @Override
     public void addBroadcastReceiverListener() {
         registerInstallReceiver();
-        registHomeBoradCast();
     }
 
     /**
@@ -395,14 +393,11 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     @Override
     public void onUninstallSucess(String id) {
-
     }
 
     @Override
     public void onUninstallFail(String id) {
-
     }
-
 
     @Override
     public void onError(DownloadTask downloadTask, int errorCode) {
@@ -519,36 +514,12 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     }
 
     /**
-     * 注册按主页键的广播
-     */
-    private void registHomeBoradCast() {
-        mHomeReceivcer = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (action.equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)) {
-                    mView.onClickHomeKey();
-                    dismissIntroduceDialog();
-                    return;
-                }
-            }
-        };
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-        mContext.registerReceiver(mHomeReceivcer, filter);
-    }
-
-    /**
      * 取消注册监听
      */
     public void unRegiestr() {
         if (mInstalledReceiver != null) {
             mContext.unregisterReceiver(mInstalledReceiver);
             mInstalledReceiver = null;
-        }
-        if (mHomeReceivcer != null) {
-            mContext.unregisterReceiver(mHomeReceivcer);
-            mHomeReceivcer = null;
         }
     }
 
