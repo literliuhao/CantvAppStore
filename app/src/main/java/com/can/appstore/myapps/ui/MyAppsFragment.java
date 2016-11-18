@@ -46,26 +46,20 @@ import static android.app.Activity.RESULT_OK;
 
 public class MyAppsFragment extends BaseFragment implements MyAppsFramentContract.View {
 
-    MyAppsFragPresenter mMyAppsFramPresenter;
-
+    private MyAppsFragPresenter mMyAppsFramPresenter;
     //表格布局
-    CanRecyclerView mAppsRecyclerView;
-    MyAppsRvAdapter mMyAppsRvAdapter;
-
-    //浮层对话框
-    Dialog dialog;
+    private CanRecyclerView mAppsRecyclerView;
+    private MyAppsRvAdapter mMyAppsRvAdapter;
 
     //焦点的监听和主Activity处理焦点框的回调
     private OnFocusChangeListener mFocusChangeListener;
     private IAddFocusListener mFocusListener;
-
-
-    //浮层对话框的按钮
+    //浮层对话框/浮层对话框的按钮
+    private Dialog dialog;
     private Button mTopAppBtn;
     private Button mRemoveAppBtn;
-
     //显示的list数据
-    public List<PackageUtil.AppInfo> mShowList;
+    private List<PackageUtil.AppInfo> mShowList;
 
     public MyAppsFragment(IAddFocusListener focusListener) {
         this.mFocusListener = focusListener;
@@ -73,7 +67,7 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.i("myappfragment","----onCreatView()");
+        Log.i("myappfragment", "----onCreatView()");
         View view = inflater.inflate(R.layout.fragment_myapps, container, false);
         mAppsRecyclerView = (CanRecyclerView) view.findViewById(R.id.cr_myapps);
         mAppsRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(getActivity(), 6, GridLayoutManager.VERTICAL, false));
@@ -86,7 +80,7 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
 
     @Override
     public void onResume() {
-        Log.i("myappfragment","----onResume()");
+        Log.i("myappfragment", "----onResume()");
         if (mMyAppsFramPresenter != null) {
             mMyAppsFramPresenter.addListener();
         }
@@ -95,9 +89,9 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
     }
 
     @Override
-    public void loadAppInfoSuccess(List<AppInfo> infoList,List<Drawable> mDrawbleList) {
+    public void loadAppInfoSuccess(List<AppInfo> infoList, List<Drawable> mDrawbleList) {
         mShowList = infoList;
-        if(infoList.size()-2 < MyApp.myAppList.size() && infoList.size() < 18 && !infoList.get(infoList.size()-1).packageName .isEmpty()){
+        if (infoList.size() - 2 < MyApp.myAppList.size() && infoList.size() < 18 && !infoList.get(infoList.size() - 1).packageName.isEmpty()) {
             infoList.add(new AppInfo("添加应用", getActivity().getResources().getDrawable(R.drawable.addapp_icon)));
         }
         if (mMyAppsRvAdapter == null) {
@@ -179,10 +173,10 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(0 == requestCode && resultCode == RESULT_OK ){
+        if (0 == requestCode && resultCode == RESULT_OK) {
             Bundle bundle = data.getExtras();
             boolean isAdd = bundle.getBoolean("isAdd");
-            if(isAdd){
+            if (isAdd) {
                 mMyAppsFramPresenter.startLoad();
             }
         }
@@ -268,7 +262,7 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
 
     @Override
     public void onStop() {
-        Log.i("myappfragment","----onStop()");
+        Log.i("myappfragment", "----onStop()");
         if (mMyAppsFramPresenter != null) {
             mMyAppsFramPresenter.unRegiestr();
         }
@@ -277,20 +271,20 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
 
     @Override
     public void onDestroyView() {
-        Log.i("myappfragment","----onDestory()");
+        Log.i("myappfragment", "----onDestory()");
         mMyAppsFramPresenter.release();
         super.onDestroyView();
     }
 
     @Override
     public void onStart() {
-        Log.i("myappfragment","----onStart()");
+        Log.i("myappfragment", "----onStart()");
         super.onStart();
     }
 
     @Override
     public void onPause() {
-        Log.i("myappfragment","----onPause()");
+        Log.i("myappfragment", "----onPause()");
         super.onPause();
     }
 

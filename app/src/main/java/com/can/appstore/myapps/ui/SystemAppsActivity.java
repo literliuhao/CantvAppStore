@@ -27,26 +27,23 @@ import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 public class SystemAppsActivity extends Activity {
 
-    TextView  systemCurRows;
-    TextView  systemTotalRows;
-    CanRecyclerView  mSystemRecyclerView;
-    SystemAppsRvAdapter  mSystemAppsRvAdapter;
+    private TextView systemCurRows;
+    private TextView systemTotalRows;
+    private CanRecyclerView mSystemRecyclerView;
+    private SystemAppsRvAdapter mSystemAppsRvAdapter;
 
-    MyAppsListDataUtil dataUtils;
-    List<AppInfo> systemAppList;
+    private MyAppsListDataUtil dataUtils;
+    private List<AppInfo> systemAppList;
 
+    private FocusMoveUtil mFocusMoveUtils;
+    private View mFocusChild;
+    private MyFocusRunnable mFocusRunnable;
 
-    FocusMoveUtil mFocusMoveUtils;
-//    FocusScaleUtil mFocusScaleUtil;
-    View mFocusChild;
-    MyFocusRunnable  mFocusRunnable;
-
-    private class MyFocusRunnable  implements Runnable{
+    private class MyFocusRunnable implements Runnable {
         @Override
         public void run() {
-            if(mFocusChild != null){
+            if (mFocusChild != null) {
                 mFocusMoveUtils.startMoveFocus(mFocusChild);
-//                mFocusScaleUtil.scaleToLarge(mFocusChild);
             }
         }
     }
@@ -65,12 +62,10 @@ public class SystemAppsActivity extends Activity {
         mSystemAppsRvAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
-                if(hasFocus){
+                if (hasFocus) {
                     mFocusChild = view;
-                    mSystemRecyclerView.postDelayed(mFocusRunnable,50);
-                    systemCurRows.setText(position / 5 + 1  + "/");
-                }else{
-//                    mFocusScaleUtil.scaleToNormal();
+                    mSystemRecyclerView.postDelayed(mFocusRunnable, 50);
+                    systemCurRows.setText(position / 5 + 1 + "/");
                 }
             }
         });
@@ -81,7 +76,7 @@ public class SystemAppsActivity extends Activity {
             @Override
             public void onClick(View view, int position, Object data) {
                 AppInfo appInfo = systemAppList.get(position);
-                PackageManager pm =getPackageManager();
+                PackageManager pm = getPackageManager();
                 Intent intent = pm.getLaunchIntentForPackage(appInfo.packageName);//获取启动的包名
                 startActivity(intent);
             }
@@ -98,16 +93,15 @@ public class SystemAppsActivity extends Activity {
     private void initView() {
         systemCurRows = (TextView) findViewById(R.id.systemapps_tv_currows);
         systemTotalRows = (TextView) findViewById(R.id.systemapps_tv_totalrows);
-        int total = systemAppList.size()/5 + 1;
-        systemTotalRows.setText(""+total+"行");
+        int total = systemAppList.size() / 5 + 1;
+        systemTotalRows.setText("" + total + "行");
         mSystemRecyclerView = (CanRecyclerView) findViewById(R.id.systemapps_recyclerview);
-        mSystemRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(this,5, LinearLayoutManager.VERTICAL,false));
-        mSystemRecyclerView.addItemDecoration(new CanRecyclerViewDivider(android.R.color.transparent,40,62));
+        mSystemRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(this, 5, LinearLayoutManager.VERTICAL, false));
+        mSystemRecyclerView.addItemDecoration(new CanRecyclerViewDivider(android.R.color.transparent, 40, 62));
         mSystemAppsRvAdapter = new SystemAppsRvAdapter(systemAppList);
         mSystemRecyclerView.setAdapter(mSystemAppsRvAdapter);
 
-        mFocusMoveUtils = new FocusMoveUtil(this,getWindow().getDecorView(),R.drawable.btn_focus);
-//        mFocusScaleUtil = new FocusScaleUtil();
+        mFocusMoveUtils = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
         mFocusRunnable = new MyFocusRunnable();
     }
 
