@@ -267,9 +267,8 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         mUninstallManagerAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {//不是选择模式的点击事件
             @Override
             public void onClick(View view, int position, Object data) {
-                //进入普通点击事件  点击弹出卸载对话框 // TODO: 2016/11/14
                 PackageUtil.AppInfo info = (PackageUtil.AppInfo) data;
-                mPresenter.silentUninstall(info.appName, info.packageName);
+                mPresenter.showUninstallDialog(info.appIcon, info.appName, info.packageName);
             }
         });
 
