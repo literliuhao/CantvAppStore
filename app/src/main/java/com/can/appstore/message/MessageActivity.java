@@ -146,12 +146,12 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                     focusMsgItem(position - 1);
                     return;
                 }
-                int first = llManager.findFirstVisibleItemPosition();
+                /*int first = llManager.findFirstVisibleItemPosition();
                 int last = llManager.findLastVisibleItemPosition();
                 if (first != 0 && last == msgCount) {
                     focusMsgItem(position - 1);
                     return;
-                }
+                }*/
                 deleteLastItem = position == msgCount - 1;
                 final int posi = deleteLastItem ? position - 1 : position;
                 focusMsgItem(posi);
@@ -197,7 +197,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                     if (deleteLastItem) {
                         focusViewMoveEnable = true;
                     }
-                    mHandler.postDelayed(mFocusMoveRunnable, 400);
+                    mHandler.postDelayed(mFocusMoveRunnable, 500);
                 }
             }
         });
