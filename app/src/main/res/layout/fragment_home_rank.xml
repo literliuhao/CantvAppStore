@@ -1,0 +1,43 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.can.appstore.homerank.HomeRankFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <HorizontalScrollView
+            android:id="@+id/homeran_scrollview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/ll_par_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <include layout="@layout/homerank_item"/>
+
+                <include layout="@layout/homerank_item"/>
+
+                <include layout="@layout/homerank_item"/>
+
+                <include layout="@layout/homerank_item"/>
+
+                <include layout="@layout/homerank_item"/>
+
+                <include layout="@layout/homerank_item"/>
+
+                <include layout="@layout/homerank_item"/>
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+    </LinearLayout>
+
+</FrameLayout>

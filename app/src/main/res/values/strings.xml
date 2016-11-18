@@ -1,5 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">CANAppStore</string>
+    <!--搜索-->
+    <string name="search_content_hint">请输入首字母</string>
+    <string name="search_content_del">删除</string>
+    <string name="search_content_clear">清空</string>
+    <string name="search_left_top_prompt1">大家都在搜:</string>
+    <string name="search_left_top_prompt2">搜索结果:</string>
+    <string name="search_bottom_recommend_st">热门推荐:</string>
+    <string name="search_null">搜不到相关应用</string>
+    <string name="search_prompt1">输入拼音首字母</string>
+    <string name="search_prompt2">如搜环球视讯: 输入“</string>
+    <string name="search_prompt3">HQSX</string>
+    <string name="search_prompt4">”</string>
+
+    <!--首页排行榜-->
+    <string name="rank_more_str">更多</string>
+    <!--首页导航-->
+    <string name="index_top">排行</string>
+    <string name="index_manager">管理</string>
+    <string name="index_myapp">我的应用</string>
+    <!--首页管理-->
+    <string name="index_manager_text1">一键加速</string>
+    <string name="index_manager_text2">更新管理</string>
+    <string name="index_manager_text3">文件管理</string>
+    <string name="index_manager_text4">电视助手</string>
+    <string name="index_manager_text5">网络测速</string>
+    <string name="index_manager_text6">卸载管理</string>
+    <string name="index_manager_text7">安装包管理</string>
+    <string name="index_manager_text8">下载管理</string>
+    <!-- 更新包管理 -->
+    <string name="update_start_autoupdate">已开启自动更新</string>
+    <string name="update_end_autoupdate">关闭自动更新</string>
+    <string name="update_sdavaliable_size">可用空间 : </string>
+    <string name="update_search_updateinfo">正在获取更新信息...</string>
+    <string name="update_title">&#160;&#160;&#160;&#160;更新管理</string>
+    <string name="update_totalnum">/4行</string>
+    <string name="update_bt_detection">检测更新</string>
+    <string name="update_bt_autosetting">更新设置</string>
+    <string name="update_updateall">已安装应用均为最新版本</string>
+    <string name="update_downloading">下载中</string>
+    <string name="update_app_versionname">版本1.12</string>
+    <string name="update_app_size">12.5M</string>
+    <!-- 安装包管理 -->
+    <string name="install_start_autoupdate">已开启自动更新</string>
+    <string name="install_end_autoupdate">关闭自动更新</string>
+    <string name="install_sdavaliable_size">可用空间 : </string>
+    <string name="install_search_updateinfo">正在获取安装包信息...</string>
+    <string name="install_title">&#160;&#160;&#160;&#160;安装包管理</string>
+    <string name="install_totalnum">/4行</string>
+    <string name="install_bt_deleteall">删除全部</string>
+    <string name="install_bt_deleteinstall">删除已安装</string>
+    <string name="install_updateall">暂未找到安装包!</string>
+    <string name="install_installing">安装中</string>
+    <string name="install_app_versionname">版本1.12</string>
+    <string name="install_app_size">12.5M</string>
     <string name="page_row_template" formatted="false">%d / %d</string>
     <string name="serach">"搜索"</string>
     <string name="click_retry">点击重试</string>
@@ -15,6 +70,7 @@
     <string name="download_no_task">当前暂无下载任务！</string>
     <string name="download_installing">正在安装</string>
     <string name="download_installed">安装完成</string>
+    <string name="download_open_app_error">打开应用出现问题</string>
 
 
     <!--卸载管理-->
@@ -64,6 +120,12 @@
     <string name="add_funtion">新增功能&#160;:&#160;</string>
     <string name="update_introduce">更新功能&#160;:\n</string>
     <string name="load_data_faild">加载数据失败,请稍后再试...</string>
+
+    <!-- 活动页 -->
+    <string name="active_click_participate">点击参加活动</string>
+    <string name="active_app_download_waiting">等待中</string>
+    <string name="active_app_installing">安装中</string>
+
     <string name="retry">"点击重试"</string>
     <string name="load_fail">"网络访问错误"</string>
     <string name="version_describe">"版本描述："</string>

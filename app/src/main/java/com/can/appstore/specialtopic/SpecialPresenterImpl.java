@@ -1,6 +1,7 @@
 package com.can.appstore.specialtopic;
 
 import android.graphics.Color;
+import android.os.Handler;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
@@ -25,6 +26,7 @@ import retrofit2.Response;
 public class SpecialPresenterImpl implements SpecialContract.SpecialPresenter {
 
     private static final String TAG = "SpecialPresenterImpl";
+    public static final int DELAY_MILLIS = 1000;
 
     private final int pageSize = 16;
     private int pageNumber = 1;
@@ -36,10 +38,12 @@ public class SpecialPresenterImpl implements SpecialContract.SpecialPresenter {
     private CanCall<ListResult<SpecialTopic>> mSpecialCall;
 
     private SpecialContract.SubjectView mView;
+    private Handler mHandler;
 
     public SpecialPresenterImpl(SpecialContract.SubjectView view) {
         mView = view;
         mView.setPresenter(this);
+        mHandler = new Handler();
     }
 
     @Override
@@ -54,27 +58,37 @@ public class SpecialPresenterImpl implements SpecialContract.SpecialPresenter {
         }
         mSpecialCall.enqueue(new CanCallback<ListResult<SpecialTopic>>() {
             @Override
-            public void onResponse(CanCall<ListResult<SpecialTopic>> call, Response<ListResult<SpecialTopic>> response) throws Exception {
-                mView.hideLoadingDialog();
-                ListResult<SpecialTopic> specialTopics = response.body();
-                if (specialTopics == null) {
-                    mView.showRetryView();
-                    return;
-                }
-                if (specialTopics.getData() == null || specialTopics.getData().size() == 0) {
-                    mView.showNoDataView();
-                    return;
-                }
-                totalSize = specialTopics.getTotal();
-                mSpecialTopics.addAll(specialTopics.getData());
-                mView.refreshData(mSpecialTopics);
-                pageNumber++;
+            public void onResponse(CanCall<ListResult<SpecialTopic>> call, final Response<ListResult<SpecialTopic>> response) throws Exception {
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mView.hideLoadingDialog();
+                        ListResult<SpecialTopic> specialTopics = response.body();
+                        if (specialTopics == null) {
+                            mView.showRetryView();
+                            return;
+                        }
+                        if (specialTopics.getData() == null || specialTopics.getData().size() == 0) {
+                            mView.showNoDataView();
+                            return;
+                        }
+                        totalSize = specialTopics.getTotal();
+                        mSpecialTopics.addAll(specialTopics.getData());
+                        mView.refreshData(mSpecialTopics);
+                        pageNumber++;
+                    }
+                }, DELAY_MILLIS);
             }
 
             @Override
             public void onFailure(CanCall<ListResult<SpecialTopic>> call, CanErrorWrapper errorWrapper) {
-                mView.hideLoadingDialog();
-                mView.showRetryView();
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mView.hideLoadingDialog();
+                        mView.showRetryView();
+                    }
+                }, DELAY_MILLIS);
             }
         });
     }
@@ -107,7 +121,7 @@ public class SpecialPresenterImpl implements SpecialContract.SpecialPresenter {
     @Override
     public void remindNoData() {
         if (isFocusedLastRow && !hasMoreData()) {
-           mView.showToast(R.string.no_more_data);
+            mView.showToast(R.string.no_more_data);
         }
     }
 
@@ -117,7 +131,7 @@ public class SpecialPresenterImpl implements SpecialContract.SpecialPresenter {
 
     @Override
     public void loadMore(final int lastVisiablePos) {
-        //此处是滑到最后一行是检测是否需要加载更多
+        //此处是滑到已经加载的数据的最后一行是检测是否需要加载更多
         if (lastVisiablePos < mSpecialTopics.size() - 1) {
             return;
         }
@@ -126,25 +140,36 @@ public class SpecialPresenterImpl implements SpecialContract.SpecialPresenter {
             CanCall<ListResult<SpecialTopic>> specialTopicsCall = HttpManager.getApiService().getSpecialTopics(pageNumber, pageSize);
             specialTopicsCall.enqueue(new CanCallback<ListResult<SpecialTopic>>() {
                 @Override
-                public void onResponse(CanCall<ListResult<SpecialTopic>> call, Response<ListResult<SpecialTopic>> response) throws Exception {
-                    mView.hideLoadingDialog();
-                    ListResult<SpecialTopic> specialTopics = response.body();
-                    if (specialTopics == null) {
-                        mView.showToast(R.string.load_data_faild);
-                        return;
-                    }
-                    if (specialTopics.getStatus() != 0 || specialTopics.getData() == null || specialTopics.getData().size() == 0) {
-                        mView.showToast(R.string.load_data_faild);
-                        return;
-                    }
-                    mSpecialTopics.addAll(specialTopics.getData());
-                    mView.onLoadMore(lastVisiablePos + 1, mSpecialTopics.size() - 1);
-                    pageNumber++;
+                public void onResponse(CanCall<ListResult<SpecialTopic>> call, final Response<ListResult<SpecialTopic>> response) throws Exception {
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mView.hideLoadingDialog();
+                            ListResult<SpecialTopic> specialTopics = response.body();
+                            if (specialTopics == null) {
+                                mView.showToast(R.string.load_data_faild);
+                                return;
+                            }
+                            if (specialTopics.getStatus() != 0 || specialTopics.getData() == null || specialTopics.getData().size() == 0) {
+                                mView.showToast(R.string.load_data_faild);
+                                return;
+                            }
+                            mSpecialTopics.addAll(specialTopics.getData());
+                            mView.onLoadMore(lastVisiablePos + 1, mSpecialTopics.size() - 1);
+                            pageNumber++;
+                        }
+                    }, DELAY_MILLIS);
                 }
 
                 @Override
                 public void onFailure(CanCall<ListResult<SpecialTopic>> call, CanErrorWrapper errorWrapper) {
-                    mView.showToast(R.string.load_data_faild);
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mView.hideLoadingDialog();
+                            mView.showToast(R.string.load_data_faild);
+                        }
+                    }, DELAY_MILLIS);
                 }
             });
         }

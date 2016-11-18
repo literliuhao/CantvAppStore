@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="720px"
+    android:layout_height="match_parent"
+    android:background="#2D313A"
+    android:orientation="vertical"
+    android:paddingTop="110px">
+
+    <RelativeLayout
+        android:layout_width="516px"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="128px">
+
+        <TextView
+            android:id="@+id/show_se_con_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/icon_02"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            android:hint="@string/search_content_hint"
+            android:maxLines="1"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/white"
+            android:textSize="32px" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/show_se_con_view"
+            android:layout_marginTop="5dp"
+            android:background="@android:color/darker_gray" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="220px"
+        android:layout_marginTop="28px">
+
+        <TextView
+            android:id="@+id/con_clear_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:layout_marginTop="3dp"
+            android:background="@drawable/search_keyboard_shape"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:nextFocusUp="@id/con_clear_view"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:text="@string/search_content_clear"
+            android:textColor="#D9DADC"
+            android:textSize="32px" />
+
+        <TextView
+            android:id="@+id/con_del_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="210px"
+            android:layout_marginRight="3dp"
+            android:layout_marginTop="3dp"
+            android:background="@drawable/search_keyboard_shape"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:nextFocusUp="@id/con_del_view"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:text="@string/search_content_del"
+            android:textColor="#D9DADC"
+            android:textSize="32px" />
+
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/keyboard_recycleview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="124px"
+        android:layout_marginRight="46px"
+        android:layout_marginTop="28px"
+        android:paddingBottom="20px" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60px"
+        android:gravity="center"
+        android:text="@string/search_prompt1"
+        android:textColor="#75777B"
+        android:textSize="32px" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20px"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/search_prompt2"
+            android:textColor="#75777B"
+            android:textSize="32px" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/search_prompt3"
+            android:textColor="#B9B56A"
+            android:textSize="32px" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/search_prompt4"
+            android:textColor="#75777B"
+            android:textSize="32px" />
+
+    </LinearLayout>
+
+</LinearLayout>

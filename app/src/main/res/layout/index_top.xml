@@ -1,0 +1,74 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/iv_cibn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/px150"
+        android:layout_marginTop="@dimen/px80"
+        android:src="@drawable/index_cibn"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_search"
+        android:focusable="true"
+        android:clickable="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/iv_cibn"
+        android:layout_marginRight="@dimen/px10"
+        android:layout_toLeftOf="@+id/rl_message"
+        android:nextFocusLeft="@+id/tv_index_title_last"
+        android:nextFocusRight="@+id/rl_message">
+
+        <ImageView
+            android:id="@+id/iv_search_bg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/btn_circle_normal"/>
+
+        <ImageView
+            android:id="@+id/iv_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/index_search"/>
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/rl_message"
+        android:focusable="true"
+        android:clickable="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/iv_cibn"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/px160"
+        android:nextFocusLeft="@+id/rl_search">
+
+        <ImageView
+            android:id="@+id/iv_message_bg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/btn_circle_normal"/>
+
+        <ImageView
+            android:id="@+id/iv_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/index_message"/>
+    </RelativeLayout>
+
+
+</RelativeLayout>
