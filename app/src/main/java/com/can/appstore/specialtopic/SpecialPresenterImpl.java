@@ -112,6 +112,7 @@ public class SpecialPresenterImpl implements SpecialContract.SpecialPresenter {
 
     @Override
     public void release() {
+        mHandler.removeCallbacksAndMessages(null);
         if (mSpecialCall != null) {
             mSpecialCall.cancel();
         }

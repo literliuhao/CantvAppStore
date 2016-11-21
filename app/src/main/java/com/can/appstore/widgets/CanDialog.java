@@ -3,136 +3,164 @@ package com.can.appstore.widgets;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+
+import cn.can.tvlib.imageloader.ImageLoader;
+import cn.can.tvlib.ui.focus.FocusMoveUtil;
 
 /**
  * Created by Atangs on 2016/10/30.
  * 暂时适配 安装框 / 卸载框 /更新设置框
  */
 
-public class CanDialog extends Dialog {
-    private TextView mTvDialogTitle;
-    private TextView mTvDialogTopLeftContent;
-    private TextView mTvDialogTopRightContent;
-    private TextView mTvDialogBelowContent;
-    private Button mBtnDialogPositive;
-    private Button mBtnDialogNegative;
-    private ImageView mIvDialogTitle;
+public class CanDialog extends Dialog implements View.OnFocusChangeListener {
+    private Context mContext;
+    private TextView mDialogTitle;
+    private TextView mDialogMsg;
+    private TextView mDialogStateMsg;
+    private TextView mDialogContentMsg;
+    private Button mPositiveBtn;
+    private Button mNegativeBtn;
+    private ImageView mDialogIcon;
 
-    private RelativeLayout mContentLayout;
+    private OnClickListener mOnClickListener;
+    private FocusMoveUtil mFocusMoveUtil;
+    private View mCurrentView;
+    private Handler mHandler = new Handler();
 
-    private OnCanBtnClickListener mOnCanBtnClickListener;
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (hasFocus) {
+            mCurrentView = v;
+            mHandler.removeCallbacks(mfocusMoveRunnable);
+            mHandler.postDelayed(mfocusMoveRunnable, 50);
+        }
+    }
 
-    public interface OnCanBtnClickListener {
-        public void onClickPositive();
+    private Runnable mfocusMoveRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (mCurrentView != null && mCurrentView.isFocused()) {
+                mFocusMoveUtil.startMoveFocus(mCurrentView, 1.0f);
+            }
+        }
+    };
 
-        public void onClickNegative();
+    public static abstract class OnClickListener {
+        public abstract void onClickPositive();
+
+        public void onClickNegative() {
+        };
     }
 
     public CanDialog(Context context) {
-        super(context);
-        initUI(context);
+        this(context,R.style.CanDialog);
     }
 
-    private void initUI(Context context) {
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        View dialogView = LayoutInflater.from(context).inflate(R.layout.can_dialog, null);
+    public CanDialog(Context context, int themeResId) {
+        super(context, themeResId);
+        this.mContext = context;
+        mFocusMoveUtil = new FocusMoveUtil(mContext, getWindow().getDecorView(), R.mipmap.btn_focus);
+        initUI();
+    }
+
+    private void initUI() {
+        View dialogView = LayoutInflater.from(mContext).inflate(R.layout.can_dialog, null);
         setContentView(dialogView);
 
-        mTvDialogTitle = (TextView) dialogView.findViewById(R.id.tv_dialog_title);
-        mIvDialogTitle = (ImageView) dialogView.findViewById(R.id.iv_dialog_title);
-        mTvDialogTopLeftContent = (TextView) dialogView.findViewById(R.id.tv_top_left_content);
-        mTvDialogTopRightContent = (TextView) dialogView.findViewById(R.id.tv_top_right_content);
-        mTvDialogBelowContent = (TextView) dialogView.findViewById(R.id.tv_bellow_content);
-        mBtnDialogPositive = (Button) dialogView.findViewById(R.id.btn_dialog_positive);
-        mBtnDialogNegative = (Button) dialogView.findViewById(R.id.btn_dialog_negative);
-
+        mDialogTitle = (TextView) dialogView.findViewById(R.id.tv_dialog_title);
+        mDialogIcon = (ImageView) dialogView.findViewById(R.id.iv_dialog_icon);
+        mDialogMsg = (TextView) dialogView.findViewById(R.id.tv_dialog_message);
+        mDialogStateMsg = (TextView) dialogView.findViewById(R.id.tv_dialog_state_message);
+        mDialogContentMsg = (TextView) dialogView.findViewById(R.id.tv_dialog_content_message);
+        mPositiveBtn = (Button) dialogView.findViewById(R.id.btn_dialog_positive);
+        mNegativeBtn = (Button) dialogView.findViewById(R.id.btn_dialog_negative);
     }
 
-
-    private void addListeneForBtn() {
-        mBtnDialogPositive.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mOnCanBtnClickListener.onClickPositive();
-            }
-        });
-        mBtnDialogNegative.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mOnCanBtnClickListener.onClickNegative();
-            }
-        });
-    }
-
-    public CanDialog setmTvDialogTitle(String title) {
-        this.mTvDialogTitle.setVisibility(View.VISIBLE);
-        this.mTvDialogTitle.setText(title);
+    public CanDialog setTitle(String title) {
+        this.mDialogTitle.setVisibility(View.VISIBLE);
+        this.mDialogTitle.setText(title);
         return this;
     }
 
-    public CanDialog setmTvDialogTopLeftContent(String topLeftContent) {
-        this.mTvDialogTopLeftContent.setVisibility(View.VISIBLE);
-        this.mTvDialogTopLeftContent.setText(topLeftContent);
+    public CanDialog setTitleMessage(String titleMessage) {
+        this.mDialogMsg.setVisibility(View.VISIBLE);
+        this.mDialogMsg.setText(titleMessage);
         return this;
     }
 
-    public CanDialog setmTvDialogTopRightContent(String topRightContent) {
-        this.mTvDialogTopRightContent.setVisibility(View.VISIBLE);
-        this.mTvDialogTopRightContent.setText(topRightContent);
+    public CanDialog setStateMessage(String stateMessage) {
+        this.mDialogStateMsg.setVisibility(View.VISIBLE);
+        this.mDialogStateMsg.setText(stateMessage);
         return this;
     }
 
-    public CanDialog setmTvDialogBelowContent(String belowContent) {
-        this.mTvDialogBelowContent.setVisibility(View.VISIBLE);
-        this.mTvDialogBelowContent.setText(belowContent);
+    public CanDialog setContentMessage(String contentMessage) {
+        this.mDialogContentMsg.setVisibility(View.VISIBLE);
+        this.mDialogContentMsg.setText(contentMessage);
         return this;
     }
 
-    public CanDialog setmBtnDialogPositive(String positiveStr) {
-        this.mBtnDialogPositive.setVisibility(View.VISIBLE);
-        this.mBtnDialogPositive.setText(positiveStr);
-        this.mBtnDialogPositive.setOnClickListener(new View.OnClickListener() {
+    /**
+     * 只有一个按钮时，请使用PositiveButton
+     * @param positiveStr
+     * @return
+     */
+    public CanDialog setPositiveButton(String positiveStr) {
+        this.mPositiveBtn.setVisibility(View.VISIBLE);
+        this.mPositiveBtn.setText(positiveStr);
+        this.mPositiveBtn.setFocusable(true);
+        this.mPositiveBtn.setOnFocusChangeListener(this);
+        this.mPositiveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOnCanBtnClickListener.onClickPositive();
+                mOnClickListener.onClickPositive();
             }
         });
         return this;
     }
 
-    public CanDialog setmBtnDialogNegative(String negativeStr) {
-        this.mBtnDialogNegative.setVisibility(View.VISIBLE);
-        this.mBtnDialogNegative.setText(negativeStr);
-        this.mBtnDialogNegative.setOnClickListener(new View.OnClickListener() {
+    public CanDialog setNegativeButton(String negativeStr) {
+        this.mNegativeBtn.setVisibility(View.VISIBLE);
+        this.mNegativeBtn.setText(negativeStr);
+        this.mNegativeBtn.setOnFocusChangeListener(this);
+        this.mNegativeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOnCanBtnClickListener.onClickNegative();
+                mOnClickListener.onClickNegative();
             }
         });
         return this;
     }
 
-    public CanDialog setmIvDialogTitle(Drawable drawable) {
-        this.mIvDialogTitle.setVisibility(View.VISIBLE);
-        this.mIvDialogTitle.setImageDrawable(drawable);
+    public CanDialog setIcon(int iconResId) {
+        this.mDialogIcon.setVisibility(View.VISIBLE);
+        this.mDialogIcon.setImageResource(iconResId);
         return this;
     }
 
-    public CanDialog setOnCanBtnClickListener(OnCanBtnClickListener listener){
-        this.mOnCanBtnClickListener = listener;
+    public CanDialog setIcon(String iconUrl) {
+        this.mDialogIcon.setVisibility(View.VISIBLE);
+        ImageLoader.getInstance().load(mContext, this.mDialogIcon, iconUrl);
         return this;
     }
 
-    public void setmContentLayout() {
-        this.mContentLayout.setVisibility(View.VISIBLE);
+    public CanDialog setIcon(Drawable icon) {
+        this.mDialogIcon.setVisibility(View.VISIBLE);
+        this.mDialogIcon.setImageDrawable(icon);
+        return this;
     }
+
+    public CanDialog setOnCanBtnClickListener(OnClickListener listener) {
+        this.mOnClickListener = listener;
+        return this;
+    }
+
 }

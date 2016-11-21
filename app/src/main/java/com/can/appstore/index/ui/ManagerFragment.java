@@ -8,10 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
-import com.can.appstore.MyApp;
 import com.can.appstore.R;
+import com.can.appstore.download.DownloadActivity;
 import com.can.appstore.index.adapter.GridAdapter;
 import com.can.appstore.index.interfaces.IAddFocusListener;
+import com.can.appstore.uninstallmanager.UninstallManagerActivity;
 
 /**
  * Created by liuhao on 2016/10/21.
@@ -50,23 +51,33 @@ public class ManagerFragment extends BaseFragment {
             public void onClick(View view) {
                 Log.i("ManagerFragment", view.getId() + "");
                 switch (view.getId()) {
+                    //一键加速
                     case 0:
                         break;
+                    //更新管理
                     case 1:
                         getActivity().startActivity(new Intent("com.can.appstore.ACTION.ACTIVITY_UPDATE"));
                         break;
+                    //文件管理
                     case 2:
                         break;
+                    //电视助手
                     case 3:
                         break;
+                    //网络测速
                     case 4:
                         break;
+                    //卸载管理
                     case 5:
+                        UninstallManagerActivity.actionStart(getActivity());
                         break;
+                    //安装包管理
                     case 6:
                         getActivity().startActivity(new Intent("com.can.appstore.ACTION.ACTIVITY_INSTALL"));
                         break;
+                    //下载管理
                     case 7:
+                        DownloadActivity.actionStart(getActivity());
                         break;
                     default:
                         break;

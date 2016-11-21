@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -15,7 +14,6 @@ import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.base.BaseActivity;
-import com.can.appstore.download.DownloadActivity;
 import com.can.appstore.entity.SpecialTopic;
 import com.can.appstore.specialtopic.adapter.SpecialAdapter;
 
@@ -36,8 +34,9 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     private static final String TAG = "SpecialActivity";
     private static final float FOCUS_SCALE = 1.0f;
     public static final int COLUMN_COUNT = 4;
-    public static final int FOCUS_IMAGE=R.mipmap.image_focus;
-    public static final int FOCUS_BUTTON=R.mipmap.btn_focus;
+    public static final int FOCUS_IMAGE = R.mipmap.image_focus;
+    public static final int FOCUS_BUTTON = R.mipmap.btn_focus;
+    public static final int DELAY_MILLIS = 500;
 
     private TextView mRowTv, mRemindTv;
     private RelativeLayout mRemindLayout;
@@ -52,20 +51,20 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
 
     private SpecialContract.SpecialPresenter mPresenter;
 
-    private Runnable mFocusMoveRunnable;
+    private Runnable mFocusMoveRunnable, mResolveFirstRunnable;
     private Handler mHandler;
     private View mCurrFocusView;
 
     private String noDataStr, netErrorStr;
 
-    private int mFocusType =FOCUS_IMAGE;
-    private long mTime;
+    private int mFocusType = FOCUS_IMAGE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_special_topic);
         initView();
+        initRunnable();
         setListener();
         initData();
     }
@@ -84,15 +83,31 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
         mRecyclerView = (CanRecyclerView) findViewById(special_recyclerview);
         mRecyclerView.addItemDecoration(itemDecoration);
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+    }
+
+    private void initRunnable() {
         mFocusMoveRunnable = new Runnable() {
             @Override
             public void run() {
-                if (mCurrFocusView != null) {
+                if (mCurrFocusView != null && mFocusMoveUtils != null) {
                     mFocusMoveUtils.startMoveFocus(mCurrFocusView, FOCUS_SCALE);
-                    // mFocusScaleUtils.scaleToLarge(mCurrFocusView);
                 }
             }
         };
+
+        mResolveFirstRunnable = new Runnable() {
+            @Override
+            public void run() {
+                View firstView = mRecyclerView.getChildAt(0);
+                if (firstView != null) {
+                    firstView.requestFocus();
+                    mFocusMoveUtils.setFocusView(firstView);
+                }
+                mFocusMoveUtils.showFocus();
+            }
+        };
+
         mHandler = new Handler();
     }
 
@@ -170,7 +185,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
                 if (hasFocus) {
                     mCurrFocusView = view;
-                    if (FOCUS_IMAGE!= mFocusType) {
+                    if (FOCUS_IMAGE != mFocusType) {
                         mFocusType = FOCUS_IMAGE;
                         mFocusMoveUtils.setFocusRes(getContext(), mFocusType);
                     }
@@ -204,6 +219,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mFocusMoveUtils.release();
         mPresenter.release();
         mPresenter = null;
     }
@@ -216,41 +232,12 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     @Override
     protected void onStop() {
         super.onStop();
+        mRecyclerView.removeCallbacks(mResolveFirstRunnable);
         mHandler.removeCallbacksAndMessages(null);
     }
 
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            long time = System.currentTimeMillis();
-            if (mTime == 0) {
-                mTime = System.currentTimeMillis();
-                if (mPresenter != null) {
-                    mPresenter.remindNoData();
-                }
-                return super.dispatchKeyEvent(event);
-            } else if (time - mTime < 150) {
-                return true;
-            } else {
-                mTime = System.currentTimeMillis();
-            }
-        }
-        return super.dispatchKeyEvent(event);
-    }
-
     private void resolveFirstFocus() {
-        mRecyclerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                View firstView = mRecyclerView.getChildAt(0);
-                if (firstView != null) {
-                    firstView.requestFocus();
-                    mFocusMoveUtils.setFocusView(firstView);
-                }
-                mFocusMoveUtils.showFocus();
-            }
-        }, 500);
-
+        mRecyclerView.postDelayed(mResolveFirstRunnable, DELAY_MILLIS);
     }
 
     @Override
@@ -286,7 +273,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     }
 
     public static void actionStart(Context context) {
-        Intent intent = new Intent(context, DownloadActivity.class);
+        Intent intent = new Intent(context, SpecialActivity.class);
         context.startActivity(intent);
     }
 

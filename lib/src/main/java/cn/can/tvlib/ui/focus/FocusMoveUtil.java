@@ -73,6 +73,7 @@ public class FocusMoveUtil {
 
     private HashMap<Animator, RectFEvaluator> mEvaluators;
     private Handler mHandler;
+    private Runnable mShowFocusRunnable;
 
     /**
      * 初始化该Util
@@ -544,12 +545,16 @@ public class FocusMoveUtil {
         if (mHandler == null) {
             mHandler = new Handler();
         }
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                showFocus();
-            }
-        }, delayInMillis);
+        if(mShowFocusRunnable==null){
+            mShowFocusRunnable=new Runnable() {
+                @Override
+                public void run() {
+                    showFocus();
+                }
+            };
+        }
+        mHandler.removeCallbacks(mShowFocusRunnable);
+        mHandler.postDelayed(mShowFocusRunnable, delayInMillis);
     }
 
     /**

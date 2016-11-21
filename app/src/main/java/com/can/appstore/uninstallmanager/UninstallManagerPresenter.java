@@ -15,8 +15,8 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 
 import com.can.appstore.R;
-import com.can.appstore.appdetail.tempfile.CanDialog;
 import com.can.appstore.uninstallmanager.csutom.CustomAsyncTaskLoader;
+import com.can.appstore.widgets.CanDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -260,8 +260,8 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
         String cancle = mContext.getResources().getString(R.string.cancle);
         String makesureUninstall = mContext.getResources().getString(R.string.makesure_uninstall_apk);
         mCanDialog = new CanDialog(mContext);
-        mCanDialog.setmIvDialogTitle(drawable).setmTvDialogTitle(name).setmTvDialogTopLeftContent(makesureUninstall).setmBtnDialogNegative(cancle)
-                .setmBtnDialogPositive(ok).setOnCanBtnClickListener(new CanDialog.OnCanBtnClickListener() {
+        mCanDialog.setIcon(drawable).setTitle(name).setTitleMessage(makesureUninstall).setNegativeButton(cancle)
+                .setPositiveButton(ok).setOnCanBtnClickListener(new CanDialog.OnClickListener() {
             @Override
             public void onClickPositive() {
                 silentUninstall(name, packName);

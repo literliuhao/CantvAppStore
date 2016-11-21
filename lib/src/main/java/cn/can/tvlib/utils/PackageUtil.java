@@ -300,6 +300,7 @@ public class PackageUtil {
 
     /**
      * 获取所有的系统应用
+     *
      * @param context
      * @return
      */
@@ -467,10 +468,12 @@ public class PackageUtil {
         }
         return appList;
     }
+
     /**
      * 获取处于白名单中的系统应用 + 第三方应用 - 黑名单
      *
      * //逻辑有问题
+     *
      * @param context
      * @return
      */
@@ -526,6 +529,7 @@ public class PackageUtil {
 
     /**
      * 获取处于白名单中的系统应用 + 第三方应用
+     *
      * @param context
      * @return
      */
@@ -628,8 +632,8 @@ public class PackageUtil {
             this.appIcon = appIcon;
         }
 
-        public AppInfo() {   }
-
+        public AppInfo() {
+        }
 
 
         @Override

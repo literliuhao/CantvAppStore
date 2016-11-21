@@ -97,6 +97,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         initView();
         mFocusMoveUtil = new FocusMoveUtil(AppDetailActivity.this, getWindow().getDecorView(), R.mipmap.btn_focus);
         mScaleUtil = new FocusScaleUtil();
+        mFocusMoveUtil.hideFocus();
         mListFocusMoveRunnable = new AppDetailActivity.ListFocusMoveRunnable();
         mAppDetailPresenter = new AppDetailPresenter(this, AppDetailActivity.this, getIntent());
         mAppDetailPresenter.startLoad();
@@ -318,17 +319,17 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         }
     }
 
-    private void recommendGridPositionRequestFocus(int hideFocusTime, final int position) {
-        mFocusMoveUtil.hideFocusForShowDelay(hideFocusTime);
+    private void recommendGridPositionRequestFocus(final int hideFocusTime, final int position) {
         mRecommendGrid.postDelayed(new Runnable() {
             @Override
             public void run() {
                 View childAt = mRecommendGrid.getChildAt(position);
                 if (childAt != null) {
+                    mFocusMoveUtil.hideFocusForShowDelay(hideFocusTime);
                     mFocusMoveUtil.setFocusView(childAt);
                     childAt.requestFocus();
                 } else {
-                    mBtRecommend.requestFocus();
+                    requestFocus(mBtRecommend);
                 }
             }
         }, 50);
@@ -393,8 +394,8 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             conTypePic.setLayoutParams(controllerTypePic);
             conTypePic.setScaleType(ImageView.ScaleType.FIT_CENTER);
             mRelativeLayuotOperatingEquipment.addView(conTypePic, controllerTypePic);
-            //            int selectOperationPic = mAppDetailPresenter.getOperationPic(type.get(i));  // TODO
-            //            conTypePic.setImageResource(selectOperationPic);
+            //              int selectOperationPic = mAppDetailPresenter.getOperationPic(type.get(i));  // TODO
+            //              conTypePic.setImageResource(selectOperationPic);
             ImageLoader.getInstance().load(AppDetailActivity.this, conTypePic, type.get(i), new GlideLoadTask.SuccessCallback() {
                 @Override
                 public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
@@ -498,6 +499,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     @Override
     public void loadAppInfoOnSuccess(AppInfo appInfo) {
+        mFocusMoveUtil.hideFocusForShowDelay(500);
         mLayoutAppDetail.setVisibility(View.VISIBLE);
         mAppinfo = appInfo;
         setData();
@@ -568,11 +570,9 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == CanRecyclerView.SCROLL_STATE_SETTLING) {
-                    mBtIntroduction.setFocusable(false);
-                    mBtRecommend.setFocusable(false);
+                    setButtonFocusable(false);
                 } else if (newState == CanRecyclerView.SCROLL_STATE_IDLE) {
-                    mBtIntroduction.setFocusable(true);
-                    mBtRecommend.setFocusable(true);
+                    setButtonFocusable(true);
                 }
             }
 
@@ -582,6 +582,13 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 mListFocusMoveRunnable.run();
             }
         });
+    }
+
+    public void setButtonFocusable(boolean Focusable) {
+        mBtIntroduction.setFocusable(Focusable);
+        mBtRecommend.setFocusable(Focusable);
+        mButtonDownload.setFocusable(Focusable);
+        mButtonUpdate.setFocusable(Focusable);
     }
 
     private void setRecommendAdapter() {
@@ -641,8 +648,8 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         mRecommedGridAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, int position, Object data) {
-                String appId = mAppinfo.getRecommend().get(position).getId();  // TODO: 2016/11/14
-                mAppDetailPresenter.mAppId = "2";
+                String appId = mAppinfo.getRecommend().get(position).getId();
+                mAppDetailPresenter.mAppId = appId;
                 mAppDetailPresenter.startLoad();
             }
         });

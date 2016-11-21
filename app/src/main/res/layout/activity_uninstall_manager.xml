@@ -12,6 +12,7 @@
         android:layout_marginTop="@dimen/dimen_150px"
         android:background="@drawable/shape_bg_batch_uninstall_bt"
         android:nextFocusDown="@id/bt_batch_uninstall"
+        android:nextFocusLeft="@id/bt_batch_uninstall"
         android:nextFocusUp="@id/bt_batch_uninstall"
         android:text="@string/bt_batch_uninstall"
         android:textColor="@color/app_name_color"

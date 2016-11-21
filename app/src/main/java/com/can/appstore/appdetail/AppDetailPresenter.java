@@ -9,13 +9,13 @@ import android.util.Log;
 
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.CustomDialog;
-import com.can.appstore.appdetail.tempfile.CanDialog;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.Result;
 import com.can.appstore.http.CanCall;
 import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
+import com.can.appstore.widgets.CanDialog;
 
 import java.io.File;
 import java.io.Serializable;
@@ -50,7 +50,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public final static float DOWNLOAD_INIT_PROGRESS = 0f;//初始时进度
     public final static float DOWNLOAD_FINISH_PROGRESS = 100f;//完成时进度
     public final static String ARGUMENT_APPID = "appID";
-    public final static String ARGUMENT_TOPICID = "topicID";
+    public final static String ARGUMENT_TOPICID = "topicid";
     private final static String INSTALL_PATH = Environment.getExternalStorageDirectory().getPath() + "/can_downloadApk/";
     public int downlaodErrorCode = 0;//下载错误
     private Context mContext;
@@ -564,16 +564,12 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         String ok = mContext.getResources().getString(R.string.ok);
         String hint = mContext.getResources().getString(R.string.space_inequacy_hint);
         mCanDialog = new CanDialog(mContext);
-        mCanDialog.setmTvDialogTitle(title).setmTvDialogTopLeftContent(hint).setmBtnDialogPositive(ok).setOnCanBtnClickListener(new CanDialog.OnCanBtnClickListener() {
+        mCanDialog.setTitle(title).setTitleMessage(hint).setPositiveButton(ok).setOnCanBtnClickListener(new CanDialog.OnClickListener() {
             @Override
             public void onClickPositive() {
                 dismissInsufficientStorageSpaceDialog();
             }
 
-            @Override
-            public void onClickNegative() {
-
-            }
         });
         mCanDialog.show();
     }

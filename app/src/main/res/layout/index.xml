@@ -23,11 +23,11 @@
 
     <android.support.v4.view.ViewPager
         android:id="@+id/id_vp"
-        android:layout_width="@dimen/px1700"
-        android:layout_height="@dimen/px600"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/px660"
         android:layout_below="@id/id_indicator"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/px50"
+        android:scrollbars="none"
         android:focusable="false">
     </android.support.v4.view.ViewPager>
 
