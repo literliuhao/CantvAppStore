@@ -21,6 +21,7 @@ import com.can.appstore.http.HttpManager;
 import com.can.appstore.index.adapter.IndexPagerAdapter;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.interfaces.IOnPagerListener;
+import com.can.appstore.index.model.ShareData;
 import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.index.ui.FragmentBody;
 import com.can.appstore.index.ui.ManagerFragment;
@@ -38,7 +39,7 @@ import retrofit2.Response;
 /**
  * Created by liuhao on 2016/10/15.
  */
-public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener,View.OnFocusChangeListener {
+public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener, View.OnFocusChangeListener {
     private List<BaseFragment> mFragmentLists;
     private IndexPagerAdapter mAdapter;
     private ViewPager mViewPager;
@@ -47,18 +48,18 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private RelativeLayout rlMessage;
     private FocusMoveUtil mFocusUtils;
     private FocusScaleUtil mFocusScaleUtils;
-    private View lastView = null;
+    private ShareData shareData;
     private final int TOP_INDEX = 1;
     private final int DURATIONLARGE = 300;
     private final int DURATIONSMALL = 300;
-    private final float SCALE = 1.05f;
+    private final float SCALE = 1.1f;
     private final int OFFSCREENPAGELIMIT = 3;
-    private final int PAGERCURRENTITEM = 5;
+    private final int PAGERCURRENTITEM = 0;
     //滚动中
     private final int SCROLLING = 2;
     //滚动完成
     private final int SCROLLED = 0;
-    private static CanCall<ListResult<Navigation>> mNavigationCall;
+    private CanCall<ListResult<Navigation>> mNavigationCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,7 +147,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 //            mFragmentLists.add(topFragment);
 //        }
 
-
         HomeRankFragment homeRankFragment = new HomeRankFragment(this);
         if (mFragmentLists.size() > 0) {
             mFragmentLists.add(TOP_INDEX, homeRankFragment);
@@ -205,9 +205,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
             @Override
             public void onExtraPageSelected(int position, View view) {
-//                view.requestFocus();
-//                mFocusUtils.startMoveFocus(view);
-//                mFocusUtils.showFocus(200);
             }
 
             @Override
@@ -218,14 +215,16 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                     }
                 } else if (state == SCROLLED) {
                     if (null == view) {
-                        mFocusUtils.startMoveFocus(IndexActivity.this.getCurrentFocus());
-                        mFocusUtils.showFocus(200);
+                        mFocusUtils.setFocusView(IndexActivity.this.getCurrentFocus(), SCALE);
+                        mFocusUtils.startMoveFocus(IndexActivity.this.getCurrentFocus(), SCALE);
+                        mFocusUtils.showFocus();
                         return;
                     }
                     if (!(IndexActivity.this.getCurrentFocus() instanceof TextView)) {
                         view.requestFocus();
-                        mFocusUtils.startMoveFocus(view);
-                        mFocusUtils.showFocus(200);
+                        mFocusUtils.setFocusView(view, SCALE);
+                        mFocusUtils.startMoveFocus(view, SCALE);
+                        mFocusUtils.showFocus();
                     }
                 }
             }
@@ -235,7 +234,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mViewPager.setCurrentItem(PAGERCURRENTITEM);
         mViewPager.setPageMargin((int) getResources().getDimension(R.dimen.px165));
         mTitleBar.setViewPager(mViewPager, PAGERCURRENTITEM);
-
+        //开始获取第三方屏蔽列表
+        shareData.getInstance().execute();
 
     }
 
@@ -248,15 +248,14 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     @Override
     public void addFocusListener(View v, boolean hasFocus) {
         if (hasFocus) {
-            mFocusUtils.startMoveFocus(v);
             if (v == null) return;
             Log.i("addFocusListener", v.getId() + "");
-//            Log.i("addFocusListener", getCurrentFocus().getId() + "");
             if (v instanceof TextView) {
                 v.callOnClick();
             } else {
                 mFocusScaleUtils.scaleToLarge(v);
             }
+            mFocusUtils.startMoveFocus(v, SCALE);
         } else {
             mFocusScaleUtils.scaleToNormal();
         }
@@ -273,7 +272,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.rl_search:
-                Log.i("IndexActivity", "onClick...." + view.getId());
                 SearchActivity.startAc(this);
                 break;
             case R.id.rl_message:

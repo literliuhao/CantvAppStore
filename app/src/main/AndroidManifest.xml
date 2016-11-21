@@ -61,7 +61,7 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
             <intent-filter>
-                <action android:name="com.can.appstore.ACTION.ACTIVITY_INDEX"/>
+                <action android:name="com.can.appstore.ACTION_INDEX"/>
             </intent-filter>
         </activity>
         <activity android:name=".myapps.addappsview.AddAppsActivity">

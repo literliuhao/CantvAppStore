@@ -27,7 +27,6 @@
         android:layout_height="@dimen/px660"
         android:layout_below="@id/id_indicator"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/px50"
         android:scrollbars="none"
         android:focusable="false">
     </android.support.v4.view.ViewPager>
