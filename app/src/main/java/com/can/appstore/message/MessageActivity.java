@@ -23,6 +23,8 @@ import java.util.List;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.utils.ToastUtils;
 
+import static android.R.attr.value;
+
 /**
  * 消息主页面
  * Created by HEKANG on 2016/10/18.
@@ -30,7 +32,6 @@ import cn.can.tvlib.utils.ToastUtils;
 public class MessageActivity extends BaseActivity implements View.OnClickListener, View.OnFocusChangeListener {
 
     private final static String TAG = "MessageActivity";
-    private static String actionID = "id" ;
     private List<MessageInfo> msgList;
     private GreenDaoManager dbManager;
     private FocusMoveUtil focusMoveUtil;
@@ -253,9 +254,8 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         itemTotal.setText(stringBuilder);
     }
 
-    public static void actionStart(Context context, String value){
+    public static void actionStart(Context context){
         Intent intent = new Intent(context, MessageActivity.class);
-        intent.putExtra(actionID, value);
         context.startActivity(intent);
     }
 
