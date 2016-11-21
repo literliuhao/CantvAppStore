@@ -249,7 +249,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                     return true;
                 } else if (mLayoutIntroduceText.isFocused()) {
                     startMoveAnmi(TO_MOVE_RIGHT);
-                    recommendGridPositionRequestFocus(500, 0);
+                    recommendGridPositionRequestFocus(200, 0);
                     mScaleUtil.scaleToNormal();
                     return true;
                 }
@@ -318,17 +318,17 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         }
     }
 
-    private void recommendGridPositionRequestFocus(int hideFocusTime, final int position) {
-        mFocusMoveUtil.hideFocusForShowDelay(hideFocusTime);
+    private void recommendGridPositionRequestFocus(final int hideFocusTime, final int position) {
         mRecommendGrid.postDelayed(new Runnable() {
             @Override
             public void run() {
                 View childAt = mRecommendGrid.getChildAt(position);
                 if (childAt != null) {
+                    mFocusMoveUtil.hideFocusForShowDelay(hideFocusTime);
                     mFocusMoveUtil.setFocusView(childAt);
                     childAt.requestFocus();
                 } else {
-                    mBtRecommend.requestFocus();
+                    requestFocus(mBtRecommend);
                 }
             }
         }, 50);
@@ -542,7 +542,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && event.getAction() == KeyEvent.ACTION_DOWN) {
                     if (position == mAppinfo.getThumbs().size() - 1) {
                         startMoveAnmi(TO_MOVE_RIGHT);
-                        recommendGridPositionRequestFocus(500, 0);
+                        recommendGridPositionRequestFocus(200, 0);
                         mScaleUtil.scaleToNormal(v);
                         return true;
                     }
