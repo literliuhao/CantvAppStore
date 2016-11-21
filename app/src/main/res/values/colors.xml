@@ -17,7 +17,6 @@
     <color name="manager_069597">#069597</color>
 
 
-
     <!--专题详情页面 FW-->
     <color name="color_80_ffffff">#CCffffff</color>
     <color name="color_50_ffffff">#80ffffff</color>
@@ -82,5 +81,14 @@
     <color name="msg_rect_gray">#42464E</color>
     <color name="msg_white_80">#CCFFFFFF</color>
     <color name="msg_white_50">#80FFFFFF</color>
+
+    <!--首页排行榜颜色-->
+    <color name="h_rank_tiem_bg1">#069597</color>
+    <color name="h_rank_tiem_bg2">#c47714</color>
+    <color name="h_rank_tiem_bg3">#448914</color>
+    <color name="h_rank_tiem_bg4">#6e53ca</color>
+    <color name="h_rank_tiem_bg5">#c45241</color>
+    <!--透明颜色-->
+    <color name="h_rank_transulcent">#16262626</color>
 
 </resources>

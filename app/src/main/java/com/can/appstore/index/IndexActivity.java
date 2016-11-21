@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.can.appstore.R;
 import com.can.appstore.entity.ListResult;
 import com.can.appstore.entity.Navigation;
+import com.can.appstore.homerank.HomeRankFragment;
 import com.can.appstore.http.CanCall;
 import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
@@ -23,9 +24,9 @@ import com.can.appstore.index.interfaces.IOnPagerListener;
 import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.index.ui.FragmentBody;
 import com.can.appstore.index.ui.ManagerFragment;
-import com.can.appstore.index.ui.ManagerFragmentTest;
 import com.can.appstore.index.ui.TitleBar;
 import com.can.appstore.myapps.ui.MyAppsFragment;
+import com.can.appstore.search.SearchActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ import retrofit2.Response;
 /**
  * Created by liuhao on 2016/10/15.
  */
-public class IndexActivity extends FragmentActivity implements IAddFocusListener,View.OnClickListener{
+public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener,View.OnFocusChangeListener {
     private List<BaseFragment> mFragmentLists;
     private IndexPagerAdapter mAdapter;
     private ViewPager mViewPager;
@@ -51,8 +52,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private final int DURATIONLARGE = 300;
     private final int DURATIONSMALL = 300;
     private final float SCALE = 1.05f;
-    private final int OFFSCREENPAGELIMIT = 6;
-    private final int PAGERCURRENTITEM = 4;
+    private final int OFFSCREENPAGELIMIT = 3;
+    private final int PAGERCURRENTITEM = 0;
     //滚动中
     private final int SCROLLING = 2;
     //滚动完成
@@ -90,7 +91,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
             @Override
             public void onFailure(CanCall<ListResult<Navigation>> call, CanErrorWrapper errorWrapper) {
-                Log.i("DataUtils",errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
+                Log.i("DataUtils", errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
             }
         });
     }
@@ -134,15 +135,23 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         FragmentBody fragment;
         for (int i = 0; i < navigationListResult.getData().size(); i++) {
             fragment = new FragmentBody(this, navigationListResult.getData().get(i));
-//            fragment.setTargetFragment(fragment, i);
             mFragmentLists.add(fragment);
         }
+
         //排行、管理、我的应用、不受服务器后台配置，因此手动干预位置
-        ManagerFragmentTest topFragment = new ManagerFragmentTest(this);
+//        ManagerFragmentTest topFragment = new ManagerFragmentTest(this);
+//        if (mFragmentLists.size() > 0) {
+//            mFragmentLists.add(TOP_INDEX, topFragment);
+//        } else {
+//            mFragmentLists.add(topFragment);
+//        }
+
+
+        HomeRankFragment homeRankFragment = new HomeRankFragment(this);
         if (mFragmentLists.size() > 0) {
-            mFragmentLists.add(TOP_INDEX, topFragment);
+            mFragmentLists.add(TOP_INDEX, homeRankFragment);
         } else {
-            mFragmentLists.add(topFragment);
+            mFragmentLists.add(homeRankFragment);
         }
         ManagerFragment managerFragment = new ManagerFragment(this);
         mFragmentLists.add(managerFragment);
@@ -224,6 +233,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mViewPager.setAdapter(mAdapter);
         mViewPager.setOffscreenPageLimit(OFFSCREENPAGELIMIT);
         mViewPager.setCurrentItem(PAGERCURRENTITEM);
+        mViewPager.setPageMargin((int) getResources().getDimension(R.dimen.px165));
         mTitleBar.setViewPager(mViewPager, PAGERCURRENTITEM);
 
 
@@ -261,13 +271,19 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.rl_search:
                 Log.i("IndexActivity", "onClick...." + view.getId());
+                SearchActivity.startAc(this);
                 break;
             case R.id.rl_message:
                 Log.i("IndexActivity", "onClick...." + view.getId());
                 break;
         }
+    }
+
+    @Override
+    public void onFocusChange(View view, boolean b) {
+        Log.i("IndexActivity", "view...." + view.getId());
     }
 }

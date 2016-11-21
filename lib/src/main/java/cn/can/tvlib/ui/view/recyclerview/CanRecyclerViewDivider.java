@@ -142,7 +142,11 @@ public class CanRecyclerViewDivider extends RecyclerView.ItemDecoration {
             }
 
         } else if (layoutManager instanceof LinearLayoutManager) {
-            return pos == childCount - 1;
+            if(((LinearLayoutManager) layoutManager).getOrientation() == LinearLayoutManager.HORIZONTAL) {
+                return true;
+            } else {
+                return pos == childCount - 1;
+            }
 
         } else if (layoutManager instanceof StaggeredGridLayoutManager) {
             int orientation = ((StaggeredGridLayoutManager) layoutManager).getOrientation();
@@ -173,7 +177,11 @@ public class CanRecyclerViewDivider extends RecyclerView.ItemDecoration {
             }
 
         } else if (layoutManager instanceof LinearLayoutManager) {
-            return pos == childCount - 1;
+            if(((LinearLayoutManager) layoutManager).getOrientation() == LinearLayoutManager.VERTICAL) {
+                return true;
+            } else {
+                return pos == childCount - 1;
+            }
 
         } else if (layoutManager instanceof StaggeredGridLayoutManager) {
             int orientation = ((StaggeredGridLayoutManager) layoutManager).getOrientation();

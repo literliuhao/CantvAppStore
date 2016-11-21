@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@drawable/search_key_item_selector"
-    android:clickable="true"
-    android:focusable="true">
+                android:layout_width="match_parent"
+                android:layout_height="104px"
+                android:clickable="true"
+                android:descendantFocusability="blocksDescendants"
+                android:focusable="true">
 
     <ImageView
         android:id="@+id/icon_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@mipmap/ic_launcher" />
+        android:layout_width="80px"
+        android:layout_height="80px"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="24px"
+        android:src="@mipmap/ic_launcher"/>
 
     <TextView
         android:id="@+id/app_name_view"
@@ -19,6 +21,13 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@id/icon_view"
+        android:duplicateParentState="true"
+        android:ellipsize="end"
+        android:focusable="true"
         android:gravity="center"
-        android:text="测试名称" />
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+        android:text="测试名称"
+        android:textColor="#ffffff"
+        android:textSize="32px"/>
 </RelativeLayout>

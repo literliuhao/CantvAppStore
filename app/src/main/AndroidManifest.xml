@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.GET_PACKAGE_SIZE"/>
+    <uses-permission android:name="android.permission.INSTALL_PACKAGES"/>
     <uses-permission android:name="android.permission.DELETE_PACKAGES"/>
 
     <application
@@ -27,7 +28,11 @@
         <activity android:name=".PortalActivity">
 
         </activity>
-        <activity android:name=".search.SearchActivity"></activity>
+        <activity android:name=".search.SearchActivity">
+            <intent-filter>
+                <action android:name="com.can.appstore.ACTION.ACTIVITY_SEARCH"/>
+            </intent-filter>
+        </activity>
         <activity android:name=".specialdetail.SpecialDetailActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION.TOPIC_DETAIL"/>
@@ -70,11 +75,13 @@
         <activity android:name=".update.UpdateManagerActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION.ACTIVITY_UPDATE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity android:name=".installpkg.InstallManagerActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION.ACTIVITY_INSTALL"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity android:name=".myapps.ui.SystemAppsActivity">

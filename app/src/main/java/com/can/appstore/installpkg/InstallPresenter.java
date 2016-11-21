@@ -43,9 +43,11 @@ public class InstallPresenter implements InstallContract.Presenter {
         mView.showLoadingDialog();
         InstallPkgUtils.myFiles.clear();
         mPath = Environment.getExternalStorageDirectory().getPath().toString() + File.separator + "Movies";
+        //mPath = MyApp.mContext.getExternalCacheDir().getPath().toString()+ File.separator;
         List appList = InstallPkgUtils.FindAllAPKFile(mPath);
         mDatas.clear();
         if (appList.size() < 1) {
+            mView.hideLoadingDialog();
             mView.showNoData();
         } else {
             mView.hideLoadingDialog();
@@ -111,6 +113,14 @@ public class InstallPresenter implements InstallContract.Presenter {
 
     }
 
+    public AppInfoBean getItem(int position) {
+        if (position < 0 || position > mDatas.size()) {
+            return null;
+        }
+        AppInfoBean appInfoBean = mDatas.get(position);
+        return appInfoBean;
+    }
+
     /**
      * 释放资源
      */
@@ -141,12 +151,12 @@ public class InstallPresenter implements InstallContract.Presenter {
      * 刷新图标（可能多重版本）通过广播获取安装完成刷新ui  +&& bean.getVersionCode().equals(String.valueOf(versonCode))
      *
      * @param packageName
-     * @param versonCode
+     * @param versonCode, int versonCode   && bean.getVersionCode().equals(String.valueOf(versonCode))
      */
-    public void isInstalled(String packageName, int versonCode) {
+    public void isInstalled(String packageName) {
         for (int i = mDatas.size() - 1; i >= 0; i--) {
             AppInfoBean bean = mDatas.get(i);
-            if (bean.getPackageName().equals(packageName) && bean.getVersionCode().equals(String.valueOf(versonCode))) {
+            if (bean.getPackageName().equals(packageName) ) {
                 if (bean.getInstall()) {
                     //bean.setInstall(true);
                     mView.refreshItem(i);
@@ -165,6 +175,24 @@ public class InstallPresenter implements InstallContract.Presenter {
         mDatas.get(position).setInstall(true);//positon传递
         InstallPkgUtils.installApkFromF(MyApp.mContext,
                 new File(mDatas.get(position).getFliePath()), true, mDatas.get(position).getPackageName());
+    }
+    /**
+     * 静默安装应用
+     */
+    public void installApp(int position) {
+        mDatas.get(position).setInstalling(true);//开始安装
+        //mInstallDatas.add(mDatas.get(position));//加入安装中集合
+        //mDatas.get(position).setInstall(true);//positon传递
+        //mView.refreshItem(position);
+        int result = InstallPkgUtils.installApp(mDatas.get(position).getFliePath());
+        if(result == 0){
+            mDatas.get(position).setInstalling(false);
+            mDatas.get(position).setInstall(true);
+            isInstalled(mDatas.get(position).getPackageName());
+        }else{
+            mDatas.get(position).setInstalling(false);
+            //mView.refreshItem(position);
+        }
     }
 
 }

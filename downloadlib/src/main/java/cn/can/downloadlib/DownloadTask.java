@@ -48,6 +48,7 @@ public class DownloadTask implements Runnable {
 
     private List<DownloadTaskListener> mDownloadlisteners = new ArrayList<>();
     private AppInstallListener mAppListener;
+
     public DownloadTask() {
     }
 
@@ -114,10 +115,10 @@ public class DownloadTask implements Runnable {
                     if (mTotalSize <= 0) {
                         mTotalSize = responseBody.contentLength();
                         /** 下载过程中删除任务，此处mDbEntity为空 xingzl 2016-11-15 15:37:43 start*/
-                        if(mDbEntity==null){
+                        if (mDbEntity == null) {
                             mDbEntity = new DownloadDBEntity(mId, mTotalSize, mDownloadedSize, mUrl, mSaveDirPath,
                                     mFileName, mDownloadStatus, mIcon);
-                        }else{
+                        } else {
                             mDbEntity.setTotalSize(mTotalSize);
                         }
                         mDownloadDao.update(mDbEntity);
@@ -152,14 +153,14 @@ public class DownloadTask implements Runnable {
                             // Update download information database
                             buffOffset = 0;
                             //考虑是否需要频繁进行数据库的读取，如果在下载过程程序崩溃的话，程序不会保存最新的下载进度,并且下载过程不会更新进度
-                            if(DownloadStatus.DOWNLOAD_STATUS_CANCEL!=mDownloadStatus){
+                            if (DownloadStatus.DOWNLOAD_STATUS_CANCEL != mDownloadStatus) {
                                 mDbEntity.setDownloadedSize(mDownloadedSize);
                                 mDownloadDao.update(mDbEntity);
                                 onDownloading();
                             }
                         }
                     }
-                    if(DownloadStatus.DOWNLOAD_STATUS_CANCEL!=mDownloadStatus){
+                    if (DownloadStatus.DOWNLOAD_STATUS_CANCEL != mDownloadStatus) {
                         mDbEntity.setDownloadedSize(mDownloadedSize);
                         mDownloadDao.update(mDbEntity);
                         onDownloading();
@@ -237,8 +238,9 @@ public class DownloadTask implements Runnable {
                 break;
             case DownloadStatus.DOWNLOAD_STATUS_CANCEL:
                 mDownloadDao.delete(mDbEntity);
-                File temp = new File(mSaveDirPath +File.separator+ mFileName);
-                if (temp.exists()) temp.delete();
+                File temp = new File(mSaveDirPath + File.separator + mFileName);
+                if (temp.exists())
+                    temp.delete();
                 onCancel();
                 break;
         }
@@ -277,6 +279,10 @@ public class DownloadTask implements Runnable {
     }
 
     public void setSaveDirPath(String saveDirPath) {
+        File file = new File(saveDirPath);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
         this.mSaveDirPath = saveDirPath;
     }
 
@@ -316,8 +322,8 @@ public class DownloadTask implements Runnable {
         this.mFileName = fileName;
     }
 
-    public String getFilePath(){
-        return getSaveDirPath()+File.separator+getFileName();
+    public String getFilePath() {
+        return getSaveDirPath() + File.separator + getFileName();
     }
 
     public String getIcon() {
@@ -362,18 +368,18 @@ public class DownloadTask implements Runnable {
         }
     }
 
-//    private void installAPK() {
-//        mAppListener.onInstalling(this);
-//        setDownloadStatus(AppInstallListener.APP_INSTALLING);
-//        ShellUtils.CommandResult res = ShellUtils.execCommand("pm install " + mSaveDirPath, false);
-//        if (res.result == 0) {
-//            setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
-//            mAppListener.onInstallSucess(this);
-//        } else {
-//            setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
-//            mAppListener.onInstallFail(this);
-//        }
-//    }
+    //    private void installAPK() {
+    //        mAppListener.onInstalling(this);
+    //        setDownloadStatus(AppInstallListener.APP_INSTALLING);
+    //        ShellUtils.CommandResult res = ShellUtils.execCommand("pm install " + mSaveDirPath, false);
+    //        if (res.result == 0) {
+    //            setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
+    //            mAppListener.onInstallSucess(this);
+    //        } else {
+    //            setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
+    //            mAppListener.onInstallFail(this);
+    //        }
+    //    }
 
     private void onCompleted() {
         for (DownloadTaskListener listener : mDownloadlisteners) {
@@ -430,8 +436,10 @@ public class DownloadTask implements Runnable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         DownloadTask that = (DownloadTask) o;
 

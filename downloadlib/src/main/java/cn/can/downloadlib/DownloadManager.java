@@ -52,6 +52,7 @@ public class DownloadManager implements AppInstallListener {
     private static final int DELAY_TIME = 1000;
     private static final int MSG_SUBMIT_TASK = 1000;
     private static final int MSG_APP_INSTALL = 1001;
+    private static final int MSG_APP_UNINSTALL = 1002;
 
     private static DownloadManager mInstance;
     private static DownloadDao mDownloadDao;
@@ -96,6 +97,16 @@ public class DownloadManager implements AppInstallListener {
                         onInstallSucess(id);
                     } else {
                         onInstallFail(id);
+                    }
+                    break;
+                case MSG_APP_UNINSTALL:
+                    Bundle b = msg.getData();
+                    String pkg = b.getString("pkgname");
+                    ShellUtils.CommandResult result = ShellUtils.execCommand("pm uninstall " + pkg, false);
+                    if (result.result == 0) {
+                        onUninstallSucess(pkg);
+                    } else {
+                        onUninstallFail(pkg);
                     }
                     break;
             }
@@ -349,6 +360,15 @@ public class DownloadManager implements AppInstallListener {
     }
 
     /**
+     * 删除任务
+     * @param id
+     */
+    private void deleteTask(String id) {
+        mTaskManager.remove(id);
+        mDownloadDao.deleteByKey(id);
+    }
+
+    /**
      * 取消任务
      *
      * @param task
@@ -587,14 +607,7 @@ public class DownloadManager implements AppInstallListener {
 
     @Override
     public void onInstalling(DownloadTask downloadTask) {
-        downloadTask.setDownloadStatus(AppInstallListener.APP_INSTALLING);
-        Message msg = new Message();
-        msg.what = MSG_APP_INSTALL;
-        Bundle bundle = new Bundle();
-        bundle.putString("path", downloadTask.getFilePath());
-        bundle.putString("id", downloadTask.getId());
-        msg.setData(bundle);
-        mHander.sendMessage(msg);
+        install(downloadTask);
         if (mAppInstallListeners != null) {
             Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
             while (iter.hasNext()) {
@@ -602,15 +615,15 @@ public class DownloadManager implements AppInstallListener {
                 listener.onInstalling(downloadTask);
             }
         }
-
     }
 
     @Override
     public void onInstallSucess(String id) {
-        DownloadTask task= getCurrentTaskById(id);
-        if(task!=null){
+        DownloadTask task = getCurrentTaskById(id);
+        if (task != null) {
             task.setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
-            Log.d(TAG, "onInstallSucess: name="+task.getFileName());
+            Log.d(TAG, "onInstallSucess: name=" + task.getFileName());
+            deleteTask(id);
         }
         if (mAppInstallListeners != null) {
             Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
@@ -635,7 +648,28 @@ public class DownloadManager implements AppInstallListener {
                 listener.onInstallFail(id);
             }
         }
+    }
 
+    @Override
+    public void onUninstallFail(String id) {
+        if (mAppInstallListeners != null) {
+            Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
+            while (iter.hasNext()) {
+                AppInstallListener listener = iter.next();
+                listener.onUninstallFail(id);
+            }
+        }
+    }
+
+    @Override
+    public void onUninstallSucess(String id) {
+        if (mAppInstallListeners != null) {
+            Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
+            while (iter.hasNext()) {
+                AppInstallListener listener = iter.next();
+                listener.onUninstallSucess(id);
+            }
+        }
     }
 
     public void setAppInstallListener(AppInstallListener listener) {
@@ -651,5 +685,28 @@ public class DownloadManager implements AppInstallListener {
         }
     }
 
+    public void dispatchAppListener () {
+
+    }
+
+    public void install(DownloadTask downloadTask) {
+        downloadTask.setDownloadStatus(AppInstallListener.APP_INSTALLING);
+        Message msg = new Message();
+        msg.what = MSG_APP_INSTALL;
+        Bundle bundle = new Bundle();
+        bundle.putString("path", downloadTask.getFilePath());
+        bundle.putString("id", downloadTask.getId());
+        msg.setData(bundle);
+        mHander.sendMessage(msg);
+    }
+
+    public void uninstall(String pkg) {
+        Message msg = new Message();
+        msg.what = MSG_APP_UNINSTALL;
+        Bundle bundle = new Bundle();
+        bundle.putString("pkgname", pkg);
+        msg.setData(bundle);
+        mHander.sendMessage(msg);
+    }
 
 }

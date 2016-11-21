@@ -7,12 +7,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.search.ToastUtil;
 import com.can.appstore.search.widget.YIBaseCompatFocusAdapter;
 
 import java.util.List;
+
+import cn.can.tvlib.imageloader.ImageLoader;
 
 /**
  * Created by yibh on 2016/10/14 18:48 .
@@ -62,6 +65,7 @@ public class HotRecommendAdapter extends YIBaseCompatFocusAdapter {
         public void setContent(int position) {
             AppInfo app = (AppInfo) mDataList.get(position);
             mAppName.setText(app.getName());
+            ImageLoader.getInstance().load(MyApp.mContext, mAppIcon, app.getIcon());
         }
 
     }

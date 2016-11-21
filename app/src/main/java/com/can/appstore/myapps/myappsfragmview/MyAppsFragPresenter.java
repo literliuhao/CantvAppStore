@@ -22,20 +22,15 @@ import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
  */
 
 public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
-    MyAppsFramentContract.View mView;
-    Context mContext;
+    private MyAppsFramentContract.View mView;
+    private Context mContext;
+    private MyAppsListDataUtil mMyAppsListDataUtil;
+    private AppInstallReceiver mAppInstallReceiver;
 
-    MyAppsListDataUtil mMyAppsListDataUtil;
-
-    AppInstallReceiver mAppInstallReceiver;
-
-
-//    //本地全部的第三方应用
-//    List<PackageUtil.AppInfo> mAppsList = new ArrayList<AppInfo>();
     //主页显示的第三方应用
-    List<AppInfo> mShowList = new ArrayList<AppInfo>(18);
+    private List<AppInfo> mShowList = new ArrayList<AppInfo>(18);
     //系统应用的icon
-    List<Drawable> mDrawables = new ArrayList<Drawable>();
+    private List<Drawable> mDrawables = new ArrayList<Drawable>();
 
 
     public MyAppsFragPresenter(MyAppsFramentContract.View view, Context context) {
@@ -52,13 +47,13 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
                 mMyAppsListDataUtil = new MyAppsListDataUtil(mContext);
                 mShowList = mMyAppsListDataUtil.getShowList(mShowList);
                 List<AppInfo> systemApp = mMyAppsListDataUtil.getSystemApp(null);
-                if(mDrawables.size()!= 0){
+                if (mDrawables.size() != 0) {
                     mDrawables.clear();
                 }
                 for (int i = 0; i < systemApp.size(); i++) {
                     mDrawables.add(systemApp.get(i).appIcon);
                 }
-                Log.i("MYSHOWLIST","------"+mShowList.size());
+                Log.i("MYSHOWLIST", "------" + mShowList.size());
                 return null;
             }
 
@@ -67,10 +62,9 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
                 super.onPreExecute();
             }
 
-
             @Override
             protected void onPostExecute(Void aVoid) {
-                mView.loadAppInfoSuccess(mShowList,mDrawables);
+                mView.loadAppInfoSuccess(mShowList, mDrawables);
             }
         }.execute();
 
@@ -81,7 +75,6 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
     public void addListener() {
         registerInstallReceiver();
     }
-
 
     /**
      * 注册应用安装卸载的广播
@@ -129,27 +122,21 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
             mShowList.clear();
             mShowList = null;
         }
-//        if (mAppsList != null) {
-//            mAppsList.clear();
-//            mShowList = null;
-//        }
     }
-
-
 
 
     public void topApp(int position) {
         AppInfo appInfo = mShowList.get(position);
         mShowList.remove(position);
         mShowList.add(2, appInfo);
-        mView.loadAppInfoSuccess(mShowList,mDrawables);
+        mView.loadAppInfoSuccess(mShowList, mDrawables);
         mMyAppsListDataUtil.saveShowList(mShowList);
     }
 
     public void removeApp(int position) {
         mShowList.remove(position);
         mMyAppsListDataUtil.saveShowList(mShowList);
-        mView.loadAppInfoSuccess(mShowList,mDrawables);
+        mView.loadAppInfoSuccess(mShowList, mDrawables);
     }
 
     public void unRegiestr() {

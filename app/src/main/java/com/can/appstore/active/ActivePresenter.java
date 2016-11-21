@@ -22,7 +22,6 @@ import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
 import cn.can.tvlib.utils.ApkUtils;
-import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.StringUtils;
 import retrofit2.Response;
 
@@ -267,6 +266,16 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
     public void onInstallFail(String id) {
         Log.d(TAG, "onInstallFail(id " + id +")");
         mOperationView.refreshTextProgressbarTextStatus("重新安装");
+    }
+
+    @Override
+    public void onUninstallSucess(String id) {
+
+    }
+
+    @Override
+    public void onUninstallFail(String id) {
+
     }
 
     private boolean isFastContinueClickView() {

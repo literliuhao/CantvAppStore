@@ -1,5 +1,6 @@
 package com.can.appstore.index.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
+import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.index.adapter.GridAdapter;
 import com.can.appstore.index.interfaces.IAddFocusListener;
@@ -47,6 +49,28 @@ public class ManagerFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 Log.i("ManagerFragment", view.getId() + "");
+                switch (view.getId()) {
+                    case 0:
+                        break;
+                    case 1:
+                        getActivity().startActivity(new Intent("com.can.appstore.ACTION.ACTIVITY_UPDATE"));
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                    case 4:
+                        break;
+                    case 5:
+                        break;
+                    case 6:
+                        getActivity().startActivity(new Intent("com.can.appstore.ACTION.ACTIVITY_INSTALL"));
+                        break;
+                    case 7:
+                        break;
+                    default:
+                        break;
+                }
             }
         });
 
