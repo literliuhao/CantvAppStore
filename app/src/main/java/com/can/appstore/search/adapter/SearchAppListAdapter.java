@@ -1,0 +1,188 @@
+package com.can.appstore.search.adapter;
+
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.can.appstore.MyApp;
+import com.can.appstore.R;
+import com.can.appstore.entity.AppInfo;
+import com.can.appstore.entity.PopularWord;
+import com.can.appstore.search.ToastUtil;
+import com.can.appstore.search.widget.YIBaseCompatFocusAdapter;
+
+import java.util.List;
+
+import cn.can.tvlib.imageloader.ImageLoader;
+
+
+/**
+ * Created by yibh on 2016/10/13 17:36 .
+ */
+
+public class SearchAppListAdapter extends YIBaseCompatFocusAdapter {
+    private List mDataList;
+    private List mDefaultList;  //"大家都在搜"的数据
+    private OnInitialsListener mOnInitialsListener;
+
+    public SearchAppListAdapter(List datas) {
+        super(datas);
+        mDataList = datas;
+        mDefaultList = datas;
+    }
+
+    private static final int DEFAULT_APPLIST_TYPE = 11;    //默认大家都在搜的类型
+    private static final int SEARCH_APPLIST_TYPE = 12;     //搜索出来的类型
+
+
+    @Override
+    protected RecyclerView.ViewHolder generateViewHolder(final ViewGroup parent, final int viewType) {
+        setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onClick(View view, int position, Object data) {
+                switch (viewType) {
+                    case DEFAULT_APPLIST_TYPE:
+                        PopularWord defaultApp = (PopularWord) mDataList.get(position);
+                        ToastUtil.toastShort("点击 " + defaultApp.getWord());
+                        setInitials(defaultApp.getPinyin());
+                        break;
+                    case SEARCH_APPLIST_TYPE:
+                        AppInfo searchApp = (AppInfo) mDataList.get(position);
+                        ToastUtil.toastShort("点击 " + searchApp.getName());
+                        break;
+                }
+            }
+        });
+        LayoutInflater mLayoutInflater = LayoutInflater.from(parent.getContext());
+        switch (viewType) {
+            case DEFAULT_APPLIST_TYPE:
+                View inflate = mLayoutInflater.inflate(R.layout.search_app_default_item, parent, false);
+                return new DefaultSearchViewHolder(inflate);
+            case SEARCH_APPLIST_TYPE:
+                View view = mLayoutInflater.inflate(R.layout.search_app_item, parent, false);
+                return new SearchViewHolder(view);
+        }
+
+        return new RecyclerView.ViewHolder(null) {
+        };
+    }
+
+
+    @Override
+    protected void bindContentData(Object mDatas, RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof DefaultSearchViewHolder) {
+            ((DefaultSearchViewHolder) holder).setContent(position);
+        } else {
+            AppInfo app = (AppInfo) mDataList.get(position);
+            ImageLoader.getInstance().load(MyApp.mContext, ((SearchViewHolder) holder).mAppIcon, app.getIcon());
+            ((SearchViewHolder) holder).mAppName.setText(app.getName());
+            ((SearchViewHolder) holder).mAppSize.setText(app.getSizeStr());
+            ((SearchViewHolder) holder).mAppDownloadCount.setText(app.getDownloadCount());
+        }
+    }
+
+    /**
+     * author: yibh
+     * Date: 2016/10/13  17:56 .
+     * "大家都在搜"默认的列表
+     */
+    public class DefaultSearchViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView mAppName;
+        private View mView;
+
+        public DefaultSearchViewHolder(View itemView) {
+            super(itemView);
+            mView = itemView;
+            mAppName = (TextView) itemView.findViewById(R.id.default_name_view);
+        }
+
+        /**
+         * 设置数据
+         *
+         * @param position
+         */
+        public void setContent(int position) {
+            PopularWord app = (PopularWord) mDataList.get(position);
+            mAppName.setText(app.getWord());
+        }
+    }
+
+    /**
+     * author: yibh
+     * Date: 2016/10/13  17:57 .
+     * 搜索出来的列表
+     */
+    public class SearchViewHolder extends RecyclerView.ViewHolder {
+        TextView mAppName;
+        ImageView mAppIcon;
+        TextView mAppSize;  //app大小
+        TextView mAppDownloadCount; //下载量
+
+        public SearchViewHolder(View itemView) {
+            super(itemView);
+            mAppIcon = (ImageView) itemView.findViewById(R.id.app_icon);
+            mAppName = (TextView) itemView.findViewById(R.id.app_name_view);
+            mAppSize = (TextView) itemView.findViewById(R.id.app_size_view);
+            mAppDownloadCount = (TextView) itemView.findViewById(R.id.app_dwoncount_view);
+        }
+
+
+    }
+
+    @Override
+    public int getViewType(int position) {
+        if (mDataList.get(position) instanceof PopularWord) {
+            return DEFAULT_APPLIST_TYPE;
+        } else {
+            return SEARCH_APPLIST_TYPE;
+        }
+    }
+
+    /**
+     * 设置数据并刷新
+     *
+     * @param dataList
+     */
+    public void setDataList(List dataList) {
+        mDataList = dataList;
+        setDatas(dataList);
+        notifyDataSetChanged();
+    }
+
+    /**
+     * 设置默认数据
+     */
+    public void setDefaultApplist() {
+        setDataList(mDefaultList);
+    }
+
+    /**
+     * author: yibh
+     * Date: 2016/10/14  18:18 .
+     * 获取首字母的监听
+     */
+    public interface OnInitialsListener {
+        void onInitials(String con);
+    }
+
+    public void setOnInitialsListener(OnInitialsListener onInitialsListener) {
+        this.mOnInitialsListener = onInitialsListener;
+    }
+
+    /**
+     * 设置首字母回调
+     *
+     * @param con
+     */
+    private void setInitials(String con) {
+        if (null != mOnInitialsListener) {
+            mOnInitialsListener.onInitials(con);
+        }
+    }
+
+
+}

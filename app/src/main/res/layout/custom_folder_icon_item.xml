@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="@dimen/px224"
+              android:layout_height="@dimen/px152"
+              android:orientation="vertical"
+    >
+    <LinearLayout
+        android:layout_width="@dimen/px208"
+        android:layout_height="@dimen/px136"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/px8"
+        android:layout_marginLeft="@dimen/px8"
+        >
+    <LinearLayout
+        android:layout_width="@dimen/px208"
+        android:layout_height="@dimen/px64"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        >
+        <ImageView
+            android:layout_width="@dimen/px64"
+            android:layout_height="@dimen/px64"
+            android:id="@+id/myapps_sys_icon1"
+            android:visibility="invisible"
+            />
+        <ImageView
+            android:layout_width="@dimen/px64"
+            android:layout_height="@dimen/px64"
+            android:id="@+id/myapps_sys_icon2"
+            android:layout_marginLeft="@dimen/px8"
+            android:layout_marginRight="@dimen/px8"
+            android:visibility="invisible"
+            />
+        <ImageView
+            android:layout_width="@dimen/px64"
+            android:layout_height="@dimen/px64"
+            android:id="@+id/myapps_sys_icon3"
+            android:visibility="invisible"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="@dimen/px208"
+        android:layout_height="@dimen/px64"
+        android:layout_marginTop="@dimen/px8"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+
+        >
+    <ImageView
+        android:layout_width="@dimen/px64"
+        android:layout_height="@dimen/px64"
+        android:id="@+id/myapps_sys_icon4"
+        android:visibility="invisible"
+        />
+    <ImageView
+        android:layout_width="@dimen/px64"
+        android:layout_height="@dimen/px64"
+        android:id="@+id/myapps_sys_icon5"
+        android:visibility="invisible"
+        android:layout_marginRight="@dimen/px8"
+        android:layout_marginLeft="@dimen/px8"
+        />
+
+    <ImageView
+        android:layout_width="@dimen/px64"
+        android:layout_height="@dimen/px64"
+        android:id="@+id/myapps_sys_icon6"
+        android:visibility="invisible"
+        />
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>

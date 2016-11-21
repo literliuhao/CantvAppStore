@@ -33,7 +33,6 @@
             android:layout_marginTop="@dimen/dimen_10px"
             android:layout_toRightOf="@+id/iv_icon"
             android:includeFontPadding="false"
-            android:text="有乐斗地主"
             android:textColor="@color/app_name_color"
             android:textSize="@dimen/fontsize_56px"/>
 

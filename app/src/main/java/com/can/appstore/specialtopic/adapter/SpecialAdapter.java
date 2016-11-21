@@ -46,7 +46,8 @@ public class SpecialAdapter extends CanRecyclerViewAdapter<SpecialTopic> {
         final SubjectViewHolder subjectViewHolder = (SubjectViewHolder) holder;
         subjectViewHolder.titleTv.setText(data.getTitle());
         subjectViewHolder.iconImgvi.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        ImageLoader.getInstance().load(mContext, subjectViewHolder.iconImgvi, data.getIcon(),android.R.anim.fade_in,
+        subjectViewHolder.iconImgvi.setBackgroundResource(R.drawable.bg_item);
+        ImageLoader.getInstance().load(mContext, subjectViewHolder.iconImgvi, data.getIcon(), android.R.anim.fade_in,
                 R.mipmap.icon_load_default, R.mipmap.icon_loading_fail, new GlideLoadTask.SuccessCallback() {
                     @Override
                     public boolean onSuccess(GlideDrawable resource, String model,
@@ -54,6 +55,7 @@ public class SpecialAdapter extends CanRecyclerViewAdapter<SpecialTopic> {
                                              boolean isFromMemoryCache,
                                              boolean isFirstResource) {
                         subjectViewHolder.iconImgvi.setScaleType(ImageView.ScaleType.FIT_XY);
+                        subjectViewHolder.iconImgvi.setBackgroundResource(0);
                         subjectViewHolder.iconImgvi.setImageDrawable(resource);
                         return true;
                     }

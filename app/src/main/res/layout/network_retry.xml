@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/network_retry_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+    <TextView
+        android:id="@+id/network_retry_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/no_data"
+        android:textColor="@color/white_opa80"
+        android:textSize="@dimen/fontsize_34"/>
+
+    <Button
+        android:id="@+id/network_retry_btn"
+        android:layout_width="@dimen/px200"
+        android:layout_height="@dimen/px75"
+        android:layout_below="@+id/network_retry_tv"
+        android:layout_marginTop="@dimen/dimen_30px"
+        android:background="@drawable/bg_btn_download"
+        android:gravity="center"
+        android:text="@string/click_retry"
+        android:textColor="@color/white_opa80"
+        android:textSize="@dimen/fontsize_32"/>
+</RelativeLayout>

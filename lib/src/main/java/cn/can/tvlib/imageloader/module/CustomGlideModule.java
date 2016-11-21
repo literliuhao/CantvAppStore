@@ -29,7 +29,7 @@ public class CustomGlideModule implements GlideModule {
     @Override
     public void applyOptions(Context context, GlideBuilder builder) {
 
-        ViewTarget.setTagId(R.id.glide_tag_id);
+//        ViewTarget.setTagId(R.id.glide_tag_id);
 
         MemorySizeCalculator calculator = new MemorySizeCalculator(context);
         int defaultBitmapPoolSize = calculator.getBitmapPoolSize();

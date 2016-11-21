@@ -27,6 +27,7 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.NetworkUtils;
 
 import static com.can.appstore.R.id.special_recyclerview;
+import static com.can.appstore.applist.AppListActivity.MIN_DOWN_INTERVAL;
 
 public class SpecialActivity extends BaseActivity implements SpecialContract.SubjectView {
 
@@ -56,6 +57,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     private String noDataStr, netErrorStr;
 
     private int mFocusType =FOCUS_IMAGE;
+    private long mTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -217,9 +219,18 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (KeyEvent.ACTION_DOWN == event.getAction() && KeyEvent.KEYCODE_DPAD_DOWN == event.getKeyCode()) {
-            if (mPresenter != null) {
-                mPresenter.remindNoData();
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            long time = System.currentTimeMillis();
+            if (mTime == 0) {
+                mTime = System.currentTimeMillis();
+                if (mPresenter != null) {
+                    mPresenter.remindNoData();
+                }
+                return super.dispatchKeyEvent(event);
+            } else if (time - mTime < MIN_DOWN_INTERVAL) {
+                return true;
+            } else {
+                mTime = System.currentTimeMillis();
             }
         }
         return super.dispatchKeyEvent(event);
@@ -271,4 +282,5 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
             mAdapter.notifyItemRangeInserted(startInsertPos, endInsertPos);
         }
     }
+
 }

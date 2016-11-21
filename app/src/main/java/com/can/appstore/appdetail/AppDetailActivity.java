@@ -1,5 +1,7 @@
 package com.can.appstore.appdetail;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -338,12 +340,14 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     }
 
     @Override
-    public void onClickHomeKey() {
-        finish();
+    public void setPresenter(AppDetailContract.Presenter presenter) {
     }
 
     @Override
-    public void setPresenter(AppDetailContract.Presenter presenter) {
+    protected void onHomeKeyListener() {
+        mAppDetailPresenter.dismissInsufficientStorageSpaceDialog();
+        mAppDetailPresenter.dismissIntroduceDialog();
+        finish();
     }
 
     private void setData() {//TODO   修改设置数据
@@ -371,24 +375,33 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         if (mRelativeLayuotOperatingEquipment.getChildCount() != 1) {
             mRelativeLayuotOperatingEquipment.removeViewsInLayout(1, mControlType.size());
         }
+        int width = getResources().getDimensionPixelSize(R.dimen.dimen_60px);
+        int leftMargin = getResources().getDimensionPixelSize(R.dimen.dimen_12px);
         mControlType = type;
         for (int i = 0; i < type.size(); i++) {
             View childAt = mRelativeLayuotOperatingEquipment.getChildAt(i);
-            RelativeLayout.LayoutParams controllerTypePic = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-            ImageView conTypePic = new ImageView(this);
+            RelativeLayout.LayoutParams controllerTypePic = new RelativeLayout.LayoutParams(width, width);
+            final ImageView conTypePic = new ImageView(this);
             if (i == 0) {
                 controllerTypePic.addRule(RelativeLayout.RIGHT_OF, R.id.tv_operating_equipment);
             } else {
                 controllerTypePic.addRule(RelativeLayout.RIGHT_OF, childAt.getId());
             }
-            controllerTypePic.leftMargin = getResources().getDimensionPixelSize(R.dimen.dimen_24px);
+            controllerTypePic.leftMargin = leftMargin;
             controllerTypePic.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
             conTypePic.setId(i + 1);
             conTypePic.setLayoutParams(controllerTypePic);
             conTypePic.setScaleType(ImageView.ScaleType.FIT_CENTER);
             mRelativeLayuotOperatingEquipment.addView(conTypePic, controllerTypePic);
-            int selectOperationPic = mAppDetailPresenter.getOperationPic(type.get(i));
+            int selectOperationPic = mAppDetailPresenter.getOperationPic(type.get(i));  // TODO
             conTypePic.setImageResource(selectOperationPic);
+            //            ImageLoader.getInstance().load(AppDetailActivity.this, conTypePic, type.get(i), new GlideLoadTask.SuccessCallback() {
+            //                @Override
+            //                public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+            //                    conTypePic.setImageDrawable(resource);
+            //                    return true;
+            //                }
+            //            }, null);
         }
     }
 
@@ -444,12 +457,12 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     public void refreshButtonProgress(int refreshButtonProgress, String buttonText, float progress) {
         if (mButtonDownload != null && refreshButtonProgress == MESSAGE_TYPE_DOWNLAOD) {
-            mButtonDownload.setProgress((int) progress);
-            mButtonDownload.setText(buttonText);
-            mHandler.removeMessages(MESSAGE_TYPE_DOWNLAOD);
             if (!buttonText.equals(getResources().getString(R.string.detail_app_run))) {
                 mButtonDownload.setProgressDrawable(getResources().getDrawable(R.drawable.layer_list_app_detail_download));
             }
+            mButtonDownload.setProgress((int) progress);
+            mButtonDownload.setText(buttonText);
+            mHandler.removeMessages(MESSAGE_TYPE_DOWNLAOD);
         } else if (mButtonUpdate != null && refreshButtonProgress == MESSAGE_TYPE_UPDATE) {
             mButtonUpdate.setProgress((int) progress);
             mButtonUpdate.setText(buttonText);
@@ -536,6 +549,8 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && event.getAction() == KeyEvent.ACTION_DOWN) {
                     mLayoutIntroduceText.requestFocus();
                     return true;
+                } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && event.getAction() == KeyEvent.ACTION_DOWN && position == 0) {
+                    return true;
                 }
                 return false;
             }
@@ -552,13 +567,12 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if (isTabLineMoveToRecommend) {
-                    int size = mAppinfo.getRecommend().size();
-                    if (size < RECOMMEND_LINE_COUNT) {
-                        recommendGridPositionRequestFocus(200, size - 1);
-                    } else {
-                        recommendGridPositionRequestFocus(300, 3);
-                    }
+                if (newState == CanRecyclerView.SCROLL_STATE_SETTLING) {
+                    mBtIntroduction.setFocusable(false);
+                    mBtRecommend.setFocusable(false);
+                } else if (newState == CanRecyclerView.SCROLL_STATE_IDLE) {
+                    mBtIntroduction.setFocusable(true);
+                    mBtRecommend.setFocusable(true);
                 }
             }
 
@@ -697,5 +711,19 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 }
             }
         }
+    }
+
+    /**
+     * 打开应用详情页面
+     *
+     * @param context 上下文
+     * @param appID   应用id
+     * @param topicID
+     */
+    public static void startAppDetail(Context context, String appID, String topicID) {
+        Intent intent = new Intent(context, AppDetailActivity.class);
+        intent.putExtra("appID", appID);
+        intent.putExtra("topicID", topicID);
+        context.startActivity(intent);
     }
 }

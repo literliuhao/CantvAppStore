@@ -1,0 +1,35 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/index_bj"
+    android:focusable="false">
+
+    <include
+        android:id="@+id/layout_top"
+        layout="@layout/index_top"/>
+
+    <com.can.appstore.index.ui.TitleBar
+        android:id="@+id/id_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/px80"
+        android:layout_below="@id/layout_top"
+        android:layout_marginLeft="@dimen/px110"
+        android:layout_marginTop="@dimen/px30"
+        android:focusable="false"
+        android:orientation="horizontal">
+    </com.can.appstore.index.ui.TitleBar>
+
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/id_vp"
+        android:layout_width="@dimen/px1700"
+        android:layout_height="@dimen/px600"
+        android:layout_below="@id/id_indicator"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/px50"
+        android:focusable="false">
+    </android.support.v4.view.ViewPager>
+
+
+</RelativeLayout>

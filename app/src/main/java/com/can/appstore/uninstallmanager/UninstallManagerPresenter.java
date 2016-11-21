@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -14,21 +15,27 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 
 import com.can.appstore.R;
+import com.can.appstore.appdetail.tempfile.CanDialog;
 import com.can.appstore.uninstallmanager.csutom.CustomAsyncTaskLoader;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.can.downloadlib.utils.ShellUtils;
+import cn.can.downloadlib.AppInstallListener;
+import cn.can.downloadlib.DownloadManager;
+import cn.can.downloadlib.DownloadTask;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.SystemUtil;
+import cn.can.tvlib.utils.ToastUtils;
+
+import static android.R.attr.name;
 
 /**
  * Created by JasonF on 2016/10/17.
  */
 
-public class UninstallManagerPresenter implements UninstallManagerContract.Presenter, LoaderManager.LoaderCallbacks<List<PackageUtil.AppInfo>> {
+public class UninstallManagerPresenter implements UninstallManagerContract.Presenter, LoaderManager.LoaderCallbacks<List<PackageUtil.AppInfo>>, AppInstallListener {
     private static final String TAG = "UninstallManagerPresen";
     private static final int LOADER_ID = 0;
     private static final int COLUMN_COUNT = 3;
@@ -38,11 +45,19 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     private AppInstallReceiver mInstalledReceiver;
     private ArrayList<String> mSelectPackageName = new ArrayList<>();
     private LoaderManager mLoaderManager;
+    private DownloadManager mDownloadManager;
+    private String mCurUninstallApkName = "";
+    private CanDialog mCanDialog;
 
     public UninstallManagerPresenter(UninstallManagerContract.View view, Context context) {
         this.mView = view;
         this.mContext = context;
+        initDownloadManager();
         addListener();
+    }
+
+    public void initDownloadManager() {
+        mDownloadManager = DownloadManager.getInstance(mContext);
     }
 
     @Override
@@ -54,6 +69,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     @Override
     public void addListener() {
         registerInstallReceiver();
+        mDownloadManager.setAppInstallListener(UninstallManagerPresenter.this);
     }
 
     /**
@@ -138,6 +154,33 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
         Log.d(TAG, "onLoaderReset: ");
     }
 
+    @Override
+    public void onInstalling(DownloadTask downloadTask) {
+        Log.d(TAG, "onInstalling: ");
+    }
+
+    @Override
+    public void onInstallSucess(String id) {
+        Log.d(TAG, "onInstallSucess: ");
+    }
+
+    @Override
+    public void onInstallFail(String id) {
+        Log.d(TAG, "onInstallFail: ");
+    }
+
+    @Override
+    public void onUninstallSucess(String id) {
+        Log.d(TAG, "onUninstallSucess: " + mCurUninstallApkName);
+        ToastUtils.showMessage(mContext, mCurUninstallApkName + mContext.getResources().getString(R.string.uninstall_success));
+    }
+
+    @Override
+    public void onUninstallFail(String id) {
+        Log.d(TAG, "onUninstallFail: " + mCurUninstallApkName);
+        ToastUtils.showMessage(mContext, mCurUninstallApkName + mContext.getResources().getString(R.string.uninstall_fail));
+    }
+
     class AppInstallReceiver extends BroadcastReceiver {
 
         @Override
@@ -154,7 +197,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
                 refreshItemInListPosition(packageName);
                 if (mSelectPackageName != null) {
                     if (mSelectPackageName.size() > 0) {
-                        continueUninstall1();
+                        continueUninstall();
                     }
                 }
             }
@@ -173,11 +216,11 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     /**
      * 继续卸载
      */
-    private void continueUninstall1() {
+    private void continueUninstall() {
         mSelectPackageName.remove(0);
         mView.refreshSelectCount(mSelectPackageName.size());
         if (mSelectPackageName.size() > 0) {
-            PackageUtil.unInstall(mContext, mSelectPackageName.get(0));
+            startUninstall();
         }
     }
 
@@ -193,7 +236,71 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
      */
     public void batchUninstallApp(ArrayList<String> selectPackageList) {
         this.mSelectPackageName = selectPackageList;
-        PackageUtil.unInstall(mContext, mSelectPackageName.get(0));
+        startUninstall();
+    }
+
+    /**
+     * 开始卸载
+     */
+    public void startUninstall() {
+        int curUninstallPosition = getCurUninstallPosition(mSelectPackageName.get(0));
+        PackageUtil.AppInfo appInfo = mAppInfoList.get(curUninstallPosition);
+        Log.d(TAG, "startUninstall: curUninstallPosition : " + curUninstallPosition + "  info : " + appInfo);
+        dismissUninstallDialog();
+        showUninstallDialog(appInfo.appIcon, appInfo.appName, appInfo.packageName);
+    }
+
+    /**
+     * 显示卸载对话框
+     *
+     * @param drawable
+     * @param name
+     * @param packName
+     */
+    public void showUninstallDialog(Drawable drawable, final String name, final String packName) {
+        String ok = mContext.getResources().getString(R.string.ok);
+        String cancle = mContext.getResources().getString(R.string.cancle);
+        String makesureUninstall = mContext.getResources().getString(R.string.makesure_uninstall_apk);
+        mCanDialog = new CanDialog(mContext);
+        mCanDialog.setmIvDialogTitle(drawable).setmTvDialogTitle(name).setmTvDialogTopLeftContent(makesureUninstall).setmBtnDialogNegative(cancle)
+                .setmBtnDialogPositive(ok).setOnCanBtnClickListener(new CanDialog.OnCanBtnClickListener() {
+            @Override
+            public void onClickPositive() {
+                silentUninstall(name, packName);
+                dismissUninstallDialog();
+            }
+
+            @Override
+            public void onClickNegative() {
+                dismissUninstallDialog();
+            }
+        });
+        mCanDialog.show();
+    }
+
+    /**
+     * 隐藏卸载对话框
+     */
+    public void dismissUninstallDialog() {
+        if (mCanDialog != null) {
+            mCanDialog.dismiss();
+        }
+    }
+
+    /**
+     * 获取当前卸载包名位置应用名称
+     *
+     * @param packName
+     * @return
+     */
+    public int getCurUninstallPosition(String packName) {
+        int uninstallPosition = 0;
+        for (int j = 0; j < mAppInfoList.size(); j++) {
+            if (packName.equals(mAppInfoList.get(j).packageName)) {
+                uninstallPosition = j;
+            }
+        }
+        return uninstallPosition;
     }
 
     @Override
@@ -206,6 +313,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
             mSelectPackageName.clear();
             mSelectPackageName = null;
         }
+        mDownloadManager.removeAppInstallListener(this);
         mLoaderManager.destroyLoader(LOADER_ID);
     }
 
@@ -215,11 +323,8 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
      * @param packageName
      */
     public void silentUninstall(String appName, String packageName) {
-        ShellUtils.CommandResult res = ShellUtils.execCommand("pm uninstall -k " + packageName, false);
-        if (res.result == 0) {
-            mView.showToast(appName + mContext.getResources().getString(R.string.uninstall_success));
-        } else {
-            mView.showToast(appName + mContext.getResources().getString(R.string.uninstall_fail));
-        }
+        mCurUninstallApkName = appName;
+        mDownloadManager.uninstall(packageName);
     }
+
 }
