@@ -46,17 +46,15 @@ public class CustomFolderIcon extends RelativeLayout {
         initView();
     }
 
-    ImageView iv_01;
-    ImageView iv_02;
-    ImageView iv_03;
-    ImageView iv_04;
-    ImageView iv_05;
-    ImageView iv_06;
-
-//压缩图片
+    private ImageView iv_01;
+    private ImageView iv_02;
+    private ImageView iv_03;
+    private ImageView iv_04;
+    private ImageView iv_05;
+    private ImageView iv_06;
 
     private void initView() {
-        View.inflate(context,R.layout.custom_folder_icon_item,CustomFolderIcon.this);
+        View.inflate(context, R.layout.custom_folder_icon_item, CustomFolderIcon.this);
         iv_01 = (ImageView) findViewById(R.id.myapps_sys_icon1);
         iv_02 = (ImageView) findViewById(R.id.myapps_sys_icon2);
         iv_03 = (ImageView) findViewById(R.id.myapps_sys_icon3);
@@ -65,10 +63,10 @@ public class CustomFolderIcon extends RelativeLayout {
         iv_06 = (ImageView) findViewById(R.id.myapps_sys_icon6);
     }
 
-    public void addMyIcon(List<Drawable> list){
-        switch (list.size()){
+    public void addMyIcon(List<Drawable> list) {
+        switch (list.size()) {
             case 1:
-               addOneIcon(list);
+                addOneIcon(list);
                 break;
             case 2:
                 addTwoIcon(list);
@@ -90,7 +88,7 @@ public class CustomFolderIcon extends RelativeLayout {
         }
     }
 
-    public void addOneIcon(List<Drawable>  list){
+    public void addOneIcon(List<Drawable> list) {
         iv_01.setVisibility(VISIBLE);
         iv_01.setImageDrawable(list.get(0));
     }

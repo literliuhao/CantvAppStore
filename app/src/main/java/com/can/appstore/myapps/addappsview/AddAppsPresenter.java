@@ -22,18 +22,16 @@ import cn.can.tvlib.utils.PackageUtil.AppInfo;
  */
 
 public class AddAppsPresenter implements AddAppsContract.Presenter {
-    AddAppsContract.View mView;
-    Context mContext;
-
-    private LoadingDialog mLoadingDialog;
-
-
-    MyAppsListDataUtil mMyAppListData;
-    List<AppInfo> isShown;
-    List<AppInfo> addShowList = new ArrayList<AppInfo>();
+    private AddAppsContract.View mView;
+    private Context mContext;
+    private BroadcastReceiver mHomeReceivcer;
+    //数据
+    private MyAppsListDataUtil mMyAppListData;
+    private List<AppInfo> isShown;
+    private List<AppInfo> addShowList = new ArrayList<AppInfo>();
     private List<AppInfo> mAllAppList;
 
-    private BroadcastReceiver mHomeReceivcer;
+    private LoadingDialog mLoadingDialog;
 
     public AddAppsPresenter(AddAppsContract.View view, Context context) {
         this.mView = view;
@@ -59,17 +57,16 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
                     boolean inShown = false;
                     for (AppInfo appInfo : isShown) {
                         if (app.packageName.equals(appInfo.packageName)) {
-                            inShown= true;
-                            break ;
+                            inShown = true;
+                            break;
                         }
                     }
-                    if(!inShown){
+                    if (!inShown) {
                         addShowList.add(app);
                     }
                 }
                 return null;
             }
-
             //加载完数据
             @Override
             protected void onPostExecute(Void aVoid) {
@@ -117,7 +114,6 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
 
     /**
      * 计算当前总行数
-     *
      * @return
      */
     public int calculateCurTotalRows() {
@@ -131,7 +127,6 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
 
     /**
      * 计算当前行数
-     *
      * @param position
      * @return
      */
