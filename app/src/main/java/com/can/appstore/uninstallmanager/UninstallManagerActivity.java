@@ -183,7 +183,10 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     public void loadAllAppInfoSuccess(List<PackageUtil.AppInfo> infoList) {
         if (infoList.size() == 0) {
             mNotUninstallApp.setVisibility(View.VISIBLE);
+            mBtBatchUninstall.setNextFocusRightId(mBtBatchUninstall.getId());
             return;
+        }else {
+            mBtBatchUninstall.setNextFocusRightId(mCanRecyclerView.getId());
         }
         if (mUninstallManagerAdapter == null) {
             mUninstallManagerAdapter = new UninstallManagerAdapter(UninstallManagerActivity.this, infoList);

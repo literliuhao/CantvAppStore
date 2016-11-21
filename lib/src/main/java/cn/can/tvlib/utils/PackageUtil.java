@@ -405,13 +405,13 @@ public class PackageUtil {
             }
             appList.add(app);
         }
-//        while (index.get() > 0) {
-//            try {
-//                Thread.sleep(20);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
+        while (index.get() > 0) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         return appList;
     }
 
