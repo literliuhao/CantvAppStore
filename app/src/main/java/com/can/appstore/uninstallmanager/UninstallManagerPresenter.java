@@ -29,8 +29,6 @@ import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.SystemUtil;
 import cn.can.tvlib.utils.ToastUtils;
 
-import static android.R.attr.name;
-
 /**
  * Created by JasonF on 2016/10/17.
  */

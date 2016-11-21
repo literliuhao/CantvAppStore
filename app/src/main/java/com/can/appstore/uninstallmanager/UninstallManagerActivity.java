@@ -217,20 +217,6 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         mCanRecyclerView.setHasFixedSize(true);
         mCanRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mCanRecyclerView.setAdapter(mUninstallManagerAdapter);
-        //        mFocusMoveUtil.hideFocusForShowDelay(50);
-        //        mCanRecyclerView.postDelayed(new Runnable() {
-        //            @Override
-        //            public void run() {
-        //                View childAt = mCanRecyclerView.getChildAt(0);
-        //                if (childAt != null) {
-        //                    mFocusMoveUtil.setFocusView(childAt);
-        //                    childAt.requestFocus();
-        //                } else {
-        //                    mBtBatchUninstall.requestFocus();
-        //                }
-        //            }
-        //        }, 50);
-
     }
 
     private void addRecyclerViewListener() {
@@ -380,7 +366,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
      *
      * @param context
      */
-    public static void startUninstallManager(Context context) {
+    public static void actionStart(Context context) {
         Intent intent = new Intent(context, UninstallManagerActivity.class);
         context.startActivity(intent);
     }
