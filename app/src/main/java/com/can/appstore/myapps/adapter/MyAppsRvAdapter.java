@@ -25,14 +25,34 @@ import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 public class MyAppsRvAdapter extends CanRecyclerViewAdapter<PackageUtil.AppInfo> {
 
-    public List<AppInfo> mList = null;
-    public List<Drawable> mCustomSys = null;
+    private List<AppInfo> mList = null;
+    private List<Drawable> mCustomSys = null;
+    private final int[] COLORS = {
+            R.drawable.index_item1_shape,
+            R.drawable.index_item2_shape,
+            R.drawable.index_item3_shape,
+            R.drawable.index_item4_shape,
+            R.drawable.index_item6_shape,
+            R.drawable.index_item7_shape,
+            R.drawable.index_item5_shape,
+            R.drawable.index_item8_shape
+    };
+
+
+    //item的两种类型
+    private int NOMAL_TYPE = 0X001;
+    private int CUSTOM_TYPE = 0X002;
 
     public MyAppsRvAdapter(List<AppInfo> datas) {
         super(datas);
         mList = datas;
     }
 
+    /**
+     * 设置系统设置的自定义item的数据
+     *
+     * @param list
+     */
     public void setCustomData(List<Drawable> list) {
         if (list != null) {
             mCustomSys = list;
@@ -40,12 +60,6 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<PackageUtil.AppInfo>
             mCustomSys = new ArrayList<Drawable>();
         }
     }
-
-    int NOMAL_TYPE = 0X001;
-    int CUSTOM_TYPE = 0X002;
-
-
-    private final int[] COLORS = {R.drawable.index_item1_shape, R.drawable.index_item2_shape, R.drawable.index_item3_shape, R.drawable.index_item4_shape,  R.drawable.index_item6_shape, R.drawable.index_item7_shape,R.drawable.index_item5_shape, R.drawable.index_item8_shape};
 
 
     @Override
@@ -72,9 +86,9 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<PackageUtil.AppInfo>
             myAppsViewHolder.mImageView.setImageDrawable(mList.get(position).appIcon);
             myAppsViewHolder.mTextView.setText(mList.get(position).appName);
             //添加按钮的背景设为透明
-            if(position == (mList.size()-1) && mDatas.packageName.isEmpty()){
+            if (position == (mList.size() - 1) && mDatas.packageName.isEmpty()) {
                 myAppsViewHolder.mLinearLayout.setBackgroundResource(R.drawable.addapp_bj);
-            }else{
+            } else {
                 myAppsViewHolder.mLinearLayout.setBackgroundResource(COLORS[position % 8]);
             }
         }

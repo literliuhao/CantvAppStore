@@ -39,7 +39,7 @@ import retrofit2.Response;
 /**
  * Created by liuhao on 2016/10/15.
  */
-public class IndexActivity extends FragmentActivity implements IAddFocusListener,View.OnClickListener{
+public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener,View.OnFocusChangeListener {
     private List<BaseFragment> mFragmentLists;
     private IndexPagerAdapter mAdapter;
     private ViewPager mViewPager;
@@ -92,7 +92,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
             @Override
             public void onFailure(CanCall<ListResult<Navigation>> call, CanErrorWrapper errorWrapper) {
-                Log.i("DataUtils",errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
+                Log.i("DataUtils", errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
             }
         });
     }
@@ -140,6 +140,14 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         }
 
         //排行、管理、我的应用、不受服务器后台配置，因此手动干预位置
+//        ManagerFragmentTest topFragment = new ManagerFragmentTest(this);
+//        if (mFragmentLists.size() > 0) {
+//            mFragmentLists.add(TOP_INDEX, topFragment);
+//        } else {
+//            mFragmentLists.add(topFragment);
+//        }
+
+
         HomeRankFragment homeRankFragment = new HomeRankFragment(this);
         if (mFragmentLists.size() > 0) {
             mFragmentLists.add(TOP_INDEX, homeRankFragment);
@@ -226,6 +234,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mViewPager.setAdapter(mAdapter);
         mViewPager.setOffscreenPageLimit(OFFSCREENPAGELIMIT);
         mViewPager.setCurrentItem(PAGERCURRENTITEM);
+        mViewPager.setPageMargin((int) getResources().getDimension(R.dimen.px165));
         mTitleBar.setViewPager(mViewPager, PAGERCURRENTITEM);
 
 
@@ -263,7 +272,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.rl_search:
                 Log.i("IndexActivity", "onClick...." + view.getId());
                 SearchActivity.startAc(this);
@@ -272,5 +281,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 MessageActivity.actionStart(this);
                 break;
         }
+    }
+
+    @Override
+    public void onFocusChange(View view, boolean b) {
+        Log.i("IndexActivity", "view...." + view.getId());
     }
 }

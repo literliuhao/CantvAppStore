@@ -12,8 +12,12 @@ import com.can.appstore.myapps.model.MyAppsListDataUtil;
 
 import java.util.List;
 
+import cn.can.downloadlib.AppInstallListener;
+import cn.can.downloadlib.DownloadManager;
+import cn.can.downloadlib.DownloadTask;
 import cn.can.tvlib.ui.widgets.LoadingDialog;
 import cn.can.tvlib.utils.PackageUtil;
+import cn.can.tvlib.utils.ToastUtils;
 
 import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
@@ -21,21 +25,29 @@ import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
  * Created by wei on 2016/11/8.
  */
 
-public class AllAppsPresenter implements AllAppsContract.Presenter {
+public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallListener {
 
-    LoadingDialog mLoadingDialog;
-    AllAppsContract.View mView;
-    MyAppsListDataUtil mMyAppsListDataUtil;
-    List<PackageUtil.AppInfo> allAppsList;
-    Context mContext;
 
-    AppInstallReceiver mAppInstallReceiver;
+    private LoadingDialog mLoadingDialog;
+    private AllAppsContract.View mView;
+    private MyAppsListDataUtil mMyAppsListDataUtil;
+    private List<PackageUtil.AppInfo> allAppsList;
+    private Context mContext;
+
+    private AppInstallReceiver mAppInstallReceiver;
     private BroadcastReceiver mHomeReceivcer;
 
+    private DownloadManager mDownloadManager;
+    private String mUninstallApkName;
 
     public AllAppsPresenter(AllAppsContract.View view, Context context) {
         this.mView = view;
         this.mContext = context;
+        initDownManger();
+    }
+
+    private void initDownManger() {
+        mDownloadManager = DownloadManager.getInstance(mContext);
     }
 
 
@@ -133,8 +145,33 @@ public class AllAppsPresenter implements AllAppsContract.Presenter {
         }
     }
 
+    @Override
+    public void onInstalling(DownloadTask downloadTask) {
+    }
+
+    @Override
+    public void onInstallSucess(String id) {
+    }
+
+    @Override
+    public void onInstallFail(String id) {
+    }
+
+    @Override
+    public void onUninstallSucess(String id) {
+        Log.d(TAG, "onUninstallSucess: " + mUninstallApkName);
+        ToastUtils.showMessage(mContext, mUninstallApkName + mContext.getResources().getString(R.string.uninstall_success));
+    }
+
+    @Override
+    public void onUninstallFail(String id) {
+        Log.d(TAG, "onUninstallFail: " + mUninstallApkName);
+        ToastUtils.showMessage(mContext, mUninstallApkName + mContext.getResources().getString(R.string.uninstall_fail));
+    }
+
+
     class AppInstallReceiver extends BroadcastReceiver {
-        @Override
+
         public void onReceive(Context context, Intent intent) {
             // 接收广播：设备上新安装了一个应用程序包后自动启动新安装应用程序。
             if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)) {
@@ -156,6 +193,10 @@ public class AllAppsPresenter implements AllAppsContract.Presenter {
                 mView.loadAllAppInfoSuccess(allAppsList);
             }
         }
+    }
+
+    public void getUninstallAppInfo(int position) {
+        mView.showUninstallDialog(allAppsList.get(position));
     }
 
     /**
@@ -183,12 +224,7 @@ public class AllAppsPresenter implements AllAppsContract.Presenter {
     }
 
     public void startApp(int position) {
-        PackageUtil.openApp(mContext,allAppsList.get(position).packageName);
-    }
-
-    public void uninstallApp(int position) {
-        String packageName = allAppsList.get(position).packageName;
-        PackageUtil.unInstall(mContext,packageName);
+        PackageUtil.openApp(mContext, allAppsList.get(position).packageName);
     }
 
     public void unRegiestr() {
@@ -200,5 +236,16 @@ public class AllAppsPresenter implements AllAppsContract.Presenter {
             mContext.unregisterReceiver(mHomeReceivcer);
             mHomeReceivcer = null;
         }
+    }
+
+
+    /**
+     * 静默卸载
+     *
+     * @param packageName
+     */
+    public void silentUninstall(String appName, String packageName) {
+        mUninstallApkName = appName;
+        mDownloadManager.uninstall(packageName);
     }
 }
