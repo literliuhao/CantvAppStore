@@ -1,5 +1,7 @@
 package com.can.appstore.specialtopic;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.base.BaseActivity;
+import com.can.appstore.download.DownloadActivity;
 import com.can.appstore.entity.SpecialTopic;
 import com.can.appstore.specialtopic.adapter.SpecialAdapter;
 
@@ -281,6 +284,11 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
         if (mAdapter != null) {
             mAdapter.notifyItemRangeInserted(startInsertPos, endInsertPos);
         }
+    }
+
+    public static void actionStart(Context context) {
+        Intent intent = new Intent(context, DownloadActivity.class);
+        context.startActivity(intent);
     }
 
 }
