@@ -24,16 +24,12 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/id_vp"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/px600"
+        android:layout_height="@dimen/px660"
         android:layout_below="@id/id_indicator"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/px50"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:focusable="false"
-        android:paddingLeft="@dimen/px160"
-        android:paddingRight="@dimen/px100"
-        android:persistentDrawingCache="animation">
+        android:scrollbars="none"
+        android:focusable="false">
     </android.support.v4.view.ViewPager>
 
 

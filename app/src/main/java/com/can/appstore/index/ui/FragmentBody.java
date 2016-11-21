@@ -80,14 +80,20 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
      * @return
      */
     private View drawView(Context context, Navigation mNavigation) {
+        FrameLayout mainLayout = new FrameLayout(context);
+        ViewGroup.LayoutParams mainParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        mainLayout.setLayoutParams(mainParams);
+        mainLayout.setPadding((int) getResources().getDimension(R.dimen.px160),0,(int) getResources().getDimension(R.dimen.px110),0);
+        mainLayout.setClipToPadding(false);
+        mainLayout.setClipChildren(false);
+
         HorizontalScrollView horizontalScrollView = new HorizontalScrollView(context);
         horizontalScrollView.setFocusable(false);
+        horizontalScrollView.setHorizontalScrollBarEnabled(false);
         ViewGroup.LayoutParams scrollParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         horizontalScrollView.setLayoutParams(scrollParams);
         FrameLayout frameLayout = new FrameLayout(context);
 //        frameLayout.setFocusable(true);
-//        frameLayout.setClipChildren(true);
-//        frameLayout.setClipToPadding(true);
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         frameLayout.setLayoutParams(params);
 
@@ -134,7 +140,8 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
             frameLayout.addView(myImageView);
         }
         horizontalScrollView.addView(frameLayout);
-        return horizontalScrollView;
+        mainLayout.addView(horizontalScrollView);
+        return mainLayout;
     }
 
     private Navigation converPosition(Navigation mNavigation, float scale) {
