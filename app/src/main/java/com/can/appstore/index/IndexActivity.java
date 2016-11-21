@@ -25,6 +25,7 @@ import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.index.ui.FragmentBody;
 import com.can.appstore.index.ui.ManagerFragment;
 import com.can.appstore.index.ui.TitleBar;
+import com.can.appstore.message.MessageActivity;
 import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
 
@@ -268,7 +269,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 SearchActivity.startAc(this);
                 break;
             case R.id.rl_message:
-                Log.i("IndexActivity", "onClick...." + view.getId());
+                MessageActivity.actionStart(this);
                 break;
         }
     }

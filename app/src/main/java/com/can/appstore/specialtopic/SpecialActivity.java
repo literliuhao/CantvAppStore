@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.base.BaseActivity;
-import com.can.appstore.download.DownloadActivity;
 import com.can.appstore.entity.SpecialTopic;
 import com.can.appstore.specialtopic.adapter.SpecialAdapter;
 
@@ -286,7 +285,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     }
 
     public static void actionStart(Context context) {
-        Intent intent = new Intent(context, DownloadActivity.class);
+        Intent intent = new Intent(context, SpecialActivity.class);
         context.startActivity(intent);
     }
 

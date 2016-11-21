@@ -253,9 +253,8 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         itemTotal.setText(stringBuilder);
     }
 
-    public static void actionStart(Context context, String value){
+    public static void actionStart(Context context){
         Intent intent = new Intent(context, MessageActivity.class);
-        intent.putExtra(actionID, value);
         context.startActivity(intent);
     }
 

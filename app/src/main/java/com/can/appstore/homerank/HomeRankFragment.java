@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.applist.AppListActivity;
 import com.can.appstore.entity.Ranking;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.ui.BaseFragment;
@@ -132,6 +133,12 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
                     @Override
                     public void onClick(View v) {
                         ToastUtils.showMessage(getActivity(), mData.getName());
+                    }
+                });
+                ll_more_view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AppListActivity.actionStart(getActivity(), AppListActivity.PAGE_TYPE_RANKING, "", mData.getId());
                     }
                 });
 
