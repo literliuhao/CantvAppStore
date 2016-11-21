@@ -1,19 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="@dimen/px200"
-              android:layout_height="@dimen/px72"
-              android:layout_marginLeft="@dimen/px20"
-              android:layout_marginRight="@dimen/px20"
-              android:layout_gravity="center"
-    >
-
-    <TextView
-        android:id="@+id/tv_app_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:textSize="@dimen/px34"
-        android:textColor="@color/white_opa80"
-        />
-
-</RelativeLayout>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/px72"
+          android:layout_marginLeft="@dimen/px20"
+          android:layout_marginRight="@dimen/px20"
+          android:gravity="center"
+          android:textColor="@color/white_opa80"
+          android:textSize="@dimen/px34"
+    />

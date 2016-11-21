@@ -1,12 +1,9 @@
-package com.can.appstore.applist;
+package com.can.appstore.applist.adpter;
 
-import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
@@ -21,13 +18,9 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
  */
 
 public class AppListMenuAdapter extends CanRecyclerViewAdapter {
-    private Context mContext;
-    private List mData;
 
-    public AppListMenuAdapter(Context context, List data) {
+    public AppListMenuAdapter(List data) {
         super(data);
-        mData = data;
-        this.mContext = context;
     }
 
     @Override
@@ -50,7 +43,7 @@ public class AppListMenuAdapter extends CanRecyclerViewAdapter {
 
         public ItemViewHolder(View itemView) {
             super(itemView);
-            mTextView = (TextView) itemView.findViewById(R.id.tv_app_list);
+            mTextView = (TextView) itemView;
         }
     }
 }

@@ -169,4 +169,9 @@ public class PromptUtils {
         pd.show();
         return pd;
     }
+    public static Dialog showLoadingDialog(Context context, int loadingSize,int offsetX) {
+        LoadingDialog pd = new LoadingDialog(context, loadingSize, offsetX);
+        pd.show();
+        return pd;
+    }
 }

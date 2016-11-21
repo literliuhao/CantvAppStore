@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RotateDrawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 
@@ -34,7 +33,7 @@ public class RotateView extends ImageView {
     }
 
     private void init() {
-        setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        setScaleType(ScaleType.CENTER_INSIDE);
         mRotateAnim = new ValueAnimator().ofFloat(0, 1);
         mRotateAnim.setDuration(1000);
         mRotateAnim.setInterpolator(new LinearInterpolator());

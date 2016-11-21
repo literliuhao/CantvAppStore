@@ -18,8 +18,10 @@ import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.utils.ToastUtils;
 import retrofit2.Response;
 
 /**
@@ -33,29 +35,32 @@ public class AppListPresenter implements AppListContract.Presenter {
     public static final int REFRESH_APP = 0;  //整个刷新adpter
     public static final int REQUEST_DELAY = 500;  //请求延迟时间
     private CanCall<Result<AppInfoContainer>> mAppListInfoCall;
+    private CanCall<Result<AppInfoContainer>> mAppsRanking;
     private AppListContract.View mView;
     private Handler mHandler;
     private Context mContext;
-    private int mFromType;
+    private int mPageType;
     private String mTypeId;
     private String mTopicId;
-    private List<Topic> topics;
-    private List<AppInfo> AppInfos;
+    private List<Topic> mTopics;
+    private List<AppInfo> mAppInfos;
     private int mTotalLine;
     private int mCurrentLine;
     private int mMenuDataPosition;
     private int mPage;
     private int mTotalSize;
 
-    public AppListPresenter(Context context, AppListContract.View view, int fromType, String typeId, String topicId) {
-        mContext = context;
+    public AppListPresenter(AppListContract.View view, int pageType, String typeId, String topicId) {
         mView = view;
-        mFromType = fromType;
+        mContext = view.getContext();
+        mPageType = pageType;
         // TODO: 2016/11/10 测试使用type  后期删除
         //mTypeId = typeId;
         mTypeId = "5";
         mTopicId = topicId;
         mView.setPresenter(this);
+        mTopics = new ArrayList<>();
+        mAppInfos = new ArrayList<>();
         initHandler();
     }
 
@@ -69,7 +74,7 @@ public class AppListPresenter implements AppListContract.Presenter {
                         mView.hideLoadingDialog();
                     } else {
                         mMenuDataPosition = msg.arg1;
-                        loadAppListData(topics.get(mMenuDataPosition).getId());
+                        loadAppListData(mTopics.get(mMenuDataPosition).getId());
                     }
                 }
             }
@@ -81,48 +86,59 @@ public class AppListPresenter implements AppListContract.Presenter {
      */
     @Override
     public void startLoadData() {
-
         mPage = 1;
         mCurrentLine = 1;
-        mAppListInfoCall = HttpManager.getApiService().getAppinfos("", mTypeId, mPage, PAGE_SIZE);
-        mAppListInfoCall.enqueue(new CanCallback<Result<AppInfoContainer>>() {
+
+        //初始化请求数据回调
+        CanCallback<Result<AppInfoContainer>> canCallback = new CanCallback<Result<AppInfoContainer>>() {
             @Override
             public void onResponse(CanCall<Result<AppInfoContainer>> call, Response<Result<AppInfoContainer>>
                     response) throws Exception {
                 mPage++;
+                mMenuDataPosition = 0;//第一次加载完数据，找到需要获取焦点的位置
                 Result<AppInfoContainer> body = response.body();
                 Log.d(TAG, "onResponse: " + body.toString());
                 AppInfoContainer data = body.getData();
                 mTotalSize = data.getTotal();
                 String typeName = data.getTypeName();
-                // TODO: 2016/11/11 先初始化 
-                topics = data.getTopics();
-                AppInfos = data.getData();
-                // TODO: 2016/11/11  删除 
-                //CollectionUtil.emptyIfNull()
-                mMenuDataPosition = findMenuFocusPosition();//第一次加载完数据，找到需要获取焦点的位置
-                for(int i = 0;i < 6;i++){
+                List<Topic> topics = data.getTopics();
+                List<AppInfo> appInfos = data.getData();
+                mTopics.addAll(topics);
+                mAppInfos.addAll(appInfos);
+                for (int i = 0; i < 6; i++) {
                     Topic topic = new Topic();
-                    topic.setName("11111");
-                    topics.add(topic);
+                    topic.setName(i + "");
+                    mTopics.add(topic);
                 }
                 mView.refreshTypeName(typeName);
-                mView.refreshMenuList(topics, mMenuDataPosition);
+                mView.refreshMenuList(mTopics, mMenuDataPosition);
                 // TODO: 2016/11/11 重载
-                mView.refreshAppList(AppInfos, REFRESH_APP);
+                mView.refreshAppList(mAppInfos, REFRESH_APP);
                 //计算总行数
-                mTotalLine = calculateLineNumber(mTotalSize);
+                mTotalLine = calculateRowNumber(mTotalSize);
                 refreshLineInformation();
             }
 
             @Override
             public void onFailure(CanCall<Result<AppInfoContainer>> call, CanErrorWrapper errorWrapper) {
-                mView.hideLoadingDialog();
                 // TODO: 2016/11/11  具体
-                mView.onLoadFail();
-                Log.d(TAG, "onFailure:");
+                //mView.changeAppInfoUiToFail();
+                mView.finish();
+                ToastUtils.showMessage(mContext, "网络连接错误，请检查网络");
+                Log.d(TAG, "onFailure:" + errorWrapper.getReason() + "-----" + errorWrapper.getThrowable());
             }
-        });
+        };
+
+
+        //根据不同页面请求数据
+        if (mPageType == AppListActivity.PAGE_TYPE_APP_LIST) {
+            mAppListInfoCall = HttpManager.getApiService().getAppinfos("", mTypeId, mPage, PAGE_SIZE);
+            mAppListInfoCall.enqueue(canCallback);
+        } else {
+            // TODO: 2016/11/17 测试 id  页面对接时修改
+            mAppsRanking = HttpManager.getApiService().getAppsRanking("15");
+            mAppsRanking.enqueue(canCallback);
+        }
 
 
     }
@@ -133,18 +149,14 @@ public class AppListPresenter implements AppListContract.Presenter {
     @Override
     public void loadAppListData(String topicId) {
         mPage = 1;
-        // TODO: 2016/11/11  名称
-        AppInfos.clear();
-        if (mAppListInfoCall != null) {
-            mAppListInfoCall.cancel();
-        }
-        mAppListInfoCall = HttpManager.getApiService().getAppinfos(topicId, "5", mPage, PAGE_SIZE);
-        mAppListInfoCall.enqueue(new CanCallback<Result<AppInfoContainer>>() {
+        mAppInfos.clear();
+
+
+        CanCallback<Result<AppInfoContainer>> canCallback = new CanCallback<Result<AppInfoContainer>>() {
             @Override
             public void onResponse(CanCall<Result<AppInfoContainer>> call, Response<Result<AppInfoContainer>>
                     response) throws Exception {
-                mView.hideLoadingDialog();
-                // TODO: 2016/11/11   
+                // TODO: 2016/11/11
                 //初始化分页信息
                 mPage = 2;
                 mCurrentLine = 1;
@@ -152,30 +164,51 @@ public class AppListPresenter implements AppListContract.Presenter {
                 Result<AppInfoContainer> body = response.body();
                 Log.d(TAG, "onResponse: " + body.toString());
                 AppInfoContainer data = body.getData();
-                AppInfos = data.getData();
-                mTotalSize = data.getTotal();
+                List<AppInfo> appInfos = data.getData();
+                mAppInfos.addAll(appInfos);
                 mView.hideLoadingDialog();
-                mView.refreshAppList(AppInfos, REFRESH_APP);
+                mView.refreshAppList(mAppInfos, REFRESH_APP);
                 //计算总行数
-                mTotalLine = calculateLineNumber(mTotalSize);
+                mTotalLine = calculateRowNumber(mTotalSize);
                 refreshLineInformation();
             }
 
             @Override
             public void onFailure(CanCall<Result<AppInfoContainer>> call, CanErrorWrapper errorWrapper) {
-                mView.hideLoadingDialog();
-                mView.onLoadFail();
-                Log.d(TAG, "onFailure:");
+                mView.changeAppInfoUiToFail();
+                Log.d(TAG, "onFailure:" + errorWrapper.getReason() + "-----" + errorWrapper.getThrowable());
             }
-        });
+        };
+
+        if (mPageType == AppListActivity.PAGE_TYPE_APP_LIST) {
+            if (mAppListInfoCall != null) {
+                mAppListInfoCall.cancel();
+            }
+            mAppListInfoCall = HttpManager.getApiService().getAppinfos(topicId, mTypeId, mPage, PAGE_SIZE);
+            mAppListInfoCall.enqueue(canCallback);
+        } else {
+            if (mAppsRanking != null) {
+                mAppsRanking.cancel();
+            }
+            mAppsRanking = HttpManager.getApiService().getAppsRanking(topicId);
+            mAppsRanking.enqueue(canCallback);
+        }
+
     }
 
     @Override
     public void loadMoreData() {
+        int mCurrDataCount = mAppInfos.size();
+        if (mCurrDataCount >= mTotalSize) {
+            mView.showToast("没有更多了");
+            return;
+        }
+
+        mView.showToast("加载更多！");
         if (mAppListInfoCall != null) {
             mAppListInfoCall.cancel();
         }
-        mAppListInfoCall = HttpManager.getApiService().getAppinfos(topics.get(mMenuDataPosition).getId(), "5", mPage,
+        mAppListInfoCall = HttpManager.getApiService().getAppinfos(mTopics.get(mMenuDataPosition).getId(), "5", mPage,
                 PAGE_SIZE);
         mAppListInfoCall.enqueue(new CanCallback<Result<AppInfoContainer>>() {
             @Override
@@ -185,17 +218,15 @@ public class AppListPresenter implements AppListContract.Presenter {
                 Log.d(TAG, "onResponse: " + body.toString());
                 AppInfoContainer data = body.getData();
                 List<AppInfo> eAppInfos = data.getData();
-                AppInfos.addAll(eAppInfos);
-                mView.refreshAppList(AppInfos, (mPage - 1) * PAGE_SIZE); // TODO: 2016/10/21  请求的数据为空数据不足  更新total
+                mAppInfos.addAll(eAppInfos);
+                mView.refreshAppList(mAppInfos, (mPage - 1) * PAGE_SIZE); // TODO: 2016/10/21  请求的数据为空数据不足  更新total
                 refreshLineInformation();
                 mPage++;//请求成功页数加1
             }
 
             @Override
             public void onFailure(CanCall<Result<AppInfoContainer>> call, CanErrorWrapper errorWrapper) {
-                mView.hideLoadingDialog();
-                mView.onLoadFail();
-                Log.d(TAG, "onFailure:");
+                Log.d(TAG, "loadMoreData,onFailure:");
             }
         });
     }
@@ -207,7 +238,7 @@ public class AppListPresenter implements AppListContract.Presenter {
      * @param number
      * @return 行数`
      */
-    private int calculateLineNumber(int number) {
+    private int calculateRowNumber(int number) {
         int lines;
         if (number % 3 == 0) {
             lines = number / 3;
@@ -219,7 +250,7 @@ public class AppListPresenter implements AppListContract.Presenter {
 
     @Override
     public void onAppListItemSelectChanged(int position) {
-        mCurrentLine = calculateLineNumber(position + 1);
+        mCurrentLine = calculateRowNumber(position + 1);
         refreshLineInformation();
     }
 
@@ -227,40 +258,17 @@ public class AppListPresenter implements AppListContract.Presenter {
      * 请求数据未成功的时候再次请求数据
      */
     public void loadAppListData() {
-        loadAppListData(topics.get(mMenuDataPosition).getId());
-    }
-
-    /**
-     * 获取菜单列表需要定位选中光标的位置
-     *
-     * @return position
-     */
-    private int findMenuFocusPosition() {
-        //        if (mTopicId == null || "".equals(mTopicId)) {
-        //            if (mFromType == AppListActivity.APPLICATION) {
-        //                return 1;
-        //            } else {
-        //                return 0;
-        //            }
-        //        }
-        //
-        //        for (int i = 0; i < mMenuData.size(); i++) {
-        //            if (mTopicId.equals(mMenuData.get(i).getId())) {
-        //                return i;
-        //            }
-        //        }
-        return 0;
+        loadAppListData(mTopics.get(mMenuDataPosition).getId());
     }
 
     @Override
     public void onMenuItemSelect(int position) {
         if (mHandler != null) {
             mHandler.removeMessages(REFRESH_APP_LIST);
-            // TODO: 2016/11/11  合并
-            Message message = Message.obtain();
-            message.what = REFRESH_APP_LIST;
-            message.arg1 = position;
-            mHandler.sendMessageDelayed(message, REQUEST_DELAY);
+            Message msg = Message.obtain();
+            msg.what = REFRESH_APP_LIST;
+            msg.arg1 = position;
+            mHandler.sendMessageDelayed(msg, REQUEST_DELAY);
         }
     }
 
@@ -268,24 +276,29 @@ public class AppListPresenter implements AppListContract.Presenter {
      * 刷新右上角行数显示信息
      */
     private void refreshLineInformation() {
-        // TODO: 2016/11/11  
-        String lineText = mCurrentLine + " / " + mTotalLine + "行";
-        SpannableStringBuilder spannable = new SpannableStringBuilder(lineText);
+        StringBuilder crowNumber = new StringBuilder();
+        crowNumber.append(mCurrentLine);
+        crowNumber.append(" / ");
+        crowNumber.append(mTotalLine);
+        crowNumber.append("行");
+        SpannableStringBuilder spannable = new SpannableStringBuilder(crowNumber);
         int currentLineTextLength = String.valueOf(mCurrentLine).length();
         spannable.setSpan(new ForegroundColorSpan(Color.WHITE), 0, currentLineTextLength, Spannable
                 .SPAN_EXCLUSIVE_INCLUSIVE);
-        mView.refreshLineText(spannable);
+        mView.refreshRowNumber(spannable);
     }
 
     /**
-     * 获取应用列表总数量
+     * 释放view引用，关闭没有完成的网络请求
      */
-    public int getAppListTotalSize() {
-        return mTotalSize;
-    }
-
     @Override
     public void release() {
         mView = null;
+        if (mAppListInfoCall != null) {
+            mAppListInfoCall.cancel();
+        }
+        if (mAppsRanking != null) {
+            mAppsRanking.cancel();
+        }
     }
 }

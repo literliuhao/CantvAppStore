@@ -9,8 +9,10 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 
 import com.can.appstore.R;
+import com.can.appstore.download.DownloadActivity;
 import com.can.appstore.index.adapter.GridAdapter;
 import com.can.appstore.index.interfaces.IAddFocusListener;
+import com.can.appstore.uninstallmanager.UninstallManagerActivity;
 
 /**
  * Created by liuhao on 2016/10/21.
@@ -67,6 +69,7 @@ public class ManagerFragment extends BaseFragment {
                         break;
                     //卸载管理
                     case 5:
+                        UninstallManagerActivity.actionStart(getActivity());
                         break;
                     //安装包管理
                     case 6:
@@ -74,6 +77,7 @@ public class ManagerFragment extends BaseFragment {
                         break;
                     //下载管理
                     case 7:
+                        DownloadActivity.actionStart(getActivity());
                         break;
                     default:
                         break;

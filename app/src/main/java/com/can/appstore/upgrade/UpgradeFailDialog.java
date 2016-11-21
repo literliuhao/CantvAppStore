@@ -2,6 +2,7 @@ package com.can.appstore.upgrade;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -38,6 +39,14 @@ public class UpgradeFailDialog extends Dialog{
     }
     private void initData(String failInfo) {
         mTvFailContent.setText(failInfo);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
 }
