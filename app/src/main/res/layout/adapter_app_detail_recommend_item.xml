@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.Android.com/apk/res-auto"
     android:layout_width="@dimen/dimen_376px"
     android:layout_height="@dimen/dimen_152px"
     android:background="@drawable/shape_bg_uninstall_manager_item"
@@ -9,13 +10,15 @@
     android:gravity="center_vertical"
     >
 
-    <ImageView
+    <cn.can.tvlib.ui.view.RoundCornerImageView
         android:id="@+id/iv_recommend_item_icon"
         android:layout_width="@dimen/dimen_120px"
         android:layout_height="@dimen/dimen_120px"
         android:layout_centerVertical="true"
         android:layout_marginStart="@dimen/dimen_24px"
-        android:src="@drawable/markettv"
+        android:scaleType="centerInside"
+        android:background="@drawable/bg_detail_list_icon_item"
+        custom:cornerSize="@dimen/dimen_20px"
         />
 
     <LinearLayout

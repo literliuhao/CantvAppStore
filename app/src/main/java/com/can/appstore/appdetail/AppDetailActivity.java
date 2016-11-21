@@ -250,7 +250,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                     return true;
                 } else if (mLayoutIntroduceText.isFocused()) {
                     startMoveAnmi(TO_MOVE_RIGHT);
-                    recommendGridPositionRequestFocus(200, 0);
+                    recommendGridPositionRequestFocus(500, 0);
                     mScaleUtil.scaleToNormal();
                     return true;
                 }
@@ -394,8 +394,8 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             conTypePic.setLayoutParams(controllerTypePic);
             conTypePic.setScaleType(ImageView.ScaleType.FIT_CENTER);
             mRelativeLayuotOperatingEquipment.addView(conTypePic, controllerTypePic);
-            //            int selectOperationPic = mAppDetailPresenter.getOperationPic(type.get(i));  // TODO
-            //            conTypePic.setImageResource(selectOperationPic);
+            //              int selectOperationPic = mAppDetailPresenter.getOperationPic(type.get(i));  // TODO
+            //              conTypePic.setImageResource(selectOperationPic);
             ImageLoader.getInstance().load(AppDetailActivity.this, conTypePic, type.get(i), new GlideLoadTask.SuccessCallback() {
                 @Override
                 public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
@@ -544,7 +544,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && event.getAction() == KeyEvent.ACTION_DOWN) {
                     if (position == mAppinfo.getThumbs().size() - 1) {
                         startMoveAnmi(TO_MOVE_RIGHT);
-                        recommendGridPositionRequestFocus(200, 0);
+                        recommendGridPositionRequestFocus(500, 0);
                         mScaleUtil.scaleToNormal(v);
                         return true;
                     }
@@ -570,11 +570,9 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == CanRecyclerView.SCROLL_STATE_SETTLING) {
-                    mBtIntroduction.setFocusable(false);
-                    mBtRecommend.setFocusable(false);
+                    setButtonFocusable(false);
                 } else if (newState == CanRecyclerView.SCROLL_STATE_IDLE) {
-                    mBtIntroduction.setFocusable(true);
-                    mBtRecommend.setFocusable(true);
+                    setButtonFocusable(true);
                 }
             }
 
@@ -584,6 +582,13 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 mListFocusMoveRunnable.run();
             }
         });
+    }
+
+    public void setButtonFocusable(boolean Focusable) {
+        mBtIntroduction.setFocusable(Focusable);
+        mBtRecommend.setFocusable(Focusable);
+        mButtonDownload.setFocusable(Focusable);
+        mButtonUpdate.setFocusable(Focusable);
     }
 
     private void setRecommendAdapter() {

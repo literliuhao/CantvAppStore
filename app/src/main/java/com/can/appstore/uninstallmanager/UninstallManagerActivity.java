@@ -41,19 +41,20 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     private FocusMoveUtil mFocusMoveUtil;
     private FocusScaleUtil mScaleUtil;
     private UninstallManagerAdapter mUninstallManagerAdapter;
-    private boolean focusSearchFailed;
     private View mFocusedListChild;
     private ListFocusMoveRunnable mListFocusMoveRunnable;
     private UninstallManagerPresenter mPresenter;
     private ArrayList<String> mSelectPackageName;
-    private boolean isSelect;
-    private long mTime;
     private Button mBtBatchUninstall;
     private TextView mTvItemCurRows;
     private TextProgressBar mProgressStorage;
     private TextView mSelectCount;
     private TextView mNotUninstallApp;
     private LinearLayout mLinearLayoutSelectApp;
+    private long mTime;
+    private boolean isSelect;
+    private boolean isFirstInto = true;
+    private boolean focusSearchFailed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,7 +186,11 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             mNotUninstallApp.setVisibility(View.VISIBLE);
             mBtBatchUninstall.setNextFocusRightId(mBtBatchUninstall.getId());
             return;
-        }else {
+        } else {
+            if (isFirstInto) {
+                isFirstInto = false;
+                mPresenter.onItemFocus(0);
+            }
             mBtBatchUninstall.setNextFocusRightId(mCanRecyclerView.getId());
         }
         if (mUninstallManagerAdapter == null) {
