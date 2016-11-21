@@ -14,8 +14,6 @@ public interface AddAppsContract {
     interface Presenter {
         void startLoad();
 
-        void addListener();
-
         void release();
     }
 
@@ -23,8 +21,6 @@ public interface AddAppsContract {
         void showLoading();
 
         void hideLoading();
-
-        void onClickHomeKey();
 
         void loadAddAppInfoSuccess(List<PackageUtil.AppInfo> infoList);
 

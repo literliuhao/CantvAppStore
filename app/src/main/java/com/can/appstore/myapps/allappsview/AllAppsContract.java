@@ -9,7 +9,7 @@ import cn.can.tvlib.utils.PackageUtil;
  * Created by wei on 2016/11/8.
  */
 
-public interface AllAppsContract {
+public interface AllAppsContract{
     interface Presenter {
         void startLoad();
 
@@ -22,8 +22,6 @@ public interface AllAppsContract {
         void showLoading();
 
         void hideLoading();
-
-        void onClickHomeKey();
 
         void showUninstallDialog(PackageUtil.AppInfo app);
 

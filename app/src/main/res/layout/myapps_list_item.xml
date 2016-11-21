@@ -16,8 +16,9 @@
 
         <ImageView
             android:id="@+id/myapp_ivicon"
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/px80"
             android:layout_height="@dimen/px80"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/px5"
             />
 

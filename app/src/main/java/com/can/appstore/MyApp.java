@@ -5,20 +5,22 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import com.can.appstore.myapps.model.MyAppsListDataUtil;
-import java.util.ArrayList;
-import java.util.List;
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.PackageUtil.AppInfo;
-import android.content.Intent;
 import android.util.Log;
 import android.view.WindowManager;
+
+import com.can.appstore.myapps.model.MyAppsListDataUtil;
 import com.can.appstore.upgrade.UpgradeService;
 import com.can.appstore.upgrade.bugly.BuglyUpgradeService;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
 import com.tencent.bugly.beta.upgrade.UpgradeListener;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.can.tvlib.utils.PackageUtil;
+import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 /**
  * ================================================
@@ -52,9 +54,13 @@ public class MyApp extends Application {
         Width = wm.getDefaultDisplay().getWidth();
         Height = wm.getDefaultDisplay().getHeight();
 
-        PRE_APPS.add("cn.cibntv.ott");
+        PRE_APPS.add("com.cantv.wechatphoto");
         PRE_APPS.add("com.cantv.media");
-        myAppList = PackageUtil.findAllThirdPartyApps(this,myAppList);
+        PRE_APPS.add("com.tvkou.linker");
+        PRE_APPS.add("com.tvm.suntv.news.client.activity");
+        PRE_APPS.add("com.cantv.market");
+
+        myAppList = PackageUtil.findAllexBllackThirdApps(this,myAppList,new ArrayList<String>());
         registerInstallReceiver();
         initBuly(true);
     }

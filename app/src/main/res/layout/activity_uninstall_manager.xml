@@ -71,7 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawablePadding="@dimen/dimen_20px"
-                android:drawableStart="@drawable/title_line"
+                android:drawableStart="@mipmap/title_line"
                 android:text="@string/tv_uninstall_manager"
                 android:textColor="@color/tv_cur_rows_color"
                 android:textSize="@dimen/fontsize_38px"/>

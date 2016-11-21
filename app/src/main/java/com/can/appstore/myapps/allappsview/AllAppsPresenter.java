@@ -64,9 +64,10 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
             @Override
             protected Void doInBackground(Void... params) {
                 mMyAppsListDataUtil = new MyAppsListDataUtil(mContext);
-                allAppsList = mMyAppsListDataUtil.getAllAppList(allAppsList);
-                allAppsList = mMyAppsListDataUtil.removeHideApp(allAppsList);
+//                allAppsList = mMyAppsListDataUtil.getAllAppList(allAppsList);
+                allAppsList = PackageUtil.findAllApps(mContext,allAppsList);
                 return null;
+
             }
 
             //加载完数据
@@ -81,7 +82,6 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
 
     @Override
     public void addListener() {
-        registHomeBoradCast();
         registerInstallReceiver();
     }
 
@@ -111,24 +111,7 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
         }
     }
 
-    /**
-     * 注册按主页键的广播
-     */
-    private void registHomeBoradCast() {
-        mHomeReceivcer = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (action.equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)) {
-                    mView.onClickHomeKey();
-                    return;
-                }
-            }
-        };
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-        mContext.registerReceiver(mHomeReceivcer, filter);
-    }
+
 
     /**
      * 注册应用安装卸载的广播

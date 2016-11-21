@@ -1,6 +1,5 @@
 package com.can.appstore.myapps.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -9,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.base.BaseActivity;
 import com.can.appstore.myapps.adapter.SystemAppsRvAdapter;
 import com.can.appstore.myapps.model.MyAppsListDataUtil;
 
@@ -25,7 +25,7 @@ import cn.can.tvlib.utils.PackageUtil.AppInfo;
  * Created by wei on 2016/11/2.
  */
 
-public class SystemAppsActivity extends Activity {
+public class SystemAppsActivity extends BaseActivity {
 
     private TextView systemCurRows;
     private TextView systemTotalRows;
@@ -104,6 +104,7 @@ public class SystemAppsActivity extends Activity {
         mFocusMoveUtils = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
         mFocusRunnable = new MyFocusRunnable();
     }
+
 
     @Override
     protected void onDestroy() {

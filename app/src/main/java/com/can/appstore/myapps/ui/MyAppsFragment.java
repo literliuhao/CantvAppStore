@@ -27,7 +27,6 @@ import com.can.appstore.myapps.addappsview.AddAppsActivity;
 import com.can.appstore.myapps.allappsview.AllAppsActivity;
 import com.can.appstore.myapps.myappsfragmview.MyAppsFragPresenter;
 import com.can.appstore.myapps.myappsfragmview.MyAppsFramentContract;
-import com.can.appstore.search.ToastUtil;
 
 import java.util.List;
 
@@ -150,7 +149,6 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
                     Intent intent = new Intent(getActivity(), AllAppsActivity.class);
                     startActivity(intent);
                 } else if (position == 1) {
-                    ToastUtil.toastShort("显示popupwindow");
                     Intent intent = new Intent(getActivity(), SystemAppsActivity.class);
                     startActivity(intent);
                 } else {
@@ -161,7 +159,6 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
                         i.putExtra("add", add);
                         startActivityForResult(i, 0);
                     } else {
-                        ToastUtil.toastShort("打开应用");
                         PackageManager pm = getActivity().getPackageManager();
                         Intent intent = pm.getLaunchIntentForPackage(mShowList.get(position).packageName);//获取启动的包名
                         startActivity(intent);

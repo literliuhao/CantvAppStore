@@ -465,13 +465,6 @@ public class PackageUtil {
             }
             appList.add(app);
         }
-        while (index.get() > 0) {
-            try {
-                Thread.sleep(20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
         return appList;
     }
     /**
@@ -527,13 +520,6 @@ public class PackageUtil {
                 app.size = apk.length();// apk包文件大小
             }
             appList.add(app);
-        }
-        while (index.get() > 0) {
-            try {
-                Thread.sleep(20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
         return appList;
     }

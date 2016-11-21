@@ -1,16 +1,18 @@
 package com.can.appstore.myapps.addappsview;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.base.BaseActivity;
 import com.can.appstore.myapps.adapter.AddAppsRvAdapter;
 import com.can.appstore.search.ToastUtil;
 
@@ -23,11 +25,13 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
+import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
+
 /**
  * Created by wei on 2016/10/26.
  */
 
-public class AddAppsActivity extends Activity implements AddAppsContract.View {
+public class AddAppsActivity extends BaseActivity implements AddAppsContract.View {
     private CanRecyclerView mAddRecyclerView;
     private AddAppsPresenter mAddAppsPresenter;
     private AddAppsRvAdapter mAddAppsRecyclerViewAdapter;
@@ -39,6 +43,8 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View {
     private View mFocusChild;
     private MyFocusRunnable mFocusRunnable;
     private boolean focusSearchFailed;
+    private long mTime;
+    public static final int MIN_DOWN_INTERVAL = 80;//响应点击事件的最小间隔事件
 
     //布局控件
     private Button addBut;
@@ -91,11 +97,6 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View {
         mAddAppsPresenter.hideLoading();
     }
 
-    @Override
-    public void onClickHomeKey() {
-        finish();
-    }
-
 
     @Override
     public void loadAddAppInfoSuccess(List<AppInfo> infoList) {
@@ -129,6 +130,23 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View {
                 }
             }
         }, 50);
+        mAddRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == CanRecyclerView.SCROLL_STATE_SETTLING) {
+                    addBut.setFocusable(false);
+                } else if (newState == CanRecyclerView.SCROLL_STATE_IDLE) {
+                    addBut.setFocusable(true);
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                mFocusRunnable.run();
+            }
+        });
     }
 
     @Override
@@ -160,6 +178,22 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View {
         }
     }
 
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            long time = System.currentTimeMillis();
+            if (mTime == 0) {
+                mTime = System.currentTimeMillis();
+                return super.dispatchKeyEvent(event);
+            } else if (time - mTime < MIN_DOWN_INTERVAL) {
+                Log.d(TAG, "dispatchKeyEvent: " + System.currentTimeMillis());
+                return true;
+            } else {
+                mTime = System.currentTimeMillis();
+            }
+        }
+        return super.dispatchKeyEvent(event);
+    }
 
     private void addViewListener() {
         //按钮的点击事件
@@ -185,7 +219,7 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
                     mFocusMoveUtil.startMoveFocus(addBut);
-                    tv_curRows.setText("0");
+                    tv_curRows.setText("1");
                 }
             }
         });
@@ -233,20 +267,15 @@ public class AddAppsActivity extends Activity implements AddAppsContract.View {
 
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
-        if (mAddAppsPresenter != null) {
-            mAddAppsPresenter.addListener();
-        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (mAddAppsPresenter != null) {
-            mAddAppsPresenter.unRegiestr();
-        }
     }
 
     @Override

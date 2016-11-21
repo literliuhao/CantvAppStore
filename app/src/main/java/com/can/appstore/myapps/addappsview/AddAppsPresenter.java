@@ -2,8 +2,6 @@ package com.can.appstore.myapps.addappsview;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.AsyncTask;
 
 import com.can.appstore.R;
@@ -77,10 +75,6 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
 
     }
 
-    @Override
-    public void addListener() {
-        registHomeBoradCast();
-    }
 
     @Override
     public void release() {
@@ -143,31 +137,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
         mView.showCanSelectCount(canSelect, alreadyShown);
     }
 
-    /**
-     * 注册按主页键的广播
-     */
-    private void registHomeBoradCast() {
-        mHomeReceivcer = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (action.equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)) {
-                    mView.onClickHomeKey();
-                    return;
-                }
-            }
-        };
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-        mContext.registerReceiver(mHomeReceivcer, filter);
-    }
 
-    public void unRegiestr() {
-        if (mHomeReceivcer != null) {
-            mContext.unregisterReceiver(mHomeReceivcer);
-            mHomeReceivcer = null;
-        }
-    }
 
     public void saveSelectlist(List<AppInfo> list) {
         boolean b = isShown.addAll(list);
