@@ -97,6 +97,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         initView();
         mFocusMoveUtil = new FocusMoveUtil(AppDetailActivity.this, getWindow().getDecorView(), R.mipmap.btn_focus);
         mScaleUtil = new FocusScaleUtil();
+        mFocusMoveUtil.hideFocus();
         mListFocusMoveRunnable = new AppDetailActivity.ListFocusMoveRunnable();
         mAppDetailPresenter = new AppDetailPresenter(this, AppDetailActivity.this, getIntent());
         mAppDetailPresenter.startLoad();
@@ -498,6 +499,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     @Override
     public void loadAppInfoOnSuccess(AppInfo appInfo) {
+        mFocusMoveUtil.hideFocusForShowDelay(500);
         mLayoutAppDetail.setVisibility(View.VISIBLE);
         mAppinfo = appInfo;
         setData();
@@ -641,8 +643,8 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         mRecommedGridAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, int position, Object data) {
-                String appId = mAppinfo.getRecommend().get(position).getId();  // TODO: 2016/11/14
-                mAppDetailPresenter.mAppId = "2";
+                String appId = mAppinfo.getRecommend().get(position).getId();
+                mAppDetailPresenter.mAppId = appId;
                 mAppDetailPresenter.startLoad();
             }
         });
