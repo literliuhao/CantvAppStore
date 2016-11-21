@@ -10,8 +10,10 @@ import android.widget.GridView;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
+import com.can.appstore.download.DownloadActivity;
 import com.can.appstore.index.adapter.GridAdapter;
 import com.can.appstore.index.interfaces.IAddFocusListener;
+import com.can.appstore.uninstallmanager.UninstallManagerActivity;
 
 /**
  * Created by liuhao on 2016/10/21.
@@ -62,11 +64,13 @@ public class ManagerFragment extends BaseFragment {
                     case 4:
                         break;
                     case 5:
+                        UninstallManagerActivity.actionStart(getActivity());
                         break;
                     case 6:
                         getActivity().startActivity(new Intent("com.can.appstore.ACTION.ACTIVITY_INSTALL"));
                         break;
                     case 7:
+                        DownloadActivity.actionStart(getActivity());
                         break;
                     default:
                         break;

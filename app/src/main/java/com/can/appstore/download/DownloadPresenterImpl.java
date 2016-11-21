@@ -90,11 +90,15 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
 
     @Override
     public void calculateRowNum(int focusPos) {
-        String rowFmt = String.format("%d/%d行", focusPos + 1, mTasks.size());
-        int pos = rowFmt.indexOf("/");
-        SpannableString ss = new SpannableString(rowFmt);
-        ss.setSpan(new ForegroundColorSpan(Color.parseColor("#EAEAEA")), 0, pos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        mView.refreshRowNumber(ss);
+        if(mTasks.size()>0){
+            String rowFmt = String.format("%d/%d行", focusPos + 1, mTasks.size());
+            int pos = rowFmt.indexOf("/");
+            SpannableString ss = new SpannableString(rowFmt);
+            ss.setSpan(new ForegroundColorSpan(Color.parseColor("#EAEAEA")), 0, pos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            mView.refreshRowNumber(ss);
+        }else{
+            mView.refreshRowNumber("");
+        }
     }
 
     @Override
