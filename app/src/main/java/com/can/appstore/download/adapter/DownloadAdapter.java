@@ -104,6 +104,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     }
                 });
         viewHolder.refreshStatus();
+        viewHolder.setDownloadListener();
     }
 
     @Override
@@ -379,7 +380,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
          */
         @Subscribe(threadMode = ThreadMode.MAIN)
         public void onDownloadEvent(DownloadEvent event) {
-            if (DownloadPresenterImpl.TAG_DOWNLOAD_UPDATA__STATUS.equals(event.getTag())) {
+            if (DownloadPresenterImpl.TAG_DOWNLOAD_UPDATA_STATUS.equals(event.getTag())) {
                 switch (event.getEventType()) {
                     case DownloadEvent.DOWNLOADEVENT_UPDATE_DOWNLOAD_STATUS:
                         refreshStatus();
@@ -423,11 +424,22 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
      */
     public class ItemEventListener implements View.OnFocusChangeListener, View.OnClickListener, View.OnKeyListener {
 
+        private long mTime;
+
         @Override
         public void onClick(View v) {
             DownloadViewHolder holder = (DownloadViewHolder) v.getTag();
             if (holder == null) {
                 return;
+            }
+            long time = System.currentTimeMillis();
+            if (mTime == 0) {
+                mTime = System.currentTimeMillis();
+                return;
+            } else if (time - mTime < 300) {
+                return;
+            } else {
+                mTime = System.currentTimeMillis();
             }
             if (v.getId() == holder.appContentLayout.getId()) {
                 if (mOnItemEventListener != null) {
@@ -567,4 +579,5 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
             return false;
         }
     }
+
 }
