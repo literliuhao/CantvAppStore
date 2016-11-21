@@ -2,7 +2,6 @@ package com.can.appstore.upgrade;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.ScrollView;
 
 /**
@@ -10,9 +9,8 @@ import android.widget.ScrollView;
  */
 
 public class UpgradeInfoScrollView extends ScrollView{
-
-    private Context mContext;
-    private float mNoticeScrollViewTotleHeight;
+    private static final String TAG = "UpgradeInfoScrollView";
+    private float mNoticeScrollViewTotalHeight;
     private float mNoticeScrollViewVisibleHeight;
     private int mPaddingTop;
     private int mPaddingBottom;
@@ -20,29 +18,27 @@ public class UpgradeInfoScrollView extends ScrollView{
 
     public UpgradeInfoScrollView(Context context) {
         super(context);
-        mContext = context;
     }
 
     public UpgradeInfoScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mContext = context;
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        mNoticeScrollViewTotleHeight = this.getChildAt(0).getMeasuredHeight();
-        mNoticeScrollViewVisibleHeight = this.getHeight();
         mPaddingBottom = this.getPaddingBottom();
         mPaddingTop = this.getPaddingTop();
-        mCursor.setCursorSize(mNoticeScrollViewVisibleHeight/mNoticeScrollViewTotleHeight);
+        mNoticeScrollViewTotalHeight = this.getChildAt(0).getMeasuredHeight();
+        mNoticeScrollViewVisibleHeight = this.getHeight()-mPaddingTop-mPaddingBottom;
+        mCursor.setCursorSize(mNoticeScrollViewVisibleHeight/ mNoticeScrollViewTotalHeight);
     }
 
     @Override
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
         super.onScrollChanged(l, t, oldl, oldt);
         float currentScrollY = this.getScrollY();
-        float maxMoveY = (mNoticeScrollViewTotleHeight - mNoticeScrollViewVisibleHeight +mPaddingTop + mPaddingBottom);
+        float maxMoveY = (mNoticeScrollViewTotalHeight - mNoticeScrollViewVisibleHeight);
         mCursor.setOffSet(currentScrollY,maxMoveY);
     }
 

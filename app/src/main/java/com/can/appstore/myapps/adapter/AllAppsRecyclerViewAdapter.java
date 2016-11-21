@@ -19,9 +19,19 @@ import cn.can.tvlib.utils.PackageUtil;
  * Created by wei on 2016/10/27.
  */
 
-public class AllAppsRecyclerViewAdapter extends CanRecyclerViewAdapter{
- List<PackageUtil.AppInfo> list ;
-    private final int[] COLORS = {R.drawable.index_item1_shape, R.drawable.index_item2_shape, R.drawable.index_item3_shape, R.drawable.index_item4_shape,  R.drawable.index_item6_shape, R.drawable.index_item7_shape,R.drawable.index_item5_shape, R.drawable.index_item8_shape};
+public class AllAppsRecyclerViewAdapter extends CanRecyclerViewAdapter {
+    private List<PackageUtil.AppInfo> list;
+    //圆角色块
+    private final int[] COLORS = {
+            R.drawable.index_item1_shape,
+            R.drawable.index_item2_shape,
+            R.drawable.index_item3_shape,
+            R.drawable.index_item4_shape,
+            R.drawable.index_item6_shape,
+            R.drawable.index_item7_shape,
+            R.drawable.index_item5_shape,
+            R.drawable.index_item8_shape
+    };
 
 
     public AllAppsRecyclerViewAdapter(List datas) {
@@ -32,8 +42,8 @@ public class AllAppsRecyclerViewAdapter extends CanRecyclerViewAdapter{
     @Override
     //填充item
     protected RecyclerView.ViewHolder generateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.allapps_list_item,parent,false);
-        AllAppsViewHolder  viewHolder = new AllAppsViewHolder(view);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.allapps_list_item, parent, false);
+        AllAppsViewHolder viewHolder = new AllAppsViewHolder(view);
         return viewHolder;
     }
 
@@ -47,7 +57,7 @@ public class AllAppsRecyclerViewAdapter extends CanRecyclerViewAdapter{
         viewHolder.mLinearLayout.setBackgroundResource(COLORS[position % 8]);
     }
 
-    private  class AllAppsViewHolder extends RecyclerView.ViewHolder{
+    private class AllAppsViewHolder extends RecyclerView.ViewHolder {
         public ImageView mImageView;
         public TextView mTextView;
         public LinearLayout mLinearLayout;
@@ -56,9 +66,8 @@ public class AllAppsRecyclerViewAdapter extends CanRecyclerViewAdapter{
             super(itemView);
             mImageView = (ImageView) itemView.findViewById(R.id.allapps_iv_icon);
             mTextView = (TextView) itemView.findViewById(R.id.allapps_tv_name);
-            mLinearLayout= (LinearLayout) itemView.findViewById(R.id.allapps_ll_bg);
+            mLinearLayout = (LinearLayout) itemView.findViewById(R.id.allapps_ll_bg);
 
         }
-
     }
 }

@@ -48,13 +48,13 @@ public class CanDialog extends Dialog {
         View dialogView = LayoutInflater.from(context).inflate(R.layout.can_dialog, null);
         setContentView(dialogView);
 
-        mTvDialogTitle = (TextView) dialogView.findViewById(R.id.tv_dialog_title);
-        mIvDialogTitle = (ImageView) dialogView.findViewById(R.id.iv_dialog_title);
-        mTvDialogTopLeftContent = (TextView) dialogView.findViewById(R.id.tv_top_left_content);
-        mTvDialogTopRightContent = (TextView) dialogView.findViewById(R.id.tv_top_right_content);
-        mTvDialogBelowContent = (TextView) dialogView.findViewById(R.id.tv_bellow_content);
-        mBtnDialogPositive = (Button) dialogView.findViewById(R.id.btn_dialog_positive);
-        mBtnDialogNegative = (Button) dialogView.findViewById(R.id.btn_dialog_negative);
+//        mTvDialogTitle = (TextView) dialogView.findViewById(R.id.tv_dialog_title);
+//        mIvDialogTitle = (ImageView) dialogView.findViewById(R.id.iv_dialog_title);
+//        mTvDialogTopLeftContent = (TextView) dialogView.findViewById(R.id.tv_top_left_content);
+//        mTvDialogTopRightContent = (TextView) dialogView.findViewById(R.id.tv_top_right_content);
+//        mTvDialogBelowContent = (TextView) dialogView.findViewById(R.id.tv_bellow_content);
+//        mBtnDialogPositive = (Button) dialogView.findViewById(R.id.btn_dialog_positive);
+//        mBtnDialogNegative = (Button) dialogView.findViewById(R.id.btn_dialog_negative);
 
     }
 

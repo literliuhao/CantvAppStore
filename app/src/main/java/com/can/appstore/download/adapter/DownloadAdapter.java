@@ -434,23 +434,28 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                         PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string.download_installing));
                         break;
                     case AppInstallListener.APP_INSTALL_SUCESS:
-                        String pacageName = ApkUtils.getPkgNameFromApkFile(v.getContext().getApplicationContext(), holder.downloadTask.getFilePath());
+                        String pacageName = ApkUtils.getPkgNameFromApkFile(v.getContext().getApplicationContext(),
+                                holder.downloadTask.getFilePath());
                         boolean isAvailable = ApkUtils.isAvailable(v.getContext().getApplicationContext(), pacageName);
                         if (isAvailable) {
                             PackageUtil.openApp(v.getContext().getApplicationContext(), pacageName);
                         } else {
-                            PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string.download_open_app_error));
+                            PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string
+                                    .download_open_app_error));
                         }
                         break;
                     case AppInstallListener.APP_INSTALL_FAIL:
                         //TODO 安装失败的重试 待改。
-                        if(FileUtils.isFileExist(holder.downloadTask.getFilePath())){
-                            DownloadManager.getInstance(v.getContext().getApplicationContext()).onInstalling(holder.downloadTask);
-                        }else{
+                        if (FileUtils.isFileExist(holder.downloadTask.getFilePath())) {
+                            DownloadManager.getInstance(v.getContext().getApplicationContext()).onInstalling(holder
+                                    .downloadTask);
+                        } else {
                             //如果文件被删除，重新下载。
-                            PromptUtils.toastShort(v.getContext(),v.getContext().getString(R.string.bt_batch_uninstall));
+                            PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string
+                                    .bt_batch_uninstall));
                             holder.downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
-                            DownloadManager.getInstance(v.getContext().getApplicationContext()).addDownloadTask(holder.downloadTask,holder.downloadListener);
+                            DownloadManager.getInstance(v.getContext().getApplicationContext()).addDownloadTask
+                                    (holder.downloadTask, holder.downloadListener);
                         }
                         break;
                 }
@@ -498,14 +503,16 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     holder.appControlLayout.setVisibility(View.VISIBLE);
                 }
                 if (mOnItemEventListener != null) {
-                    mOnItemEventListener.onItemControlButtonFocusChanged(v, hasFocus, holder.position, holder.downloadTask);
+                    mOnItemEventListener.onItemControlButtonFocusChanged(v, hasFocus, holder.position, holder
+                            .downloadTask);
                 }
             } else if (v.getId() == holder.appDeleteBtn.getId()) {
                 if (hasFocus) {
                     holder.appControlLayout.setVisibility(View.VISIBLE);
                 }
                 if (mOnItemEventListener != null) {
-                    mOnItemEventListener.onItemDeleteButtonFocusChanged(v, hasFocus, holder.position, holder.downloadTask);
+                    mOnItemEventListener.onItemDeleteButtonFocusChanged(v, hasFocus, holder.position, holder
+                            .downloadTask);
                 }
             }
         }
@@ -525,7 +532,8 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     return true;
                 }
                 if (mOnItemEventListener != null) {
-                    return mOnItemEventListener.onItemContentKeyListener(v, keyCode, event, holder.position, holder.downloadTask);
+                    return mOnItemEventListener.onItemContentKeyListener(v, keyCode, event, holder.position, holder
+                            .downloadTask);
                 }
             }
             return false;

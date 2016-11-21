@@ -23,7 +23,7 @@ public class UpgradeProgressBarDialog extends Dialog{
             mHandler.sendEmptyMessageDelayed(1,10);
             mProgressBar.setProgress(mProgress);
             mProgress++;
-            if(mProgress > 1000){
+            if(mProgress > 200){
                 mProgress = 0;
             }
         }
@@ -38,7 +38,7 @@ public class UpgradeProgressBarDialog extends Dialog{
     private void initView(Context context) {
         setContentView(R.layout.layout_upgrade_progress_bar);
         mProgressBar = (UpgradeProgressBar) findViewById(R.id.pb_upgrade);
-        mProgressBar.setMax(1000);
+        mProgressBar.setMax(200);
         mHandler.sendEmptyMessageDelayed(1,100);
     }
 

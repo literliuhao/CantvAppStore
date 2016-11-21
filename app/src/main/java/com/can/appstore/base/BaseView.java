@@ -18,6 +18,8 @@ public interface BaseView <T>{
 
     void hideLoadingDialog();
 
+    boolean isLoadingDialogShowing();
+
     Context getContext();
 
 

@@ -13,18 +13,15 @@ import cn.can.tvlib.utils.PackageUtil.AppInfo;
  */
 
 public interface MyAppsFramentContract {
-    interface Presenter{
+    interface Presenter {
         void startLoad();
 
         void addListener();
 
         void release();
-
-//        void  saveShowList(List<PackageUtil.AppInfo>  list);
     }
 
-    interface View{
-
+    interface View {
         void loadAppInfoSuccess(List<AppInfo> showList, List<Drawable> mDraebleList);
     }
 

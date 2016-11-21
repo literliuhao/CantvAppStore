@@ -3,9 +3,10 @@
               android:layout_width="490px"
               android:layout_height="wrap_content"
               android:layout_marginRight="40px"
-              android:background="@color/white_opa50"
               android:orientation="vertical"
+
               android:visibility="gone">
+              <!--android:background="@drawable/search_keyboard_shape"-->
 
     <!--<TextView-->
     <!--android:id="@+id/rank_tag_view"-->

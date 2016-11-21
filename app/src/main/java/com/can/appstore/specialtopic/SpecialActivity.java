@@ -30,7 +30,6 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.NetworkUtils;
 
 import static com.can.appstore.R.id.special_recyclerview;
-import static com.can.appstore.applist.AppListActivity.MIN_DOWN_INTERVAL;
 
 public class SpecialActivity extends BaseActivity implements SpecialContract.SubjectView {
 
@@ -230,7 +229,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
                     mPresenter.remindNoData();
                 }
                 return super.dispatchKeyEvent(event);
-            } else if (time - mTime < MIN_DOWN_INTERVAL) {
+            } else if (time - mTime < 150) {
                 return true;
             } else {
                 mTime = System.currentTimeMillis();
