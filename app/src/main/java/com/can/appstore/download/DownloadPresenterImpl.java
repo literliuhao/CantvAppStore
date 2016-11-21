@@ -25,7 +25,7 @@ import cn.can.tvlib.utils.SystemUtil;
 public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter {
 
     private static final String TAG = "DownloadPresenterImpl";
-    public static final String TAG_DOWNLOAD_UPDATA__STATUS = "download_update_status";
+    public static final String TAG_DOWNLOAD_UPDATA_STATUS = "download_update_status";
     private DownloadContract.DownloadView mView;
 
     private DownloadManager mDownLoadManager;
@@ -134,7 +134,7 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
         }
 
         if (pauseSize > 0) {
-            DownloadDispatcher.getInstance().postDownloadStatusEvent(TAG, TAG_DOWNLOAD_UPDATA__STATUS);
+            DownloadDispatcher.getInstance().postDownloadStatusEvent(TAG, TAG_DOWNLOAD_UPDATA_STATUS);
             return true;
         }
         return false;
@@ -160,7 +160,7 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
             pauseSize++;
         }
         if (pauseSize > 0) {
-            DownloadDispatcher.getInstance().postDownloadStatusEvent(TAG, TAG_DOWNLOAD_UPDATA__STATUS);
+            DownloadDispatcher.getInstance().postDownloadStatusEvent(TAG, TAG_DOWNLOAD_UPDATA_STATUS);
             return true;
         }
         return false;
@@ -170,17 +170,17 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
 
         @Override
         public void onInstalling(DownloadTask downloadTask) {
-            DownloadDispatcher.getInstance().postInstallStatusEvent(downloadTask.getId(),TAG,TAG_DOWNLOAD_UPDATA__STATUS );
+            DownloadDispatcher.getInstance().postInstallStatusEvent(downloadTask.getId(),TAG, TAG_DOWNLOAD_UPDATA_STATUS);
         }
 
         @Override
         public void onInstallSucess(String id) {
-            DownloadDispatcher.getInstance().postInstallStatusEvent(id,TAG,TAG_DOWNLOAD_UPDATA__STATUS );
+            DownloadDispatcher.getInstance().postInstallStatusEvent(id,TAG, TAG_DOWNLOAD_UPDATA_STATUS);
         }
 
         @Override
         public void onInstallFail(String id) {
-            DownloadDispatcher.getInstance().postInstallStatusEvent(id,TAG,TAG_DOWNLOAD_UPDATA__STATUS );
+            DownloadDispatcher.getInstance().postInstallStatusEvent(id,TAG, TAG_DOWNLOAD_UPDATA_STATUS);
         }
 
         @Override
