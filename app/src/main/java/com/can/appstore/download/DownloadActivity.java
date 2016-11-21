@@ -1,10 +1,11 @@
 package com.can.appstore.download;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -22,15 +23,13 @@ import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 
-import static com.can.appstore.applist.AppListActivity.MIN_DOWN_INTERVAL;
-
 public class DownloadActivity extends BaseActivity implements DownloadContract.DownloadView {
 
     private static final String TAG = "DownloadActivity";
-    public static final int DELAY_MILLIS_MOVE_FOCUS = 30;
-    public static final int DELAY_MILLIS_REFRESH_STORAGE = 5000;
-
-    public static final int MSG_REFRESH_STORAGE = 0x1;
+    public static final int DELAY_MILLIS_MOVE_FOCUS = 50;
+    public static final int DELAY_MILLIS_REFRESH_STORAGE = 5000; //刷新可用空间进度条时间间隔
+    public static final int MSG_REFRESH_STORAGE = 0x1;//刷新可用空间进度条
+    public static final int MIN_DOWN_INTERVAL = 80;//响应点击事件的最小间隔事件
 
     private TextView mRowTv, mNoDataTv, mPauseAllBtn, mDeleteAllBtn;
     private CanRecyclerView mCanRecyclerView;
@@ -41,15 +40,15 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
     private CanRecyclerView.CanLinearLayoutManager mLayoutManager;
 
     private FocusMoveUtil mFocusMoveUtil;
-    private Runnable mFocusMoveRunnable, mFocusResolveRunnable;
+    private Runnable mFocusMoveRunnable,mFocusResolveRunnable;
     private Handler hanlder;
     private View mFocusView;
 
     private String pauseAllTaskString;
     private String resumeAllTaskString;
 
-    private boolean focusMoveEnable = true;
-    private int focusResolvePos = 0;
+    private int lastFocusPos = 0;
+    private int focusResolvePos=0;
     private long mTime;
 
     @Override
@@ -107,10 +106,10 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
             }
         };
 
-        mFocusResolveRunnable = new Runnable() {
+        mFocusResolveRunnable=new Runnable() {
             @Override
             public void run() {
-                focusItemContentView();
+               focusItemContentView();
             }
         };
     }
@@ -196,6 +195,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
                     mFocusView = view;
                     focusMoveDelay();
                     mPresenter.calculateRowNum(pos);
+                    lastFocusPos =-1;
                 }
             }
 
@@ -205,6 +205,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
                     mFocusView = view;
                     focusMoveDelay();
                     mPresenter.calculateRowNum(pos);
+                    lastFocusPos =-1;
                 }
 
             }
@@ -213,8 +214,13 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
             public void onItemDeleteButtonFocusChanged(View view, boolean hasFocus, int pos, DownloadTask downloadTask) {
                 if (hasFocus) {
                     mFocusView = view;
-                    focusMoveDelay();
+                    if(lastFocusPos ==pos){
+                        focusMoveDelay(400);
+                    }else{
+                        focusMoveDelay();
+                    }
                     mPresenter.calculateRowNum(pos);
+                    lastFocusPos =pos;
                 }
             }
 
@@ -230,21 +236,16 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
 
             @Override
             public void onDeleteButtonClick(View view, int pos, DownloadTask downloadTask) {
+                focusResolvePos=pos;
                 mAdapter.notifyItemRemoved(pos);
                 tasks.remove(downloadTask);
-                focusMoveEnable = false;
+                mPresenter.calculateRowNum(pos-1);
                 if (tasks.size() == 0) {
                     showNoDataView();
-                    focusMoveEnable = true;
                 } else {
-                    mPresenter.calculateRowNum(pos);
                     if (pos != 0) {
                         mFocusMoveUtil.hideFocusForShowDelay(400);
-                        focusResolvePos = pos == mAdapter.getItemCount() ? pos - 1 : pos;
-                        hanlder.removeCallbacks(mFocusResolveRunnable);
-                        hanlder.postDelayed(mFocusResolveRunnable, 400);
-                    } else {
-                        focusMoveEnable = true;
+                        hanlder.postDelayed(mFocusResolveRunnable,400);
                     }
                 }
             }
@@ -261,18 +262,10 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
     }
 
     private void focusItemContentView() {
-        mCanRecyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                View view = mCanRecyclerView.getChildAt(focusResolvePos - mLayoutManager.findFirstVisibleItemPosition());
-                if (view != null) {
-                    View contentView = view.findViewById(R.id.download_item_content_rlayout);
-                    focusMoveEnable = true;
-                    contentView.requestFocus();
-                }
-                focusMoveEnable = true;
-            }
-        });
+        if(mLayoutManager.findFirstVisibleItemPosition()!=0&&mLayoutManager.findFirstVisibleItemPosition()<focusResolvePos){
+          mCanRecyclerView.smoothScrollToPosition(mLayoutManager.findFirstVisibleItemPosition());
+        }
+        mLayoutManager.findFirstVisibleItemPosition();
     }
 
     @Override
@@ -286,9 +279,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
     }
 
     private void focusMoveDelay() {
-        if (focusMoveEnable) {
-            focusMoveDelay(DELAY_MILLIS_MOVE_FOCUS);
-        }
+        focusMoveDelay(DELAY_MILLIS_MOVE_FOCUS);
     }
 
     private void focusMoveDelay(int delayMillis) {
@@ -365,12 +356,17 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
                 mTime = System.currentTimeMillis();
                 return super.dispatchKeyEvent(event);
             } else if (time - mTime < MIN_DOWN_INTERVAL) {
-                Log.d(TAG, "dispatchKeyEvent: " + System.currentTimeMillis());
                 return true;
             } else {
                 mTime = System.currentTimeMillis();
             }
         }
         return super.dispatchKeyEvent(event);
+    }
+
+
+    public static void actionStart(Context context) {
+        Intent intent = new Intent(context, DownloadActivity.class);
+        context.startActivity(intent);
     }
 }

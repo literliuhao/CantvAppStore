@@ -350,7 +350,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         finish();
     }
 
-    private void setData() {//TODO   修改设置数据
+    private void setData() {
         ImageLoader.getInstance().load(AppDetailActivity.this, mImageViewIcon, mAppinfo.getIcon(), android.R.anim.fade_in,
                 R.mipmap.icon_load_default, R.mipmap.icon_loading_fail, new GlideLoadTask.SuccessCallback() {
                     @Override
@@ -393,15 +393,15 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             conTypePic.setLayoutParams(controllerTypePic);
             conTypePic.setScaleType(ImageView.ScaleType.FIT_CENTER);
             mRelativeLayuotOperatingEquipment.addView(conTypePic, controllerTypePic);
-            int selectOperationPic = mAppDetailPresenter.getOperationPic(type.get(i));  // TODO
-            conTypePic.setImageResource(selectOperationPic);
-            //            ImageLoader.getInstance().load(AppDetailActivity.this, conTypePic, type.get(i), new GlideLoadTask.SuccessCallback() {
-            //                @Override
-            //                public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-            //                    conTypePic.setImageDrawable(resource);
-            //                    return true;
-            //                }
-            //            }, null);
+            //            int selectOperationPic = mAppDetailPresenter.getOperationPic(type.get(i));  // TODO
+            //            conTypePic.setImageResource(selectOperationPic);
+            ImageLoader.getInstance().load(AppDetailActivity.this, conTypePic, type.get(i), new GlideLoadTask.SuccessCallback() {
+                @Override
+                public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                    conTypePic.setImageDrawable(resource);
+                    return true;
+                }
+            }, null);
         }
     }
 
@@ -720,10 +720,10 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
      * @param appID   应用id
      * @param topicID
      */
-    public static void startAppDetail(Context context, String appID, String topicID) {
+    public static void actionStart(Context context, String appID, String topicID) {
         Intent intent = new Intent(context, AppDetailActivity.class);
-        intent.putExtra("appID", appID);
-        intent.putExtra("topicID", topicID);
+        intent.putExtra(AppDetailPresenter.ARGUMENT_APPID, appID);
+        intent.putExtra(AppDetailPresenter.ARGUMENT_TOPICID, topicID);
         context.startActivity(intent);
     }
 }

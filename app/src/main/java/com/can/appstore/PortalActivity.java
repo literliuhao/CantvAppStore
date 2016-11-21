@@ -63,6 +63,8 @@ public class PortalActivity extends Activity {
                 list.add("应用详情3");
             } else if (i == 6){
                 list.add("消息中心");
+            } else if (i == 7){
+                list.add("首页");
             }else {
                 list.add(i + "");
             }
@@ -109,6 +111,9 @@ public class PortalActivity extends Activity {
                     startActivity(intent);
                 }else if(position == 6){
                     Intent intent = new Intent(PortalActivity.this, MessageStartActivity.class);
+                    startActivity(intent);
+                }else if(position==7){
+                    Intent intent = new Intent(PortalActivity.this, MainActivity.class);
                     startActivity(intent);
                 }
             }

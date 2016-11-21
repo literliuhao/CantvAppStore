@@ -49,6 +49,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public final static int DOWNLOAD_BUTTON_STATUS_UPDATE = 8;//更新
     public final static float DOWNLOAD_INIT_PROGRESS = 0f;//初始时进度
     public final static float DOWNLOAD_FINISH_PROGRESS = 100f;//完成时进度
+    public final static String ARGUMENT_APPID = "appID";
+    public final static String ARGUMENT_TOPICID = "topicID";
     private final static String INSTALL_PATH = Environment.getExternalStorageDirectory().getPath() + "/can_downloadApk/";
     public int downlaodErrorCode = 0;//下载错误
     private Context mContext;
@@ -79,8 +81,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     public void getData(Intent intent) {
         if (intent != null) {
-            mAppId = intent.getStringExtra("appID");
-            mTopicId = intent.getStringExtra("topicID");
+            mAppId = intent.getStringExtra(ARGUMENT_APPID);
+            mTopicId = intent.getStringExtra(ARGUMENT_TOPICID);
         }
     }
 

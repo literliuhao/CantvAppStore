@@ -431,7 +431,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                         break;
                     case AppInstallListener.APP_INSTALLING:
                         //正在安装
-                        ToastUtils.showMessage(v.getContext(), v.getContext().getString(R.string.download_installing));
+                        PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string.download_installing));
                         break;
                     case AppInstallListener.APP_INSTALL_SUCESS:
                         String pacageName = ApkUtils.getPkgNameFromApkFile(v.getContext().getApplicationContext(), holder.downloadTask.getFilePath());
