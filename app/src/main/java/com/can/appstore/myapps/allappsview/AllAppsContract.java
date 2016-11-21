@@ -25,6 +25,8 @@ public interface AllAppsContract {
 
         void onClickHomeKey();
 
+        void showUninstallDialog(PackageUtil.AppInfo app);
+
         void loadAllAppInfoSuccess(List<PackageUtil.AppInfo> infoList);
     }
 
