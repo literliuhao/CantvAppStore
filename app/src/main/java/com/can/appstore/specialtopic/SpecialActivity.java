@@ -1,5 +1,7 @@
 package com.can.appstore.specialtopic;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.base.BaseActivity;
+import com.can.appstore.download.DownloadActivity;
 import com.can.appstore.entity.SpecialTopic;
 import com.can.appstore.specialtopic.adapter.SpecialAdapter;
 
@@ -56,6 +59,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     private String noDataStr, netErrorStr;
 
     private int mFocusType =FOCUS_IMAGE;
+    private long mTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -217,9 +221,18 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (KeyEvent.ACTION_DOWN == event.getAction() && KeyEvent.KEYCODE_DPAD_DOWN == event.getKeyCode()) {
-            if (mPresenter != null) {
-                mPresenter.remindNoData();
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            long time = System.currentTimeMillis();
+            if (mTime == 0) {
+                mTime = System.currentTimeMillis();
+                if (mPresenter != null) {
+                    mPresenter.remindNoData();
+                }
+                return super.dispatchKeyEvent(event);
+            } else if (time - mTime < 150) {
+                return true;
+            } else {
+                mTime = System.currentTimeMillis();
             }
         }
         return super.dispatchKeyEvent(event);
@@ -271,4 +284,10 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
             mAdapter.notifyItemRangeInserted(startInsertPos, endInsertPos);
         }
     }
+
+    public static void actionStart(Context context) {
+        Intent intent = new Intent(context, DownloadActivity.class);
+        context.startActivity(intent);
+    }
+
 }

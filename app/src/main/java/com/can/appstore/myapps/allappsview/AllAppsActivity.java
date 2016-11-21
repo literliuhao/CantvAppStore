@@ -22,6 +22,7 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
+import retrofit2.http.HEAD;
 
 import static com.can.appstore.MyApp.mContext;
 
@@ -155,6 +156,7 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
             @Override
             public void onClick(View view) {
                 mAllAppsPresenter.getUninstallAppInfo(position);
+
                 hideEditView(item);
             }
         });

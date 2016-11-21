@@ -23,8 +23,6 @@ public interface AppDetailContract {
     interface View extends BaseView<Presenter>{
         void loadDataFail();
 
-        void onClickHomeKey();
-
         void loadAppInfoOnSuccess(AppInfo appInfo);
 
         void refreshDownloadButtonStatus(int status, float progress);

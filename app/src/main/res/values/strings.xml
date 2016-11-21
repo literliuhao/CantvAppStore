@@ -1,6 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">CANAppStore</string>
-
     <!--搜索-->
     <string name="search_content_hint">请输入首字母</string>
     <string name="search_content_del">删除</string>
@@ -29,7 +29,7 @@
     <string name="index_manager_text6">卸载管理</string>
     <string name="index_manager_text7">安装包管理</string>
     <string name="index_manager_text8">下载管理</string>
-	<!-- 更新包管理 -->
+    <!-- 更新包管理 -->
     <string name="update_start_autoupdate">已开启自动更新</string>
     <string name="update_end_autoupdate">关闭自动更新</string>
     <string name="update_sdavaliable_size">可用空间 : </string>
@@ -70,6 +70,7 @@
     <string name="download_no_task">当前暂无下载任务！</string>
     <string name="download_installing">正在安装</string>
     <string name="download_installed">安装完成</string>
+    <string name="download_open_app_error">打开应用出现问题</string>
 
 
     <!--卸载管理-->

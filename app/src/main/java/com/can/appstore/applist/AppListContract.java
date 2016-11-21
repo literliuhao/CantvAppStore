@@ -2,6 +2,8 @@ package com.can.appstore.applist;
 
 import android.text.SpannableStringBuilder;
 
+import com.can.appstore.base.BasePresenter;
+import com.can.appstore.base.BaseView;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.Topic;
 
@@ -12,7 +14,8 @@ import java.util.List;
  */
 
 public interface AppListContract {
-    interface Presenter{
+
+    interface Presenter extends BasePresenter {
         void startLoadData();
         void onMenuItemSelect(int position);
         void loadMoreData();
@@ -20,19 +23,15 @@ public interface AppListContract {
         void loadAppListData();
         void loadAppListData(String topicId);
         void onAppListItemSelectChanged(int position);
-        void release();
-        int getAppListTotalSize();
     }
-    interface View{
-        void setPresenter(Presenter presenter);
-        void showLoadingDialog();
-        void hideLoadingDialog();
+
+    interface View extends BaseView<Presenter> {
         void refreshMenuList(List<Topic> menuData, int focusPosition);
         void refreshAppList(List<AppInfo> rightData, int InsertPosition);
-        // TODO: 2016/11/11  rowNum
-        void refreshLineText(SpannableStringBuilder spannable);
+        void refreshRowNumber(SpannableStringBuilder spannable);
+        void changeAppInfoUiToFail();
+        void finish();
         void refreshTypeName(String typeName);
-        void onLoadFail();
     }
 
 }

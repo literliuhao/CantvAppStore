@@ -1,5 +1,7 @@
 package com.can.appstore.message;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -28,6 +30,7 @@ import cn.can.tvlib.utils.ToastUtils;
 public class MessageActivity extends BaseActivity implements View.OnClickListener, View.OnFocusChangeListener {
 
     private final static String TAG = "MessageActivity";
+    private static String actionID = "id" ;
     private List<MessageInfo> msgList;
     private GreenDaoManager dbManager;
     private FocusMoveUtil focusMoveUtil;
@@ -146,12 +149,12 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                     focusMsgItem(position - 1);
                     return;
                 }
-                int first = llManager.findFirstVisibleItemPosition();
+                /*int first = llManager.findFirstVisibleItemPosition();
                 int last = llManager.findLastVisibleItemPosition();
                 if (first != 0 && last == msgCount) {
                     focusMsgItem(position - 1);
                     return;
-                }
+                }*/
                 deleteLastItem = position == msgCount - 1;
                 final int posi = deleteLastItem ? position - 1 : position;
                 focusMsgItem(posi);
@@ -197,7 +200,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                     if (deleteLastItem) {
                         focusViewMoveEnable = true;
                     }
-                    mHandler.postDelayed(mFocusMoveRunnable, 400);
+                    mHandler.postDelayed(mFocusMoveRunnable, 500);
                 }
             }
         });
@@ -248,6 +251,12 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         stringBuilder.append(total);
         stringBuilder.append("行");
         itemTotal.setText(stringBuilder);
+    }
+
+    public static void actionStart(Context context, String value){
+        Intent intent = new Intent(context, MessageActivity.class);
+        intent.putExtra(actionID, value);
+        context.startActivity(intent);
     }
 
     @Override

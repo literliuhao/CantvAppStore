@@ -195,7 +195,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
                 refreshItemInListPosition(packageName);
                 if (mSelectPackageName != null) {
                     if (mSelectPackageName.size() > 0) {
-                        continueUninstall1();
+                        continueUninstall();
                     }
                 }
             }
@@ -214,7 +214,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     /**
      * 继续卸载
      */
-    private void continueUninstall1() {
+    private void continueUninstall() {
         mSelectPackageName.remove(0);
         mView.refreshSelectCount(mSelectPackageName.size());
         if (mSelectPackageName.size() > 0) {

@@ -5,14 +5,20 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-
 import com.can.appstore.myapps.model.MyAppsListDataUtil;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
+import android.content.Intent;
+import android.util.Log;
+import android.view.WindowManager;
+import com.can.appstore.upgrade.UpgradeService;
+import com.can.appstore.upgrade.bugly.BuglyUpgradeService;
+import com.tencent.bugly.Bugly;
+import com.tencent.bugly.beta.Beta;
+import com.tencent.bugly.beta.UpgradeInfo;
+import com.tencent.bugly.beta.upgrade.UpgradeListener;
 
 /**
  * ================================================
@@ -24,8 +30,11 @@ import cn.can.tvlib.utils.PackageUtil.AppInfo;
  * ================================================
  */
 public class MyApp extends Application {
+    private static final String TAG = "MyApp";
     public static Context mContext;
     private static MyApp INSTANCE;
+    public static int Width;
+    public static int Height;
     //内存维护的全局应用List
     public static List<AppInfo> myAppList = new ArrayList<AppInfo>();
     /**
@@ -39,10 +48,15 @@ public class MyApp extends Application {
         super.onCreate();
         this.mContext = this;
 
+        WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+        Width = wm.getDefaultDisplay().getWidth();
+        Height = wm.getDefaultDisplay().getHeight();
+
         PRE_APPS.add("cn.cibntv.ott");
         PRE_APPS.add("com.cantv.media");
         myAppList = PackageUtil.findAllThirdPartyApps(this,myAppList);
         registerInstallReceiver();
+        initBuly(true);
     }
 
     public static Context getContext() {
@@ -77,6 +91,37 @@ public class MyApp extends Application {
             }
             myAppList = new MyAppsListDataUtil(mContext).getAllAppList(myAppList);
         }
+    }
+
+    /**
+     * Bugly实现自更新
+     *
+     * @param downloadSelf 是否自己下载apk
+     *                     自下载：可控制下载、安装
+     *                     Bugly下载：可控制下载，安装Bugly自行调用
+     */
+    private void initBuly(final boolean downloadSelf) {
+        Beta.autoCheckUpgrade = false;
+        Beta.showInterruptedStrategy = false;
+        Beta.upgradeListener = new UpgradeListener() {
+            @Override
+            public void onUpgrade(int ret, UpgradeInfo strategy, boolean isManual, boolean isSilence) {
+                if (strategy != null) {
+                    Log.d(TAG, "onUpgrade: 更新");
+                    Intent intent;
+                    if (downloadSelf) {
+                        intent = new Intent(MyApp.this, UpgradeService.class);
+                    } else {
+                        intent = new Intent(MyApp.this, BuglyUpgradeService.class);
+                    }
+                    MyApp.this.startService(intent);
+                } else {
+                    Log.d(TAG, "onUpgrade: 没有更新");
+                }
+            }
+        };
+        Bugly.init(getApplicationContext(), "900059606", true);
+        Beta.checkUpgrade();
     }
 
 }
