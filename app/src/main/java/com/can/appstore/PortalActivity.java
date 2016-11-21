@@ -65,6 +65,8 @@ public class PortalActivity extends Activity {
                 list.add("消息中心");
             } else if (i == 7) {
                 list.add("首页");
+            } else if (i == 8) {
+                list.add("排行榜列表");
             } else {
                 list.add(i + "");
             }
@@ -115,6 +117,12 @@ public class PortalActivity extends Activity {
                 } else if (position == 7) {
                     Intent intent = new Intent(PortalActivity.this, MainActivity.class);
                     startActivity(intent);
+                }else if (position == 8) {
+                    Intent intent = new Intent(PortalActivity.this, AppListActivity.class);
+                    intent.putExtra(AppListActivity.ENTRY_KEY_SRC_TYPE, AppListActivity.PAGE_TYPE_RANKING);
+                    intent.putExtra(AppListActivity.ENTRY_KEY_TOPIC_ID, "");
+                    intent.putExtra(AppListActivity.ENTRY_KEY_TYPE_ID, "");
+                    PortalActivity.this.startActivity(intent);
                 }
             }
         });
