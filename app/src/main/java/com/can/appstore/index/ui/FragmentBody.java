@@ -85,7 +85,9 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
         ViewGroup.LayoutParams scrollParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         horizontalScrollView.setLayoutParams(scrollParams);
         FrameLayout frameLayout = new FrameLayout(context);
-        frameLayout.setFocusable(false);
+//        frameLayout.setFocusable(true);
+//        frameLayout.setClipChildren(true);
+//        frameLayout.setClipToPadding(true);
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         frameLayout.setLayoutParams(params);
 
@@ -94,12 +96,12 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
             final Layout childBean = mNavigation.getLayout().get(j);
             final MyImageView myImageView = new MyImageView(getActivity());
             myImageView.setId(j);
-//            myImageView.setImageURI(childBean.getIcon());
-            myImageView.setColour(bodeColor);
-            myImageView.setBorder(2);
+            myImageView.setImageURI(childBean.getIcon());
+//            myImageView.setColour(bodeColor);
+//            myImageView.setBorder(2);
             myImageView.setFocusable(true);
 //            myImageView.setScaleType(MyImageView.ScaleType.CENTER_CROP);
-//            myImageView.setBackground(getResources().getDrawable(R.drawable.index_recommend, null));
+            myImageView.setBackground(getResources().getDrawable(R.drawable.index_recommend));
             myImageView.setOnFocusChangeListener(FragmentBody.this);
             myImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -185,8 +187,10 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
      */
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
+        Log.i("FragmentBody", v.getId() + "");
         mFocusListener.addFocusListener(v, hasFocus);
     }
+
 
     @Override
     public View getLastView() {
