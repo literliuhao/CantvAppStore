@@ -1,5 +1,7 @@
 package com.can.appstore.download;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -24,10 +26,10 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 public class DownloadActivity extends BaseActivity implements DownloadContract.DownloadView {
 
     private static final String TAG = "DownloadActivity";
-    public static final int DELAY_MILLIS_MOVE_FOCUS = 30;
-    public static final int DELAY_MILLIS_REFRESH_STORAGE=5000;
-
-    public static final int MSG_REFRESH_STORAGE=0x1;
+    public static final int DELAY_MILLIS_MOVE_FOCUS = 50;
+    public static final int DELAY_MILLIS_REFRESH_STORAGE = 5000; //刷新可用空间进度条时间间隔
+    public static final int MSG_REFRESH_STORAGE = 0x1;//刷新可用空间进度条
+    public static final int MIN_DOWN_INTERVAL = 80;//响应点击事件的最小间隔事件
 
     private TextView mRowTv, mNoDataTv, mPauseAllBtn, mDeleteAllBtn;
     private CanRecyclerView mCanRecyclerView;
@@ -38,15 +40,15 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
     private CanRecyclerView.CanLinearLayoutManager mLayoutManager;
 
     private FocusMoveUtil mFocusMoveUtil;
-    private Runnable mFocusMoveRunnable;
+    private Runnable mFocusMoveRunnable, mFocusResolveRunnable;
     private Handler hanlder;
     private View mFocusView;
 
     private String pauseAllTaskString;
     private String resumeAllTaskString;
 
-    private int lastFocusPos = -1;
-
+    private int lastFocusPos = 0;
+    private boolean focusMoveEnable = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +61,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
 
     private void initView() {
         CanRecyclerViewDivider itemDecoration = new CanRecyclerViewDivider(40);
+
         mLayoutManager = new CanRecyclerView.CanLinearLayoutManager(this);
 
         mFocusMoveUtil = new FocusMoveUtil(this, getWindow().getDecorView().findViewById(android.R.id.content),
@@ -76,18 +79,19 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
         mCanRecyclerView.addItemDecoration(itemDecoration);
         mCanRecyclerView.setLayoutManager(mLayoutManager);
 
+        resolveFirstFocus();
     }
 
     private void initHandler() {
-        hanlder = new Handler(){
+        hanlder = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                switch (msg.what){
+                switch (msg.what) {
                     case MSG_REFRESH_STORAGE:
-                        if(mPresenter!=null){
+                        if (mPresenter != null) {
                             mPresenter.caculateStorage();
                         }
-                        sendEmptyMessageDelayed(MSG_REFRESH_STORAGE,DELAY_MILLIS_REFRESH_STORAGE);
+                        sendEmptyMessageDelayed(MSG_REFRESH_STORAGE, DELAY_MILLIS_REFRESH_STORAGE);
                         break;
                 }
             }
@@ -97,6 +101,13 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
             @Override
             public void run() {
                 mFocusMoveUtil.startMoveFocus(mFocusView);
+            }
+        };
+
+        mFocusResolveRunnable = new Runnable() {
+            @Override
+            public void run() {
+                focusItemContentView();
             }
         };
     }
@@ -140,6 +151,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
                 mPresenter.deleteAllTasks();
             }
         });
+
 
     }
 
@@ -201,7 +213,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
                 if (hasFocus) {
                     mFocusView = view;
                     if (lastFocusPos == pos) {
-                        focusMoveDelay(500);
+                        focusMoveDelay(490);
                     } else {
                         focusMoveDelay();
                     }
@@ -222,22 +234,41 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
 
             @Override
             public void onDeleteButtonClick(View view, int pos, DownloadTask downloadTask) {
-                if (tasks.size() == 0) {
+                if (tasks.size() <= 1) {
                     showNoDataView();
+                    focusMoveEnable = true;
                 } else {
-                    mPresenter.calculateRowNum(pos);
+                    if (pos != 0 && pos != mLayoutManager.findFirstVisibleItemPosition()) {
+                        mFocusMoveUtil.hideFocusForShowDelay(500);
+                        if (pos == tasks.size() - 1) {
+                            focusMoveEnable = false;
+                            hanlder.postDelayed(mFocusResolveRunnable, 490);
+                        }
+                    }
                 }
+                mAdapter.notifyItemRemoved(pos);
+                tasks.remove(downloadTask);
+                int itemPos = pos == 0 ? 0 : pos - 1;
+                mPresenter.calculateRowNum(itemPos);
             }
 
             @Override
             public boolean onItemContentKeyListener(View view, int keyCode, KeyEvent event, int pos, DownloadTask downloadTask) {
-                if(KeyEvent.KEYCODE_DPAD_LEFT==keyCode&&KeyEvent.ACTION_DOWN==event.getAction()){
+                if (KeyEvent.KEYCODE_DPAD_LEFT == keyCode && KeyEvent.ACTION_DOWN == event.getAction()) {
                     mPauseAllBtn.requestFocus();
                     return true;
                 }
                 return false;
             }
         });
+    }
+
+    private void focusItemContentView() {
+        focusMoveEnable = true;
+        DownloadAdapter.DownloadViewHolder holder = (DownloadAdapter.DownloadViewHolder) mCanRecyclerView.findViewHolderForAdapterPosition(mAdapter.getItemCount() - 1);
+        if (holder != null) {
+            holder.appContentLayout.requestFocus();
+        }
     }
 
     @Override
@@ -251,7 +282,9 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
     }
 
     private void focusMoveDelay() {
-        focusMoveDelay(DELAY_MILLIS_MOVE_FOCUS);
+        if (focusMoveEnable) {
+            focusMoveDelay(DELAY_MILLIS_MOVE_FOCUS);
+        }
     }
 
     private void focusMoveDelay(int delayMillis) {
@@ -262,9 +295,16 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onStop() {
+        super.onStop();
         hanlder.removeCallbacksAndMessages(null);
+    }
+
+    @Override
+    protected void onDestroy() {
         super.onDestroy();
+        mFocusMoveUtil.release();
+        mPresenter.release();
     }
 
     @Override
@@ -305,5 +345,20 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
             }
         }
         mPauseAllBtn.setText(text);
+    }
+
+    public void resolveFirstFocus() {
+        mPauseAllBtn.post(new Runnable() {
+            @Override
+            public void run() {
+                hanlder.removeCallbacks(mFocusMoveRunnable);
+                mFocusMoveUtil.setFocusView(mPauseAllBtn);
+            }
+        });
+    }
+
+    public static void actionStart(Context context) {
+        Intent intent = new Intent(context, DownloadActivity.class);
+        context.startActivity(intent);
     }
 }

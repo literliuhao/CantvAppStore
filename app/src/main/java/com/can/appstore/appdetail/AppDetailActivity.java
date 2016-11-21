@@ -1,5 +1,7 @@
 package com.can.appstore.appdetail;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -95,6 +97,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         initView();
         mFocusMoveUtil = new FocusMoveUtil(AppDetailActivity.this, getWindow().getDecorView(), R.mipmap.btn_focus);
         mScaleUtil = new FocusScaleUtil();
+        mFocusMoveUtil.hideFocus();
         mListFocusMoveRunnable = new AppDetailActivity.ListFocusMoveRunnable();
         mAppDetailPresenter = new AppDetailPresenter(this, AppDetailActivity.this, getIntent());
         mAppDetailPresenter.startLoad();
@@ -316,17 +319,17 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         }
     }
 
-    private void recommendGridPositionRequestFocus(int hideFocusTime, final int position) {
-        mFocusMoveUtil.hideFocusForShowDelay(hideFocusTime);
+    private void recommendGridPositionRequestFocus(final int hideFocusTime, final int position) {
         mRecommendGrid.postDelayed(new Runnable() {
             @Override
             public void run() {
                 View childAt = mRecommendGrid.getChildAt(position);
                 if (childAt != null) {
+                    mFocusMoveUtil.hideFocusForShowDelay(hideFocusTime);
                     mFocusMoveUtil.setFocusView(childAt);
                     childAt.requestFocus();
                 } else {
-                    mBtRecommend.requestFocus();
+                    requestFocus(mBtRecommend);
                 }
             }
         }, 50);
@@ -338,15 +341,17 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     }
 
     @Override
-    public void onClickHomeKey() {
-        finish();
-    }
-
-    @Override
     public void setPresenter(AppDetailContract.Presenter presenter) {
     }
 
-    private void setData() {//TODO   修改设置数据
+    @Override
+    protected void onHomeKeyListener() {
+        mAppDetailPresenter.dismissInsufficientStorageSpaceDialog();
+        mAppDetailPresenter.dismissIntroduceDialog();
+        finish();
+    }
+
+    private void setData() {
         ImageLoader.getInstance().load(AppDetailActivity.this, mImageViewIcon, mAppinfo.getIcon(), android.R.anim.fade_in,
                 R.mipmap.icon_load_default, R.mipmap.icon_loading_fail, new GlideLoadTask.SuccessCallback() {
                     @Override
@@ -371,31 +376,33 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         if (mRelativeLayuotOperatingEquipment.getChildCount() != 1) {
             mRelativeLayuotOperatingEquipment.removeViewsInLayout(1, mControlType.size());
         }
+        int width = getResources().getDimensionPixelSize(R.dimen.dimen_60px);
+        int leftMargin = getResources().getDimensionPixelSize(R.dimen.dimen_12px);
         mControlType = type;
         for (int i = 0; i < type.size(); i++) {
             View childAt = mRelativeLayuotOperatingEquipment.getChildAt(i);
-            RelativeLayout.LayoutParams controllerTypePic = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-            ImageView conTypePic = new ImageView(this);
+            RelativeLayout.LayoutParams controllerTypePic = new RelativeLayout.LayoutParams(width, width);
+            final ImageView conTypePic = new ImageView(this);
             if (i == 0) {
                 controllerTypePic.addRule(RelativeLayout.RIGHT_OF, R.id.tv_operating_equipment);
             } else {
                 controllerTypePic.addRule(RelativeLayout.RIGHT_OF, childAt.getId());
             }
-            controllerTypePic.leftMargin = getResources().getDimensionPixelSize(R.dimen.dimen_24px);
+            controllerTypePic.leftMargin = leftMargin;
             controllerTypePic.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
             conTypePic.setId(i + 1);
             conTypePic.setLayoutParams(controllerTypePic);
             conTypePic.setScaleType(ImageView.ScaleType.FIT_CENTER);
             mRelativeLayuotOperatingEquipment.addView(conTypePic, controllerTypePic);
-            int selectOperationPic = mAppDetailPresenter.getOperationPic(type.get(i));
-            conTypePic.setImageResource(selectOperationPic);
-            //            ImageLoader.getInstance().load(AppDetailActivity.this, conTypePic, type.get(i), new GlideLoadTask.SuccessCallback() {
-            //                @Override
-            //                public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-            //                    conTypePic.setImageDrawable(resource);
-            //                    return true;
-            //                }
-            //            }, null);
+            //              int selectOperationPic = mAppDetailPresenter.getOperationPic(type.get(i));  // TODO
+            //              conTypePic.setImageResource(selectOperationPic);
+            ImageLoader.getInstance().load(AppDetailActivity.this, conTypePic, type.get(i), new GlideLoadTask.SuccessCallback() {
+                @Override
+                public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                    conTypePic.setImageDrawable(resource);
+                    return true;
+                }
+            }, null);
         }
     }
 
@@ -492,6 +499,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     @Override
     public void loadAppInfoOnSuccess(AppInfo appInfo) {
+        mFocusMoveUtil.hideFocusForShowDelay(500);
         mLayoutAppDetail.setVisibility(View.VISIBLE);
         mAppinfo = appInfo;
         setData();
@@ -543,6 +551,8 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && event.getAction() == KeyEvent.ACTION_DOWN) {
                     mLayoutIntroduceText.requestFocus();
                     return true;
+                } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && event.getAction() == KeyEvent.ACTION_DOWN && position == 0) {
+                    return true;
                 }
                 return false;
             }
@@ -559,13 +569,10 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if (isTabLineMoveToRecommend) {
-                    int size = mAppinfo.getRecommend().size();
-                    if (size < RECOMMEND_LINE_COUNT) {
-                        recommendGridPositionRequestFocus(200, size - 1);
-                    } else {
-                        recommendGridPositionRequestFocus(300, 3);
-                    }
+                if (newState == CanRecyclerView.SCROLL_STATE_SETTLING) {
+                    setButtonFocusable(false);
+                } else if (newState == CanRecyclerView.SCROLL_STATE_IDLE) {
+                    setButtonFocusable(true);
                 }
             }
 
@@ -575,6 +582,13 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 mListFocusMoveRunnable.run();
             }
         });
+    }
+
+    public void setButtonFocusable(boolean Focusable) {
+        mBtIntroduction.setFocusable(Focusable);
+        mBtRecommend.setFocusable(Focusable);
+        mButtonDownload.setFocusable(Focusable);
+        mButtonUpdate.setFocusable(Focusable);
     }
 
     private void setRecommendAdapter() {
@@ -634,8 +648,8 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         mRecommedGridAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, int position, Object data) {
-                String appId = mAppinfo.getRecommend().get(position).getId();  // TODO: 2016/11/14
-                mAppDetailPresenter.mAppId = "2";
+                String appId = mAppinfo.getRecommend().get(position).getId();
+                mAppDetailPresenter.mAppId = appId;
                 mAppDetailPresenter.startLoad();
             }
         });
@@ -704,5 +718,19 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 }
             }
         }
+    }
+
+    /**
+     * 打开应用详情页面
+     *
+     * @param context 上下文
+     * @param appID   应用id
+     * @param topicID
+     */
+    public static void actionStart(Context context, String appID, String topicID) {
+        Intent intent = new Intent(context, AppDetailActivity.class);
+        intent.putExtra(AppDetailPresenter.ARGUMENT_APPID, appID);
+        intent.putExtra(AppDetailPresenter.ARGUMENT_TOPICID, topicID);
+        context.startActivity(intent);
     }
 }

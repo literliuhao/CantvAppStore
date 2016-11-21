@@ -183,12 +183,12 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
         final String mName = app.appName;
         final String mPackName = app.packageName;
         mCanDialog = new CanDialog(this);
-        mCanDialog.setmIvDialogTitle(mIcon)
-                .setmTvDialogTitle(mName)
-                .setmTvDialogTopLeftContent(makesureUninstall)
-                .setmBtnDialogNegative(cancle)
-                .setmBtnDialogPositive(ok)
-                .setOnCanBtnClickListener(new CanDialog.OnCanBtnClickListener() {
+        mCanDialog.setIcon(mIcon)
+                .setTitle(mName)
+                .setTitleMessage(makesureUninstall)
+                .setNegativeButton(cancle)
+                .setPositiveButton(ok)
+                .setOnCanBtnClickListener(new CanDialog.OnClickListener() {
                     @Override
                     public void onClickPositive() {
                         silentUninstall(mName, mPackName);

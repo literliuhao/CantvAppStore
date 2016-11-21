@@ -412,8 +412,9 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
 
     private void initDialog(String str) {
         canDialog = new CanDialog(UpdateManagerActivity.this);
-        canDialog.setmTvDialogTitle("更新设置").setmTvDialogTopLeftContent("自动更新").setmTvDialogBelowContent("应用需要更新时，自动开始下载安装").setmTvDialogTopRightContent(str).setmBtnDialogNegative("关闭").setmBtnDialogPositive("开启");
-        canDialog.setOnCanBtnClickListener(new CanDialog.OnCanBtnClickListener() {
+        canDialog.setTitle("更新设置").setTitleMessage("自动更新").setContentMessage("应用需要更新时，自动开始下载安装")
+                .setStateMessage(str).setNegativeButton("关闭").setPositiveButton("开启");
+        canDialog.setOnCanBtnClickListener(new CanDialog.OnClickListener() {
             @Override
             public void onClickPositive() {
                 PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", true);

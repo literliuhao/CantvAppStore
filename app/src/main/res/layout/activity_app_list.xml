@@ -65,11 +65,12 @@
             android:text="@string/serach"
             android:textColor="@color/white_opa80"
             android:textSize="@dimen/px34"
+            android:visibility="gone"
             />
 
         <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
             android:id="@+id/rv_app_menu"
-            android:layout_width="@dimen/px240"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/tv_app_list_search"
             android:focusable="false"
@@ -129,8 +130,7 @@
         android:clipToPadding="false"
         android:focusable="false"
         android:paddingBottom="@dimen/px58"
-        android:paddingTop="@dimen/px10"
-        android:visibility="gone"/>
+        android:paddingTop="@dimen/px10"/>
 
     <LinearLayout
         android:id="@+id/ll_app_list_load_fail"

@@ -25,7 +25,7 @@ import cn.can.tvlib.utils.SystemUtil;
 public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter {
 
     private static final String TAG = "DownloadPresenterImpl";
-    public static final String TAG_DOWNLOAD_UPDATA__STATUS = "download_update_status";
+    public static final String TAG_DOWNLOAD_UPDATA_STATUS = "download_update_status";
     private DownloadContract.DownloadView mView;
 
     private DownloadManager mDownLoadManager;
@@ -90,11 +90,15 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
 
     @Override
     public void calculateRowNum(int focusPos) {
-        String rowFmt = String.format("%d/%d行", focusPos + 1, mTasks.size());
-        int pos = rowFmt.indexOf("/");
-        SpannableString ss = new SpannableString(rowFmt);
-        ss.setSpan(new ForegroundColorSpan(Color.parseColor("#EAEAEA")), 0, pos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        mView.refreshRowNumber(ss);
+        if(mTasks.size()>0){
+            String rowFmt = String.format("%d/%d行", focusPos + 1, mTasks.size());
+            int pos = rowFmt.indexOf("/");
+            SpannableString ss = new SpannableString(rowFmt);
+            ss.setSpan(new ForegroundColorSpan(Color.parseColor("#EAEAEA")), 0, pos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            mView.refreshRowNumber(ss);
+        }else{
+            mView.refreshRowNumber("");
+        }
     }
 
     @Override
@@ -120,7 +124,6 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
         for (DownloadTask task : mTasks) {
             if (DownloadStatus.DOWNLOAD_STATUS_COMPLETED == task.getDownloadStatus()
                     || DownloadStatus.DOWNLOAD_STATUS_CANCEL == task.getDownloadStatus()
-                    || DownloadStatus.DOWNLOAD_STATUS_ERROR == task.getDownloadStatus()
                     || AppInstallListener.APP_INSTALL_FAIL == task.getDownloadStatus()
                     || AppInstallListener.APP_INSTALL_SUCESS == task.getDownloadStatus()
                     || AppInstallListener.APP_INSTALLING == task.getDownloadStatus()) {
@@ -131,7 +134,7 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
         }
 
         if (pauseSize > 0) {
-            DownloadDispatcher.getInstance().postDownloadStatusEvent(TAG, TAG_DOWNLOAD_UPDATA__STATUS);
+            DownloadDispatcher.getInstance().postDownloadStatusEvent(TAG, TAG_DOWNLOAD_UPDATA_STATUS);
             return true;
         }
         return false;
@@ -148,7 +151,6 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
         for (DownloadTask task : mTasks) {
             if (DownloadStatus.DOWNLOAD_STATUS_COMPLETED == task.getDownloadStatus()
                     || DownloadStatus.DOWNLOAD_STATUS_CANCEL == task.getDownloadStatus()
-                    || DownloadStatus.DOWNLOAD_STATUS_ERROR == task.getDownloadStatus()
                     || AppInstallListener.APP_INSTALL_FAIL == task.getDownloadStatus()
                     || AppInstallListener.APP_INSTALLING == task.getDownloadStatus()
                     || AppInstallListener.APP_INSTALL_SUCESS == task.getDownloadStatus()) {
@@ -158,7 +160,7 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
             pauseSize++;
         }
         if (pauseSize > 0) {
-            DownloadDispatcher.getInstance().postDownloadStatusEvent(TAG, TAG_DOWNLOAD_UPDATA__STATUS);
+            DownloadDispatcher.getInstance().postDownloadStatusEvent(TAG, TAG_DOWNLOAD_UPDATA_STATUS);
             return true;
         }
         return false;
@@ -168,17 +170,17 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
 
         @Override
         public void onInstalling(DownloadTask downloadTask) {
-            DownloadDispatcher.getInstance().postInstallStatusEvent(downloadTask.getId(),TAG,TAG_DOWNLOAD_UPDATA__STATUS );
+            DownloadDispatcher.getInstance().postInstallStatusEvent(downloadTask.getId(),TAG, TAG_DOWNLOAD_UPDATA_STATUS);
         }
 
         @Override
         public void onInstallSucess(String id) {
-            DownloadDispatcher.getInstance().postInstallStatusEvent(id,TAG,TAG_DOWNLOAD_UPDATA__STATUS );
+            DownloadDispatcher.getInstance().postInstallStatusEvent(id,TAG, TAG_DOWNLOAD_UPDATA_STATUS);
         }
 
         @Override
         public void onInstallFail(String id) {
-            DownloadDispatcher.getInstance().postInstallStatusEvent(id,TAG,TAG_DOWNLOAD_UPDATA__STATUS );
+            DownloadDispatcher.getInstance().postInstallStatusEvent(id,TAG, TAG_DOWNLOAD_UPDATA_STATUS);
         }
 
         @Override
@@ -193,3 +195,4 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
     }
 
 }
+
