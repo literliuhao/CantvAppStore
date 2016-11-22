@@ -61,6 +61,7 @@
     <string name="network_error">网络访问错误</string>
     <string name="no_data">没有数据!</string>
     <string name="no_more_data">没有更多数据!</string>
+    <string name="data_error">数据异常</string>
 
     <!--专题-->
     <string name="special">"专题"</string>

@@ -435,7 +435,6 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
             long time = System.currentTimeMillis();
             if (mTime == 0) {
                 mTime = System.currentTimeMillis();
-                return;
             } else if (time - mTime < 300) {
                 return;
             } else {
