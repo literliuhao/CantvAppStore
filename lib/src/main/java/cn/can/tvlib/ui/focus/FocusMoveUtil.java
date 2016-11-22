@@ -74,6 +74,7 @@ public class FocusMoveUtil {
     private HashMap<Animator, RectFEvaluator> mEvaluators;
     private Handler mHandler;
     private Runnable mShowFocusRunnable;
+    private boolean released;
 
     /**
      * 初始化该Util
@@ -367,6 +368,9 @@ public class FocusMoveUtil {
      * @param cancelFactor 当前移动动画延迟多少帧后取消
      */
     public void startMoveFocus(View view, float scaleX, float scaleY, int offsetX, int offsetY, int cancelFactor) {
+        if(released){
+            return;
+        }
         RectF destRect = calculateViewRegion(view, scaleX, scaleY, offsetX, offsetY);
         destRect = validateActiveRegion(destRect);
         if (destRect == null) {
@@ -391,7 +395,7 @@ public class FocusMoveUtil {
         mStartRect = mCurRect;
         mDestRect = destRect;
         resolveRectPadding(mDestRect, mFocusPaddingRect);
-        RectFEvaluator rectFEvaluator = new RectFEvaluator();
+        final RectFEvaluator rectFEvaluator = new RectFEvaluator();
         ValueAnimator am = ValueAnimator.ofObject(rectFEvaluator, mStartRect, mDestRect);
         mEvaluators.put(am, rectFEvaluator);
         am.setTarget(view);
@@ -400,11 +404,17 @@ public class FocusMoveUtil {
         am.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                if(released){
+                    return;
+                }
                 mEvaluators.remove(animation);
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
+                if(released){
+                    return;
+                }
                 mEvaluators.remove(mAnimator);
             }
         });
@@ -592,6 +602,7 @@ public class FocusMoveUtil {
      * 释放资源 ** 务必在使用完毕后调用此方法 **
      */
     public void release() {
+        released = true;
         if (mHandler != null) {
             mHandler.removeCallbacksAndMessages(null);
             mHandler = null;
