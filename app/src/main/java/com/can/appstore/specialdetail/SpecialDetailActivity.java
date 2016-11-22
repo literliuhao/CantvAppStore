@@ -12,9 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import java.util.List;
 import com.can.appstore.R;
-import retrofit2.Response;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.Result;
 import com.can.appstore.entity.SpecialTopic;
@@ -23,12 +21,15 @@ import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
 import com.can.appstore.search.SearchActivity;
+
+import java.util.List;
+
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
-import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
+import retrofit2.Response;
 
 public class SpecialDetailActivity extends Activity {
     private CanRecyclerView mCanRecyclerView;
@@ -52,10 +53,10 @@ public class SpecialDetailActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_special_detail);
         Intent intent = getIntent();
-        if(intent != null){
+        if (intent != null) {
             mTopicId = intent.getStringExtra("topicId");
         }
-        mTopicId = TextUtils.isEmpty(mTopicId)?"14":mTopicId;
+        mTopicId = TextUtils.isEmpty(mTopicId) ? "14" : mTopicId;
         initView();
 
         //焦点工具初始化
@@ -72,13 +73,12 @@ public class SpecialDetailActivity extends Activity {
         mRetryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(v.getId()==R.id.network_retry_btn){
+                if (v.getId() == R.id.network_retry_btn) {
                     requestTopicDetail();
                 }
             }
         });
     }
-
 
     private Runnable mfocusMoveRunnable = new Runnable() {
         @Override
@@ -88,7 +88,6 @@ public class SpecialDetailActivity extends Activity {
             }
         }
     };
-
 
     /**
      * 为 CanRecycleView 设置数据，适配器，布局
@@ -109,7 +108,7 @@ public class SpecialDetailActivity extends Activity {
             public void run() {
                 mCanRecyclerView.getChildAt(0).requestFocus();
             }
-        },500);
+        }, 500);
 
     }
 
@@ -140,10 +139,10 @@ public class SpecialDetailActivity extends Activity {
         });
     }
 
-    private void showNetworkRetryView(boolean isRetry){
-        mCanRecyclerView.setVisibility(isRetry?View.GONE:View.VISIBLE);
-        mDetailImgBg.setVisibility(isRetry?View.GONE:View.VISIBLE);
-        mNetworkLayout.setVisibility(isRetry?View.VISIBLE:View.GONE);
+    private void showNetworkRetryView(boolean isRetry) {
+        mCanRecyclerView.setVisibility(isRetry ? View.GONE : View.VISIBLE);
+        mDetailImgBg.setVisibility(isRetry ? View.GONE : View.VISIBLE);
+        mNetworkLayout.setVisibility(isRetry ? View.VISIBLE : View.GONE);
 
     }
 
@@ -187,15 +186,14 @@ public class SpecialDetailActivity extends Activity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        if(mSpecialTopic!=null){
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mSpecialTopic != null) {
             mSpecialTopic.cancel();
         }
-        if(mFocusMoveUtil != null){
+        if (mFocusMoveUtil != null) {
             mFocusMoveUtil.release();
             mFocusMoveUtil = null;
         }
     }
-
 }

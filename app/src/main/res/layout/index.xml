@@ -21,7 +21,7 @@
     </com.can.appstore.index.ui.TitleBar>
 
 
-    <android.support.v4.view.ViewPager
+    <com.can.appstore.index.ui.CustomPager
         android:id="@+id/id_vp"
         android:layout_width="match_parent"
         android:layout_height="@dimen/px660"
@@ -29,7 +29,7 @@
         android:layout_centerHorizontal="true"
         android:scrollbars="none"
         android:focusable="false">
-    </android.support.v4.view.ViewPager>
+    </com.can.appstore.index.ui.CustomPager>
 
 
 </RelativeLayout>

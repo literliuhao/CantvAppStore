@@ -59,7 +59,9 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
         public abstract void onClickPositive();
 
         public void onClickNegative() {
-        };
+        }
+
+        ;
     }
 
     public CanDialog(Context context) {
@@ -70,6 +72,7 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
         super(context, themeResId);
         this.mContext = context;
         mFocusMoveUtil = new FocusMoveUtil(mContext, getWindow().getDecorView(), R.mipmap.btn_focus);
+        mFocusMoveUtil.hideFocusForShowDelay(500);
         initUI();
     }
 
@@ -164,6 +167,7 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
 
     /**
      * 是否显示内容区背景图（默认显示）
+     *
      * @param visible
      * @return
      */
@@ -172,10 +176,16 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
         return this;
     }
 
-
     public CanDialog setOnCanBtnClickListener(OnClickListener listener) {
         this.mOnClickListener = listener;
         return this;
     }
 
+    @Override
+    public void dismiss() {
+        super.dismiss();
+        if (mFocusMoveUtil != null) {
+            mFocusMoveUtil.release();
+        }
+    }
 }

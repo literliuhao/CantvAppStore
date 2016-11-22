@@ -234,6 +234,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mViewPager.setOffscreenPageLimit(OFFSCREENPAGELIMIT);
         mViewPager.setCurrentItem(PAGERCURRENTITEM);
         mViewPager.setPageMargin((int) getResources().getDimension(R.dimen.px165));
+//        mViewPager.setOnFocusChangeListener(this);
         mTitleBar.setViewPager(mViewPager, PAGERCURRENTITEM);
         //开始获取第三方屏蔽列表
         shareData.getInstance().execute();
@@ -254,6 +255,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             if (v instanceof TextView) {
                 v.callOnClick();
             } else {
+                v.bringToFront();
                 mFocusScaleUtils.scaleToLarge(v);
             }
             mFocusUtils.startMoveFocus(v, SCALE);
