@@ -94,7 +94,7 @@
     </cn.can.tvlib.ui.view.recyclerview.CanRecyclerView>
     <TextView
         android:id="@+id/download_no_data_tv"
-        android:layout_width="@dimen/px300"
+        android:layout_width="@dimen/px400"
         android:layout_height="@dimen/px50"
         android:textColor="@color/white_opa80"
         android:textSize="@dimen/fontsize_36"
