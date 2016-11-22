@@ -27,8 +27,10 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
 
     private static final String TAG = "DownloadActivity";
     public static final int DELAY_MILLIS_MOVE_FOCUS = 50;
+    public static final int DELAY_MILLIS_RESOLVE_FOCUS = 500;
     public static final int DELAY_MILLIS_REFRESH_STORAGE = 5000; //刷新可用空间进度条时间间隔
     public static final int MSG_REFRESH_STORAGE = 0x1;//刷新可用空间进度条
+
 
     private TextView mRowTv, mNoDataTv, mPauseAllBtn, mDeleteAllBtn;
     private CanRecyclerView mCanRecyclerView;
@@ -213,7 +215,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
                 if (hasFocus) {
                     mFocusView = view;
                     if (lastFocusPos == pos) {
-                        focusMoveDelay(490);
+                        focusMoveDelay(DELAY_MILLIS_RESOLVE_FOCUS-10);
                     } else {
                         focusMoveDelay();
                     }
@@ -239,10 +241,10 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
                     focusMoveEnable = true;
                 } else {
                     if (pos != 0 && pos != mLayoutManager.findFirstVisibleItemPosition()) {
-                        mFocusMoveUtil.hideFocusForShowDelay(500);
+                        mFocusMoveUtil.hideFocusForShowDelay(DELAY_MILLIS_RESOLVE_FOCUS);
                         if (pos == tasks.size() - 1) {
                             focusMoveEnable = false;
-                            hanlder.postDelayed(mFocusResolveRunnable, 490);
+                            hanlder.postDelayed(mFocusResolveRunnable, DELAY_MILLIS_RESOLVE_FOCUS-10);
                         }
                     }
                 }
@@ -360,5 +362,10 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
     public static void actionStart(Context context) {
         Intent intent = new Intent(context, DownloadActivity.class);
         context.startActivity(intent);
+    }
+
+    @Override
+    protected void onHomeKeyDown() {
+        this.finish();
     }
 }

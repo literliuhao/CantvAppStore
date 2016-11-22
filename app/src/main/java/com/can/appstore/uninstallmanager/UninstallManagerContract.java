@@ -32,6 +32,8 @@ public interface UninstallManagerContract {
 
         void refreshSelectCount(int count);
 
+        void uninstallLastPosition(int position);//卸载最后一个位置,让刷新后的最后一个位置请求焦点
+
         void refreshRows(SpannableStringBuilder rows);
     }
 }

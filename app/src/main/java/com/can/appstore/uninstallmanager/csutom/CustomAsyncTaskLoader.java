@@ -18,15 +18,19 @@ public class CustomAsyncTaskLoader extends AsyncTaskLoader<List<PackageUtil.AppI
     public static final int FILTER_SYSTEM_APP = 1; // 系统程序
     public static final int FILTER_THIRD_APP = 2; // 第三方应用程序
     public static final int FILTER_PRE_INSTALL_THIRD_APP = 3; // 获取处于白名单中的系统应用 + 第三方应用
+    public static final int FILTER_LOSE_PRE_INSTALL_THIRD_APP = 4; // 忽略处于白名单中的系统应用 + 第三方应用
     private Context mContext;
     private int mAppsType;
     private List<PackageUtil.AppInfo> mAppinfos;
-    private List<String> mAppWhiteList = new ArrayList<String>();
+    private List<String> mAppWhiteList = new ArrayList<>();
 
     public CustomAsyncTaskLoader(Context contex, int getAppsType) {
         super(contex);
         this.mContext = contex;
         this.mAppsType = getAppsType;
+        mAppWhiteList.add("com.can.appstore");
+        mAppWhiteList.add("cn.cibntv.ott");
+        mAppWhiteList.add("com.dangbeimarket");
     }
 
     @Override
@@ -43,6 +47,9 @@ public class CustomAsyncTaskLoader extends AsyncTaskLoader<List<PackageUtil.AppI
                 break;
             case FILTER_PRE_INSTALL_THIRD_APP:
                 mAppinfos = PackageUtil.findAllComplexApps(mContext, mAppinfos, mAppWhiteList);
+                break;
+            case FILTER_LOSE_PRE_INSTALL_THIRD_APP:
+                mAppinfos = PackageUtil.findLoseWhiteAllComplexApps(mContext, mAppinfos, mAppWhiteList);
                 break;
             default:
                 break;

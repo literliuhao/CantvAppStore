@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.can.appstore.R;
@@ -500,7 +501,12 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
      */
     public void showIntroduceDialog() {
         CustomDialog.Builder builder = new CustomDialog.Builder(mContext);
-        builder.setUpdatelogText(mAppInfo.getUpdateLog());
+        String updateLog = mAppInfo.getUpdateLog();
+        if (!TextUtils.isEmpty(updateLog)) {
+            builder.setUpdatelogText(updateLog);
+        } else {
+            builder.setUpdatelogText(mContext.getResources().getString(R.string.not_update_log));
+        }
         builder.setAboutText(mAppInfo.getAbout());
         mCustomDialog = builder.create();
         mCustomDialog.show();
