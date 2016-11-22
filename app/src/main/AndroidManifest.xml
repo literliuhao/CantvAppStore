@@ -102,7 +102,7 @@
         </activity>
         <activity android:name=".applist.AppListActivity">
             <intent-filter>
-                <action android:name="com.can.appstore.applist.ACTION.applist" />
+                <action android:name="com.can.appstore.ACTION_APPLIST" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
