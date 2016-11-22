@@ -32,10 +32,10 @@ public interface AppListContract {
         void showSearchView();
         void showAppList();
         void showFailUI();
+        void hideAppList();
         void refreshMenuList(List<Topic> menuData, int focusPosition);
         void refreshAppList(List<AppInfo> rightData, int InsertPosition,long delayTime);
         void refreshRowNumber(SpannableStringBuilder spannable);
-        void changeAppInfoUiToFail();
         void refreshTypeName(String typeName);
         void finish();
     }
