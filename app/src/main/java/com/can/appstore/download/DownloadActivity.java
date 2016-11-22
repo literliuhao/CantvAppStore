@@ -29,7 +29,6 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
     public static final int DELAY_MILLIS_MOVE_FOCUS = 50;
     public static final int DELAY_MILLIS_REFRESH_STORAGE = 5000; //刷新可用空间进度条时间间隔
     public static final int MSG_REFRESH_STORAGE = 0x1;//刷新可用空间进度条
-    public static final int MIN_DOWN_INTERVAL = 80;//响应点击事件的最小间隔事件
 
     private TextView mRowTv, mNoDataTv, mPauseAllBtn, mDeleteAllBtn;
     private CanRecyclerView mCanRecyclerView;
@@ -49,6 +48,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
 
     private int lastFocusPos = 0;
     private boolean focusMoveEnable = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

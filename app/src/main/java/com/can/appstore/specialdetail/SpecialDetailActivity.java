@@ -32,6 +32,7 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import retrofit2.Response;
 
 public class SpecialDetailActivity extends Activity {
+    public static final String EXTRA_TOPIC_ID="topicId";
     private CanRecyclerView mCanRecyclerView;
     private CanCall<Result<SpecialTopic>> mSpecialTopic;
     private ImageView mDetailImgBg;
@@ -53,8 +54,8 @@ public class SpecialDetailActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_special_detail);
         Intent intent = getIntent();
-        if (intent != null) {
-            mTopicId = intent.getStringExtra("topicId");
+        if(intent != null){
+            mTopicId = intent.getStringExtra(EXTRA_TOPIC_ID);
         }
         mTopicId = TextUtils.isEmpty(mTopicId) ? "14" : mTopicId;
         initView();

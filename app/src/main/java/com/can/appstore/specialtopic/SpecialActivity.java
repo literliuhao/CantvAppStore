@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -15,13 +16,13 @@ import android.widget.TextView;
 import com.can.appstore.R;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.entity.SpecialTopic;
+import com.can.appstore.specialdetail.SpecialDetailActivity;
 import com.can.appstore.specialtopic.adapter.SpecialAdapter;
 
 import java.util.List;
 
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
-import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
@@ -47,7 +48,6 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     private GridLayoutManager mLayoutManager;
 
     private FocusMoveUtil mFocusMoveUtils;
-    private FocusScaleUtil mFocusScaleUtils;
 
     private SpecialContract.SpecialPresenter mPresenter;
 
@@ -113,13 +113,16 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
 
     private void setListener() {
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            int scrollDy=0;
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 if (RecyclerView.SCROLL_STATE_IDLE == newState) {
                     if (!isDestroyed()) {
                         ImageLoader.getInstance().resumeTask(SpecialActivity.this);
                         int lastPos = mLayoutManager.findLastVisibleItemPosition();
-                        mPresenter.loadMore(lastPos);
+                        if(scrollDy>0){
+                            mPresenter.loadMore(lastPos);
+                        }
                     }
                 } else {
                     ImageLoader.getInstance().pauseTask(SpecialActivity.this);
@@ -129,8 +132,10 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (dx == 0 && dy == 0) {
+                    scrollDy=0;
                     return;
                 }
+                scrollDy=dy;
                 mHandler.removeCallbacks(mFocusMoveRunnable);
                 mHandler.postDelayed(mFocusMoveRunnable, 50);
             }
@@ -165,13 +170,10 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     }
 
     private void initData() {
-        //TODO 删除
         noDataStr = getString(R.string.no_data);
         netErrorStr = getString(R.string.network_error);
 
         mFocusMoveUtils = new FocusMoveUtil(this, getWindow().getDecorView().findViewById(android.R.id.content), R.mipmap.image_focus);
-        mFocusScaleUtils = new FocusScaleUtil();
-        mFocusScaleUtils.setFocusScale(1.1f);
         SpecialContract.SpecialPresenter presenter = new SpecialPresenterImpl(this);
         presenter.startLoad();
     }
@@ -196,7 +198,6 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
                         mPresenter.onItemFocused(position);
                     }
                 } else {
-                    mFocusScaleUtils.scaleToNormal();
                     view.setSelected(false);
                 }
             }
@@ -204,8 +205,19 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
         mAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, int position, Object data) {
-                //TODO
-                showToast(data.toString());
+                if(!NetworkUtils.isNetworkConnected(getContext())){
+                    // TODO: 2016/11/22
+                    showToast(R.string.network_connection_disconnect);
+                    return;
+                }
+                SpecialTopic topic= (SpecialTopic) data;
+                if(topic!=null&&topic.getId()!=null){
+                    Intent intent=new Intent(SpecialActivity.this, SpecialDetailActivity.class);
+                    intent.putExtra(SpecialDetailActivity.EXTRA_TOPIC_ID,topic.getId());
+                    startActivity(intent);
+                }else{
+                    showToast(R.string.data_error);
+                }
             }
         });
         resolveFirstFocus();
@@ -244,8 +256,9 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     public void showNoDataView() {
         mRemindTv.setText(noDataStr);
         mRecyclerView.setVisibility(View.INVISIBLE);
-        mRetryBtn.requestFocus();
-        mFocusMoveUtils.showFocus();
+        mHandler.removeCallbacks(mFocusMoveRunnable);
+        mFocusMoveUtils.setFocusView(mRetryBtn);
+        mFocusMoveUtils.hideFocusForShowDelay(30);
         mRemindLayout.setVisibility(View.VISIBLE);
     }
 
@@ -253,8 +266,9 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     public void showRetryView() {
         mRemindTv.setText(netErrorStr);
         mRecyclerView.setVisibility(View.INVISIBLE);
-        mRetryBtn.requestFocus();
-        mFocusMoveUtils.showFocus();
+        mHandler.removeCallbacks(mFocusMoveRunnable);
+        mFocusMoveUtils.setFocusView(mRetryBtn);
+        mFocusMoveUtils.hideFocusForShowDelay(30);
         mRemindLayout.setVisibility(View.VISIBLE);
 
     }
@@ -277,4 +291,13 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
         context.startActivity(intent);
     }
 
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (KeyEvent.ACTION_DOWN == event.getAction() && KeyEvent.KEYCODE_DPAD_DOWN == event.getKeyCode()) {
+            if (mPresenter != null) {
+                mPresenter.remindNoData();
+            }
+        }
+        return super.dispatchKeyEvent(event);
+    }
 }

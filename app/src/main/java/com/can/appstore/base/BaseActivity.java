@@ -10,19 +10,20 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 
 import com.can.appstore.R;
-import com.can.appstore.applist.AppListActivity;
 
 import cn.can.tvlib.utils.PromptUtils;
 
 public abstract class BaseActivity extends FragmentActivity {
 
     private Dialog mLoadingDialog;
+    private Dialog mAppInfoLoadingDialog;
     private BroadcastReceiver mHomeKeyReceiver;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -34,9 +35,11 @@ public abstract class BaseActivity extends FragmentActivity {
         super.onPause();
         unregisterReceiver(mHomeKeyReceiver);
     }
+
     @Override
     protected void onDestroy() {
         hideLoadingDialog();
+        hideAppInfoLoadingDialog();
         super.onDestroy();
     }
 
@@ -50,15 +53,7 @@ public abstract class BaseActivity extends FragmentActivity {
 
     public void showLoadingDialog() {
         if (mLoadingDialog == null) {
-
-            //如果是列表页，添加loading的偏移量，如果不是，正常创建loading
-            if (this instanceof AppListActivity) {
-                mLoadingDialog = PromptUtils.showLoadingDialog(this, -2, getResources().getDimensionPixelSize(R.dimen
-                        .px132));
-            } else {
-                mLoadingDialog = PromptUtils.showLoadingDialog(this);
-            }
-
+            mLoadingDialog = PromptUtils.showLoadingDialog(this);
         } else if (mLoadingDialog.isShowing()) {
             return;
         } else {
@@ -72,14 +67,36 @@ public abstract class BaseActivity extends FragmentActivity {
         }
     }
 
+    public void showAppInfoLoadingDialog() {
+        if (mAppInfoLoadingDialog == null) {
+            mAppInfoLoadingDialog = PromptUtils.showLoadingDialog(this, -2, getResources().getDimensionPixelSize(R.dimen
+                    .px132));
+        } else if (mAppInfoLoadingDialog.isShowing()) {
+            return;
+        } else {
+            mAppInfoLoadingDialog.show();
+        }
+    }
+
+    public void hideAppInfoLoadingDialog() {
+        if (mAppInfoLoadingDialog != null && mAppInfoLoadingDialog.isShowing()) {
+            mAppInfoLoadingDialog.dismiss();
+        }
+    }
+
     public boolean isLoadingDialogShowing() {
         return mLoadingDialog != null && mLoadingDialog.isShowing();
+    }
+
+    public boolean isAppInfoLoadingDialogShowing() {
+        return mAppInfoLoadingDialog != null && mAppInfoLoadingDialog.isShowing();
     }
 
     public Context getContext() {
         return this;
     }
-    private void startHomeKeyListener(){
+
+    private void startHomeKeyListener() {
         if (mHomeKeyReceiver == null) {
             mHomeKeyReceiver = new HomeKeyReceiver();
         }
@@ -91,14 +108,14 @@ public abstract class BaseActivity extends FragmentActivity {
     /**
      * Home键监听
      */
-    protected void onHomeKeyListener(){
+    protected void onHomeKeyListener() {
     }
 
     class HomeKeyReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if(Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)){
+            if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)) {
                 onHomeKeyListener();
             }
         }
