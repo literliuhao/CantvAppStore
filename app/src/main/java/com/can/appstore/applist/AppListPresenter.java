@@ -84,6 +84,8 @@ public class AppListPresenter implements AppListContract.Presenter {
                     case REFRESH_APP_LIST:
                         if (mMenuDataPosition == msg.arg1) {
                             mView.hideAppInfoLoadingDialog();
+                            //显示隐藏的UI
+                            noLoadShowHideUI();
                         } else {
                             //消除正在延时中还没有执行的runable
                             mHandler.removeCallbacks(mLoadFailRunable);
@@ -223,6 +225,8 @@ public class AppListPresenter implements AppListContract.Presenter {
                 if(call.isCanceled()){
                     return;
                 }
+                //清空数据
+                mAppInfos.clear();
                 mHandler.sendEmptyMessageDelayed(HIDE_LOADING, delayTime);
                 sendFailLoadRunable(delayTime);
                 Log.d(TAG, "onFailure:" + errorWrapper.getReason() + "-----" + errorWrapper.getThrowable());
@@ -374,6 +378,17 @@ public class AppListPresenter implements AppListContract.Presenter {
         map.put(AppListActivity.ENTRY_KEY_TOPIC_ID,mTopics.get(mMenuDataPosition).getId());
         map.put(AppListActivity.ENTRY_KEY_APP_ID,mAppInfos.get(position).getId());
         return  map;
+    }
+
+    /**
+     * 上下移动menu，位置没有改变的时候，不加载数据，显示隐藏的UI
+     */
+    public void noLoadShowHideUI(){
+        if(mAppInfos.size() == 0){
+            mView.showFailUI();
+        }else{
+            mView.showAppList();
+        }
     }
 
     /**

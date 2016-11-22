@@ -30,6 +30,8 @@ public interface AppListContract {
     interface View extends BaseView<Presenter> {
         void hideAppInfoLoadingDialog();
         void showSearchView();
+        void showAppList();
+        void showFailUI();
         void refreshMenuList(List<Topic> menuData, int focusPosition);
         void refreshAppList(List<AppInfo> rightData, int InsertPosition,long delayTime);
         void refreshRowNumber(SpannableStringBuilder spannable);

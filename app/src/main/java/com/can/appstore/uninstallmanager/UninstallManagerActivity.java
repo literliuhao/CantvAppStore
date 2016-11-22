@@ -55,6 +55,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     private boolean isSelect;
     private boolean isFirstInto = true;
     private boolean focusSearchFailed;
+    private boolean isLastRemove = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,7 +137,8 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         mBtBatchUninstall.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
-                if (b) {
+                Log.d(TAG, "onFocusChange: view" + view + " hasfocus : " + b);
+                if (b && !isLastRemove) {
                     mFocusedListChild = view;
                     mListFocusMoveRunnable.run();
                     mBtBatchUninstall.setBackgroundResource(R.drawable.shape_bg_uninstall_manager_item_focus);
@@ -182,8 +184,11 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
 
     @Override
     public void loadAllAppInfoSuccess(List<PackageUtil.AppInfo> infoList) {
+        Log.d(TAG, "loadAllAppInfoSuccess: infoList : " + infoList);
         if (infoList.size() == 0) {
             mNotUninstallApp.setVisibility(View.VISIBLE);
+            mCanRecyclerView.setVisibility(View.INVISIBLE);
+            mTvItemCurRows.setVisibility(View.INVISIBLE);
             mBtBatchUninstall.setNextFocusRightId(mBtBatchUninstall.getId());
             return;
         } else {
@@ -191,6 +196,9 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
                 isFirstInto = false;
                 mPresenter.onItemFocus(0);
             }
+            mCanRecyclerView.setVisibility(View.VISIBLE);
+            mTvItemCurRows.setVisibility(View.VISIBLE);
+            mNotUninstallApp.setVisibility(View.INVISIBLE);
             mBtBatchUninstall.setNextFocusRightId(mCanRecyclerView.getId());
         }
         if (mUninstallManagerAdapter == null) {
@@ -212,6 +220,28 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     @Override
     public void refreshSelectCount(int count) {
         mSelectCount.setText(count + "");
+    }
+
+    @Override
+    public void uninstallLastPosition(final int position) {
+        Log.d(TAG, "uninstallLastPosition: " + position);
+        if (position >= 0) {
+            isLastRemove = true;
+        }
+        mFocusMoveUtil.hideFocusForShowDelay(500);
+        mCanRecyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                View childAt = mCanRecyclerView.getChildAt(position);
+                if (childAt != null) {
+                    childAt.setFocusable(true);
+                    childAt.requestFocus();
+                } else {
+                    mBtBatchUninstall.setFocusable(true);
+                    mBtBatchUninstall.requestFocus();
+                }
+            }
+        }, 200);
     }
 
     @Override
@@ -237,8 +267,11 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
                 if (hasFocus) {
-                    mFocusedListChild = view;
                     Log.d(TAG, "onItemFocusChanged " + position);
+                    mFocusedListChild = view;
+                    if (position == mUninstallManagerAdapter.getItemCount() - 1) {
+                        isLastRemove = false;
+                    }
                     mCanRecyclerView.postDelayed(mListFocusMoveRunnable, 50);
                     view.setBackgroundResource(R.drawable.shape_bg_uninstall_manager_item_focus);
                 } else {
@@ -277,7 +310,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             @Override
             public void onClick(View view, int position, Object data) {
                 PackageUtil.AppInfo info = (PackageUtil.AppInfo) data;
-                mPresenter.showUninstallDialog(info.appIcon, info.appName, info.packageName);
+                mPresenter.showUninstallDialog(info.appIcon, info.appName, info.packageName, false);
             }
         });
 
@@ -324,7 +357,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     }
 
     @Override
-    protected void onHomeKeyListener() {
+    protected void onHomeKeyDown() {
         mPresenter.dismissUninstallDialog();
         finish();
     }
