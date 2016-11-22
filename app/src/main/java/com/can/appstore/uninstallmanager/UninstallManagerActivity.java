@@ -310,7 +310,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             @Override
             public void onClick(View view, int position, Object data) {
                 PackageUtil.AppInfo info = (PackageUtil.AppInfo) data;
-                mPresenter.showUninstallDialog(info.appIcon, info.appName, info.packageName);
+                mPresenter.showUninstallDialog(info.appIcon, info.appName, info.packageName, false);
             }
         });
 
