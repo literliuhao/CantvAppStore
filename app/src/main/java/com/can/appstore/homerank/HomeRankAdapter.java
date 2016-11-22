@@ -56,6 +56,10 @@ public class HomeRankAdapter extends YIBaseCompatFocusAdapter {
             if ((position + 1) % 2 == 0) {
                 ((RankAppItemViewHolder) holder).mView.setBackgroundColor(mContext.getResources().getColor(R.color.h_rank_transulcent));
             }
+            //每列第一条比较高
+//            if (position == 0) {
+//                ((RankAppItemViewHolder) holder).mView.setLayoutParams(new LinearLayout.LayoutParams(490, 136));
+//            }
         }
     }
 

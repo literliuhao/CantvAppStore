@@ -66,13 +66,14 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
         switch (viewType) {
             case DEFAULT_APPLIST_TYPE:
                 View inflate = mLayoutInflater.inflate(R.layout.search_app_default_item, parent, false);
-                mHotKeyViewList.add(inflate);
+                if (!mHotKeyViewList.contains(inflate)) {
+                    mHotKeyViewList.add(inflate);
+                }
                 return new DefaultSearchViewHolder(inflate);
             case SEARCH_APPLIST_TYPE:
                 View view = mLayoutInflater.inflate(R.layout.search_app_item, parent, false);
                 return new SearchViewHolder(view);
         }
-
         return new RecyclerView.ViewHolder(null) {
         };
     }
