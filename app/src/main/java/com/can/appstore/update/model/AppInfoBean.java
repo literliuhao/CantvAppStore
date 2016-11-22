@@ -21,6 +21,25 @@ public class AppInfoBean {
     private Drawable icon;//图标，删除后期
     private String fliePath;//路径
     private boolean isInstalling;//是否开始安装
+    private boolean isUpdated;//更新完成
+    private boolean isInstalled;//安装结束
+
+    public boolean getUpdated() {
+        return isUpdated;
+    }
+
+    public void setUpdated(boolean updated) {
+        isUpdated = updated;
+    }
+
+    public boolean getInstalled() {
+        return isInstalled;
+    }
+
+    public void setInstalled(boolean installed) {
+        isInstalled = installed;
+    }
+
 
     public boolean getIsInstalling() {
         return isInstalling;

@@ -76,7 +76,7 @@
         android:text="更新管理"
         android:textColor="#ccffffff"
         android:textSize="35px"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <RelativeLayout
         android:layout_width="match_parent"

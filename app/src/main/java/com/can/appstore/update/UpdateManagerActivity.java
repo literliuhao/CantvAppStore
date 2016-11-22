@@ -2,11 +2,16 @@ package com.can.appstore.update;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -21,6 +26,7 @@ import com.can.appstore.R;
 import com.can.appstore.installpkg.utils.InstallPkgUtils;
 import com.can.appstore.installpkg.view.LoadingDialog;
 import com.can.appstore.update.model.AppInfoBean;
+import com.can.appstore.update.utils.UpdateUtils;
 import com.can.appstore.widgets.CanDialog;
 
 import java.util.List;
@@ -65,6 +71,8 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
     private cn.can.downloadlib.DownloadManager mDownloadManager;
     private ProgressBar mUpdatePro;
     private String mCurrentId;
+    private BroadcastReceiver mUpdatelApkReceiver;
+    private IntentFilter intentFilter;
 
     public Handler mHandler = new Handler() {
         @Override
@@ -99,6 +107,36 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
     @Override
     protected void onStart() {
         super.onStart();
+        //registerInstalledReceiver();
+    }
+
+
+    /**
+     * 安装完成广播，刷新数据,失败广播获取包名，install为true再刷新 再加集合存储安装成功
+     */
+    private void registerInstalledReceiver() {
+        if (mUpdatelApkReceiver == null) {
+            mUpdatelApkReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (intent.getAction().equals("android.intent.action.PACKAGE_ADDED") || intent.getAction().equals("android.intent.action.PACKAGE_REPLACED")) {
+                        String packageName = intent.getDataString().substring(8);
+                        //刷新图标（可能多重版本）通过广播获取安装完成刷新ui  +&& bean.getVersionCode().equals(String.valueOf(versonCode))
+                        int versonCode = UpdateUtils.getVersonCode(MyApp.mContext, packageName);
+                        mPresenter.isInstalled(packageName,versonCode);
+                        Toast.makeText(MyApp.mContext, packageName + "更新成功啦!!!", Toast.LENGTH_LONG).show();
+                    } else if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
+                        Toast.makeText(MyApp.mContext, "更新失败", Toast.LENGTH_LONG).show();
+                    }
+                }
+            };
+            intentFilter = new IntentFilter();
+            intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+            intentFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
+            intentFilter.addAction(Intent.ACTION_VIEW);
+            intentFilter.addDataScheme("package");
+        }
+        registerReceiver(mUpdatelApkReceiver, intentFilter);
     }
 
     @Override
@@ -162,6 +200,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
             }
 
         });
+
         /*mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -229,6 +268,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                     mDownloadManager = cn.can.downloadlib.DownloadManager.getInstance(UpdateManagerActivity.this);
                 }
                 DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(downloadUrl));
+                //mDownloadManager.install(downloadTask);
                 if (downloadTask == null) {
                     /*int status = downloadTask.getDownloadStatus();
 
@@ -498,7 +538,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
 
     @Override
     public void refreshItem(int position) {
-
+        mRecyclerAdapter.notifyItemChanged(position);
     }
 
     @Override

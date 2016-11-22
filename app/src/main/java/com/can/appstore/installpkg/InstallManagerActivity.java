@@ -114,7 +114,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
                         //刷新图标（可能多重版本）通过广播获取安装完成刷新ui  +&& bean.getVersionCode().equals(String.valueOf(versonCode))
                         int versonCode = UpdateUtils.getVersonCode(MyApp.mContext, packageName);
                         mPresenter.isInstalled(packageName);
-                        Toast.makeText(MyApp.mContext, packageName + "安装成功", Toast.LENGTH_LONG).show();
+                        Toast.makeText(MyApp.mContext, packageName + "安装成功啦!!!", Toast.LENGTH_LONG).show();
                     } else if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
                         Toast.makeText(MyApp.mContext, "安装失败", Toast.LENGTH_LONG).show();
                     }
@@ -308,6 +308,11 @@ public class InstallManagerActivity extends Activity implements InstallContract.
 
     @Override
     public void refreshItem(int position) {
+        mRecyclerAdapter.notifyItemChanged(position);
+    }
+
+    @Override
+    public void removeItem(int position) {
         mRecyclerAdapter.notifyItemRemoved(position);//自带动画
     }
 
@@ -434,10 +439,10 @@ public class InstallManagerActivity extends Activity implements InstallContract.
                     }*/
                     //mInstalling.setVisibility(View.VISIBLE);
                     final TextView mInstalling = (TextView) view.findViewById(R.id.tv_install_installing);
-                    //mInstalling.setVisibility(View.VISIBLE);
+                    mInstalling.setVisibility(View.VISIBLE);
                     //mPresenter.installApk(position);
-                    //mPresenter.installApp(position);
                     canDialog.dismiss();
+                    mPresenter.installApp(position);
                 }
 
                 @Override
