@@ -23,8 +23,6 @@ import java.util.List;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.utils.ToastUtils;
 
-import static android.R.attr.value;
-
 /**
  * 消息主页面
  * Created by HEKANG on 2016/10/18.
@@ -260,9 +258,9 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     }
 
     @Override
-    protected void onHomeKeyListener() {
+    protected void onHomeKeyDown() {
         finish();
-        super.onHomeKeyListener();
+        super.onHomeKeyDown();
     }
 
     @Override

@@ -45,10 +45,10 @@ public class AppListInfoAdapter extends CanRecyclerViewAdapter<AppInfo> {
     protected void bindContentData(AppInfo mDatas, RecyclerView.ViewHolder holder, int position) {
         AppItemViewHolder itemViewHolder = (AppItemViewHolder) holder;
         final ImageView imageView = itemViewHolder.iv_app_list_item;
-//        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-//        imageView.setImageResource(R.mipmap.cibn_icon);
         imageView.setBackgroundResource(R.drawable.shap_app_list_icon_bg);
-        ImageLoader.getInstance().load(getAttachedView().getContext(), imageView,mDatas.getIcon(),new GlideLoadTask
+        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        ImageLoader.getInstance().load(getAttachedView().getContext(), imageView, mDatas.getIcon(), R.mipmap
+                .cibn_icon, R.mipmap.cibn_icon, new GlideLoadTask
                 .SuccessCallback() {
             @Override
             public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean

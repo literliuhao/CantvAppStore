@@ -74,7 +74,7 @@ public class TaskManager {
         mWorkTaskQueue.remove(taskId);
     }
 
-    public void release(){
+    public synchronized void release(){
         for (String key : mCurrentTaskMap.keySet()) {
             mCurrentTaskMap.get(key).removeAllDownloadListener();
             mCurrentTaskMap.get(key).cancel();

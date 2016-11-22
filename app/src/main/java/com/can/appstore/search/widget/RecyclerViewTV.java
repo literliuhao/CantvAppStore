@@ -12,10 +12,10 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
+
 //import com.open.androidtvwidget.leanback.adapter.GeneralAdapter;
 //import com.open.androidtvwidget.utils.OPENLOG;
-
-import java.util.ArrayList;
 
 /**
  * RecyclerView TV适配版本.

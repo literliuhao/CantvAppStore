@@ -24,7 +24,7 @@ public interface SearchContract {
     }
 
     interface Presenter {
-        void getSearchList(String searCon);
+        void getSearchList(String searCon, int pageIndex);
 
         void getDefaultList();
     }

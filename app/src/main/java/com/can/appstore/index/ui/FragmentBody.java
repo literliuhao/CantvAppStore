@@ -8,9 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.Target;
 import com.can.appstore.R;
@@ -80,12 +78,12 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
      * @param mNavigation
      * @return
      */
-    private View drawView(Context context, Navigation mNavigation) {
+    private View drawView(final Context context, Navigation mNavigation) {
         FrameLayout mainLayout = new FrameLayout(context);
         ViewGroup.LayoutParams mainParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        mainLayout.setFocusable(false);
+//        mainLayout.setFocusable(false);
         mainLayout.setLayoutParams(mainParams);
-        mainLayout.setPadding((int) getResources().getDimension(R.dimen.px160),(int) getResources().getDimension(R.dimen.px50),(int) getResources().getDimension(R.dimen.px110),(int) getResources().getDimension(R.dimen.px50));
+        mainLayout.setPadding((int) getResources().getDimension(R.dimen.px160), (int) getResources().getDimension(R.dimen.px50), (int) getResources().getDimension(R.dimen.px110), (int) getResources().getDimension(R.dimen.px50));
         mainLayout.setClipToPadding(false);
         mainLayout.setClipChildren(false);
 
@@ -101,15 +99,12 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
         for (int j = 0; j < mNavigation.getLayout().size(); j++) {
             final Layout childBean = mNavigation.getLayout().get(j);
             final MyImageView myImageView = new MyImageView(getActivity());
+            myImageView.setScaleType(MyImageView.ScaleType.CENTER_CROP);
+            myImageView.setImageURI(childBean.getIcon());
             imageFrame = new FrameLayout(context);
             imageFrame.setId(j);
-            myImageView.setImageURI(childBean.getIcon());
-            myImageView.setBackground(getResources().getDrawable(R.drawable.index_recommend));
-//            myImageView.setColour(bodeColor);
-//            myImageView.setBorder(2);
+            imageFrame.setBackground(getResources().getDrawable(R.drawable.index_recommend));
             imageFrame.setFocusable(true);
-//            imageFrame.setPadding(30,30,30,30);
-//            myImageView.setScaleType(MyImageView.ScaleType.CENTER_CROP);
             imageFrame.setOnFocusChangeListener(FragmentBody.this);
             imageFrame.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -119,10 +114,9 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
                 }
             });
 
-            ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new CenterCrop(context)).bitmapTransformation(new GlideRoundTransform(context, 12)).placeholder(R.mipmap.icon_load_default).errorHolder(R.mipmap.icon_loading_fail).successCallback(new SuccessCallback() {
+            ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, getResources().getDimension(R.dimen.px8))).placeholder(R.mipmap.icon_load_default).errorHolder(R.mipmap.icon_loading_fail).successCallback(new SuccessCallback() {
                 @Override
                 public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                    myImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     myImageView.setImageDrawable(resource);
                     return true;
                 }
@@ -196,9 +190,9 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         Log.i("FragmentBody", v.getId() + "");
+//        v.bringToFront();
         mFocusListener.addFocusListener(v, hasFocus);
     }
-
 
     @Override
     public View getLastView() {
