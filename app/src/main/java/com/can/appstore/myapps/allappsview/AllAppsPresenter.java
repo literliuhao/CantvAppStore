@@ -8,7 +8,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.can.appstore.R;
-import com.can.appstore.myapps.model.MyAppsListDataUtil;
+import com.can.appstore.myapps.utils.MyAppsListDataUtil;
 
 import java.util.List;
 
@@ -64,10 +64,8 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
             @Override
             protected Void doInBackground(Void... params) {
                 mMyAppsListDataUtil = new MyAppsListDataUtil(mContext);
-//                allAppsList = mMyAppsListDataUtil.getAllAppList(allAppsList);
-                allAppsList = PackageUtil.findAllApps(mContext,allAppsList);
+                allAppsList = mMyAppsListDataUtil.getAllAppList(allAppsList);
                 return null;
-
             }
 
             //加载完数据
@@ -75,9 +73,15 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
             protected void onPostExecute(Void aVoid) {
                 mView.loadAllAppInfoSuccess(allAppsList);
                 mView.hideLoading();
+                removeHideApps();
             }
         }.execute();
 
+    }
+
+    private void removeHideApps() {
+        allAppsList = mMyAppsListDataUtil.removeHideApp(allAppsList);
+        mView.loadAllAppInfoSuccess(allAppsList);
     }
 
     @Override

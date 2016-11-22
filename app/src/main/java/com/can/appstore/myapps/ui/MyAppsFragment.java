@@ -95,17 +95,17 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         }
         if (mMyAppsRvAdapter == null) {
             mMyAppsRvAdapter = new MyAppsRvAdapter(infoList);
-            baseSetting(mDrawbleList);
+            baseSetting();
         } else {
             mMyAppsRvAdapter.notifyDataSetChanged();
         }
+        //系统应用的图标集合
+        mMyAppsRvAdapter.setCustomData(mDrawbleList);
     }
 
 
-    private void baseSetting(List<Drawable> mDrawbleList) {
+    private void baseSetting() {
         mAppsRecyclerView.setAdapter(mMyAppsRvAdapter);
-        //系统应用的图标集合
-        mMyAppsRvAdapter.setCustomData(mDrawbleList);
         addItemListener();
     }
 

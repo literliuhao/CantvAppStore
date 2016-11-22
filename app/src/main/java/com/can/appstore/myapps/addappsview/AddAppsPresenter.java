@@ -5,7 +5,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.can.appstore.R;
-import com.can.appstore.myapps.model.MyAppsListDataUtil;
+import com.can.appstore.index.model.ShareData;
+import com.can.appstore.myapps.utils.MyAppsListDataUtil;
 import com.can.appstore.search.ToastUtil;
 
 import java.util.ArrayList;
@@ -30,6 +31,9 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
     private List<AppInfo> mAllAppList;
 
     private LoadingDialog mLoadingDialog;
+    //隐藏应用
+    private List<String>  hideList = null;
+    private  ShareData mShareData;
 
     public AddAppsPresenter(AddAppsContract.View view, Context context) {
         this.mView = view;
@@ -63,6 +67,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
                         addShowList.add(app);
                     }
                 }
+
                 return null;
             }
             //加载完数据
@@ -70,11 +75,15 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
             protected void onPostExecute(Void aVoid) {
                 mView.loadAddAppInfoSuccess(addShowList);
                 mView.hideLoading();
+                getHideApps();
             }
         }.execute();
 
     }
-
+    public void getHideApps() {
+        addShowList = mMyAppListData.removeHideApp(addShowList);
+        mView.loadAddAppInfoSuccess(addShowList);
+    }
 
     @Override
     public void release() {

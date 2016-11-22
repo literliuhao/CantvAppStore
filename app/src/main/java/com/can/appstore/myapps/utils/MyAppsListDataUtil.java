@@ -1,10 +1,11 @@
-package com.can.appstore.myapps.model;
+package com.can.appstore.myapps.utils;
 
 import android.content.Context;
 import android.text.TextUtils;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
+import com.can.appstore.index.model.ShareData;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -158,67 +159,35 @@ public class MyAppsListDataUtil {
         }
         return list;
     }
-
-//    /**
-//     * 获取可添加到桌面的应用
-//     * 在全部第三方应用中，不在我的应用桌面
-//     */
-//    public List<AppInfo> getAddApp(List<AppInfo> list) {
-//        if (list == null) {
-//            list = new ArrayList<>();
-//        } else {
-//            list.clear();
-//        }
-//
-//
-//        return list;
-//    }
+    //隐藏应用
+    private List<String>  hideList = null;
+    private ShareData mShareData;
 
     /**
-     * 获取 隐藏应用
+     * 从列表里删除隐藏应用
      */
-//    public static List<String> hideList = new ArrayList<>();
-//
-//    public void getHideApps() {
-//        CanCall<ListResult<String>> hiddenApps = HttpManager.getApiService().getHiddenApps();
-//        hiddenApps.enqueue(new CanCallback<ListResult<String>>() {
-//            @Override
-//            public void onResponse(CanCall<ListResult<String>> call, Response<ListResult<String>> response) throws Exception {
-//                ListResult<String> body = response.body();
-//                hideList = (List<String>) body;
-//            }
-//
-//            @Override
-//            public void onFailure(CanCall<ListResult<String>> call, CanErrorWrapper errorWrapper) {
-//
-//            }
-//        });
-//    }
-//
-//    /**
-//     * 从列表里删除隐藏应用
-//     */
-//    public List<AppInfo> removeHideApp(List<AppInfo> appList) {
-//        if (appList == null) {
-//            return null;
-//        }
-//        if (hideList == null || hideList.size() == 0) {
-//            return appList;
-//        }
-//        List<AppInfo> hideAppList = new ArrayList<>();
-//        for (AppInfo appInfo : appList) {
-//            boolean isHide = false;
-//            for (String s : hideList) {
-//                if (appInfo.packageName.equals(s)) {
-//                    isHide = true;
-//                }
-//            }
-//            if (isHide) {
-//                hideAppList.add(appInfo);
-//            }
-//        }
-//        appList.removeAll(hideAppList);
-//        return appList;
-//    }
+    public List<AppInfo> removeHideApp(List<AppInfo> appList) {
+        mShareData = ShareData.getInstance();
+        hideList = mShareData.getHiddenApps(hideList);
+        if (appList == null) {
+            return null;
+        }
+        if (hideList == null || hideList.size() == 0) {
+            return appList;
+        }
+        if (hideList.size() != 0) {
+            for (int i = appList.size() - 1; i >= 0; i--) {
+                AppInfo appInfo = appList.get(i);
+                for (int j = hideList.size() - 1; j >= 0; j--) {
+                    if (hideList.get(j).equals(appInfo.packageName)) {
+                        //  hideList.remove(j);
+                        appList.remove(i);
+                        break;
+                    }
+                }
+            }
+        }
+        return appList;
+    }
 
 }

@@ -8,7 +8,7 @@ import android.content.IntentFilter;
 import android.util.Log;
 import android.view.WindowManager;
 
-import com.can.appstore.myapps.model.MyAppsListDataUtil;
+import com.can.appstore.myapps.utils.MyAppsListDataUtil;
 import com.can.appstore.upgrade.UpgradeService;
 import com.can.appstore.upgrade.bugly.BuglyUpgradeService;
 import com.tencent.bugly.Bugly;
@@ -39,6 +39,7 @@ public class MyApp extends Application {
     public static int Height;
     //内存维护的全局应用List
     public static List<AppInfo> myAppList = new ArrayList<AppInfo>();
+    public static List<String>  hidenAppList = null;
     /**
      * 预装APP白名单
      */
@@ -54,12 +55,14 @@ public class MyApp extends Application {
         Width = wm.getDefaultDisplay().getWidth();
         Height = wm.getDefaultDisplay().getHeight();
 
+        //白名单
         PRE_APPS.add("com.cantv.wechatphoto");
         PRE_APPS.add("com.cantv.media");
         PRE_APPS.add("com.tvkou.linker");
         PRE_APPS.add("com.tvm.suntv.news.client.activity");
         PRE_APPS.add("com.cantv.market");
 
+        //所有的第三方应用
         myAppList = PackageUtil.findAllexBllackThirdApps(this,myAppList,new ArrayList<String>());
         registerInstallReceiver();
         initBuly(true);

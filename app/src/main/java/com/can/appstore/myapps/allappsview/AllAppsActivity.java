@@ -1,5 +1,7 @@
 package com.can.appstore.myapps.allappsview;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -337,4 +339,15 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
         mAllAppsPresenter.release();
         super.onDestroy();
     }
+
+    /**
+     * 打开全部应用
+     * *
+     * @param context
+     */
+    public static void actionStart(Context context) {
+        Intent intent = new Intent(context, AllAppsActivity.class);
+        context.startActivity(intent);
+    }
+
 }
