@@ -142,4 +142,10 @@
     <string name="btn_clear_msg">清空</string>
     <string name="txt_empty_msg">暂无消息</string>
 
+    <!--应用列表文本-->
+    <string name="no_network">没有网络，请检查您的网络连接！</string>
+    <string name="no_more_content">没有更多了!</string>
+    <string name="load_more_content">加载更多！</string>
+    <string name="line">行</string>
+    <string name="backslashes">/</string>
 </resources>
