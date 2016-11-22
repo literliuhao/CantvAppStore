@@ -57,6 +57,7 @@ public abstract class BaseActivity extends FragmentActivity {
         } else if (mLoadingDialog.isShowing()) {
             return;
         } else {
+            mLoadingDialog.setCancelable(false);
             mLoadingDialog.show();
         }
     }
@@ -108,15 +109,15 @@ public abstract class BaseActivity extends FragmentActivity {
     /**
      * Home键监听
      */
-    protected void onHomeKeyListener() {
+    protected void onHomeKeyDown(){
     }
 
     class HomeKeyReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)) {
-                onHomeKeyListener();
+            if(Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)){
+                onHomeKeyDown();
             }
         }
     }
