@@ -94,13 +94,14 @@
     </cn.can.tvlib.ui.view.recyclerview.CanRecyclerView>
     <TextView
         android:id="@+id/download_no_data_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/px300"
+        android:layout_height="@dimen/px50"
         android:textColor="@color/white_opa80"
-        android:textSize="@dimen/fontsize_40"
+        android:textSize="@dimen/fontsize_36"
         android:text="当前暂无下载任务！"
-        android:layout_marginStart="@dimen/px800"
-        android:layout_marginTop="@dimen/px500"
-        android:visibility="gone"
+        android:layout_marginStart="@dimen/px920"
+        android:layout_marginTop="@dimen/px570"
+        android:visibility="invisible"
+        android:textStyle="bold"
         />
 </RelativeLayout>

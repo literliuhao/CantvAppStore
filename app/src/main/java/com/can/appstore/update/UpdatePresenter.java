@@ -3,6 +3,7 @@ package com.can.appstore.update;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.entity.AppInfo;
@@ -102,7 +103,7 @@ public class UpdatePresenter implements UpdateContract.Presenter, DownloadTaskLi
         }
     }
 
-    public List<AppInfoBean> getList(){
+    public List<AppInfoBean> getList() {
         return mDatas;
     }
 
@@ -283,6 +284,28 @@ public class UpdatePresenter implements UpdateContract.Presenter, DownloadTaskLi
                 break;*/
             default:
                 break;
+        }
+    }
+
+    /**
+     * 是否已安装
+     * 刷新图标（可能多重版本）通过广播获取安装完成刷新ui  +&& bean.getVersionCode().equals(String.valueOf(versonCode))
+     *
+     * @param packageName
+     * @param //int       versonCode   && bean.getVersionCode().equals(String.valueOf(versonCode))
+     */
+    public void isInstalled(String packageName, int versionCode) {
+        for (int i = mDatas.size() - 1; i >= 0; i--) {
+            AppInfoBean bean = mDatas.get(i);
+            if (bean.getPackageName().equals(packageName)) {
+                //if (bean.getInstall()) {
+                    bean.setUpdated(true);
+                    bean.setInstalled(false);
+                    mView.refreshAll();
+                    Log.i(TAG, "isInstalled: "+packageName + "22222");
+                    Toast.makeText(MyApp.mContext, packageName + "22222", Toast.LENGTH_LONG).show();
+                //}
+            }
         }
     }
 }

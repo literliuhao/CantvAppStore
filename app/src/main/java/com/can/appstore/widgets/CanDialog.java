@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
@@ -29,6 +30,7 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
     private Button mPositiveBtn;
     private Button mNegativeBtn;
     private ImageView mDialogIcon;
+    private RelativeLayout mRlContent;
 
     private OnClickListener mOnClickListener;
     private FocusMoveUtil mFocusMoveUtil;
@@ -57,17 +59,20 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
         public abstract void onClickPositive();
 
         public void onClickNegative() {
-        };
+        }
+
+        ;
     }
 
     public CanDialog(Context context) {
-        this(context,R.style.CanDialog);
+        this(context, R.style.CanDialog);
     }
 
     public CanDialog(Context context, int themeResId) {
         super(context, themeResId);
         this.mContext = context;
         mFocusMoveUtil = new FocusMoveUtil(mContext, getWindow().getDecorView(), R.mipmap.btn_focus);
+        mFocusMoveUtil.hideFocusForShowDelay(500);
         initUI();
     }
 
@@ -82,6 +87,7 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
         mDialogContentMsg = (TextView) dialogView.findViewById(R.id.tv_dialog_content_message);
         mPositiveBtn = (Button) dialogView.findViewById(R.id.btn_dialog_positive);
         mNegativeBtn = (Button) dialogView.findViewById(R.id.btn_dialog_negative);
+        mRlContent = (RelativeLayout) dialogView.findViewById(R.id.rl_content);
     }
 
     public CanDialog setTitle(String title) {
@@ -110,6 +116,7 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
 
     /**
      * 只有一个按钮时，请使用PositiveButton
+     *
      * @param positiveStr
      * @return
      */
@@ -158,9 +165,27 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
         return this;
     }
 
+    /**
+     * 是否显示内容区背景图（默认显示）
+     *
+     * @param visible
+     * @return
+     */
+    public CanDialog setRlCOntent(boolean visible) {
+        this.mRlContent.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        return this;
+    }
+
     public CanDialog setOnCanBtnClickListener(OnClickListener listener) {
         this.mOnClickListener = listener;
         return this;
     }
 
+    @Override
+    public void dismiss() {
+        super.dismiss();
+        if (mFocusMoveUtil != null) {
+            mFocusMoveUtil.release();
+        }
+    }
 }

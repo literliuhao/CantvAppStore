@@ -348,7 +348,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     }
 
     @Override
-    protected void onHomeKeyListener() {
+    protected void onHomeKeyDown() {
         mAppDetailPresenter.dismissInsufficientStorageSpaceDialog();
         mAppDetailPresenter.dismissIntroduceDialog();
         finish();

@@ -357,7 +357,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     }
 
     @Override
-    protected void onHomeKeyListener() {
+    protected void onHomeKeyDown() {
         mPresenter.dismissUninstallDialog();
         finish();
     }
