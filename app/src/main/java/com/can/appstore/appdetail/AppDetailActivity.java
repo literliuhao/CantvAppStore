@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -77,6 +78,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     private ImageView mIvTabLine;
     private TextView mTvAppIntroduc;
     private TextView mTvAddFuntion;
+    private TextView mTvDeveloper;
     private RelativeLayout mRelativeLayuotOperatingEquipment;
     private List<String> mControlType = new ArrayList<>();
     private RecommedGridAdapter mRecommedGridAdapter;
@@ -121,6 +123,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         mBtRecommend = (Button) findViewById(R.id.bt_recommend);
         mTvAppIntroduc = (TextView) findViewById(R.id.tv_app_introduc);
         mTvAddFuntion = (TextView) findViewById(R.id.tv_add_function);
+        mTvDeveloper = (TextView) findViewById(R.id.tv_app_developer);
         mIvTabLine = (ImageView) findViewById(R.id.iv_tab_line);
         mButtonDownload = (TextProgressBar) findViewById(R.id.bt_download);
         mButtonUpdate = (TextProgressBar) findViewById(R.id.bt_update);
@@ -367,8 +370,14 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         mAppDownloadCount.setText(String.format(getResources().getString(R.string.detail_app_downlaod_count), mAppinfo.getDownloadCount()));
         mAppFreeStroage.setText(String.format(getResources().getString(R.string.detail_app_free_stroage), StringUtils.formatFileSize(SystemUtil.getSDCardAvailableSpace(), false)));
         mTvAppIntroduc.setText(getResources().getString(R.string.app_introduce) + mAppinfo.getAbout());
-        String updateLog = mAppinfo.getUpdateLog().replaceAll("\n", "");
-        mTvAddFuntion.setText(getResources().getString(R.string.add_funtion) + updateLog);
+        mTvDeveloper.setText(String.format(getResources().getString(R.string.detail_developer), mAppinfo.getDeveloper()));
+        String updateLog = mAppinfo.getUpdateLog();
+        if (!TextUtils.isEmpty(updateLog)) {
+            updateLog = mAppinfo.getUpdateLog().replaceAll("\\r\\n", "  ");
+            mTvAddFuntion.setText(getResources().getString(R.string.add_funtion) + updateLog);
+        } else {
+            mTvAddFuntion.setVisibility(View.INVISIBLE);
+        }
         setOperaPic(mAppinfo.getControls());
     }
 
@@ -394,8 +403,8 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             conTypePic.setLayoutParams(controllerTypePic);
             conTypePic.setScaleType(ImageView.ScaleType.FIT_CENTER);
             mRelativeLayuotOperatingEquipment.addView(conTypePic, controllerTypePic);
-            //              int selectOperationPic = mAppDetailPresenter.getOperationPic(type.get(i));  // TODO
-            //              conTypePic.setImageResource(selectOperationPic);
+            //            int selectOperationPic = mAppDetailPresenter.getOperationPic(type.get(i));  // TODO
+            //            conTypePic.setImageResource(selectOperationPic);
             ImageLoader.getInstance().load(AppDetailActivity.this, conTypePic, type.get(i), new GlideLoadTask.SuccessCallback() {
                 @Override
                 public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {

@@ -130,7 +130,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     public Loader<List<PackageUtil.AppInfo>> onCreateLoader(int id, Bundle args) {
         Log.d(TAG, "onCreateLoader: " + " id : " + id);
         mView.showLoadingDialog();
-        return new CustomAsyncTaskLoader(mContext, CustomAsyncTaskLoader.FILTER_THIRD_APP);
+        return new CustomAsyncTaskLoader(mContext, CustomAsyncTaskLoader.FILTER_LOSE_PRE_INSTALL_THIRD_APP);
     }
 
     @Override
@@ -192,6 +192,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
                 String packageName = intent.getData().getSchemeSpecificPart();
                 Log.d(TAG, "uninstall packageName : " + packageName);
                 calculateCurStoragePropgress();
+                refreshLastFocus(packageName);
                 refreshItemInListPosition(packageName);
                 if (mSelectPackageName != null) {
                     if (mSelectPackageName.size() > 0) {
@@ -202,6 +203,24 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
         }
     }
 
+    /**
+     * 卸载最后一个让此时最后一个请求焦点
+     *
+     * @param packageName
+     */
+    private void refreshLastFocus(String packageName) {
+        int curUninstallPosition = getCurUninstallPosition(packageName);
+        Log.d(TAG, "refreshLastFocus: curUninstallPosition : " + curUninstallPosition + "  infosize : " + mAppInfoList.size());
+        if (curUninstallPosition == mAppInfoList.size() - 1) {
+            mView.uninstallLastPosition(curUninstallPosition - 1);
+        }
+    }
+
+    /**
+     * 刷新列表页数据
+     *
+     * @param packageName
+     */
     private void refreshItemInListPosition(String packageName) {
         for (int j = 0; j < mAppInfoList.size(); j++) {
             if (packageName.equals(mAppInfoList.get(j).packageName)) {

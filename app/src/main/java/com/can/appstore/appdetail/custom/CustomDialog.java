@@ -3,6 +3,7 @@ package com.can.appstore.appdetail.custom;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -16,6 +17,8 @@ import com.can.appstore.R;
  */
 
 public class CustomDialog extends Dialog {
+    private static final String TAG = "CustomDialog";
+
     public CustomDialog(Context context) {
         super(context);
     }
@@ -73,8 +76,9 @@ public class CustomDialog extends Dialog {
 
         private void calculateShowScrollBar() {
             mLinearLyoutContent.measure(0, 0);
-            int contentHeight = mLinearLyoutContent.getMeasuredHeight();
             mScrollView.measure(0, 0);
+            int contentHeight = mLinearLyoutContent.getMeasuredHeight();
+            Log.d(TAG, "calculateShowScrollBar: mLinearLyoutContent : " + contentHeight + "  mScrollView : " + mScrollView.getMeasuredHeight());
             int srollViewHeight = mContext.getResources().getDimensionPixelSize(R.dimen.dimen_500px);
             if (contentHeight > srollViewHeight) {
                 mScrollView.setVerticalScrollBarEnabled(true);
