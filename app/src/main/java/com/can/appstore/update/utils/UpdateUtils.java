@@ -122,9 +122,9 @@ public class UpdateUtils {
                 AppInfoBean info = new AppInfoBean();
                 info.setAppName(packageInfo.applicationInfo.loadLabel(pm)
                         .toString());
-                info.setPackageName(packageInfo.packageName);
+                //info.setPackageName(packageInfo.packageName);
                 int versionCode = packageInfo.versionCode;
-                info.setVersionCode(String.valueOf(versionCode));
+                //info.setVersionCode(String.valueOf(versionCode));
                 String versionName = packageInfo.versionName;
                 info.setVersionName(versionName);
                 info.setAppSize(i + "M");
@@ -132,15 +132,24 @@ public class UpdateUtils {
                 info.setIcon(drawable);
                 if (i == 31) {
                     info.setDownloadUrl("http://app.znds.com/down/20160909/dsj2.0-2.9.1-dangbei.apk");
+                    info.setPackageName("com.elinkway.tvlive2");
+                    info.setVersionCode(String.valueOf(101));
                 } else if (i == 32) {
-                    info.setDownloadUrl("http://172.16.11.65:8080/download/20161018/F2_Launcher_V536_20161018191036.apk");
+                    info.setDownloadUrl("http://app.znds.com/update/dangbeimarket_3.9.5_znds.apk");
+                    info.setPackageName("com.dangbeimarket");
+                    info.setVersionCode(String.valueOf(101));
                 }else if (i == 33) {
-                    info.setDownloadUrl("http://172.16.11.65:8080/download/20161018/F1_Launcher_V532_20161018192912.apk");
+                    info.setDownloadUrl("http://app.znds.com/down/20161118/dbzm_2.1.4.2_dangbei.apk");
+                    info.setPackageName("com.dangbei.tvlauncher");
+                    info.setVersionCode(String.valueOf(47));
                 }else if (i == 34) {
-                    info.setDownloadUrl("http://172.16.11.65:8080/download/20161018/F2_Launcher_V532_20161018192912.apk");
-                }/*else if (i == 35) {
-                    info.setDownloadUrl("http://172.16.11.65:8080/download/20161018/F2_Launcher_V532_20161018192912.apk");
-                }*/else{
+                    info.setDownloadUrl("http://app.znds.com/down/20161117/douyu_1.1.6_dangbei.apk");
+                    info.setPackageName("com.douyu.xl.douyutv");
+                    info.setVersionCode(String.valueOf(110006));
+                }else if (i == 35) {
+                    info.setDownloadUrl("http://app.znds.com/down/20161111/qqyy_1.8.0.5_dangbei.apk");
+
+                }else{
                     info.setDownloadUrl("http://");
                 }
                 // 获取该应用安装包的Intent，用于启动该应用
@@ -197,4 +206,11 @@ public class UpdateUtils {
 //    http://172.16.11.65:8080/download/20161018/F1_Launcher_V532_20161018192912.apk
 //    http://172.16.11.65:8080/download/20161018/F2_Launcher_V532_20161018192912.apk
 //    http://172.16.11.65:8080/download/20161018/F2_Launcher_V532_20161018192912.apk
+
+//    "http://app.znds.com/down/20160909/dsj2.0-2.9.1-dangbei.apk" 电视家
+//    http://app.znds.com/update/dangbeimarket_3.9.5_znds.apk   当贝市场
+//    http://app.znds.com/down/20161118/dbzm_2.1.4.2_dangbei.apk  当贝桌面
+//    http://app.znds.com/down/20161117/douyu_1.1.6_dangbei.apk   斗鱼
+//    http://app.znds.com/down/20161111/qqyy_1.8.0.5_dangbei.apk   qq音乐
+
 }

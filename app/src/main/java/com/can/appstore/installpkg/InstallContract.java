@@ -24,6 +24,8 @@ public interface InstallContract {
 
         void refreshItem(int position);
 
+        void removeItem(int position);
+
         void refreshAll();
 
         void showCurrentNum(int current, int total);

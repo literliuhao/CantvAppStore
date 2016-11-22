@@ -60,7 +60,8 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
         updateHolder.appVersioncode.setText(mDatas.get(position).getVersionName());
         updateHolder.appIcon.setImageDrawable(mDatas.get(position).getIcon());
 //        ImageLoader.getInstance().load(MyApp.mContext,updateHolder.appIcon,mDatas.get(position).getIconUrl(),0,0,null,null);
-        //updateHolder.updatedIcon.setVisibility(mDatas.get(position).getInstall() ? View.VISIBLE : View.INVISIBLE);
+        updateHolder.updatedIcon.setVisibility(mDatas.get(position).getUpdated() ? View.VISIBLE : View.INVISIBLE);
+        updateHolder.downloading.setVisibility(View.INVISIBLE);
         /**
          * 初始化更新状态
          */
@@ -86,11 +87,14 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                 updateHolder.downloading.setVisibility(View.VISIBLE);
                 updateHolder.downloading.setText("安装中");
                 updateHolder.progressbar.setVisibility(View.INVISIBLE);
-            } /*else if (downloadStatus == AppInstallListener.APP_INSTALL_FAIL) {
+            } else if (downloadStatus == AppInstallListener.APP_INSTALL_FAIL) {
                 updateHolder.downloading.setVisibility(View.VISIBLE);
                 updateHolder.downloading.setText("安装失败");
                 updateHolder.progressbar.setVisibility(View.INVISIBLE);
-            }*/ else {
+            }else if (downloadStatus == AppInstallListener.APP_INSTALL_SUCESS) {
+                updateHolder.downloading.setVisibility(View.INVISIBLE);
+                updateHolder.progressbar.setVisibility(View.INVISIBLE);
+            } else {
                 updateHolder.downloading.setVisibility(View.INVISIBLE);
                 updateHolder.progressbar.setVisibility(View.INVISIBLE);
                 updateHolder.updatedIcon.setVisibility(View.INVISIBLE);
@@ -145,7 +149,7 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                         public void run() {
                             int result = InstallPkgUtils.installApp(downloadTask.getSaveDirPath());
                             if(result == 0){
-                                updateHolder.updatedIcon.setVisibility(View.INVISIBLE);
+                                updateHolder.downloading.setVisibility(View.INVISIBLE);
                                 //status.setText("安装成功");
                                 updateHolder.updatedIcon.setVisibility(View.VISIBLE);
                             }else{
@@ -250,13 +254,16 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                 status.setVisibility(View.VISIBLE);
                 status.setText("安装中");
                 break;
-            /*case AppInstallListener.APP_INSTALL_FAIL:
+            case AppInstallListener.APP_INSTALL_FAIL:
                 status.setVisibility(View.VISIBLE);
                 status.setText("安装失败");
-                break;*/
-            /*default:
+                break;
+            case AppInstallListener.APP_INSTALL_SUCESS:
                 status.setVisibility(View.INVISIBLE);
-                break;*/
+                break;
+            default:
+                status.setVisibility(View.INVISIBLE);
+                break;
                     /*case DownloadStatus.DOWNLOAD_STATUS_ERROR:
                         controlButton.setText("重试");
                         break;*/

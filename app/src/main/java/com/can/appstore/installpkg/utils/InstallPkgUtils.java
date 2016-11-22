@@ -9,13 +9,18 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.update.utils.UpdateUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -205,7 +210,7 @@ public class InstallPkgUtils {
     }
 
     /**
-     * 静默安装
+     * 静默安装1
      */
     public static int installApp(String path) {
 
@@ -215,6 +220,7 @@ public class InstallPkgUtils {
             return 50;
         }
         ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r" + path, false);
+        Log.i("shen", "installApp: " + res.result);
         //成功
         if (res.result == 0) {
             return 0;
@@ -223,9 +229,9 @@ public class InstallPkgUtils {
         }
     }
 
-    /*
- * Java文件操作 获取不带扩展名的文件名
- */
+    /**
+     * Java文件操作 获取不带扩展名的文件名
+     */
     public static String getFileNameNoEx(String filename) {
         if ((filename != null) && (filename.length() > 0)) {
             int dot = filename.lastIndexOf('.');
@@ -234,5 +240,61 @@ public class InstallPkgUtils {
             }
         }
         return filename;
+    }
+
+    /**
+     * 静默安装
+     */
+    //final String path = Environment.getExternalStorageDirectory() + File.separator + "baidu"+File.separator + "360MobileSa
+    public static int installApp2(String path) {
+
+        long space = SdcardUtils.getSDCardAvailableSpace() / 1014 / 1024;
+        if (space < 50) {
+            ToastUtils.showMessageLong(MyApp.mContext, cn.can.downloadlib.R.string.error_msg);
+            return 50;
+        }
+
+        String result = execCommand("pm","install","-r",path);
+        Toast.makeText(MyApp.mContext, "安装结果:"+result, Toast.LENGTH_LONG).show();
+        //ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r" + path, false);
+        //Log.i("shen", "installApp: " + result);
+        //成功
+        if (result.equals("Success")) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+    /**
+     *静默安装方法
+     */
+    public static String execCommand(String... command) {
+        Process process = null;
+        InputStream errIs = null;
+        InputStream inIs = null;
+        String result = "";
+
+        try {
+            process = new ProcessBuilder().command(command).start();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            int read = -1;
+            errIs = process.getErrorStream();
+            while ((read = errIs.read()) != -1) {
+                baos.write(read);
+            }
+            inIs = process.getInputStream();
+            while ((read = inIs.read()) != -1) {
+                baos.write(read);
+            }
+            result = new String(baos.toByteArray());
+            if (inIs != null)
+                inIs.close();
+            if (errIs != null)
+                errIs.close();
+            process.destroy();
+        } catch (IOException e) {
+            result = e.getMessage();
+        }
+        return result;
     }
 }
