@@ -42,8 +42,9 @@ public class InstallPresenter implements InstallContract.Presenter {
         mView.showInstallPkgList(mDatas);
         mView.showLoadingDialog();
         InstallPkgUtils.myFiles.clear();
+        //mPath = Environment.getExternalStorageDirectory().getPath().toString();
         mPath = Environment.getExternalStorageDirectory().getPath().toString() + File.separator + "Movies";
-        //mPath = MyApp.mContext.getExternalCacheDir().getPath().toString()+ File.separator;
+        //mPath = MyApp.mContext.getExternalCacheDir().getPath().toString();
         List appList = InstallPkgUtils.FindAllAPKFile(mPath);
         mDatas.clear();
         if (appList.size() < 1) {
@@ -89,7 +90,7 @@ public class InstallPresenter implements InstallContract.Presenter {
             if (bean.getInstall()) {
                 mDatas.remove(i);
 //                InstallPkgUtils.deleteApkPkg(mDatas.get(i).getFliePath());//可以删除安装包
-                mView.refreshItem(i);
+                mView.removeItem(i);
             }
         }
         setNum(0);
@@ -151,7 +152,7 @@ public class InstallPresenter implements InstallContract.Presenter {
      * 刷新图标（可能多重版本）通过广播获取安装完成刷新ui  +&& bean.getVersionCode().equals(String.valueOf(versonCode))
      *
      * @param packageName
-     * @param versonCode, int versonCode   && bean.getVersionCode().equals(String.valueOf(versonCode))
+     * @param  //int versonCode   && bean.getVersionCode().equals(String.valueOf(versonCode))
      */
     public void isInstalled(String packageName) {
         for (int i = mDatas.size() - 1; i >= 0; i--) {
@@ -159,7 +160,7 @@ public class InstallPresenter implements InstallContract.Presenter {
             if (bean.getPackageName().equals(packageName) ) {
                 if (bean.getInstall()) {
                     //bean.setInstall(true);
-                    mView.refreshItem(i);
+                    mView.refreshAll();
                     Toast.makeText(MyApp.mContext, packageName + "111111", Toast.LENGTH_LONG).show();
                 }
             }
@@ -180,18 +181,22 @@ public class InstallPresenter implements InstallContract.Presenter {
      * 静默安装应用
      */
     public void installApp(int position) {
-        mDatas.get(position).setInstalling(true);//开始安装
+        //mDatas.get(position).setInstalling(true);//开始安装
         //mInstallDatas.add(mDatas.get(position));//加入安装中集合
         //mDatas.get(position).setInstall(true);//positon传递
-        //mView.refreshItem(position);
-        int result = InstallPkgUtils.installApp(mDatas.get(position).getFliePath());
-        if(result == 0){
+        //mView.refreshAll();
+        //String path = Environment.getExternalStorageDirectory().getPath().toString() + File.separator + "Movies"+File.separator;
+        String fliePath = mDatas.get(position).getFliePath();
+        int result = InstallPkgUtils.installApp2(fliePath);
+        if(result == 1){
             mDatas.get(position).setInstalling(false);
             mDatas.get(position).setInstall(true);
-            isInstalled(mDatas.get(position).getPackageName());
+            //isInstalled(mDatas.get(position).getPackageName());
+            //mView.refreshAll();
         }else{
             mDatas.get(position).setInstalling(false);
             //mView.refreshItem(position);
+            //mView.refreshAll();
         }
     }
 

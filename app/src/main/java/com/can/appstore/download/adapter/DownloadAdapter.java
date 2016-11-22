@@ -34,10 +34,10 @@ import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.utils.ApkUtils;
 import cn.can.tvlib.utils.FileUtils;
+import cn.can.tvlib.utils.LogUtil;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.StringUtils;
-import cn.can.tvlib.utils.ToastUtils;
 
 import static com.can.appstore.MyApp.mContext;
 
@@ -156,13 +156,18 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
         private void initListener() {
             downloadListener = new DownloadListener() {
                 @Override
-                public void onError(DownloadTask downloadTask, int errorCode) {
-                    postRefreshStatus();
+                public void onError(DownloadTask task, int errorCode) {
+                    if(downloadTask.getId().equals(task.getId())){
+                        postRefreshStatus();
+                    }
+                    LogUtil.e(TAG, "error = "+errorCode+" DownloadTask="+downloadTask.toString() );
                 }
 
                 @Override
-                public void onDownloadStatusUpdate(DownloadTask downloadTask) {
-                    postRefreshStatus();
+                public void onDownloadStatusUpdate(DownloadTask task) {
+                    if(downloadTask.getId().equals(task.getId())){
+                        postRefreshStatus();
+                    }
                 }
             };
         }
@@ -195,6 +200,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
             itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
                 @Override
                 public void onViewAttachedToWindow(View v) {
+                    Log.i(TAG, "onViewAttachedToWindow: ");
                     setDownloadListener();
                     eventBus.register(DownloadViewHolder.this);
                     appDownloadStatusImgVi.startRotate();
@@ -202,6 +208,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
 
                 @Override
                 public void onViewDetachedFromWindow(View v) {
+                    Log.i(TAG, "onViewDetachedFromWindow: ");
                     removeDownloadListener();
                     v.removeCallbacks(showControlViewRunnable);
                     v.removeCallbacks(selectedViewRunnable);
@@ -380,7 +387,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
          */
         @Subscribe(threadMode = ThreadMode.MAIN)
         public void onDownloadEvent(DownloadEvent event) {
-            if (DownloadPresenterImpl.TAG_DOWNLOAD_UPDATA_STATUS.equals(event.getTag())) {
+            if (DownloadPresenterImpl.TAG_DOWNLOAD_UPDATE_STATUS.equals(event.getTag())) {
                 switch (event.getEventType()) {
                     case DownloadEvent.DOWNLOADEVENT_UPDATE_DOWNLOAD_STATUS:
                         refreshStatus();
@@ -435,7 +442,6 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
             long time = System.currentTimeMillis();
             if (mTime == 0) {
                 mTime = System.currentTimeMillis();
-                return;
             } else if (time - mTime < 300) {
                 return;
             } else {
@@ -507,7 +513,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
             } else if (v.getId() == holder.appDeleteBtn.getId()) {
                 if (AppInstallListener.APP_INSTALLING == holder.downloadTask.getDownloadStatus()) {
                     //安装中 安装成功 删除按钮不可点击
-                    ToastUtils.showMessage(v.getContext(), v.getContext().getString(R.string.download_installing));
+                    PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string.download_installing));
                     return;
                 }
                 DownloadManager.getInstance(v.getContext().getApplicationContext()).cancel(holder.downloadTask);

@@ -7,6 +7,7 @@ import com.can.appstore.base.BaseView;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.Topic;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -23,15 +24,20 @@ public interface AppListContract {
         void loadAppListData();
         void loadAppListData(String topicId);
         void onAppListItemSelectChanged(int position);
+        HashMap getIds(int position);
     }
 
     interface View extends BaseView<Presenter> {
+        void hideAppInfoLoadingDialog();
+        void showSearchView();
+        void showAppList();
+        void showFailUI();
         void refreshMenuList(List<Topic> menuData, int focusPosition);
-        void refreshAppList(List<AppInfo> rightData, int InsertPosition);
+        void refreshAppList(List<AppInfo> rightData, int InsertPosition,long delayTime);
         void refreshRowNumber(SpannableStringBuilder spannable);
         void changeAppInfoUiToFail();
-        void finish();
         void refreshTypeName(String typeName);
+        void finish();
     }
 
 }

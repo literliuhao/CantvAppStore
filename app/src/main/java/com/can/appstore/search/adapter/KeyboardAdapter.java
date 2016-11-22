@@ -117,4 +117,15 @@ public class KeyboardAdapter extends YIBaseCompatFocusAdapter {
         }
     }
 
+    /**
+     * 设置键盘是否失去焦点
+     *
+     * @param isLoseFocus true 是失去焦点
+     */
+    public void setKeyLoseFocus(boolean isLoseFocus) {
+        for (int i = 0; i < mViewList.size(); i++) {
+            mViewList.get(i).setFocusable(!isLoseFocus);
+        }
+    }
+
 }

@@ -16,7 +16,8 @@
         android:layout_marginLeft="@dimen/px24"
         android:layout_marginBottom="@dimen/px24"
         android:background="@drawable/shap_app_list_icon_bg"
-        android:scaleType="fitXY"
+        android:src="@mipmap/cibn_icon"
+        android:scaleType="centerInside"
         roundCornerImage:cornerSize="@dimen/px24"
         />
     <TextView

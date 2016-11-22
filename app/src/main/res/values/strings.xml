@@ -61,6 +61,7 @@
     <string name="network_error">网络访问错误</string>
     <string name="no_data">没有数据!</string>
     <string name="no_more_data">没有更多数据!</string>
+    <string name="data_error">数据异常</string>
 
     <!--专题-->
     <string name="special">"专题"</string>
@@ -80,7 +81,7 @@
     <string name="downloaded">下载</string>
     <string name="select_app_count">已选择应用数</string>
     <string name="loading">加载中,请稍后</string>
-    <string name="not_uinstall_data">暂无应用!</string>
+    <string name="not_uinstall_data">暂无应用&#160;!</string>
     <string name="uninstall_success">卸载成功</string>
     <string name="uninstall_fail">卸载失败</string>
     <string name="ok">确定</string>
@@ -95,6 +96,7 @@
     <string name="detail_app_downlaod_count">下载&#160;:&#160;%s</string>
     <string name="detail_app_free_stroage">可用空间&#160;:&#160;%s</string>
     <string name="detail_app_operating_equipment">操作设备&#160;:</string>
+    <string name="detail_developer">开发者&#160;:&#160;%s</string>
     <string name="detail_app_download">下载</string>
     <string name="detail_app_install">安装</string>
     <string name="install_success">安装成功</string>
@@ -120,6 +122,7 @@
     <string name="add_funtion">新增功能&#160;:&#160;</string>
     <string name="update_introduce">更新功能&#160;:\n</string>
     <string name="load_data_faild">加载数据失败,请稍后再试...</string>
+    <string name="not_update_log">修复了bug，完善了用户体验。</string>
 
     <!-- 活动页 -->
     <string name="active_click_participate">点击参加活动</string>
@@ -141,4 +144,10 @@
     <string name="btn_clear_msg">清空</string>
     <string name="txt_empty_msg">暂无消息</string>
 
+    <!--应用列表文本-->
+    <string name="no_network">没有网络，请检查您的网络连接！</string>
+    <string name="no_more_content">没有更多了!</string>
+    <string name="load_more_content">加载更多！</string>
+    <string name="line">行</string>
+    <string name="backslashes">/</string>
 </resources>

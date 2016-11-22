@@ -601,6 +601,66 @@ public class PackageUtil {
         return appList;
     }
 
+    /**
+     * 忽略处于白名单中的应用 + 第三方应用
+     *
+     * @param context
+     * @return
+     */
+    public static List<AppInfo> findLoseWhiteAllComplexApps(Context context, List<AppInfo> appList, List<String> appWhiteList) {
+        if (appList == null) {
+            appList = new ArrayList<>();
+        } else {
+            appList.clear();
+        }
+        PackageManager pm = context.getApplicationContext().getPackageManager();
+        List<PackageInfo> pList = pm.getInstalledPackages(0);
+        final AtomicInteger index = new AtomicInteger();
+        for (PackageInfo info : pList) {
+            ApplicationInfo applicationInfo = info.applicationInfo;
+            boolean isSystemApp = (applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM;
+            // 排除不在白名单中的系统应用
+            if (isSystemApp || appWhiteList.contains(info.packageName)) {
+                continue;
+            }
+            index.incrementAndGet();
+            final AppInfo app = new AppInfo();
+            app.isSystemApp = isSystemApp;
+            app.packageName = info.packageName;
+            app.versionName = info.versionName;
+            app.versionCode = info.versionCode;
+            app.installtime = info.firstInstallTime;
+            app.installPath = applicationInfo.sourceDir;
+            app.appIcon = applicationInfo.loadIcon(pm);
+            app.appName = applicationInfo.loadLabel(pm).toString();
+
+            // 应用占用空间大小
+            try {
+                Method method = PackageManager.class.getMethod("getPackageSizeInfo", String.class, IPackageStatsObserver.class);
+                method.setAccessible(true);
+                method.invoke(pm, app.packageName, new IPackageStatsObserver.Stub() {
+                    @Override
+                    public void onGetStatsCompleted(PackageStats pStats, boolean succeeded) throws RemoteException {
+                        app.size = pStats.codeSize + pStats.dataSize + pStats.cacheSize;
+                        int i = index.decrementAndGet();
+                    }
+                });
+            } catch (Exception e) {
+                File apk = new File(applicationInfo.sourceDir);
+                app.size = apk.length();// apk包文件大小
+            }
+            appList.add(app);
+        }
+        while (index.get() > 0) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return appList;
+    }
+
     public static class AppInfo implements CanRecyclerViewAdapter.Selectable {
         public String appName = "";
         public String packageName = "";

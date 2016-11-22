@@ -13,6 +13,7 @@ import com.can.appstore.entity.AppInfo;
 import com.can.appstore.search.ToastUtil;
 import com.can.appstore.search.widget.YIBaseCompatFocusAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.tvlib.imageloader.ImageLoader;
@@ -23,6 +24,7 @@ import cn.can.tvlib.imageloader.ImageLoader;
 
 public class HotRecommendAdapter extends YIBaseCompatFocusAdapter {
     private List mDataList;
+    public List<View> mViewList = new ArrayList<>(); //存每个Key的View
 
     public HotRecommendAdapter(List datas) {
         super(datas);
@@ -39,6 +41,7 @@ public class HotRecommendAdapter extends YIBaseCompatFocusAdapter {
             }
         });
         View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_app_item, parent, false);
+        mViewList.add(inflate);
         return new HotViewHolder(inflate);
     }
 
@@ -50,9 +53,11 @@ public class HotRecommendAdapter extends YIBaseCompatFocusAdapter {
     public class HotViewHolder extends RecyclerView.ViewHolder {
         TextView mAppName;
         ImageView mAppIcon;
+        View mView;
 
         public HotViewHolder(View itemView) {
             super(itemView);
+            mView = itemView;
             mAppName = (TextView) itemView.findViewById(R.id.app_name_view);
             mAppIcon = (ImageView) itemView.findViewById(R.id.app_icon);
         }
@@ -66,6 +71,8 @@ public class HotRecommendAdapter extends YIBaseCompatFocusAdapter {
             AppInfo app = (AppInfo) mDataList.get(position);
             mAppName.setText(app.getName());
             ImageLoader.getInstance().load(MyApp.mContext, mAppIcon, app.getIcon());
+            //+100是为了防止在搜索页出现相同的id
+            mView.setId(position + 100);
         }
 
     }
