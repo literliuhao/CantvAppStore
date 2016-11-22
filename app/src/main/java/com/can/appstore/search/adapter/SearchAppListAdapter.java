@@ -28,7 +28,7 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 public class SearchAppListAdapter extends CanRecyclerViewAdapter {
     public List mDataList;
-    private List mDefaultList;  //"大家都在搜"的数据
+    public List mDefaultList;  //"大家都在搜"的数据
     private OnInitialsListener mOnInitialsListener;
     public List<View> mHotKeyViewList = new ArrayList<>(); //存每个热词的View
     private SearchActivity mActivity;
@@ -175,6 +175,15 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
      */
     public void setDefaultApplist() {
         setDataList(mDefaultList);
+    }
+
+    /**
+     * 设置默认数据
+     * @param list
+     */
+    public void setDefaultApplist(List list) {
+        mDefaultList = list;
+        setDefaultApplist();
     }
 
     /**

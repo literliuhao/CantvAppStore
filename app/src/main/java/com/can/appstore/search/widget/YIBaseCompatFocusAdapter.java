@@ -16,7 +16,6 @@ public abstract class YIBaseCompatFocusAdapter extends CanRecyclerViewAdapter {
 
     public YIBaseCompatFocusAdapter(List datas) {
         super(datas);
-        setHasStableIds(true);
     }
 
     /**

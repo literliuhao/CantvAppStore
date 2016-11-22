@@ -25,6 +25,7 @@ import com.can.appstore.search.adapter.HotRecommendAdapter;
 import com.can.appstore.search.adapter.KeyboardAdapter;
 import com.can.appstore.search.adapter.SearchAppListAdapter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -80,6 +81,9 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
     private int mWinH;
     private int mWinW;
     private boolean setRightNextFocus;  //设置右侧热词和热门推荐之间焦点跳转
+    private View mRLNoNetworkView;
+    private List mHotRomList = new ArrayList();
+    private List mSearchList = new ArrayList();
 
     public static void startAc(Context context) {
         Intent intent = new Intent(context, SearchActivity.class);
@@ -113,6 +117,9 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
         mKeyboard_recy = (RecyclerView) findViewById(R.id.keyboard_recycleview);
         mContent_cl_view = (TextView) findViewById(R.id.con_clear_view);
         mContent_del_view = (TextView) findViewById(R.id.con_del_view);
+
+        //无网络展示的布局
+        mRLNoNetworkView = findViewById(R.id.rl_no_network);
 
         //右侧布局
         mTopView = (RelativeLayout) findViewById(R.id.top_view);
@@ -167,6 +174,11 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
 
             }
         });
+
+        //搜索内容
+        mAppListAdapter = new SearchAppListAdapter(mSearchList, this);
+        //"热门推荐"数据
+        mHotRecommendAdapter = new HotRecommendAdapter(mHotRomList);
 
         mContent_del_view.setOnClickListener(this);
         mContent_cl_view.setOnClickListener(this);
@@ -278,10 +290,10 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
      */
     @Override
     public void getHotRecomAppList(List list) {
-        //"热门推荐"数据
-        mHotRecommendAdapter = new HotRecommendAdapter(list);
+        mHotRecommendAdapter.setDataList(list);
         mBottom_re_recycle.setAdapter(mHotRecommendAdapter);
         mHotRecommendAdapter.setMyOnFocusChangeListener(mScaleFocusChangeListener);
+        showGoneView(TAG_SHOW_TOP_BOTTOM);
         if (!setRightNextFocus) {
             setRNextFocus();
         }
@@ -295,7 +307,7 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
     @Override
     public void getHotKeyList(List list) {
         //"大家都在搜"数据
-        mAppListAdapter = new SearchAppListAdapter(list, this);
+        mAppListAdapter.setDefaultApplist(list);
         mSearAppList_recycle.setAdapter(mAppListAdapter);
         mAppListAdapter.setOnInitialsListener(new SearchAppListAdapter.OnInitialsListener() {
             @Override
@@ -303,6 +315,8 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
                 getInitials(con);
             }
         });
+
+        showGoneView(TAG_SHOW_TOP_BOTTOM);
 
         //对显示行号的处理
         mAppListAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
@@ -332,13 +346,23 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
         }
     }
 
+    @Override
+    public void noNetWork() {
+        mRLNoNetworkView.setVisibility(View.VISIBLE);
+    }
+
     /**
      * 在清空搜索时,右侧重置为默认数据
      */
     public void resetDefaultList() {
         mleft_top.setText(getResources().getText(R.string.search_left_top_prompt1));
-        mAppListAdapter.setDefaultApplist();
-        showGoneView(TAG_SHOW_TOP_BOTTOM);
+        //热词/热门推荐都有数据是不再重新请求,否则要重新请求数据
+        if (mAppListAdapter.mDefaultList.size() > 0 && mHotRecommendAdapter.mDataList.size() > 0) {
+            mAppListAdapter.setDefaultApplist();
+            showGoneView(TAG_SHOW_TOP_BOTTOM);
+        } else {
+            mSearchPresenter.getDefaultList();
+        }
     }
 
     /**
@@ -385,6 +409,7 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
             mBottom_re_ll.setVisibility(View.VISIBLE);  //热门推荐
             mSearch_null.setVisibility(View.GONE);  //没有到结果对应的布局
             mright_top.setVisibility(View.GONE);
+            mRLNoNetworkView.setVisibility(View.GONE);
         }
 
         //没有搜到内容
@@ -394,6 +419,7 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
             mSearch_null.setVisibility(View.VISIBLE);
             mBottom_re_ll.setVisibility(View.VISIBLE);  //热门推荐
             mright_top.setVisibility(View.GONE);
+            mRLNoNetworkView.setVisibility(View.GONE);
         }
 
         //搜到内容
@@ -402,6 +428,7 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
             mSearAppList_recycle.setVisibility(View.VISIBLE);   //搜索结果对应的布局
             mSearch_null.setVisibility(View.GONE);
             mBottom_re_ll.setVisibility(View.GONE);  //热门推荐
+            mRLNoNetworkView.setVisibility(View.GONE);
         }
 
     }

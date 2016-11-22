@@ -1,5 +1,6 @@
 package com.can.appstore.search;
 
+import com.can.appstore.MyApp;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.ListResult;
 import com.can.appstore.entity.PopularWord;
@@ -11,6 +12,7 @@ import com.can.appstore.http.HttpManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.utils.NetworkUtils;
 import retrofit2.Response;
 
 /**
@@ -32,6 +34,11 @@ public class SearchPresenter implements SearchContract.Presenter {
      */
     @Override
     public void getSearchList(final String searCon, final int pageIndex) {
+        if (!NetworkUtils.isNetworkConnected(MyApp.getContext())){
+            mView.noNetWork();
+            return;
+        }
+
         mView.startSearch();
 
         HttpManager.getApiService().search(searCon).enqueue(new CanCallback<ListResult<AppInfo>>() {
@@ -65,6 +72,10 @@ public class SearchPresenter implements SearchContract.Presenter {
     @Override
     public void getDefaultList() {
 
+        if (!NetworkUtils.isNetworkConnected(MyApp.getContext())){
+            mView.noNetWork();
+            return;
+        }
 
         //热门推荐
         HttpManager.getApiService().recommend().enqueue(new CanCallback<ListResult<AppInfo>>() {
