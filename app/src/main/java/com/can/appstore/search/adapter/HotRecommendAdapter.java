@@ -76,7 +76,7 @@ public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapte
 
     @Override
     public void onBindViewHolder(HotViewHolder holder, int position) {
-        ((HotViewHolder) holder).setContent(position);
+        holder.setContent(position);
     }
 
     @Override
