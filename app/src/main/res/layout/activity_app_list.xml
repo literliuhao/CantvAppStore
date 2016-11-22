@@ -58,7 +58,7 @@
             android:text="@string/serach"
             android:textColor="@color/white_opa80"
             android:textSize="@dimen/px34"
-            android:visibility="invisible"
+            android:visibility="gone"
             />
 
         <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
