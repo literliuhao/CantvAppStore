@@ -25,7 +25,7 @@ public interface SpecialContract {
         void showNoDataView();
         void showRetryView();
         void hideRetryView();
-        void onLoadMore(int startInsertPos,int endInsertPos);
+        void onLoadMore(int startInsertPos, int endInsertPos);
     }
 
 

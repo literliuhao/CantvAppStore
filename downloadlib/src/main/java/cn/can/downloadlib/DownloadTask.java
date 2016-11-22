@@ -414,7 +414,10 @@ public class DownloadTask implements Runnable {
     }
 
     public void addDownloadListener(DownloadTaskListener listener) {
-        mDownloadlisteners.add(listener);
+        /**添加重复元素判断 xzl */
+        if(!mDownloadlisteners.contains(listener)){
+            mDownloadlisteners.add(listener);
+        }
     }
 
     /**
@@ -468,3 +471,5 @@ public class DownloadTask implements Runnable {
                 '}';
     }
 }
+
+

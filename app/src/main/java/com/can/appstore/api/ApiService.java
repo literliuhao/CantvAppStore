@@ -50,7 +50,7 @@ public interface ApiService {
      * 排行榜列表
      */
     @GET("start/ranklist")
-    CanCall<Result<AppInfoContainer>> getAppsRanking(@Query("rankId") String rankingId, @Query("pageNumber") int page, @Query("pageSize") int pageSize);
+    CanCall<Result<AppInfoContainer>> getAppsRanking(@Query("rankId") String rankingId);
 
     /**
      * 应用列表
@@ -100,6 +100,11 @@ public interface ApiService {
     @POST("application/updateapp")
     CanCall<ListResult<AppInfo>> checkUpdate(@Body List<AppInfo> apps);
 
+    /**
+     * 自升级检查
+     */
+    @GET("application/checkUpdateSelf")
+    CanCall<Result<AppInfo>> checkUpdateSelf();
 
     /**
      * 首页导航

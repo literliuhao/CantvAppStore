@@ -426,8 +426,8 @@ public class InstallManagerActivity extends Activity implements InstallContract.
         AppInfoBean bean = mPresenter.getItem(position);
         if (bean != null) {
             //int imageId,String title,String positive,String cancel   .setmIvDialogTitle(bean.getIcon())
-            canDialog.setmTvDialogTitle(bean.getAppName()).setmBtnDialogNegative("删除").setmBtnDialogPositive("安装");
-            canDialog.setOnCanBtnClickListener(new CanDialog.OnCanBtnClickListener() {
+            canDialog.setTitle(bean.getAppName()).setNegativeButton("删除").setPositiveButton("安装");
+            canDialog.setOnCanBtnClickListener(new CanDialog.OnClickListener() {
                 @Override
                 public void onClickPositive() {
                     //开始安装应用，安装键

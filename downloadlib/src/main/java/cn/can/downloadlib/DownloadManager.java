@@ -117,15 +117,18 @@ public class DownloadManager implements AppInstallListener {
     public DownloadManager(OkHttpClient client, Context context) {
         this.mOkHttpClient = client;
         this.mContext = context;
+        mAppInstallListeners = new ArrayList<>();
     }
 
     private DownloadManager() {
         init();
+        mAppInstallListeners = new ArrayList<>();
     }
 
     private DownloadManager(Context context, InputStream in) {
         this.mContext = context;
         init(in, null);
+        mAppInstallListeners = new ArrayList<>();
     }
 
     /**
@@ -187,7 +190,7 @@ public class DownloadManager implements AppInstallListener {
     public static DownloadManager getInstance(Context context, InputStream sslKey) {
         if (mInstance == null) {
             synchronized (DownloadManager.class) {
-                if(mInstance==null){
+                if (mInstance == null) {
                     mInstance = new DownloadManager(context, sslKey);
                 }
             }
@@ -313,7 +316,7 @@ public class DownloadManager implements AppInstallListener {
         /**读取数据库task，不轮询提交任务问题 xingzhaolei 2016-11-4 17:05:13 start*/
         mHander.removeMessages(MSG_SUBMIT_TASK);
         mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
-        /**读取数据库task，不轮询提交任务问题 xingzhaolei 2016-11-4 17:05:13 end*/
+
         DownloadTask downloadTask = getCurrentTaskById(taskId);
         if (downloadTask != null) {
             if (downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
@@ -329,9 +332,6 @@ public class DownloadManager implements AppInstallListener {
                 downloadTask.setHttpClient(mOkHttpClient);
                 downloadTask.setAppListener(this);
                 mTaskManager.put(downloadTask);
-//                mWorkTaskQueue.offer(taskId);
-//                /**修复数据库获取task 无法resume 问题  xingzl 2016-11-4 16:51:58 end*/
-//                mCurrentTaskList.put(taskId, downloadTask);
                 Future future = mExecutorService.submit(downloadTask);
             }
         }
@@ -382,7 +382,6 @@ public class DownloadManager implements AppInstallListener {
 
     /**
      * 取消所有任务
-     *
      */
     public void cancelAll() {
         mDownloadDao.deleteAll();
@@ -451,7 +450,6 @@ public class DownloadManager implements AppInstallListener {
 
     /**
      * 获取所有任务（执行中与未执行）
-     *
      * @return
      */
     public List<DownloadTask> loadAllTask() {
@@ -636,10 +634,10 @@ public class DownloadManager implements AppInstallListener {
 
     @Override
     public void onInstallFail(String id) {
-        DownloadTask task= getCurrentTaskById(id);
-        if(task!=null){
+        DownloadTask task = getCurrentTaskById(id);
+        if (task != null) {
             task.setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
-            Log.d(TAG, "onInstallSucess: name="+task.getFileName());
+            Log.d(TAG, "onInstallSucess: name=" + task.getFileName());
         }
         if (mAppInstallListeners != null) {
             Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();

@@ -20,7 +20,7 @@
             android:id="@+id/iv_icon"
             android:layout_width="@dimen/dimen_200px"
             android:layout_height="@dimen/dimen_200px"
-            android:background="@drawable/bg_icon_item"
+            android:background="@drawable/bg_detail_icon_item"
             android:scaleType="centerInside"
             custom:cornerSize="@dimen/dimen_36px"/>
 
@@ -33,7 +33,6 @@
             android:layout_marginTop="@dimen/dimen_10px"
             android:layout_toRightOf="@+id/iv_icon"
             android:includeFontPadding="false"
-            android:text="有乐斗地主"
             android:textColor="@color/app_name_color"
             android:textSize="@dimen/fontsize_56px"/>
 
@@ -119,6 +118,8 @@
             android:layout_height="@dimen/dimen_80px"
             android:max="100"
             android:nextFocusForward="@id/bt_download"
+            android:nextFocusLeft="@+id/bt_download"
+            android:nextFocusUp="@+id/bt_download"
             android:progressDrawable="@drawable/layer_list_app_detail_download_focus"
             android:textColor="@color/app_name_color"
             android:textSize="@dimen/fontsize_36px"/>
@@ -149,6 +150,7 @@
             android:background="@android:color/transparent"
             android:gravity="center"
             android:nextFocusForward="@id/bt_Introduction"
+            android:nextFocusUp="@+id/bt_Introduction"
             android:text="@string/detail_app_Introduction"
             android:textColor="@color/app_name_color"
             android:textSize="@dimen/fontsize_34px"/>
@@ -163,6 +165,7 @@
             android:background="@android:color/transparent"
             android:gravity="center"
             android:nextFocusRight="@id/bt_recommend"
+            android:nextFocusUp="@id/bt_recommend"
             android:text="@string/detail_app_recommend"
             android:textColor="@color/app_name_color"
             android:textSize="@dimen/fontsize_34px"/>

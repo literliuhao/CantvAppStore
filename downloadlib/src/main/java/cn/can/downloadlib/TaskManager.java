@@ -2,7 +2,7 @@ package cn.can.downloadlib;
 
 import android.text.TextUtils;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -20,7 +20,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class TaskManager {
     private static final int MAX_TASKS = 50;
     // 工作队列
-    private Map<String, DownloadTask> mCurrentTaskMap = new HashMap<>(MAX_TASKS);
+    private Map<String, DownloadTask> mCurrentTaskMap = new LinkedHashMap<>(MAX_TASKS);
     // 工作队列FIFO
     private BlockingQueue<String> mWorkTaskQueue = new LinkedBlockingQueue<>(MAX_TASKS);
     // 异常任务队列

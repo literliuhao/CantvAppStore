@@ -30,9 +30,7 @@ public interface AddAppsContract {
 
         void showCanSelectCount(int cansel, int alreadyshow);
 
-        void saveSelectInfo(List<AppInfo>  list);
+        void saveSelectInfo(List<AppInfo> list);
     }
-
-
 
 }

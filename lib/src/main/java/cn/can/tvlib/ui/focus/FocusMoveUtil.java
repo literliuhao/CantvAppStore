@@ -16,6 +16,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
 import android.os.Build;
 import android.os.Handler;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,6 +73,7 @@ public class FocusMoveUtil {
 
     private HashMap<Animator, RectFEvaluator> mEvaluators;
     private Handler mHandler;
+    private Runnable mShowFocusRunnable;
 
     /**
      * 初始化该Util
@@ -200,6 +202,7 @@ public class FocusMoveUtil {
      * @param bottom
      */
     public void setFocusActiveRegion(int left, int top, int right, int bottom) {
+        Log.d("AppListActivity", "限制焦点框可以移动的区域: "+left+"---"+top+"---"+right+"--"+bottom);
         if (mActiveRegion == null) {
             mActiveRegion = new Rect(left, top, right, bottom);
         } else {
@@ -542,12 +545,16 @@ public class FocusMoveUtil {
         if (mHandler == null) {
             mHandler = new Handler();
         }
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                showFocus();
-            }
-        }, delayInMillis);
+        if(mShowFocusRunnable==null){
+            mShowFocusRunnable=new Runnable() {
+                @Override
+                public void run() {
+                    showFocus();
+                }
+            };
+        }
+        mHandler.removeCallbacks(mShowFocusRunnable);
+        mHandler.postDelayed(mShowFocusRunnable, delayInMillis);
     }
 
     /**

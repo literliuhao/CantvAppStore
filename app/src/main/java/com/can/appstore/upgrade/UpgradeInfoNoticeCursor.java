@@ -9,7 +9,6 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-
 import com.can.appstore.R;
 
 /**
@@ -17,7 +16,7 @@ import com.can.appstore.R;
  */
 
 public class UpgradeInfoNoticeCursor extends View {
-
+    private static final String TAG = "UpgradeInfoNoticeCursor";
     private Context mContext;
     private Paint mPaint;
     private float mCursorScale;
@@ -90,6 +89,7 @@ public class UpgradeInfoNoticeCursor extends View {
      */
     public void setCursorSize(float cursorScale){
         mCursorScale = cursorScale;
+        Log.d(TAG, "setCursorSize: "+mCursorScale);
         if(mCursorScale == 0){
             return;
         }else if(mCursorScale > 1){
