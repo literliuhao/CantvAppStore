@@ -8,6 +8,7 @@ import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Response;
@@ -18,13 +19,19 @@ import retrofit2.Response;
 
 public class SearchPresenter implements SearchContract.Presenter {
     private SearchContract.View mView;
+    private List<AppInfo> mAppInfoList;
 
     public SearchPresenter(SearchContract.View view) {
         mView = view;
+        mAppInfoList = new ArrayList<>();
     }
 
+    /**
+     * @param searCon   搜索首字母
+     * @param pageIndex 第几页
+     */
     @Override
-    public void getSearchList(final String searCon) {
+    public void getSearchList(final String searCon, final int pageIndex) {
         mView.startSearch();
 
         HttpManager.getApiService().search(searCon).enqueue(new CanCallback<ListResult<AppInfo>>() {
@@ -32,7 +39,17 @@ public class SearchPresenter implements SearchContract.Presenter {
             public void onResponse(CanCall<ListResult<AppInfo>> call, Response<ListResult<AppInfo>> response) throws Exception {
                 ListResult<AppInfo> body = response.body();
                 List<AppInfo> data = body.getData();
-                mView.getAppList(data);
+                for (int i = 0; i < 20; i++) {
+                    AppInfo appInfo = new AppInfo();
+                    appInfo.setName(i + "测试数据");
+                    data.add(appInfo);
+                }
+                //说明是刚搜索,有内容就清空
+                if (pageIndex == 1 && mAppInfoList.size() > 0) {
+                    mAppInfoList.clear();
+                }
+                mAppInfoList.addAll(data);
+                mView.getAppList(mAppInfoList);
             }
 
             @Override
