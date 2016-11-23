@@ -111,7 +111,8 @@
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 android:paddingLeft="@dimen/px23"
-                android:paddingTop="@dimen/px23" />
+                android:paddingTop="@dimen/px23"
+                android:paddingBottom="@dimen/px1"/>
         </FrameLayout>
     </LinearLayout>
 
