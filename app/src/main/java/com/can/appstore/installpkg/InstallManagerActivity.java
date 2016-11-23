@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
+import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.installpkg.utils.InstallPkgUtils;
 import com.can.appstore.installpkg.view.LoadingDialog;
 import com.can.appstore.update.model.AppInfoBean;
@@ -36,6 +37,7 @@ import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
+import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PreferencesUtils;
 
 
@@ -58,7 +60,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
     private TextView mRoomSize;
     private TextView mTotalnum;
     private TextView mCurrentnum;
-    private ProgressBar mProgressBar;
+    private TextProgressBar mProgressBar;
     private BroadcastReceiver mInstallApkReceiver;
     private IntentFilter intentFilter;
     private List<AppInfoBean> mInstallDatas;//安装中集合
@@ -159,8 +161,9 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
+                    mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mDeleteAllButton, 1.0f);
-                    //mFocusScaleUtil.scaleToLarge(mDeleteAllButton);
+                    mPresenter.setNum(0);
                 } else {
                     mFocusScaleUtil.scaleToNormal(mDeleteAllButton);
                 }
@@ -171,8 +174,9 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
+                    mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mDeleteButton, 1.0f);
-                    //mFocusScaleUtil.scaleToLarge(mDeleteButton);
+                    mPresenter.setNum(0);
                 } else {
                     mFocusScaleUtil.scaleToNormal(mDeleteButton);
                 }
@@ -183,8 +187,8 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
+                    mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mUpdateButton, 1.0f);
-                    //mFocusScaleUtil.scaleToLarge(mUpdateButton);
                 } else {
                     mFocusScaleUtil.scaleToNormal(mUpdateButton);
                 }
@@ -203,12 +207,22 @@ public class InstallManagerActivity extends Activity implements InstallContract.
                 } else {
                     mFocusScaleUtil.scaleToNormal();
                 }
+                view.setSelected(hasFocus);
             }
         });
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
+                if (newState == CanRecyclerView.SCROLL_STATE_SETTLING) {
+                    mDeleteButton.setFocusable(false);
+                    mDeleteAllButton.setFocusable(false);
+                    mUpdateButton.setFocusable(false);
+                } else if (newState == CanRecyclerView.SCROLL_STATE_IDLE) {
+                    mDeleteButton.setFocusable(true);
+                    mDeleteAllButton.setFocusable(true);
+                    mUpdateButton.setFocusable(true);
+                }
             }
 
             @Override
@@ -239,10 +253,6 @@ public class InstallManagerActivity extends Activity implements InstallContract.
         mRecyclerAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, int position, Object data) {
-                /*Toast.makeText(InstallManagerActivity.this, position + 1 + "/" + mDatas.size(),
-                        Toast.LENGTH_SHORT).show();*/
-                //mCurrentPositon = position;
-                //showMenu(view, position);
                 initDialog(view,position);
             }
         });
@@ -262,14 +272,22 @@ public class InstallManagerActivity extends Activity implements InstallContract.
         mDeleteAllButton = (Button) findViewById(R.id.bt_install_deleteall);
         mDeleteButton = (Button) findViewById(R.id.bt_install_delete);
         mUpdateButton = (Button) findViewById(R.id.bt_install_update);
-        mRoomSize = (TextView) findViewById(R.id.tv_install_roomsize);
-        mProgressBar = (ProgressBar) findViewById(R.id.pb_install_progressbar);
+        mProgressBar = (TextProgressBar) findViewById(R.id.pb_install_progressbar);
         mFocusMoveUtil = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
         mFocusScaleUtil = new FocusScaleUtil();
         myFocusRunnable = new MyFocusRunnable();
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        CanRecyclerViewDivider canRecyclerViewDivider = new CanRecyclerViewDivider(0, getResources().getDimensionPixelSize(R.dimen.px38), 0);
+        mRecyclerView.addItemDecoration(canRecyclerViewDivider);
+        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.setSelected(true);
+        mDeleteAllButton.post(new Runnable() {
+            @Override
+            public void run() {
+                mDeleteAllButton.setFocusable(true);
+                mDeleteAllButton.requestFocus();
+            }
+        });
 
     }
 
@@ -292,6 +310,8 @@ public class InstallManagerActivity extends Activity implements InstallContract.
     @Override
     public void showNoData() {
         mReminder.setVisibility(View.VISIBLE);
+        mCurrentnum.setVisibility(View.INVISIBLE);
+        mTotalnum.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -300,10 +320,10 @@ public class InstallManagerActivity extends Activity implements InstallContract.
     }
 
     @Override
-    public void showSDProgressbar(int currentsize, int total, String sdinfo) {
-        mProgressBar.setMax(total);
+    public void showSDProgressbar(int currentsize, String sdinfo) {
         mProgressBar.setProgress(currentsize);
-        mRoomSize.setText(getString(R.string.install_sdavaliable_size) + sdinfo);
+        mProgressBar.setTextSize(getResources().getDimensionPixelOffset(R.dimen.px18));
+        mProgressBar.setText(sdinfo);
     }
 
     @Override
@@ -341,7 +361,6 @@ public class InstallManagerActivity extends Activity implements InstallContract.
         public void run() {
             if (mFocusedListChild != null) {
                 mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f);
-                //mFocusScaleUtil.scaleToLarge(mFocusedListChild);
             }
         }
     }
@@ -358,39 +377,6 @@ public class InstallManagerActivity extends Activity implements InstallContract.
     }
 
     /**
-     * 显示菜单键布局
-     *
-     * @param view
-     * @param position
-     */
-    private void showMenu(final View view, final int position) {
-
-        final Button start = (Button) view.findViewById(R.id.bt_installpkg_start);
-        final Button delete = (Button) view.findViewById(R.id.bt_installpkg_delete);
-
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteLayout.setVisibility(View.INVISIBLE);
-                //删除键
-                mPresenter.deleteOne(mCurrentPositon);
-                isVisibility = false;
-            }
-        });
-        start.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                deleteLayout.setVisibility(View.INVISIBLE);
-                //开始安装应用，安装键
-                //mInstalling.setVisibility(View.VISIBLE);
-                isVisibility = false;
-                mPresenter.installApk(position);
-            }
-        });
-
-    }
-
-    /**
      * 按键事件
      *
      * @param keyCode
@@ -399,16 +385,6 @@ public class InstallManagerActivity extends Activity implements InstallContract.
      */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (isVisibility) {
-                deleteLayout.setVisibility(View.INVISIBLE);
-                //isVisibility = false;
-                //mRecyclerView.requestFocus();
-                return true;
-            } else {
-                InstallManagerActivity.this.finish();
-            }
-        }
         return super.onKeyDown(keyCode, event);
     }
 
@@ -430,14 +406,6 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             canDialog.setOnCanBtnClickListener(new CanDialog.OnClickListener() {
                 @Override
                 public void onClickPositive() {
-                    //开始安装应用，安装键
-                    //isVisibility = false;
-                    /*int result = InstallPkgUtils.installApp("");
-                    if (result == 0) {
-
-                    } else {
-                    }*/
-                    //mInstalling.setVisibility(View.VISIBLE);
                     final TextView mInstalling = (TextView) view.findViewById(R.id.tv_install_installing);
                     mInstalling.setVisibility(View.VISIBLE);
                     //mPresenter.installApk(position);
@@ -454,5 +422,14 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             });
             canDialog.show();
         }
+    }
+
+    /**
+     * 启动安装包管理
+     * @param context
+     */
+    public static void actionStart(Context context){
+        Intent intent = new Intent(context, InstallManagerActivity.class);
+        context.startActivity(intent);
     }
 }

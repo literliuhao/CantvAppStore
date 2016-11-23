@@ -41,12 +41,14 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     private Context mContext;
     private static List<PackageUtil.AppInfo> mAppInfoList;
     private AppInstallReceiver mInstalledReceiver;
-    private ArrayList<String> mSelectPackageName = new ArrayList<>();
+    public ArrayList<String> mSelectPackageName = new ArrayList<>();
     private LoaderManager mLoaderManager;
     private DownloadManager mDownloadManager;
     private String mCurUninstallApkName = "";
     private CanDialog mCanDialog;
-    private boolean isClickbatchUninstall = false;
+    public boolean isFirstIntoRefresh = true;  //是否是第一次进入
+    private boolean isClickBatchUninstall = false;  //是否是点击批量卸载
+    private boolean isAppInstallRefresh = false;  // 是否应用安装刷新页面
 
     public UninstallManagerPresenter(UninstallManagerContract.View view, Context context) {
         this.mView = view;
@@ -147,6 +149,28 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
         mView.loadAllAppInfoSuccess(mAppInfoList);
     }
 
+    /**
+     * 当有应用安装刷新后选择之前的选择的应用
+     */
+    public void refreshSelectPosition() {
+        if (mSelectPackageName != null && mSelectPackageName.size() > 0) {
+            Log.d(TAG, "refreshSelectPosition: isAppInstallRefresh : " + isAppInstallRefresh + "  mSelectPackageName : " +
+                    mSelectPackageName.size() + "  mAppInfoList : " + mAppInfoList.size());
+            if (isAppInstallRefresh) {
+                int[] selectPositon = new int[mSelectPackageName.size()];
+                for (int i = 0; i < mSelectPackageName.size(); i++) {
+                    for (int j = 0; j < mAppInfoList.size(); j++) {
+                        if (mSelectPackageName.get(i).equals(mAppInfoList.get(j).packageName)) {
+                            selectPositon[i] = j;
+                        }
+                    }
+                }
+                mSelectPackageName.clear();
+                mView.refreshSelectPosition(selectPositon);
+            }
+        }
+    }
+
 
     @Override
     public void onLoaderReset(Loader<List<PackageUtil.AppInfo>> loader) {
@@ -188,12 +212,13 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
             if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)) {
                 String packageName = intent.getDataString().substring(8);
                 Log.d(TAG, "install packageName : " + packageName);
+                isAppInstallRefresh = true;
                 mLoaderManager.restartLoader(LOADER_ID, null, UninstallManagerPresenter.this);
             } else if (intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)) {
                 String packageName = intent.getData().getSchemeSpecificPart();
                 Log.d(TAG, "uninstall packageName : " + packageName);
                 calculateCurStoragePropgress();
-                if (!isClickbatchUninstall) {
+                if (!isClickBatchUninstall) {
                     refreshLastFocus(packageName);
                 }
                 refreshItemInListPosition(packageName);
@@ -228,6 +253,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
         for (int j = 0; j < mAppInfoList.size(); j++) {
             if (packageName.equals(mAppInfoList.get(j).packageName)) {
                 mAppInfoList.remove(j);
+                isAppInstallRefresh = false;
                 mView.loadAllAppInfoSuccess(mAppInfoList);
             }
         }
@@ -277,8 +303,8 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
      * @param name
      * @param packName
      */
-    public void showUninstallDialog(Drawable drawable, final String name, final String packName, boolean isClickbatchUninstall) {
-        this.isClickbatchUninstall = isClickbatchUninstall;
+    public void showUninstallDialog(Drawable drawable, final String name, final String packName, final boolean isClickbatchUninstall) {
+        this.isClickBatchUninstall = isClickbatchUninstall;
         String ok = mContext.getResources().getString(R.string.ok);
         String cancle = mContext.getResources().getString(R.string.cancle);
         String makesureUninstall = mContext.getResources().getString(R.string.makesure_uninstall_apk);
@@ -294,6 +320,14 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
             @Override
             public void onClickNegative() {
                 dismissUninstallDialog();
+                if (isClickbatchUninstall) {
+                    int curClickNegativePosition = getCurUninstallPosition(packName);
+                    mSelectPackageName.remove(packName);
+                    mView.clickNegativeRefreshPage(curClickNegativePosition, mSelectPackageName.size());
+                    if (mSelectPackageName.size() > 0) {
+                        startUninstall(isClickbatchUninstall);
+                    }
+                }
             }
         });
         mCanDialog.show();

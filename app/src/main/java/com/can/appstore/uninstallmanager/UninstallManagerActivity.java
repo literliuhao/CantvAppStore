@@ -37,6 +37,8 @@ import cn.can.tvlib.utils.PackageUtil;
 public class UninstallManagerActivity extends BaseActivity implements UninstallManagerContract.View {
     public static final String TAG = "UninstallManagerActivi";
     public static final int MIN_DOWN_INTERVAL = 80;//响应点击事件的最小间隔事件
+    public static final int APP_INSTALL_REFRESH_DELAYE = 200;//应用安装刷新此时选择的位置
+    public static final int UNINSTALL_LAST_POSITION_DELAYE = 490;//卸载最后一个位置延时请求焦点
     private CanRecyclerView mCanRecyclerView;
     private FocusMoveUtil mFocusMoveUtil;
     private FocusScaleUtil mScaleUtil;
@@ -53,9 +55,9 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     private LinearLayout mLinearLayoutSelectApp;
     private long mTime;
     private boolean isSelect;
-    private boolean isFirstInto = true;
     private boolean focusSearchFailed;
     private boolean isLastRemove = false;
+    private CanRecyclerView.CanGridLayoutManager mLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +91,8 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         mSelectCount = (TextView) findViewById(R.id.tv_select_count);
         mNotUninstallApp = (TextView) findViewById(R.id.tv_no_data);
         mLinearLayoutSelectApp = (LinearLayout) findViewById(R.id.ll_select_app);
-        mCanRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(UninstallManagerActivity.this, 3, CanRecyclerView.CanGridLayoutManager.VERTICAL, false), new CanRecyclerView.OnFocusSearchCallback() {
+        mLayoutManager = new CanRecyclerView.CanGridLayoutManager(UninstallManagerActivity.this, 3, CanRecyclerView.CanGridLayoutManager.VERTICAL, false);
+        new CanRecyclerView.OnFocusSearchCallback() {
             @Override
             public void onSuccess(View view, View focused, int focusDirection, RecyclerView.Recycler recycler, RecyclerView.State state) {
                 focusSearchFailed = false;
@@ -99,7 +102,8 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             public void onFail(View focused, int focusDirection, RecyclerView.Recycler recycler, RecyclerView.State state) {
                 focusSearchFailed = false;
             }
-        });
+        };
+        mCanRecyclerView.setLayoutManager(mLayoutManager);
         mPresenter.calculateCurStoragePropgress();
         mBtBatchUninstall.post(new Runnable() {
             @Override
@@ -115,21 +119,23 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         mBtBatchUninstall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mUninstallManagerAdapter.getCurrentSelectMode() == CanRecyclerViewAdapter.MODE_SELECT) {
-                    if (isSelect && mSelectPackageName != null && mSelectPackageName.size() > 0) {
-                        mPresenter.batchUninstallApp(mSelectPackageName);
-                    } else {
-                        mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_NORMAL);
-                        if (mSelectPackageName != null) {
-                            mSelectPackageName.clear();
+                if (mUninstallManagerAdapter != null) {
+                    if (mUninstallManagerAdapter.getCurrentSelectMode() == CanRecyclerViewAdapter.MODE_SELECT && mUninstallManagerAdapter.getItemCount() > 0) {
+                        if (isSelect && mSelectPackageName != null && mSelectPackageName.size() > 0) {
+                            mPresenter.batchUninstallApp(mSelectPackageName);
+                        } else {
+                            mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_NORMAL);
+                            if (mSelectPackageName != null) {
+                                mSelectPackageName.clear();
+                            }
+                            hideSelectAppCount();
+                            isSelect = !isSelect;
                         }
-                        hideSelectAppCount();
+                    } else if (mUninstallManagerAdapter.getCurrentSelectMode() == CanRecyclerViewAdapter.MODE_NORMAL && mUninstallManagerAdapter.getItemCount() > 0) {
+                        mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_SELECT);
+                        showSelectAppCount();
                         isSelect = !isSelect;
                     }
-                } else if (mUninstallManagerAdapter.getCurrentSelectMode() == CanRecyclerViewAdapter.MODE_NORMAL) {
-                    mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_SELECT);
-                    showSelectAppCount();
-                    isSelect = !isSelect;
                 }
             }
         });
@@ -153,22 +159,24 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Log.d(TAG, "onKeyDow : " + keyCode);
-        if (keyCode == KeyEvent.KEYCODE_MENU && event.getAction() == KeyEvent.ACTION_DOWN) {
-            mUninstallManagerAdapter.switchSelectMode(isSelect ? CanRecyclerViewAdapter.MODE_NORMAL : CanRecyclerViewAdapter.MODE_SELECT);
-            if (isSelect) {
+        if (mUninstallManagerAdapter != null && mUninstallManagerAdapter.getItemCount() > 0) {
+            if (keyCode == KeyEvent.KEYCODE_MENU && event.getAction() == KeyEvent.ACTION_DOWN) {
+                mUninstallManagerAdapter.switchSelectMode(isSelect ? CanRecyclerViewAdapter.MODE_NORMAL : CanRecyclerViewAdapter.MODE_SELECT);
+                if (isSelect) {
+                    hideSelectAppCount();
+                } else {
+                    showSelectAppCount();
+                }
+                isSelect = !isSelect;
+            } else if (keyCode == KeyEvent.KEYCODE_BACK && isSelect && event.getAction() == KeyEvent.ACTION_DOWN) {
+                mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_NORMAL);
                 hideSelectAppCount();
-            } else {
-                showSelectAppCount();
+                if (mSelectPackageName != null) {
+                    mSelectPackageName.clear();
+                }
+                isSelect = !isSelect;
+                return true;
             }
-            isSelect = !isSelect;
-        } else if (keyCode == KeyEvent.KEYCODE_BACK && isSelect && event.getAction() == KeyEvent.ACTION_DOWN) {
-            mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_NORMAL);
-            hideSelectAppCount();
-            if (mSelectPackageName != null) {
-                mSelectPackageName.clear();
-            }
-            isSelect = !isSelect;
-            return true;
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -192,8 +200,8 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             mBtBatchUninstall.setNextFocusRightId(mBtBatchUninstall.getId());
             return;
         } else {
-            if (isFirstInto) {
-                isFirstInto = false;
+            if (mPresenter.isFirstIntoRefresh) {
+                mPresenter.isFirstIntoRefresh = false;
                 mPresenter.onItemFocus(0);
             }
             mCanRecyclerView.setVisibility(View.VISIBLE);
@@ -207,6 +215,12 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             addSetting();
         } else {
             mUninstallManagerAdapter.notifyDataSetChanged();
+            mCanRecyclerView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mPresenter.refreshSelectPosition();
+                }
+            }, APP_INSTALL_REFRESH_DELAYE);
         }
     }
 
@@ -232,7 +246,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         mCanRecyclerView.postDelayed(new Runnable() {
             @Override
             public void run() {
-                View childAt = mCanRecyclerView.getChildAt(position);
+                View childAt = mCanRecyclerView.getChildAt(position - mLayoutManager.findFirstVisibleItemPosition());
                 if (childAt != null) {
                     childAt.setFocusable(true);
                     childAt.requestFocus();
@@ -241,7 +255,25 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
                     mBtBatchUninstall.requestFocus();
                 }
             }
-        }, 200);
+        }, UNINSTALL_LAST_POSITION_DELAYE);
+    }
+
+    @Override
+    public void clickNegativeRefreshPage(int position, int count) {
+        Log.d(TAG, "clickNegativeRefreshPage: position : " + position + "  count : " + count);
+        mUninstallManagerAdapter.setItemUnselected(position);
+        mSelectCount.setText(count + "");
+    }
+
+    @Override
+    public void refreshSelectPosition(int[] selectPosition) {
+        if (mSelectPackageName != null && mSelectPackageName.size() > 0) {
+            mSelectPackageName.clear();
+        }
+        for (int i = 0; i < selectPosition.length; i++) {
+            Log.d(TAG, "refreshSelectPosition: " + selectPosition[i]);
+            mUninstallManagerAdapter.setItemSelected(selectPosition[i]);
+        }
     }
 
     @Override
@@ -302,6 +334,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
                         }
                     }
                 }
+                mPresenter.mSelectPackageName = mSelectPackageName;
                 mSelectCount.setText(mSelectPackageName.size() + "");
             }
         });

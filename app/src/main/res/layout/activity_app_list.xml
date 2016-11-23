@@ -39,7 +39,7 @@
         android:layout_marginBottom="@dimen/px80"
         android:layout_marginLeft="@dimen/px140"
         android:layout_marginRight="@dimen/px20"
-        android:layout_marginTop="@dimen/px130"
+        android:layout_marginTop="@dimen/px145"
         android:orientation="vertical"
         >
 
