@@ -256,11 +256,11 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
 
 
     @Override
-    protected void onHomeKeyListener() {
-        if(mCanDialog != null){
+    protected void onHomeKeyDown() {
+        if(mCanDialog!= null){
             mCanDialog.dismiss();
         }
-       finish();
+        finish();
     }
 
     private class myOnItemClickListener implements CanRecyclerViewAdapter.OnItemClickListener {

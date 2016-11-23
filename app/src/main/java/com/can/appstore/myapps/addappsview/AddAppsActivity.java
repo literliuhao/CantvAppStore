@@ -165,6 +165,8 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
         mAddAppsPresenter.saveSelectlist(list);
     }
 
+
+
     class MyFocusRunnable implements Runnable {
         @Override
         public void run() {
@@ -271,11 +273,17 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
     @Override
     protected void onResume() {
         super.onResume();
+        if(mAddAppsPresenter!= null){
+            mAddAppsPresenter.addListener();
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        if(mAddAppsPresenter!= null){
+            mAddAppsPresenter.unRegiestr();
+        }
     }
 
     @Override

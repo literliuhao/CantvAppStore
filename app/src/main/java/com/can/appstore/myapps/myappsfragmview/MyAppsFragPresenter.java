@@ -62,7 +62,8 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                mView.loadAppInfoSuccess(mShowList, mDrawables);
+                mView.loadAppInfoSuccess(mShowList);
+                mView.loadCustomDataSuccess(mDrawables);
                 removeHideApps();
             }
         }.execute();
@@ -72,10 +73,9 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
 
     //筛选隐藏应用
     public void removeHideApps() {
-        mShowList = mMyAppsListDataUtil.removeHideApp(mShowList);
         systemApp = mMyAppsListDataUtil.removeHideApp(systemApp);
         mDrawables = sysAppInfo2Drawble(systemApp, mDrawables);
-        mView.loadAppInfoSuccess(mShowList, mDrawables);
+        mView.loadCustomDataSuccess(mDrawables);
     }
 
     private List<Drawable> sysAppInfo2Drawble(List<AppInfo> list, List<Drawable> mDrawablelist) {
@@ -153,14 +153,14 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
         AppInfo appInfo = mShowList.get(position);
         mShowList.remove(position);
         mShowList.add(2, appInfo);
-        mView.loadAppInfoSuccess(mShowList, mDrawables);
+        mView.loadAppInfoSuccess(mShowList);
         mMyAppsListDataUtil.saveShowList(mShowList);
     }
 
     public void removeApp(int position) {
         mShowList.remove(position);
         mMyAppsListDataUtil.saveShowList(mShowList);
-        mView.loadAppInfoSuccess(mShowList, mDrawables);
+        mView.loadAppInfoSuccess(mShowList);
     }
 
     public void unRegiestr() {

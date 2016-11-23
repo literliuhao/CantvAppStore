@@ -9,7 +9,6 @@ import com.can.appstore.index.model.ShareData;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import cn.can.tvlib.utils.PackageUtil;
@@ -44,7 +43,7 @@ public class MyAppsListDataUtil {
             mShowList.clear();
         }
         List<AppInfo> allAppsList = new ArrayList<>();
-        allAppsList = PackageUtil.findAllexBllackThirdApps(context, allAppsList,new ArrayList<String>() );
+        allAppsList = PackageUtil.findAllThirdPartyAppsNoDelay(context, allAppsList);
         if (!PreferencesUtils.getString(context, "myappsshowlist", "0").equals("0")) {
             //存在，证明我在本地已写过过文件
             mShowList = getList(mShowList);
@@ -76,7 +75,7 @@ public class MyAppsListDataUtil {
         } else {
             allAppslist.clear();
         }
-        allAppslist = PackageUtil.findAllWhiteBlackApps(context, allAppslist, MyApp.PRE_APPS,new ArrayList<String>());
+        allAppslist = PackageUtil.findAllComplexAppsNoDelay(context, allAppslist, MyApp.PRE_APPS);
         ComparatorAppInfo comparatorAppInfo = new ComparatorAppInfo();
         Collections.sort(allAppslist, comparatorAppInfo);
 
@@ -124,20 +123,6 @@ public class MyAppsListDataUtil {
     }
 
 
-    /**
-     * 全部应用排序
-     */
-    private class ComparatorAppInfo implements Comparator<AppInfo> {
-        @Override
-        public int compare(AppInfo o1, AppInfo o2) {
-            if (o1.installtime == o2.installtime)
-                return 0;
-            if (o1.installtime < o2.installtime)
-                return 1;
-            return -1;
-        }
-    }
-
 
     /**
      * 获取全部系统应用,必须是APK存在的
@@ -152,7 +137,7 @@ public class MyAppsListDataUtil {
         }
         for (int i = 0; i < MyApp.PRE_APPS.size(); i++) {
             AppInfo appInfo = PackageUtil.getAppInfo(context, MyApp.PRE_APPS.get(i));
-            //如果该应用已卸载，返回为空，这里还需要判断是否在黑名单里
+            //如果该应用已卸载，返回为空
             if (appInfo != null) {
                 list.add(appInfo);
             }
@@ -160,7 +145,7 @@ public class MyAppsListDataUtil {
         return list;
     }
     //隐藏应用
-    private List<String>  hideList = null;
+    public static List<String>  hideList = null;
     private ShareData mShareData;
 
     /**
@@ -189,5 +174,8 @@ public class MyAppsListDataUtil {
         }
         return appList;
     }
+
+
+
 
 }

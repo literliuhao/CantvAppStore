@@ -35,7 +35,6 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
     private Context mContext;
 
     private AppInstallReceiver mAppInstallReceiver;
-    private BroadcastReceiver mHomeReceivcer;
 
     private DownloadManager mDownloadManager;
     private String mUninstallApkName;
@@ -218,10 +217,6 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
         if (mAppInstallReceiver != null) {
             mContext.unregisterReceiver(mAppInstallReceiver);
             mAppInstallReceiver = null;
-        }
-        if (mHomeReceivcer != null) {
-            mContext.unregisterReceiver(mHomeReceivcer);
-            mHomeReceivcer = null;
         }
     }
 

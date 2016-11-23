@@ -52,6 +52,7 @@ public class ShareData {
     public List<String> getHiddenApps(List<String> list) {
         if (list == null) {
             list = new ArrayList<String>();
+            execute();
         } else {
             list.clear();
         }

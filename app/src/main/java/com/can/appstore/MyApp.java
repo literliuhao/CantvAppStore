@@ -39,7 +39,6 @@ public class MyApp extends Application {
     public static int Height;
     //内存维护的全局应用List
     public static List<AppInfo> myAppList = new ArrayList<AppInfo>();
-    public static List<String>  hidenAppList = null;
     /**
      * 预装APP白名单
      */
@@ -63,7 +62,7 @@ public class MyApp extends Application {
         PRE_APPS.add("com.cantv.market");
 
         //所有的第三方应用
-        myAppList = PackageUtil.findAllexBllackThirdApps(this,myAppList,new ArrayList<String>());
+        myAppList = PackageUtil.findAllThirdPartyAppsNoDelay(this,myAppList);
         registerInstallReceiver();
         initBuly(true);
     }

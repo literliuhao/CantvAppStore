@@ -87,8 +87,9 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         super.onResume();
     }
 
+
     @Override
-    public void loadAppInfoSuccess(List<AppInfo> infoList, List<Drawable> mDrawbleList) {
+    public void loadAppInfoSuccess(List<AppInfo> infoList) {
         mShowList = infoList;
         if (infoList.size() - 2 < MyApp.myAppList.size() && infoList.size() < 18 && !infoList.get(infoList.size() - 1).packageName.isEmpty()) {
             infoList.add(new AppInfo("添加应用", getActivity().getResources().getDrawable(R.drawable.addapp_icon)));
@@ -99,9 +100,15 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         } else {
             mMyAppsRvAdapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public void loadCustomDataSuccess(List<Drawable> mDrawbleList) {
         //系统应用的图标集合
         mMyAppsRvAdapter.setCustomData(mDrawbleList);
     }
+
+
 
 
     private void baseSetting() {
@@ -289,4 +296,6 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
     public View getLastView() {
         return null;
     }
+
+
 }

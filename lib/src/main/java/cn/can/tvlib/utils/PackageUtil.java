@@ -420,7 +420,7 @@ public class PackageUtil {
      * @param context
      * @return
      */
-    public static List<AppInfo> findAllexBllackThirdApps(Context context, List<AppInfo> appList, List<String> appBlackList) {
+    public static List<AppInfo> findAllThirdPartyAppsNoDelay(Context context, List<AppInfo> appList) {
         if (appList == null) {
             appList = new ArrayList<>();
         } else {
@@ -434,9 +434,6 @@ public class PackageUtil {
             // 是否是系统权限
             boolean isSystemApp = (applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM;
             if (isSystemApp) {
-                continue;
-            }
-            if(appBlackList.contains(info.packageName)){
                 continue;
             }
             index.incrementAndGet();
@@ -477,7 +474,7 @@ public class PackageUtil {
      * @param context
      * @return
      */
-    public static List<AppInfo> findAllWhiteBlackApps(Context context, List<AppInfo> appList, List<String> appWhiteList, List<String> appBlackList) {
+    public static List<AppInfo> findAllComplexAppsNoDelay(Context context, List<AppInfo> appList, List<String> appWhiteList) {
         if (appList == null) {
             appList = new ArrayList<>();
         } else {
@@ -491,9 +488,6 @@ public class PackageUtil {
             boolean isSystemApp = (applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM;
             // 排除不在白名单中的系统应用
             if (isSystemApp && !appWhiteList.contains(info.packageName)) {
-                continue;
-            }
-            if(appBlackList.contains(info.packageName)){
                 continue;
             }
             index.incrementAndGet();
