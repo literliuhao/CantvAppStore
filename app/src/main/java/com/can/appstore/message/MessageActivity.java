@@ -47,7 +47,6 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     private MessageAdapter mAdapter;
     private View mFocusedView;
     private boolean focusViewMoveEnable = true;
-    private boolean isBtnTagClick = false;
     private boolean deleteLastItem = false;
 
     @Override
@@ -55,8 +54,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
         initView();
-        //showLoadingDialog();
-        // TODO: 2016/11/23  孙炎龙方法，顶部有黑边阴影
+        // TODO: 2016/11/23
         showAppInfoLoadingDialog();
         initData();
         initFocusView();
@@ -92,14 +90,13 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
             }
         };
         msgList = queryData();
-        //hideLoadingDialog();
+        // TODO: 2016/11/23
         hideAppInfoLoadingDialog();
         if (msgList != null && !msgList.isEmpty()) {
             initAdapter();
             initRecyclerView();
             refreshTotalText(msgList.size());
         } else {
-            itemPos.setVisibility(View.INVISIBLE);
             empty.setVisibility(View.VISIBLE);
         }
     }
@@ -111,43 +108,43 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     private void initAdapter() {
         mAdapter = new MessageAdapter(msgList);
         mAdapter.setFocusListener(this);
-        mAdapter.setOnllMsgClickListener(new MessageAdapter.OnMsgFocusLayoutClickListener() {
+        mAdapter.setOnMsgFocusLayoutClickListener(new MessageAdapter.OnMsgFocusLayoutClickListener() {
             @Override
-            public void onllMsgClick(View view, int position) {
+            public void onMsgFocusLayoutClick(View view, int position) {
                 boolean isNetConnected = NetworkUtils.isNetworkConnected(MessageActivity.this);
                 MessageInfo msg = msgList.get(position);
-                if(msg == null){
+                if (msg == null) {
                     return;
                 }
-                if (!isNetConnected &&  !msg.getAction().equals(ActionConstants.ACTION_NOTHIN)){
+                if (!isNetConnected && !msg.getAction().equals(ActionConstants.ACTION_NOTHIN)) {
                     ToastUtil.toastShort("网络连接失败");
                     return;
                 }
                 switch (msg.getAction()) {
                     case ActionConstants.ACTION_NOTHIN:
-                        refreshRecyclerItem(msg , position);
+                        refreshRecyclerItem(msg, position);
                         break;
                     case ActionConstants.ACTION_APP_DETAIL:
-                       String appDetailActionData = msg.getActionData();
-                       AppDetailActivity.actionStart(MessageActivity.this , appDetailActionData );
-                       refreshRecyclerItem(msg , position);
+                        String appDetailActionData = msg.getActionData();
+                        AppDetailActivity.actionStart(MessageActivity.this, appDetailActionData);
+                        refreshRecyclerItem(msg, position);
                         break;
                     case ActionConstants.ACTION_TOPIC_DETAIL:
                         String topicActionData = msg.getActionData();
-                        SpecialDetailActivity.actionStart(MessageActivity.this , topicActionData);
-                        refreshRecyclerItem(msg , position);
+                        SpecialDetailActivity.actionStart(MessageActivity.this, topicActionData);
+                        refreshRecyclerItem(msg, position);
                         break;
                     case ActionConstants.ACTION_ACTIVITY_DETAIL:
                         String activityActionData = msg.getActionData();
-                        ActiveActivity.actionStart(MessageActivity.this , activityActionData);
-                        refreshRecyclerItem(msg , position);
+                        ActiveActivity.actionStart(MessageActivity.this, activityActionData);
+                        refreshRecyclerItem(msg, position);
                         break;
                 }
             }
         });
-        mAdapter.setOnllMsgFocusChangeListener(new MessageAdapter.OnMsgFocusLayoutFocusChangeListener() {
+        mAdapter.setOnMsgFocusLayoutFocusChangeListener(new MessageAdapter.OnMsgFocusLayoutFocusChangeListener() {
             @Override
-            public void onllMsgFocusChange(View view, int position) {
+            public void onMsgFocusLayoutFocusChange(View view, int position) {
                 if (view.hasFocus()) {
                     refreshPosText(++position);
                 }
@@ -191,19 +188,25 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         });
     }
 
-    private void refreshRecyclerItem( MessageInfo msg , int position){
-        if (msg.getStatus()){
-                    MessageManager.updateStatus(msg.getMsgId());
-                    msg.setStatus(false);
-                    msgList.set(position, msg);
-                    mAdapter.setMsgList(msgList);
-                    mAdapter.notifyItemChanged(position);
+    /**
+     * 更新条目
+     */
+    private void refreshRecyclerItem(MessageInfo msg, int position) {
+        if (msg.getStatus()) {
+            MessageManager.updateStatus(msg.getMsgId());
+            msg.setStatus(false);
+            msgList.set(position, msg);
+            mAdapter.setMsgList(msgList);
+            mAdapter.notifyItemChanged(position);
         }
     }
 
     private void initRecyclerView() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.id_recyclerview);
+        mRecyclerView = (RecyclerView) findViewById(R.id.rv_msg);
         mRecyclerView.setVisibility(View.VISIBLE);
+        itemPos.setVisibility(View.VISIBLE);
+        itemTotal.setVisibility(View.VISIBLE);
+        btnClear.setVisibility(View.VISIBLE);
         mRecyclerView.requestFocus();
         mRecyclerView.post(new Runnable() {
             @Override
@@ -244,7 +247,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
             public void run() {
                 View childView = mRecyclerView.getChildAt(focusPosi - llManager.findFirstVisibleItemPosition());
                 if (childView != null) {
-                    mFocusedView = childView.findViewById(R.id.ll_focus_msg);
+                    mFocusedView = childView.findViewById(R.id.item_ll_focus_msg);
                     mFocusedView.requestFocus();
                     mHandler.removeCallbacks(mFocusMoveRunnable);
                     mHandler.postDelayed(mFocusMoveRunnable, 50);
@@ -257,26 +260,35 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     private void focusMsgItem(int focusPosi) {
         View childView = mRecyclerView.getChildAt(focusPosi - llManager.findFirstVisibleItemPosition());
         if (childView != null) {
-            mFocusedView = childView.findViewById(R.id.ll_focus_msg);
+            mFocusedView = childView.findViewById(R.id.item_ll_focus_msg);
             mFocusedView.requestFocus();
             mHandler.removeCallbacks(mFocusMoveRunnable);
             mHandler.postDelayed(mFocusMoveRunnable, 50);
         }
     }
 
+
     private void changeListStatus() {
         int size = msgList.size();
         for (int i = 0; i < size; i++) {
             MessageInfo msg = msgList.get(i);
-            msg.setStatus(false);
-            msgList.set(i, msg);
+            if (msg.getStatus()) {
+                msg.setStatus(false);
+                msgList.set(i, msg);
+            }
         }
     }
 
+    /**
+     * 刷新右上角焦点框所在条目上的位置信息
+     */
     private void refreshPosText(int pos) {
         itemPos.setText(String.valueOf(pos));
     }
 
+    /**
+     * 刷新右上角总共Item的条数信息
+     */
     private void refreshTotalText(int total) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("/");
@@ -285,7 +297,11 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         itemTotal.setText(stringBuilder);
     }
 
-    public static void actionStart(Context context){
+    /**
+     * 启动消息页面
+     * （外部调用）
+     */
+    public static void actionStart(Context context) {
         Intent intent = new Intent(context, MessageActivity.class);
         context.startActivity(intent);
     }
@@ -300,9 +316,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_tag:
-                if (msgList == null || msgList.isEmpty()) {
-                    return;
-                } else if (isBtnTagClick) {
+                if (msgList == null || msgList.isEmpty() || !MessageManager.existUnreadMsg()) {
                     return;
                 }
                 new Thread() {
@@ -313,7 +327,6 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                 }.start();
                 changeListStatus();
                 mAdapter.notifyDataSetChanged();
-                isBtnTagClick = true;
                 break;
             case R.id.btn_clear:
                 if (msgList == null || msgList.isEmpty()) {
@@ -340,11 +353,6 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         if (focusViewMoveEnable) {
             if (hasFocus) {
                 mFocusedView = v;
-                /*if (mFocusedView.getId() == R.id.iv_btn_delete){
-                    focusMoveUtil.setFocusRes(MessageActivity.this , R.mipmap.btn_circle_focus);
-                }else{
-                    focusMoveUtil.setFocusRes(MessageActivity.this , R.mipmap.btn_focus);
-                }*/
                 if (mFocusedView == btnTag || mFocusedView == btnClear) {
                     refreshPosText(0);
                 }
