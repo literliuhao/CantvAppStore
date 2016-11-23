@@ -44,7 +44,7 @@ public class SpecialDetailActivity extends Activity {
     private String mTopicId;
 
     public static void actionStart(Context context, String topicId){
-        Intent intent = new Intent(context, SpecialActivity.class);
+        Intent intent = new Intent(context, SpecialDetailActivity.class);
         intent.putExtra("topicId", topicId);
         context.startActivity(intent);
     }
