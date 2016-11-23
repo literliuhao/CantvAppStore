@@ -498,7 +498,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                         } else {
                             //如果文件被删除，重新下载。
                             PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string
-                                    .bt_batch_uninstall));
+                                    .download_file_error));
                             holder.downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
                             DownloadManager.getInstance(v.getContext().getApplicationContext()).addDownloadTask
                                     (holder.downloadTask, holder.downloadListener);

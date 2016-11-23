@@ -1,7 +1,6 @@
 package com.can.appstore.index.ui;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,10 +15,10 @@ import com.can.appstore.R;
 import com.can.appstore.entity.Layout;
 import com.can.appstore.entity.Navigation;
 import com.can.appstore.index.interfaces.IAddFocusListener;
+import com.can.appstore.index.model.ActionUtils;
 
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
-import cn.can.tvlib.utils.ActionUtils;
 import cn.can.tvlib.utils.DisplayUtil;
 
 import static cn.can.tvlib.imageloader.GlideLoadTask.SuccessCallback;
@@ -111,10 +110,9 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
             imageFrame.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.i("FragmentBody", ActionUtils.convertAction(childBean.getAction()));
                     try {
                         //startActivty -- 之后在首页做统一处理
-                        startActivity(new Intent());
+                        ActionUtils.convertAction(context, childBean.getAction(), childBean.getActionData());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

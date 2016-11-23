@@ -17,6 +17,8 @@ public class MessageManager {
         void onUpdate();
     }
 
+
+
     public static void setCallMsgDataUpdate(CallMsgDataUpdate callMsgDataUpdate) {
         mCallMsgDataUpdate = callMsgDataUpdate;
     }
