@@ -144,7 +144,7 @@
         <activity android:name="com.can.appstore.message.MessageHomeActivity"></activity>
         <activity android:name="com.can.appstore.message.MessageActivity">
             <intent-filter>
-                <action android:name="com.can.appstore.message.ACTION.Message" />
+                <action android:name="com.can.appstore.ACTION.MESSAGE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
