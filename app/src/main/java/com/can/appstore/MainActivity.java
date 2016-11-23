@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.bt_specail_detail).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SpecialDetailActivity.startAc(MainActivity.this);
+                SpecialDetailActivity.actionStart(MainActivity.this,"");
             }
         });
         findViewById(R.id.bt_install).setOnClickListener(new View.OnClickListener() {
