@@ -252,6 +252,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {   // 下载错误 , 设置取消,重新添加任务
             downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
             mDownloadManager.addDownloadTask(downloadTask, AppDetailPresenter.this);
+            clickRefreshButtonStatus(isClickUpdateButton, DOWNLOAD_INIT_PROGRESS);
+            return;
         } else if (downloadStatus == AppInstallListener.APP_INSTALL_FAIL) {   //安装失败,可能内存不足，安装包出现问题,删除安装包重新下载
             if (mInstallApkFileMD5.equals(mAppInfo.getMd5())) {  // MD5值相同  安装
                 silentInstall(mAppInfo.getName());
