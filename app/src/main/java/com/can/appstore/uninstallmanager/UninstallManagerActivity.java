@@ -120,7 +120,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             @Override
             public void onClick(View view) {
                 if (mUninstallManagerAdapter != null) {
-                    if (mUninstallManagerAdapter.getCurrentSelectMode() == CanRecyclerViewAdapter.MODE_SELECT) {
+                    if (mUninstallManagerAdapter.getCurrentSelectMode() == CanRecyclerViewAdapter.MODE_SELECT && mUninstallManagerAdapter.getItemCount() > 0) {
                         if (isSelect && mSelectPackageName != null && mSelectPackageName.size() > 0) {
                             mPresenter.batchUninstallApp(mSelectPackageName);
                         } else {
@@ -131,7 +131,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
                             hideSelectAppCount();
                             isSelect = !isSelect;
                         }
-                    } else if (mUninstallManagerAdapter.getCurrentSelectMode() == CanRecyclerViewAdapter.MODE_NORMAL) {
+                    } else if (mUninstallManagerAdapter.getCurrentSelectMode() == CanRecyclerViewAdapter.MODE_NORMAL && mUninstallManagerAdapter.getItemCount() > 0) {
                         mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_SELECT);
                         showSelectAppCount();
                         isSelect = !isSelect;
@@ -159,7 +159,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Log.d(TAG, "onKeyDow : " + keyCode);
-        if (mUninstallManagerAdapter != null) {
+        if (mUninstallManagerAdapter != null && mUninstallManagerAdapter.getItemCount() > 0) {
             if (keyCode == KeyEvent.KEYCODE_MENU && event.getAction() == KeyEvent.ACTION_DOWN) {
                 mUninstallManagerAdapter.switchSelectMode(isSelect ? CanRecyclerViewAdapter.MODE_NORMAL : CanRecyclerViewAdapter.MODE_SELECT);
                 if (isSelect) {
