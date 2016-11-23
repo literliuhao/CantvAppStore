@@ -1,10 +1,12 @@
 package com.can.appstore.myapps.allappsview;
 
-import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.base.BaseActivity;
 import com.can.appstore.myapps.adapter.AllAppsRecyclerViewAdapter;
 import com.can.appstore.widgets.CanDialog;
 
@@ -23,13 +26,14 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
+import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 import static com.can.appstore.MyApp.mContext;
 
 /**
  * Created by wei on 2016/10/26.
  */
 
-public class AllAppsActivity extends Activity implements AllAppsContract.View {
+public class AllAppsActivity extends BaseActivity implements AllAppsContract.View {
 
     private List<AppInfo> allAppList = null;
     private CanRecyclerView mAllAppsRecyclerView;
@@ -51,6 +55,8 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
     private MyFocusRunnable myFocusRunnable;
     private boolean focusSearchFailed;
     private CanRecyclerViewAdapter.OnFocusChangeListener myFocusChangesListener;
+    private long mTime;
+    public static final int MIN_DOWN_INTERVAL = 80;//响应点击事件的最小间隔事件
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,8 +125,32 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
                 childAt.requestFocus();
             }
         }, 50);
+        mAllAppsRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                myFocusRunnable.run();
+            }
+        });
     }
 
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            long time = System.currentTimeMillis();
+            if (mTime == 0) {
+                mTime = System.currentTimeMillis();
+                return super.dispatchKeyEvent(event);
+            } else if (time - mTime < MIN_DOWN_INTERVAL) {
+                Log.d(TAG, "dispatchKeyEvent: " + System.currentTimeMillis());
+                return true;
+            } else {
+                mTime = System.currentTimeMillis();
+            }
+        }
+        return super.dispatchKeyEvent(event);
+    }
 
     private void editItem(final View item, final int position) {
 
@@ -224,11 +254,14 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
         mAllAppsPresenter.hideLoading();
     }
 
+
     @Override
-    public void onClickHomeKey() {
+    protected void onHomeKeyDown() {
+        if(mCanDialog!= null){
+            mCanDialog.dismiss();
+        }
         finish();
     }
-
 
     private class myOnItemClickListener implements CanRecyclerViewAdapter.OnItemClickListener {
         @Override
@@ -270,7 +303,6 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
         @Override
         public boolean onItemKeyEvent(int position, View v, int keyCode, KeyEvent event) {
             if (keyCode == KeyEvent.KEYCODE_MENU) {
-                //判断系统应用机制
                 mAdapter.setOnFocusChangeListener(null);
                 ll_edit = (LinearLayout) v.findViewById(R.id.allapps_ll_edit);
                 butStrartapp = (Button) ll_edit.findViewById(R.id.allapps_but_startapp);
@@ -307,4 +339,15 @@ public class AllAppsActivity extends Activity implements AllAppsContract.View {
         mAllAppsPresenter.release();
         super.onDestroy();
     }
+
+    /**
+     * 打开全部应用
+     * *
+     * @param context
+     */
+    public static void actionStart(Context context) {
+        Intent intent = new Intent(context, AllAppsActivity.class);
+        context.startActivity(intent);
+    }
+
 }

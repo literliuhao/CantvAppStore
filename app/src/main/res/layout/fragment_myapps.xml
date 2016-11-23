@@ -3,13 +3,12 @@
                 android:id="@+id/myapps_main_page"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-
     >
 
     <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
         android:id="@+id/cr_myapps"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/px640"
+        android:layout_width="@dimen/px1700"
+        android:layout_height="@dimen/px610"
         android:layout_centerHorizontal="true"
         android:clipChildren="false"
         android:clipToPadding="false"

@@ -420,7 +420,7 @@ public class PackageUtil {
      * @param context
      * @return
      */
-    public static List<AppInfo> findAllexBllackThirdApps(Context context, List<AppInfo> appList, List<String> appBlackList) {
+    public static List<AppInfo> findAllThirdPartyAppsNoDelay(Context context, List<AppInfo> appList) {
         if (appList == null) {
             appList = new ArrayList<>();
         } else {
@@ -436,9 +436,6 @@ public class PackageUtil {
             if (isSystemApp) {
                 continue;
             }
-            if(appBlackList.contains(info.packageName)){
-                continue;
-            }
             index.incrementAndGet();
             final AppInfo app = new AppInfo();
             app.isSystemApp = isSystemApp;
@@ -466,13 +463,6 @@ public class PackageUtil {
             }
             appList.add(app);
         }
-        while (index.get() > 0) {
-            try {
-                Thread.sleep(20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
         return appList;
     }
 
@@ -484,7 +474,7 @@ public class PackageUtil {
      * @param context
      * @return
      */
-    public static List<AppInfo> findAllWhiteBlackApps(Context context, List<AppInfo> appList, List<String> appWhiteList, List<String> appBlackList) {
+    public static List<AppInfo> findAllComplexAppsNoDelay(Context context, List<AppInfo> appList, List<String> appWhiteList) {
         if (appList == null) {
             appList = new ArrayList<>();
         } else {
@@ -500,9 +490,6 @@ public class PackageUtil {
             if (isSystemApp && !appWhiteList.contains(info.packageName)) {
                 continue;
             }
-            if(appBlackList.contains(info.packageName)){
-                continue;
-            }
             index.incrementAndGet();
             final AppInfo app = new AppInfo();
             app.isSystemApp = isSystemApp;
@@ -530,13 +517,6 @@ public class PackageUtil {
                 app.size = apk.length();// apk包文件大小
             }
             appList.add(app);
-        }
-        while (index.get() > 0) {
-            try {
-                Thread.sleep(20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
         return appList;
     }

@@ -1,21 +1,21 @@
 package com.can.appstore.myapps.myappsfragmview;
 
+import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
 
-import com.can.appstore.myapps.model.MyAppsListDataUtil;
+import com.can.appstore.myapps.utils.MyAppsListDataUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
-
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
 /**
  * Created by wei on 2016/11/9.
@@ -29,6 +29,8 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
 
     //主页显示的第三方应用
     private List<AppInfo> mShowList = new ArrayList<AppInfo>(18);
+    //系统应用
+    List<AppInfo> systemApp;
     //系统应用的icon
     private List<Drawable> mDrawables = new ArrayList<Drawable>();
 
@@ -38,37 +40,52 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
         this.mContext = context;
     }
 
+    @TargetApi(Build.VERSION_CODES.CUPCAKE)
     @Override
     public void startLoad() {
         new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                //初始化数据
-                mMyAppsListDataUtil = new MyAppsListDataUtil(mContext);
-                mShowList = mMyAppsListDataUtil.getShowList(mShowList);
-                List<AppInfo> systemApp = mMyAppsListDataUtil.getSystemApp(null);
-                if (mDrawables.size() != 0) {
-                    mDrawables.clear();
-                }
-                for (int i = 0; i < systemApp.size(); i++) {
-                    mDrawables.add(systemApp.get(i).appIcon);
-                }
-                Log.i("MYSHOWLIST", "------" + mShowList.size());
-                return null;
-            }
-
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
             }
 
             @Override
+            protected Void doInBackground(Void... params) {
+                //初始化数据
+                mMyAppsListDataUtil = new MyAppsListDataUtil(mContext);
+                mShowList = mMyAppsListDataUtil.getShowList(mShowList);
+                systemApp = mMyAppsListDataUtil.getSystemApp(null);
+                mDrawables = sysAppInfo2Drawble(systemApp, mDrawables);
+                Log.i("MYSHOWLIST", "------" + mShowList.size());
+                return null;
+            }
+
+            @Override
             protected void onPostExecute(Void aVoid) {
-                mView.loadAppInfoSuccess(mShowList, mDrawables);
+                mView.loadAppInfoSuccess(mShowList);
+                mView.loadCustomDataSuccess(mDrawables);
+                removeHideApps();
             }
         }.execute();
 
 
+    }
+
+    //筛选隐藏应用
+    public void removeHideApps() {
+        systemApp = mMyAppsListDataUtil.removeHideApp(systemApp);
+        mDrawables = sysAppInfo2Drawble(systemApp, mDrawables);
+        mView.loadCustomDataSuccess(mDrawables);
+    }
+
+    private List<Drawable> sysAppInfo2Drawble(List<AppInfo> list, List<Drawable> mDrawablelist) {
+        if (mDrawablelist.size() != 0) {
+            mDrawablelist.clear();
+        }
+        for (int i = 0; i < list.size(); i++) {
+            mDrawablelist.add(list.get(i).appIcon);
+        }
+        return mDrawablelist;
     }
 
     @Override
@@ -91,17 +108,16 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
         }
     }
 
+
     class AppInstallReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             // 接收广播：设备上新安装了一个应用程序包后自动启动新安装应用程序。
             if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)) {
                 String packageName = intent.getDataString().substring(8);
-                Log.d(TAG, "install packageName : " + packageName);
                 startLoad();
             } else if (intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)) {
                 String packageName = intent.getData().getSchemeSpecificPart();
-                Log.d(TAG, "uninstall packageName : " + packageName);
                 int position = 0;
                 for (int i = 0; i < mShowList.size(); i++) {
                     if (packageName.equals(mShowList.get(i).packageName)) {
@@ -122,6 +138,14 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
             mShowList.clear();
             mShowList = null;
         }
+        if (systemApp != null) {
+            systemApp.clear();
+            systemApp = null;
+        }
+        if (mDrawables != null) {
+            mDrawables.clear();
+            mDrawables = null;
+        }
     }
 
 
@@ -129,14 +153,14 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
         AppInfo appInfo = mShowList.get(position);
         mShowList.remove(position);
         mShowList.add(2, appInfo);
-        mView.loadAppInfoSuccess(mShowList, mDrawables);
+        mView.loadAppInfoSuccess(mShowList);
         mMyAppsListDataUtil.saveShowList(mShowList);
     }
 
     public void removeApp(int position) {
         mShowList.remove(position);
         mMyAppsListDataUtil.saveShowList(mShowList);
-        mView.loadAppInfoSuccess(mShowList, mDrawables);
+        mView.loadAppInfoSuccess(mShowList);
     }
 
     public void unRegiestr() {
