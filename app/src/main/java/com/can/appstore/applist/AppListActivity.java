@@ -108,6 +108,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     private AppListContract.Presenter mPresenter;
     private FocusMoveUtil mFocusMoveUtil;
     private Handler mHandler;
+    private Runnable mSelectRunable;
     private Runnable mChangeAppBgRunnable;
     private int mPageType;
     private String mTypeId;
@@ -490,10 +491,16 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 return false;
             }
         });
-        mMenu.postDelayed(new Runnable() {
+
+
+        mSelectRunable = new Runnable() {
             @Override
             public void run() {
                 // showFocusView
+                if(isDestroyed()){
+                    Log.d(TAG, "refreshAppList: isDestroyed1");
+                    return;
+                }
                 View child = mMenu.getChildAt(focusPosition);
                 mFocusMoveUtil.setFocusView(child);
                 mFocusMoveUtil.showFocus();
@@ -513,7 +520,9 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                     refreshMenuPaddingWithFocusRegion();
                 }
             }
-        }, 100);
+        };
+
+        mHandler.postDelayed(mSelectRunable,100);
     }
 
     private void hideMenuTopArrow() {
@@ -624,8 +633,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 mLineNumTv.setVisibility(View.INVISIBLE);
                 return;
             }
-            // TODO: 2016/11/14 删除
-            mAppListAdapter.setDatas(appListData);
             mAppListAdapter.notifyDataSetChanged();
             mMenu.postDelayed(new Runnable() {
                 @Override
@@ -634,7 +641,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 }
             }, 20);
         } else {
-            mAppListAdapter.setDatas(appListData);
             mAppListAdapter.notifyItemInserted(insertPosition);
         }
 
@@ -678,13 +684,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
         mTileTv.setText(typeName);
     }
 
-    @Override
-    public void changeAppInfoUiToFail() {
-        mAppList.setVisibility(View.INVISIBLE);
-        mLoadFailView.setVisibility(View.VISIBLE);
-        mLineNumTv.setVisibility(View.INVISIBLE);
-    }
-
     /**
      * 显示应用列表
      */
@@ -705,6 +704,19 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     public void showFailUI(){
         if(mLoadFailView.getVisibility() != View.VISIBLE ){
             mLoadFailView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * 隐藏应用列表
+     */
+    @Override
+    public void hideAppList(){
+        if(mAppList.getVisibility() == View.VISIBLE){
+            mAppList.setVisibility(View.INVISIBLE);
+        }
+        if (mLineNumTv.getVisibility() == View.VISIBLE) {
+            mLineNumTv.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -779,6 +791,16 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     protected void onDestroy() {
         if (mFocusMoveUtil != null) {
             mFocusMoveUtil.release();
+        }
+
+        if(mPresenter != null){
+            Log.d(TAG, "onDestroy: mPresenter.release()");
+            mPresenter.release();
+        }
+
+        if(mMenu != null){
+            mMenu.removeCallbacks(mSelectRunable);
+            Log.d(TAG, "onDestroy:removeCallbacks ");
         }
         super.onDestroy();
     }

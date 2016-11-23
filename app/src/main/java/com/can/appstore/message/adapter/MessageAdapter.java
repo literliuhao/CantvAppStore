@@ -153,13 +153,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
                     }
                     break;
                 case R.id.ll_focus_msg:
-                    MessageInfo msg = msgList.get(getLayoutPosition());
+                    /*MessageInfo msg = msgList.get(getLayoutPosition());
                     if (msg.getStatus()){
                         MessageManager.updateStatus(msg.getMsgId());
                         msg.setStatus(false);
                         msgList.set(getLayoutPosition(), msg);
                         notifyItemChanged(getLayoutPosition());
-                    }
+                    }*/
                     if (mFocusClickListener != null) {
                         mFocusClickListener.onllMsgClick(v, getLayoutPosition());
                     }

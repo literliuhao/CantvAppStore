@@ -35,7 +35,7 @@ public class AppListPresenter implements AppListContract.Presenter {
     //常量
     public static final int PAGE_SIZE = 18;   //每次加载请求的总App数
     public static final int REFRESH_APP = 0;  //整个刷新adpter
-    public static final int REQUEST_DELAY = 500;  //请求延迟时间
+    public static final int REQUEST_DELAY = 1000;  //请求延迟时间
 
     //handler msg.what
     public static final int REFRESH_APP_LIST = 1;
@@ -161,6 +161,9 @@ public class AppListPresenter implements AppListContract.Presenter {
             @Override
             public void onFailure(CanCall<Result<AppInfoContainer>> call, CanErrorWrapper errorWrapper) {
                 // TODO: 2016/11/11  具体
+                if(call.isCanceled()){
+                    return;
+                }
                 mView.hideLoadingDialog();
                 ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.load_data_faild));
                 mView.finish();
@@ -187,20 +190,22 @@ public class AppListPresenter implements AppListContract.Presenter {
      */
     @Override
     public void loadAppListData(String topicId) {
-
-        if(!NetworkUtils.isNetworkConnected(mContext)){
-            ToastUtils.showMessage(mContext,mContext.getResources().getString(R.string.no_network));
-            return;
-        }
-
         mPage = 1;
         mAppInfos.clear();
+        if(!NetworkUtils.isNetworkConnected(mContext)){
+            ToastUtils.showMessage(mContext,mContext.getResources().getString(R.string.no_network));
+            sendFailLoadRunable(calculateDelayTime());
+            return;
+        }
 
         CanCallback<Result<AppInfoContainer>> canCallback = new CanCallback<Result<AppInfoContainer>>() {
             @Override
             public void onResponse(CanCall<Result<AppInfoContainer>> call, Response<Result<AppInfoContainer>>
                     response) throws Exception {
                 // TODO: 2016/11/11
+                if(mAppListInfoCall.isCanceled()){
+                    Log.d(TAG, "onResponse: isCanceled");
+                }
                 //初始化分页信息
                 mPage = 2;
                 mCurrentLine = 1;
@@ -212,6 +217,7 @@ public class AppListPresenter implements AppListContract.Presenter {
 
                 //计算总行数
                 mTotalLine = calculateRowNumber(mTotalSize);
+                //计算延迟时间
                 long delayTime = calculateDelayTime();
                 mHandler.sendEmptyMessageDelayed(HIDE_LOADING, delayTime);
                 mView.refreshAppList(mAppInfos, REFRESH_APP, delayTime);
@@ -222,11 +228,10 @@ public class AppListPresenter implements AppListContract.Presenter {
             public void onFailure(CanCall<Result<AppInfoContainer>> call, CanErrorWrapper errorWrapper) {
                 long delayTime = calculateDelayTime();
                 Log.d(TAG, "onFailure:" + "&&&&&&&&&&" );
+                // TODO: 2016/11/22 合并代码后删除
                 if(call.isCanceled()){
                     return;
                 }
-                //清空数据
-                mAppInfos.clear();
                 mHandler.sendEmptyMessageDelayed(HIDE_LOADING, delayTime);
                 sendFailLoadRunable(delayTime);
                 Log.d(TAG, "onFailure:" + errorWrapper.getReason() + "-----" + errorWrapper.getThrowable());
@@ -346,12 +351,17 @@ public class AppListPresenter implements AppListContract.Presenter {
         mView.refreshRowNumber(spannable);
     }
 
+    /**
+     * 延时显现加载错误UI
+     * @param delayTime 延迟时间
+     */
     private void sendFailLoadRunable(long delayTime){
         if(mLoadFailRunable == null){
             mLoadFailRunable = new Runnable() {
                 @Override
                 public void run() {
-                    mView.changeAppInfoUiToFail();
+                  mView.hideAppList();
+                  mView.showFailUI();
                 }
             };
         }

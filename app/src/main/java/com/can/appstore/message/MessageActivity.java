@@ -13,15 +13,18 @@ import android.widget.TextView;
 
 import com.can.appstore.ActionConstants;
 import com.can.appstore.R;
+import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.message.adapter.MessageAdapter;
 import com.can.appstore.message.db.entity.MessageInfo;
 import com.can.appstore.message.manager.GreenDaoManager;
+import com.can.appstore.message.manager.MessageManager;
+import com.can.appstore.search.ToastUtil;
 
 import java.util.List;
 
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
-import cn.can.tvlib.utils.ToastUtils;
+import cn.can.tvlib.utils.NetworkUtils;
 
 /**
  * 消息主页面
@@ -106,19 +109,38 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         mAdapter.setOnllMsgClickListener(new MessageAdapter.OnMsgFocusLayoutClickListener() {
             @Override
             public void onllMsgClick(View view, int position) {
+                boolean isNetConnected = NetworkUtils.isNetworkConnected(MessageActivity.this);
                 MessageInfo msg = msgList.get(position);
+                if(msg == null){
+                    return;
+                }
+                if (!isNetConnected &&  !msg.getAction().equals(ActionConstants.ACTION_NOTHIN)){
+                    ToastUtil.toastShort("网络连接失败");
+                    return;
+                }
                 switch (msg.getAction()) {
                     case ActionConstants.ACTION_NOTHIN:
-                        ToastUtils.showMessage(MessageActivity.this , "无反应");
+                        refreshRecyclerItem(msg , position);
                         break;
                     case ActionConstants.ACTION_APP_DETAIL:
-                        ToastUtils.showMessage(MessageActivity.this , "应用详情页");
+                       ToastUtil.toastShort("跳转到应用详情页");
+                       String appDetailActionData = msg.getActionData();
+                       AppDetailActivity.actionStart(MessageActivity.this , appDetailActionData );
+                       refreshRecyclerItem(msg , position);
                         break;
                     case ActionConstants.ACTION_TOPIC_DETAIL:
-                        ToastUtils.showMessage(MessageActivity.this , "专题详情页");
+                        ToastUtil.toastShort("跳转到专题详情页");
+                        // TODO: 2016/11/23  
+//                        String topicActionData = msg.getActionData();
+//                        SpecialDetailActivity.actionStart(MessageActivity.this , topicActionData);
+                        refreshRecyclerItem(msg , position);
                         break;
                     case ActionConstants.ACTION_ACTIVITY_DETAIL:
-                        ToastUtils.showMessage(MessageActivity.this , "活动详情页");
+                        ToastUtil.toastShort("跳转到活动详情页");
+                        // TODO: 2016/11/23
+//                        String activityActionData = msg.getActionData();
+//                        ActiveActivity.actionStart(MessageActivity.this , activityActionData);
+                        refreshRecyclerItem(msg , position);
                         break;
                 }
             }
@@ -134,27 +156,28 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         mAdapter.setOnItemRemoveListener(new MessageAdapter.OnItemRemoveListener() {
             @Override
             public void onRemoveItem(int position) {
+                focusMoveUtil.hideFocusForShowDelay(400);
                 int msgCount = msgList.size();
                 refreshTotalText(msgCount);
                 if (msgCount == 0) {
                     itemTotal.setVisibility(View.INVISIBLE);
                     itemPos.setVisibility(View.INVISIBLE);
                     mRecyclerView.setVisibility(View.INVISIBLE);
+                    btnClear.setVisibility(View.INVISIBLE);
                     empty.setVisibility(View.VISIBLE);
                     return;
                 }
-                //删除最后一行情况
                 if (position > msgCount - 1) {
                     focusMsgItem(position - 1);
                     return;
                 }
-                /*int first = llManager.findFirstVisibleItemPosition();
+                int first = llManager.findFirstVisibleItemPosition();
                 int last = llManager.findLastVisibleItemPosition();
                 if (first != 0 && last == msgCount) {
                     focusMsgItem(position - 1);
                     return;
-                }*/
-                deleteLastItem = position == msgCount - 1;
+                }
+                deleteLastItem = position == msgCount + 1;
                 final int posi = deleteLastItem ? position - 1 : position;
                 focusMsgItem(posi);
                 focusViewMoveEnable = false;
@@ -163,9 +186,19 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                     public void run() {
                         focusMsgItemInRunnable(posi);
                     }
-                }, 500);
+                }, 400);
             }
         });
+    }
+
+    private void refreshRecyclerItem( MessageInfo msg , int position){
+        if (msg.getStatus()){
+                    MessageManager.updateStatus(msg.getMsgId());
+                    msg.setStatus(false);
+                    msgList.set(position, msg);
+                    mAdapter.setMsgList(msgList);
+                    mAdapter.notifyItemChanged(position);
+        }
     }
 
     private void initRecyclerView() {
@@ -199,7 +232,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                     if (deleteLastItem) {
                         focusViewMoveEnable = true;
                     }
-                    mHandler.postDelayed(mFocusMoveRunnable, 500);
+                    mHandler.postDelayed(mFocusMoveRunnable, 300);
                 }
             }
         });
@@ -295,6 +328,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                 mRecyclerView.setVisibility(View.GONE);
                 itemPos.setVisibility(View.GONE);
                 itemTotal.setVisibility(View.GONE);
+                btnClear.setVisibility(View.GONE);
                 empty.setVisibility(View.VISIBLE);
                 msgList.clear();
                 break;
@@ -322,12 +356,6 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
 
     @Override
     protected void onStop() {
-        if (dbManager != null) {
-            dbManager = null;
-        }
-        if (msgList != null) {
-            msgList.clear();
-        }
         super.onStop();
     }
 
@@ -336,6 +364,12 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         if (focusMoveUtil != null) {
             focusMoveUtil.release();
             focusMoveUtil = null;
+        }
+        if (dbManager != null) {
+            dbManager = null;
+        }
+        if (msgList != null) {
+            msgList.clear();
         }
         if (mAdapter != null) {
             mAdapter.setFocusListener(null);

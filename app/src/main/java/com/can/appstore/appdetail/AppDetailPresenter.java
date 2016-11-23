@@ -249,6 +249,9 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         } else if (!NetworkUtils.isNetworkConnected(mContext)) { // 网络连接断开时不能点击
             mView.showToast(mContext.getResources().getString(R.string.network_connection_disconnect));
             return;
+        } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {   // 下载错误 , 设置取消,重新添加任务
+            downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
+            mDownloadManager.addDownloadTask(downloadTask, AppDetailPresenter.this);
         } else if (downloadStatus == AppInstallListener.APP_INSTALL_FAIL) {   //安装失败,可能内存不足，安装包出现问题,删除安装包重新下载
             if (mInstallApkFileMD5.equals(mAppInfo.getMd5())) {  // MD5值相同  安装
                 silentInstall(mAppInfo.getName());
@@ -275,11 +278,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
             clickRefreshButtonStatus(isClickUpdateButton, per);
             mDownloadManager.resume(mTaskId);
-        } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {
-            if (downlaodErrorCode != DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR) {//重试
-                clickRefreshButtonStatus(isClickUpdateButton, per);
-                mDownloadManager.resume(mTaskId);
-            }
         }
     }
 
