@@ -119,21 +119,23 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         mBtBatchUninstall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mUninstallManagerAdapter.getCurrentSelectMode() == CanRecyclerViewAdapter.MODE_SELECT) {
-                    if (isSelect && mSelectPackageName != null && mSelectPackageName.size() > 0) {
-                        mPresenter.batchUninstallApp(mSelectPackageName);
-                    } else {
-                        mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_NORMAL);
-                        if (mSelectPackageName != null) {
-                            mSelectPackageName.clear();
+                if (mUninstallManagerAdapter != null) {
+                    if (mUninstallManagerAdapter.getCurrentSelectMode() == CanRecyclerViewAdapter.MODE_SELECT) {
+                        if (isSelect && mSelectPackageName != null && mSelectPackageName.size() > 0) {
+                            mPresenter.batchUninstallApp(mSelectPackageName);
+                        } else {
+                            mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_NORMAL);
+                            if (mSelectPackageName != null) {
+                                mSelectPackageName.clear();
+                            }
+                            hideSelectAppCount();
+                            isSelect = !isSelect;
                         }
-                        hideSelectAppCount();
+                    } else if (mUninstallManagerAdapter.getCurrentSelectMode() == CanRecyclerViewAdapter.MODE_NORMAL) {
+                        mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_SELECT);
+                        showSelectAppCount();
                         isSelect = !isSelect;
                     }
-                } else if (mUninstallManagerAdapter.getCurrentSelectMode() == CanRecyclerViewAdapter.MODE_NORMAL) {
-                    mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_SELECT);
-                    showSelectAppCount();
-                    isSelect = !isSelect;
                 }
             }
         });
@@ -157,22 +159,24 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Log.d(TAG, "onKeyDow : " + keyCode);
-        if (keyCode == KeyEvent.KEYCODE_MENU && event.getAction() == KeyEvent.ACTION_DOWN) {
-            mUninstallManagerAdapter.switchSelectMode(isSelect ? CanRecyclerViewAdapter.MODE_NORMAL : CanRecyclerViewAdapter.MODE_SELECT);
-            if (isSelect) {
+        if (mUninstallManagerAdapter != null) {
+            if (keyCode == KeyEvent.KEYCODE_MENU && event.getAction() == KeyEvent.ACTION_DOWN) {
+                mUninstallManagerAdapter.switchSelectMode(isSelect ? CanRecyclerViewAdapter.MODE_NORMAL : CanRecyclerViewAdapter.MODE_SELECT);
+                if (isSelect) {
+                    hideSelectAppCount();
+                } else {
+                    showSelectAppCount();
+                }
+                isSelect = !isSelect;
+            } else if (keyCode == KeyEvent.KEYCODE_BACK && isSelect && event.getAction() == KeyEvent.ACTION_DOWN) {
+                mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_NORMAL);
                 hideSelectAppCount();
-            } else {
-                showSelectAppCount();
+                if (mSelectPackageName != null) {
+                    mSelectPackageName.clear();
+                }
+                isSelect = !isSelect;
+                return true;
             }
-            isSelect = !isSelect;
-        } else if (keyCode == KeyEvent.KEYCODE_BACK && isSelect && event.getAction() == KeyEvent.ACTION_DOWN) {
-            mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_NORMAL);
-            hideSelectAppCount();
-            if (mSelectPackageName != null) {
-                mSelectPackageName.clear();
-            }
-            isSelect = !isSelect;
-            return true;
         }
         return super.onKeyDown(keyCode, event);
     }
