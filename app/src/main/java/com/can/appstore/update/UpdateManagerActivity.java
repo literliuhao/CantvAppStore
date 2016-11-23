@@ -2,11 +2,16 @@ package com.can.appstore.update;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -18,9 +23,11 @@ import android.widget.Toast;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
+import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.installpkg.utils.InstallPkgUtils;
 import com.can.appstore.installpkg.view.LoadingDialog;
 import com.can.appstore.update.model.AppInfoBean;
+import com.can.appstore.update.utils.UpdateUtils;
 import com.can.appstore.widgets.CanDialog;
 
 import java.util.List;
@@ -32,6 +39,7 @@ import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
+import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PreferencesUtils;
 
 /**
@@ -39,7 +47,7 @@ import cn.can.tvlib.utils.PreferencesUtils;
  * Created by shenpx on 2016/10/12 0012.
  */
 
-public class UpdateManagerActivity extends Activity implements UpdateContract.View,DownloadTaskListener {
+public class UpdateManagerActivity extends Activity implements UpdateContract.View {
 
     private CanRecyclerView mRecyclerView;
     private UpdateManagerAdapter mRecyclerAdapter;
@@ -47,41 +55,22 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
     private Button mAutoButton;
     private TextView mReminder;
     private int mCurrentPositon;
-    private TextView mRoomSize;
     private boolean mAutoUpdate;
     private TextView mTotalnum;
     private TextView mCurrentnum;
-    private ProgressBar mSizeProgressBar;
-    private int i;
+    private TextProgressBar mSizeProgressBar;
     private Dialog mLoadingDialog;
     FocusMoveUtil mFocusMoveUtil;
     FocusScaleUtil mFocusScaleUtil;
     private View mFocusedListChild;
     private MyFocusRunnable myFocusRunnable;
     private CanDialog canDialog;
-    private cn.can.downloadlib.DownloadManager manager;
     private UpdatePresenter mPresenter;
     private List<AppInfoBean> mUpdateList;
     private cn.can.downloadlib.DownloadManager mDownloadManager;
-    private ProgressBar mUpdatePro;
     private String mCurrentId;
-
-    public Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 1:
-                    if (msg.arg1 > 0) {
-                        mUpdatePro.setVisibility(View.VISIBLE);
-                        mUpdatePro.setProgress(msg.arg1);
-                    } else {
-                        mUpdatePro.setVisibility(View.INVISIBLE);
-                    }
-                    Toast.makeText(MyApp.mContext, msg.arg1 + "", Toast.LENGTH_SHORT).show();
-                    break;
-            }
-        }
-    };
+    private BroadcastReceiver mUpdatelApkReceiver;
+    private IntentFilter intentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +88,36 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
     @Override
     protected void onStart() {
         super.onStart();
+        //registerInstalledReceiver();
+    }
+
+
+    /**
+     * 安装完成广播，刷新数据,失败广播获取包名，install为true再刷新 再加集合存储安装成功
+     */
+    private void registerInstalledReceiver() {
+        if (mUpdatelApkReceiver == null) {
+            mUpdatelApkReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (intent.getAction().equals("android.intent.action.PACKAGE_ADDED") || intent.getAction().equals("android.intent.action.PACKAGE_REPLACED")) {
+                        String packageName = intent.getDataString().substring(8);
+                        //刷新图标（可能多重版本）通过广播获取安装完成刷新ui  +&& bean.getVersionCode().equals(String.valueOf(versonCode))
+                        int versonCode = UpdateUtils.getVersonCode(MyApp.mContext, packageName);
+                        mPresenter.isInstalled(packageName,versonCode);
+                        Toast.makeText(MyApp.mContext, packageName + "更新成功啦!!!", Toast.LENGTH_LONG).show();
+                    } else if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
+                        Toast.makeText(MyApp.mContext, "更新失败", Toast.LENGTH_LONG).show();
+                    }
+                }
+            };
+            intentFilter = new IntentFilter();
+            intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+            intentFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
+            intentFilter.addAction(Intent.ACTION_VIEW);
+            intentFilter.addDataScheme("package");
+        }
+        registerReceiver(mUpdatelApkReceiver, intentFilter);
     }
 
     @Override
@@ -128,8 +147,9 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
+                    mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mDetectionButton, 1.0f);
-                    //mFocusScaleUtil.scaleToLarge(mDetectionButton);
+                    mPresenter.setNum(0);
                 } else {
                     mFocusScaleUtil.scaleToNormal(mDetectionButton);
                 }
@@ -140,8 +160,9 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
+                    mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mAutoButton, 1.0f);
-                    //mFocusScaleUtil.scaleToLarge(mAutoButton);
+                    mPresenter.setNum(0);
                 } else {
                     mFocusScaleUtil.scaleToNormal(mAutoButton);
                 }
@@ -159,13 +180,22 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 } else {
                     mFocusScaleUtil.scaleToNormal();
                 }
+                view.setSelected(hasFocus);
             }
 
         });
-        /*mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
+                if (newState == CanRecyclerView.SCROLL_STATE_SETTLING) {
+                    mDetectionButton.setFocusable(false);
+                    mAutoButton.setFocusable(false);
+                } else if (newState == CanRecyclerView.SCROLL_STATE_IDLE) {
+                    mDetectionButton.setFocusable(true);
+                    mAutoButton.setFocusable(true);
+                }
             }
 
             @Override
@@ -173,7 +203,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 super.onScrolled(recyclerView, dx, dy);
                 myFocusRunnable.run();
             }
-        });*/
+        });
     }
 
     private void initClick() {
@@ -181,7 +211,6 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
         mDetectionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Toast.makeText(UpdateManagerActivity.this, "点击检测更新,item总数：" + mDatas.size(), Toast.LENGTH_SHORT).show();
                 mAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
                 if (mAutoUpdate) {
                     mPresenter.clearList();
@@ -229,6 +258,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                     mDownloadManager = cn.can.downloadlib.DownloadManager.getInstance(UpdateManagerActivity.this);
                 }
                 DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(downloadUrl));
+                //mDownloadManager.install(downloadTask);
                 if (downloadTask == null) {
                     /*int status = downloadTask.getDownloadStatus();
 
@@ -442,19 +472,26 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
     private void initView() {
         mTotalnum = (TextView) findViewById(R.id.tv_update_totalnum);
         mCurrentnum = (TextView) findViewById(R.id.tv_update_currentnum);
-        mRoomSize = (TextView) findViewById(R.id.tv_update_roomsize);
         mDetectionButton = (Button) findViewById(R.id.bt_update_detection);
         mAutoButton = (Button) findViewById(R.id.bt_update_auto);
         mRecyclerView = (CanRecyclerView) findViewById(R.id.rv_update_recyclerview);
         mReminder = (TextView) findViewById(R.id.tv_update_reminder);
-        mSizeProgressBar = (ProgressBar) findViewById(R.id.pb_update_progressbar);
+        mSizeProgressBar = (TextProgressBar) findViewById(R.id.pb_update_progressbar);
         mFocusMoveUtil = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
         mFocusScaleUtil = new FocusScaleUtil();
         myFocusRunnable = new MyFocusRunnable();
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
-        //mRecyclerView.setAdapter(mRecyclerAdapter);
+        CanRecyclerViewDivider canRecyclerViewDivider = new CanRecyclerViewDivider(0, getResources().getDimensionPixelSize(R.dimen.px38), 0);
+        mRecyclerView.addItemDecoration(canRecyclerViewDivider);
+        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.setSelected(true);
+        mDetectionButton.post(new Runnable() {
+            @Override
+            public void run() {
+                mDetectionButton.setFocusable(true);
+                mDetectionButton.requestFocus();
+            }
+        });
 
     }
 
@@ -491,15 +528,15 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
     }
 
     @Override
-    public void showSDProgressbar(int currentsize, int total, String sdinfo) {
-        mSizeProgressBar.setMax(total);
+    public void showSDProgressbar(int currentsize, String sdinfo) {
         mSizeProgressBar.setProgress(currentsize);
-        mRoomSize.setText(getString(R.string.update_sdavaliable_size) + sdinfo);
+        mSizeProgressBar.setTextSize(getResources().getDimensionPixelOffset(R.dimen.px18));
+        mSizeProgressBar.setText(sdinfo);
     }
 
     @Override
     public void refreshItem(int position) {
-
+        mRecyclerAdapter.notifyItemChanged(position);
     }
 
     @Override
@@ -518,6 +555,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
         if (mRecyclerAdapter == null) {
             mRecyclerAdapter = new UpdateManagerAdapter(mDatas);
         }
+//        }
         mRecyclerView.setAdapter(mRecyclerAdapter);
         mRecyclerAdapter.notifyDataSetChanged();
     }
@@ -547,62 +585,12 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
         return super.onKeyDown(keyCode, event);
     }
 
-    @Override
-    public void onPrepare(DownloadTask downloadTask) {
-        String url = downloadTask.getUrl();
-        /*for (int i = 0; i < mUpdateList.size(); i++) {
-            String downloadUrl = mUpdateList.get(i).getDownloadUrl();
-            if (downloadUrl.equals(url)) {
-                View view = mRecyclerView.getChildAt(i);
-                ProgressBar progressbar = (ProgressBar) view.findViewById(R.id.pb_updateapp_progressbar);
-
-            }
-        }*/
+    /**
+     * 启动更新管理
+     * @param context
+     */
+    public static void actionStart(Context context){
+        Intent intent = new Intent(context, UpdateManagerActivity.class);
+        context.startActivity(intent);
     }
-
-    @Override
-    public void onStart(DownloadTask downloadTask) {
-
-    }
-
-    @Override
-    public void onDownloading(DownloadTask downloadTask) {
-        /*mHandler.removeMessages(1);
-        Message message = mHandler.obtainMessage();
-        message.what = 1;
-        message.arg1 = (int) downloadTask.getPercent();
-        mHandler.sendMessage(message);*/
-    }
-
-    @Override
-    public void onPause(DownloadTask downloadTask) {
-
-    }
-
-    @Override
-    public void onCancel(DownloadTask downloadTask) {
-
-    }
-
-    @Override
-    public void onCompleted(DownloadTask downloadTask) {
-
-    }
-
-    @Override
-    public void onError(DownloadTask downloadTask, int errorCode) {
-
-    }
-
-
-    /*GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
-    int firstItemPosition = gridLayoutManager.findFirstVisibleItemPosition();
-    if (i - firstItemPosition >= 0) {
-        //得到要更新的item的view
-        View view = mRecyclerView.getChildAt(i - firstItemPosition);
-        if (null != mRecyclerView.getChildViewHolder(view)) {
-            ProductsViewHolder viewHolder = (ProductsViewHolder) mRecyclerView.getChildViewHolder(view);
-
-        }
-    }*/
 }

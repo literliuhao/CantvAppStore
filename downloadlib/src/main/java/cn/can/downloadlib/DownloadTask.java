@@ -30,6 +30,7 @@ import okhttp3.ResponseBody;
  * ================================================
  */
 public class DownloadTask implements Runnable {
+    private static final String TAG = "DownloadTaskRunnable";
     private DownloadDBEntity mDbEntity;
     private DownloadDao mDownloadDao;
     private DownloadManager mDownloadManager;
@@ -102,7 +103,7 @@ public class DownloadTask implements Runnable {
             }
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_START;
             onStart();
-            Log.e("debug", mUrl + "DownloadedSize:" + mDownloadedSize);
+            Log.e(TAG,"*****onStart*****" +mUrl + "DownloadedSize:" + mDownloadedSize);
             Request request = new Request.Builder()
                     .url(mUrl)
                     .header("RANGE", "bytes=" + mDownloadedSize + "-")
@@ -177,19 +178,19 @@ public class DownloadTask implements Runnable {
             onError(DownloadTaskListener.DOWNLOAD_ERROR_FILE_NOT_FOUND);
             return;
         } catch (SocketException e) {
-            Log.d("", "*******SocketException*******");
+            Log.d(TAG, "*******SocketException*******");
             e.printStackTrace();
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
             onError(DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR);
             return;
         } catch (IOException e) {
-            Log.d("", "*******IOException*******");
+            Log.d(TAG, "*******IOException*******");
             e.printStackTrace();
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
             onError(DownloadTaskListener.DOWNLOAD_ERROR_IO_ERROR);
             return;
         } catch (Exception e) {
-            Log.d("", "*******Exception*******");
+            Log.d(TAG, "*******Exception*******");
             e.printStackTrace();
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
             onError(DownloadTaskListener.DOWNLOAD_ERROR_UNKONW_ERROR);
@@ -226,7 +227,7 @@ public class DownloadTask implements Runnable {
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_COMPLETED;
         mDbEntity.setDownloadStatus(mDownloadStatus);
         mDownloadDao.update(mDbEntity);
-        Log.d("onDownloadComplete2", mDbEntity.toString());
+        Log.d(TAG,"*****onDownloadComplete2*****   "+ mDbEntity.toString());
 
 
         switch (mDownloadStatus) {
@@ -362,24 +363,11 @@ public class DownloadTask implements Runnable {
     }
 
     private void onDownloading() {
-        Log.d("onDownloading", mId + " listener size:" + mDownloadlisteners.size()+"  total size:"+mTotalSize);
+        Log.d(TAG,"*****onDownloading***** task+"+this.toString() + " listener size:" + mDownloadlisteners.size());
         for (DownloadTaskListener listener : mDownloadlisteners) {
             listener.onDownloading(this);
         }
     }
-
-    //    private void installAPK() {
-    //        mAppListener.onInstalling(this);
-    //        setDownloadStatus(AppInstallListener.APP_INSTALLING);
-    //        ShellUtils.CommandResult res = ShellUtils.execCommand("pm install " + mSaveDirPath, false);
-    //        if (res.result == 0) {
-    //            setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
-    //            mAppListener.onInstallSucess(this);
-    //        } else {
-    //            setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
-    //            mAppListener.onInstallFail(this);
-    //        }
-    //    }
 
     private void onCompleted() {
         for (DownloadTaskListener listener : mDownloadlisteners) {
@@ -414,7 +402,10 @@ public class DownloadTask implements Runnable {
     }
 
     public void addDownloadListener(DownloadTaskListener listener) {
-        mDownloadlisteners.add(listener);
+        /**添加重复元素判断 xzl */
+        if(!mDownloadlisteners.contains(listener)){
+            mDownloadlisteners.add(listener);
+        }
     }
 
     /**

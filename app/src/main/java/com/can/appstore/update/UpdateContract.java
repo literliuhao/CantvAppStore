@@ -34,7 +34,7 @@ public interface UpdateContract {
          */
         void showStartAutoUpdate();
 
-        void showSDProgressbar(int currentsize, int total, String sdinfo);
+        void showSDProgressbar(int currentsize, String sdinfo);
 
         /**
          * 刷新单个条目
@@ -95,25 +95,4 @@ public interface UpdateContract {
         void release();
     }
 
-    //更新进度view
-    interface UpdateView {
-        /**
-         * 刷新更新状态按钮
-         */
-        void refreshUpdateButton(String status,boolean visible);
-
-        /**
-         * 刷新更新进度
-         */
-        void refreshUpdateProgress(int progress, boolean visible);
-        /**
-         * 刷新更新标
-         */
-        void refreshUpdateIcon();
-        /**
-         * 完成时刻
-         */
-        void showCompleted(String text);
-
-    }
 }

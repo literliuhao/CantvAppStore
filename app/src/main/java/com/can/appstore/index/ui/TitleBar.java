@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -300,13 +301,13 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
         int marginLR = (int) getResources().getDimension(R.dimen.px40);
-        int textSize = (int) getResources().getDimension(R.dimen.px30);
+        int textSize = (int) getResources().getDimension(R.dimen.px38);
 
         lp.setMargins(marginLR, 0, marginLR, 0);
         textView.setGravity(Gravity.CENTER);
         textView.setTextColor(COLOR_TEXT_NORMAL);
         textView.setText(text);
-        textView.setTextSize(textSize);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
         textView.setLayoutParams(lp);
         textView.setFocusable(true);
         textView.setOnFocusChangeListener(this);

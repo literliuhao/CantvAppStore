@@ -15,15 +15,14 @@ import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.base.BaseActivity;
-import com.can.appstore.download.DownloadActivity;
 import com.can.appstore.entity.SpecialTopic;
+import com.can.appstore.specialdetail.SpecialDetailActivity;
 import com.can.appstore.specialtopic.adapter.SpecialAdapter;
 
 import java.util.List;
 
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
-import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
@@ -36,8 +35,9 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     private static final String TAG = "SpecialActivity";
     private static final float FOCUS_SCALE = 1.0f;
     public static final int COLUMN_COUNT = 4;
-    public static final int FOCUS_IMAGE=R.mipmap.image_focus;
-    public static final int FOCUS_BUTTON=R.mipmap.btn_focus;
+    public static final int FOCUS_IMAGE = R.mipmap.image_focus;
+    public static final int FOCUS_BUTTON = R.mipmap.btn_focus;
+    public static final int DELAY_MILLIS = 500;
 
     private TextView mRowTv, mRemindTv;
     private RelativeLayout mRemindLayout;
@@ -48,24 +48,23 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     private GridLayoutManager mLayoutManager;
 
     private FocusMoveUtil mFocusMoveUtils;
-    private FocusScaleUtil mFocusScaleUtils;
 
     private SpecialContract.SpecialPresenter mPresenter;
 
-    private Runnable mFocusMoveRunnable;
+    private Runnable mFocusMoveRunnable, mResolveFirstRunnable;
     private Handler mHandler;
     private View mCurrFocusView;
 
     private String noDataStr, netErrorStr;
 
-    private int mFocusType =FOCUS_IMAGE;
-    private long mTime;
+    private int mFocusType = FOCUS_IMAGE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_special_topic);
         initView();
+        initRunnable();
         setListener();
         initData();
     }
@@ -84,27 +83,46 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
         mRecyclerView = (CanRecyclerView) findViewById(special_recyclerview);
         mRecyclerView.addItemDecoration(itemDecoration);
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+    }
+
+    private void initRunnable() {
         mFocusMoveRunnable = new Runnable() {
             @Override
             public void run() {
-                if (mCurrFocusView != null) {
+                if (mCurrFocusView != null && mFocusMoveUtils != null) {
                     mFocusMoveUtils.startMoveFocus(mCurrFocusView, FOCUS_SCALE);
-                    // mFocusScaleUtils.scaleToLarge(mCurrFocusView);
                 }
             }
         };
+
+        mResolveFirstRunnable = new Runnable() {
+            @Override
+            public void run() {
+                View firstView = mRecyclerView.getChildAt(0);
+                if (firstView != null) {
+                    firstView.requestFocus();
+                    mFocusMoveUtils.setFocusView(firstView);
+                }
+                mFocusMoveUtils.showFocus();
+            }
+        };
+
         mHandler = new Handler();
     }
 
     private void setListener() {
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            int scrollDy=0;
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 if (RecyclerView.SCROLL_STATE_IDLE == newState) {
                     if (!isDestroyed()) {
                         ImageLoader.getInstance().resumeTask(SpecialActivity.this);
                         int lastPos = mLayoutManager.findLastVisibleItemPosition();
-                        mPresenter.loadMore(lastPos);
+                        if(scrollDy>0){
+                            mPresenter.loadMore(lastPos);
+                        }
                     }
                 } else {
                     ImageLoader.getInstance().pauseTask(SpecialActivity.this);
@@ -114,8 +132,10 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (dx == 0 && dy == 0) {
+                    scrollDy=0;
                     return;
                 }
+                scrollDy=dy;
                 mHandler.removeCallbacks(mFocusMoveRunnable);
                 mHandler.postDelayed(mFocusMoveRunnable, 50);
             }
@@ -150,13 +170,10 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     }
 
     private void initData() {
-        //TODO 删除
         noDataStr = getString(R.string.no_data);
         netErrorStr = getString(R.string.network_error);
 
         mFocusMoveUtils = new FocusMoveUtil(this, getWindow().getDecorView().findViewById(android.R.id.content), R.mipmap.image_focus);
-        mFocusScaleUtils = new FocusScaleUtil();
-        mFocusScaleUtils.setFocusScale(1.1f);
         SpecialContract.SpecialPresenter presenter = new SpecialPresenterImpl(this);
         presenter.startLoad();
     }
@@ -170,7 +187,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
                 if (hasFocus) {
                     mCurrFocusView = view;
-                    if (FOCUS_IMAGE!= mFocusType) {
+                    if (FOCUS_IMAGE != mFocusType) {
                         mFocusType = FOCUS_IMAGE;
                         mFocusMoveUtils.setFocusRes(getContext(), mFocusType);
                     }
@@ -181,7 +198,6 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
                         mPresenter.onItemFocused(position);
                     }
                 } else {
-                    mFocusScaleUtils.scaleToNormal();
                     view.setSelected(false);
                 }
             }
@@ -189,8 +205,19 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
         mAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, int position, Object data) {
-                //TODO
-                showToast(data.toString());
+                if(!NetworkUtils.isNetworkConnected(getContext())){
+                    // TODO: 2016/11/22
+                    showToast(R.string.network_connection_disconnect);
+                    return;
+                }
+                SpecialTopic topic= (SpecialTopic) data;
+                if(topic!=null&&topic.getId()!=null){
+                    Intent intent=new Intent(SpecialActivity.this, SpecialDetailActivity.class);
+                    intent.putExtra(SpecialDetailActivity.EXTRA_TOPIC_ID,topic.getId());
+                    startActivity(intent);
+                }else{
+                    showToast(R.string.data_error);
+                }
             }
         });
         resolveFirstFocus();
@@ -204,6 +231,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mFocusMoveUtils.release();
         mPresenter.release();
         mPresenter = null;
     }
@@ -216,49 +244,21 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     @Override
     protected void onStop() {
         super.onStop();
+        mRecyclerView.removeCallbacks(mResolveFirstRunnable);
         mHandler.removeCallbacksAndMessages(null);
     }
 
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            long time = System.currentTimeMillis();
-            if (mTime == 0) {
-                mTime = System.currentTimeMillis();
-                if (mPresenter != null) {
-                    mPresenter.remindNoData();
-                }
-                return super.dispatchKeyEvent(event);
-            } else if (time - mTime < 150) {
-                return true;
-            } else {
-                mTime = System.currentTimeMillis();
-            }
-        }
-        return super.dispatchKeyEvent(event);
-    }
-
     private void resolveFirstFocus() {
-        mRecyclerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                View firstView = mRecyclerView.getChildAt(0);
-                if (firstView != null) {
-                    firstView.requestFocus();
-                    mFocusMoveUtils.setFocusView(firstView);
-                }
-                mFocusMoveUtils.showFocus();
-            }
-        }, 500);
-
+        mRecyclerView.postDelayed(mResolveFirstRunnable, DELAY_MILLIS);
     }
 
     @Override
     public void showNoDataView() {
         mRemindTv.setText(noDataStr);
         mRecyclerView.setVisibility(View.INVISIBLE);
-        mRetryBtn.requestFocus();
-        mFocusMoveUtils.showFocus();
+        mHandler.removeCallbacks(mFocusMoveRunnable);
+        mFocusMoveUtils.setFocusView(mRetryBtn);
+        mFocusMoveUtils.hideFocusForShowDelay(30);
         mRemindLayout.setVisibility(View.VISIBLE);
     }
 
@@ -266,8 +266,9 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     public void showRetryView() {
         mRemindTv.setText(netErrorStr);
         mRecyclerView.setVisibility(View.INVISIBLE);
-        mRetryBtn.requestFocus();
-        mFocusMoveUtils.showFocus();
+        mHandler.removeCallbacks(mFocusMoveRunnable);
+        mFocusMoveUtils.setFocusView(mRetryBtn);
+        mFocusMoveUtils.hideFocusForShowDelay(30);
         mRemindLayout.setVisibility(View.VISIBLE);
 
     }
@@ -286,8 +287,17 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     }
 
     public static void actionStart(Context context) {
-        Intent intent = new Intent(context, DownloadActivity.class);
+        Intent intent = new Intent(context, SpecialActivity.class);
         context.startActivity(intent);
     }
 
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (KeyEvent.ACTION_DOWN == event.getAction() && KeyEvent.KEYCODE_DPAD_DOWN == event.getKeyCode()) {
+            if (mPresenter != null) {
+                mPresenter.remindNoData();
+            }
+        }
+        return super.dispatchKeyEvent(event);
+    }
 }

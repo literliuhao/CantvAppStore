@@ -17,6 +17,7 @@ import com.can.appstore.http.HttpManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.utils.NetworkUtils;
 import retrofit2.Response;
 
 /**
@@ -112,6 +113,7 @@ public class SpecialPresenterImpl implements SpecialContract.SpecialPresenter {
 
     @Override
     public void release() {
+        mHandler.removeCallbacksAndMessages(null);
         if (mSpecialCall != null) {
             mSpecialCall.cancel();
         }
@@ -131,6 +133,11 @@ public class SpecialPresenterImpl implements SpecialContract.SpecialPresenter {
 
     @Override
     public void loadMore(final int lastVisiablePos) {
+        if(!NetworkUtils.isNetworkConnected(mView.getContext())){
+           //TODO 弹出网络连接提示
+            mView.showToast("没有网络链接！");
+            return;
+        }
         //此处是滑到已经加载的数据的最后一行是检测是否需要加载更多
         if (lastVisiablePos < mSpecialTopics.size() - 1) {
             return;

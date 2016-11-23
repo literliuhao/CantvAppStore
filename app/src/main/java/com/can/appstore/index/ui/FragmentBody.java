@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.Target;
@@ -79,31 +78,35 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
      * @param mNavigation
      * @return
      */
-    private View drawView(Context context, Navigation mNavigation) {
+    private View drawView(final Context context, Navigation mNavigation) {
+        FrameLayout mainLayout = new FrameLayout(context);
+        ViewGroup.LayoutParams mainParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//        mainLayout.setFocusable(false);
+        mainLayout.setLayoutParams(mainParams);
+        mainLayout.setPadding((int) getResources().getDimension(R.dimen.px160), (int) getResources().getDimension(R.dimen.px50), (int) getResources().getDimension(R.dimen.px110), (int) getResources().getDimension(R.dimen.px50));
+        mainLayout.setClipToPadding(false);
+        mainLayout.setClipChildren(false);
+
         HorizontalScrollView horizontalScrollView = new HorizontalScrollView(context);
-        horizontalScrollView.setFocusable(false);
-        ViewGroup.LayoutParams scrollParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        horizontalScrollView.setLayoutParams(scrollParams);
+        horizontalScrollView.setClipToPadding(false);
+        horizontalScrollView.setClipChildren(false);
+        horizontalScrollView.setHorizontalScrollBarEnabled(false);
         FrameLayout frameLayout = new FrameLayout(context);
-//        frameLayout.setFocusable(true);
-//        frameLayout.setClipChildren(true);
-//        frameLayout.setClipToPadding(true);
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         frameLayout.setLayoutParams(params);
 
-        FrameLayout.LayoutParams layoutParams;
+        FrameLayout imageFrame;
         for (int j = 0; j < mNavigation.getLayout().size(); j++) {
             final Layout childBean = mNavigation.getLayout().get(j);
             final MyImageView myImageView = new MyImageView(getActivity());
-            myImageView.setId(j);
+            myImageView.setScaleType(MyImageView.ScaleType.CENTER_CROP);
             myImageView.setImageURI(childBean.getIcon());
-//            myImageView.setColour(bodeColor);
-//            myImageView.setBorder(2);
-            myImageView.setFocusable(true);
-//            myImageView.setScaleType(MyImageView.ScaleType.CENTER_CROP);
-            myImageView.setBackground(getResources().getDrawable(R.drawable.index_recommend));
-            myImageView.setOnFocusChangeListener(FragmentBody.this);
-            myImageView.setOnClickListener(new View.OnClickListener() {
+            imageFrame = new FrameLayout(context);
+            imageFrame.setId(j);
+            imageFrame.setBackground(getResources().getDrawable(R.drawable.index_recommend));
+            imageFrame.setFocusable(true);
+            imageFrame.setOnFocusChangeListener(FragmentBody.this);
+            imageFrame.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Log.i("FragmentBody", String.valueOf(childBean.getId()));
@@ -111,30 +114,29 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
                 }
             });
 
-//            ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, 25)).build().start(context);
-
-            ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, 25)).placeholder(R.mipmap.icon_load_default).errorHolder(R.mipmap.icon_loading_fail).successCallback(new SuccessCallback() {
+            ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, getResources().getDimension(R.dimen.px8))).placeholder(R.mipmap.icon_load_default).errorHolder(R.mipmap.icon_loading_fail).successCallback(new SuccessCallback() {
                 @Override
                 public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                    myImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     myImageView.setImageDrawable(resource);
                     return true;
                 }
             }).build().start(context);
 
-            layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            myImageView.setLeft(childBean.getX());
-            myImageView.setTop(childBean.getY());
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            imageFrame.setLeft(childBean.getX());
+            imageFrame.setTop(childBean.getY());
             layoutParams.leftMargin = (childBean.getX());
             layoutParams.topMargin = childBean.getY();
             layoutParams.width = childBean.getWidth();
             layoutParams.height = childBean.getHeight();
-            myImageView.setLayoutParams(layoutParams);
-            markLastView(myImageView);
-            frameLayout.addView(myImageView);
+            imageFrame.setLayoutParams(layoutParams);
+            markLastView(imageFrame);
+            imageFrame.addView(myImageView);
+            frameLayout.addView(imageFrame);
         }
         horizontalScrollView.addView(frameLayout);
-        return horizontalScrollView;
+        mainLayout.addView(horizontalScrollView);
+        return mainLayout;
     }
 
     private Navigation converPosition(Navigation mNavigation, float scale) {
@@ -150,7 +152,7 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
         return converNavigation;
     }
 
-    private void markLastView(MyImageView mView) {
+    private void markLastView(FrameLayout mView) {
         if (null == lastView) {
             lastView = mView;
         } else {
@@ -188,9 +190,9 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         Log.i("FragmentBody", v.getId() + "");
+//        v.bringToFront();
         mFocusListener.addFocusListener(v, hasFocus);
     }
-
 
     @Override
     public View getLastView() {

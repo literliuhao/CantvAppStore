@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -77,6 +78,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     private ImageView mIvTabLine;
     private TextView mTvAppIntroduc;
     private TextView mTvAddFuntion;
+    private TextView mTvDeveloper;
     private RelativeLayout mRelativeLayuotOperatingEquipment;
     private List<String> mControlType = new ArrayList<>();
     private RecommedGridAdapter mRecommedGridAdapter;
@@ -97,6 +99,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         initView();
         mFocusMoveUtil = new FocusMoveUtil(AppDetailActivity.this, getWindow().getDecorView(), R.mipmap.btn_focus);
         mScaleUtil = new FocusScaleUtil();
+        mFocusMoveUtil.hideFocus();
         mListFocusMoveRunnable = new AppDetailActivity.ListFocusMoveRunnable();
         mAppDetailPresenter = new AppDetailPresenter(this, AppDetailActivity.this, getIntent());
         mAppDetailPresenter.startLoad();
@@ -120,6 +123,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         mBtRecommend = (Button) findViewById(R.id.bt_recommend);
         mTvAppIntroduc = (TextView) findViewById(R.id.tv_app_introduc);
         mTvAddFuntion = (TextView) findViewById(R.id.tv_add_function);
+        mTvDeveloper = (TextView) findViewById(R.id.tv_app_developer);
         mIvTabLine = (ImageView) findViewById(R.id.iv_tab_line);
         mButtonDownload = (TextProgressBar) findViewById(R.id.bt_download);
         mButtonUpdate = (TextProgressBar) findViewById(R.id.bt_update);
@@ -318,17 +322,17 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         }
     }
 
-    private void recommendGridPositionRequestFocus(int hideFocusTime, final int position) {
-        mFocusMoveUtil.hideFocusForShowDelay(hideFocusTime);
+    private void recommendGridPositionRequestFocus(final int hideFocusTime, final int position) {
         mRecommendGrid.postDelayed(new Runnable() {
             @Override
             public void run() {
                 View childAt = mRecommendGrid.getChildAt(position);
                 if (childAt != null) {
+                    mFocusMoveUtil.hideFocusForShowDelay(hideFocusTime);
                     mFocusMoveUtil.setFocusView(childAt);
                     childAt.requestFocus();
                 } else {
-                    mBtRecommend.requestFocus();
+                    requestFocus(mBtRecommend);
                 }
             }
         }, 50);
@@ -344,7 +348,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     }
 
     @Override
-    protected void onHomeKeyListener() {
+    protected void onHomeKeyDown() {
         mAppDetailPresenter.dismissInsufficientStorageSpaceDialog();
         mAppDetailPresenter.dismissIntroduceDialog();
         finish();
@@ -366,8 +370,14 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         mAppDownloadCount.setText(String.format(getResources().getString(R.string.detail_app_downlaod_count), mAppinfo.getDownloadCount()));
         mAppFreeStroage.setText(String.format(getResources().getString(R.string.detail_app_free_stroage), StringUtils.formatFileSize(SystemUtil.getSDCardAvailableSpace(), false)));
         mTvAppIntroduc.setText(getResources().getString(R.string.app_introduce) + mAppinfo.getAbout());
-        String updateLog = mAppinfo.getUpdateLog().replaceAll("\n", "");
-        mTvAddFuntion.setText(getResources().getString(R.string.add_funtion) + updateLog);
+        mTvDeveloper.setText(String.format(getResources().getString(R.string.detail_developer), mAppinfo.getDeveloper()));
+        String updateLog = mAppinfo.getUpdateLog();
+        if (!TextUtils.isEmpty(updateLog)) {
+            updateLog = mAppinfo.getUpdateLog().replaceAll("\\r\\n", "  ");
+            mTvAddFuntion.setText(getResources().getString(R.string.add_funtion) + updateLog);
+        } else {
+            mTvAddFuntion.setVisibility(View.INVISIBLE);
+        }
         setOperaPic(mAppinfo.getControls());
     }
 
@@ -393,7 +403,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             conTypePic.setLayoutParams(controllerTypePic);
             conTypePic.setScaleType(ImageView.ScaleType.FIT_CENTER);
             mRelativeLayuotOperatingEquipment.addView(conTypePic, controllerTypePic);
-            //            int selectOperationPic = mAppDetailPresenter.getOperationPic(type.get(i));  // TODO
+            //              int selectOperationPic = mAppDetailPresenter.getOperationPic(type.get(i));  // TODO
             //            conTypePic.setImageResource(selectOperationPic);
             ImageLoader.getInstance().load(AppDetailActivity.this, conTypePic, type.get(i), new GlideLoadTask.SuccessCallback() {
                 @Override
@@ -498,6 +508,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     @Override
     public void loadAppInfoOnSuccess(AppInfo appInfo) {
+        mFocusMoveUtil.hideFocusForShowDelay(500);
         mLayoutAppDetail.setVisibility(View.VISIBLE);
         mAppinfo = appInfo;
         setData();
@@ -568,11 +579,9 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == CanRecyclerView.SCROLL_STATE_SETTLING) {
-                    mBtIntroduction.setFocusable(false);
-                    mBtRecommend.setFocusable(false);
+                    setButtonFocusable(false);
                 } else if (newState == CanRecyclerView.SCROLL_STATE_IDLE) {
-                    mBtIntroduction.setFocusable(true);
-                    mBtRecommend.setFocusable(true);
+                    setButtonFocusable(true);
                 }
             }
 
@@ -582,6 +591,13 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 mListFocusMoveRunnable.run();
             }
         });
+    }
+
+    public void setButtonFocusable(boolean Focusable) {
+        mBtIntroduction.setFocusable(Focusable);
+        mBtRecommend.setFocusable(Focusable);
+        mButtonDownload.setFocusable(Focusable);
+        mButtonUpdate.setFocusable(Focusable);
     }
 
     private void setRecommendAdapter() {
@@ -641,8 +657,8 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         mRecommedGridAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, int position, Object data) {
-                String appId = mAppinfo.getRecommend().get(position).getId();  // TODO: 2016/11/14
-                mAppDetailPresenter.mAppId = "2";
+                String appId = mAppinfo.getRecommend().get(position).getId();
+                mAppDetailPresenter.mAppId = appId;
                 mAppDetailPresenter.startLoad();
             }
         });
@@ -725,5 +741,15 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         intent.putExtra(AppDetailPresenter.ARGUMENT_APPID, appID);
         intent.putExtra(AppDetailPresenter.ARGUMENT_TOPICID, topicID);
         context.startActivity(intent);
+    }
+
+    /**
+     * 打开应用详情页面
+     *
+     * @param context
+     * @param appID   应用id
+     */
+    public static void actionStart(Context context, String appID) {
+        actionStart(context, appID, null);
     }
 }

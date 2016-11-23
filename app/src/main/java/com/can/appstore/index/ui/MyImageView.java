@@ -1,11 +1,17 @@
 package com.can.appstore.index.ui;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.ImageView;
@@ -26,10 +32,15 @@ public class MyImageView extends ImageView {
     public MyImageView(Context context) {
         super(context);
         mContext = context;
-        setScaleType(ScaleType.CENTER_CROP);
-        cornerRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, 40, context.getResources().getDisplayMetrics());
+//        setScaleType(ScaleType.CENTER_CROP);
+        cornerRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, 12, context.getResources().getDisplayMetrics());
         mRect = new RectF();
         path = new Path();
+    }
+
+    @Override
+    protected void onFocusChanged(boolean gainFocus, int direction, Rect previouslyFocusedRect) {
+        super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
     }
 
     public MyImageView(Context context, AttributeSet attrs, int defStyle) {
@@ -77,8 +88,54 @@ public class MyImageView extends ImageView {
         //设置边框宽度
         paint.setStrokeWidth(mBorder);
         canvas.drawRect(rec, paint);
-        path.addRoundRect(mRect, cornerRadius, cornerRadius, Path.Direction.CW);
+//        canvas.drawCircle(getWidth() / 2, getHeight() / 2, 20, paint);
+        canvas.drawARGB(0, 0, 0, 0);
+        canvas.drawRoundRect(mRect, cornerRadius, cornerRadius, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.clipPath(path);
+    }
+
+    /**
+     * 根据原图和变长绘制圆形图片
+     *
+     * @param source
+     * @param min
+     * @return
+     */
+    public Bitmap createCircleImage(Bitmap source, int min) {
+        final Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        Bitmap target = Bitmap.createBitmap(min, min, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(target);
+        canvas.drawCircle(min / 2, min / 2, min, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(source, 0, 0, paint);
+        return target;
+    }
+
+    public Bitmap getBitmapFromDrawable(Drawable drawable) {
+        if (drawable == null) {
+            return null;
+        }
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+        try {
+            Bitmap bitmap;
+            if (drawable instanceof ColorDrawable) {
+                bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+            } else {
+                bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            }
+
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+            return bitmap;
+        } catch (OutOfMemoryError e) {
+            return null;
+        }
     }
 
     @Override
@@ -95,4 +152,6 @@ public class MyImageView extends ImageView {
     public void setImageURI(String s) {
         mIcon = s;
     }
+
+
 }

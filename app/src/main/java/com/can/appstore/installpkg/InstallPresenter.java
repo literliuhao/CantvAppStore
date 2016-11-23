@@ -15,6 +15,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.utils.StringUtils;
+import cn.can.tvlib.utils.SystemUtil;
+
 /**
  * Created by shenpx on 2016/11/9 0009.
  */
@@ -25,9 +28,6 @@ public class InstallPresenter implements InstallContract.Presenter {
     private InstallContract.View mView;
     private Context mContext;
     private String mPath;
-    private int mSdTotalSize;
-    private int mSdSurplusSize;
-    private String mSdAvaliableSize;
     private List<AppInfoBean> mDatas;//安装包集合
 
     public InstallPresenter(InstallContract.View mView, Context context) {
@@ -42,8 +42,9 @@ public class InstallPresenter implements InstallContract.Presenter {
         mView.showInstallPkgList(mDatas);
         mView.showLoadingDialog();
         InstallPkgUtils.myFiles.clear();
+        //mPath = Environment.getExternalStorageDirectory().getPath().toString();
         mPath = Environment.getExternalStorageDirectory().getPath().toString() + File.separator + "Movies";
-        //mPath = MyApp.mContext.getExternalCacheDir().getPath().toString()+ File.separator;
+        //mPath = MyApp.mContext.getExternalCacheDir().getPath().toString();
         List appList = InstallPkgUtils.FindAllAPKFile(mPath);
         mDatas.clear();
         if (appList.size() < 1) {
@@ -60,10 +61,11 @@ public class InstallPresenter implements InstallContract.Presenter {
 
     @Override
     public void getSDInfo() {
-        mSdTotalSize = UpdateUtils.getSDTotalSize();
-        mSdSurplusSize = UpdateUtils.getSDSurplusSize();
-        mSdAvaliableSize = UpdateUtils.getSDAvaliableSize();
-        mView.showSDProgressbar(mSdSurplusSize, mSdTotalSize, mSdAvaliableSize);
+        long freeSize = SystemUtil.getSDCardAvailableSpace();
+        long totalSize = SystemUtil.getSDCardTotalSpace();
+        int progress = (int) (((totalSize - freeSize) * 100) / totalSize);
+        String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + StringUtils.formatFileSize(freeSize, false);
+        mView.showSDProgressbar(progress, freeStorage);
     }
 
     /**
@@ -89,8 +91,12 @@ public class InstallPresenter implements InstallContract.Presenter {
             if (bean.getInstall()) {
                 mDatas.remove(i);
 //                InstallPkgUtils.deleteApkPkg(mDatas.get(i).getFliePath());//可以删除安装包
-                mView.refreshItem(i);
+                //mView.removeItem(i);
             }
+        }
+        mView.refreshAll();
+        if (mDatas.size() == 0) {
+            mView.showNoData();
         }
         setNum(0);
     }
@@ -105,6 +111,9 @@ public class InstallPresenter implements InstallContract.Presenter {
         mDatas.remove(position);
 //        InstallPkgUtils.deleteApkPkg(mDatas.get(position).getFliePath());//可以删除安装包
         mView.refreshAll();
+        if (mDatas.size() == 0) {
+            mView.showNoData();
+        }
         setNum(0);
     }
 
@@ -151,15 +160,15 @@ public class InstallPresenter implements InstallContract.Presenter {
      * 刷新图标（可能多重版本）通过广播获取安装完成刷新ui  +&& bean.getVersionCode().equals(String.valueOf(versonCode))
      *
      * @param packageName
-     * @param versonCode, int versonCode   && bean.getVersionCode().equals(String.valueOf(versonCode))
+     * @param //int       versonCode   && bean.getVersionCode().equals(String.valueOf(versonCode))
      */
     public void isInstalled(String packageName) {
         for (int i = mDatas.size() - 1; i >= 0; i--) {
             AppInfoBean bean = mDatas.get(i);
-            if (bean.getPackageName().equals(packageName) ) {
+            if (bean.getPackageName().equals(packageName)) {
                 if (bean.getInstall()) {
                     //bean.setInstall(true);
-                    mView.refreshItem(i);
+                    mView.refreshAll();
                     Toast.makeText(MyApp.mContext, packageName + "111111", Toast.LENGTH_LONG).show();
                 }
             }
@@ -176,22 +185,26 @@ public class InstallPresenter implements InstallContract.Presenter {
         InstallPkgUtils.installApkFromF(MyApp.mContext,
                 new File(mDatas.get(position).getFliePath()), true, mDatas.get(position).getPackageName());
     }
+
     /**
      * 静默安装应用
      */
     public void installApp(int position) {
-        mDatas.get(position).setInstalling(true);//开始安装
+        //mDatas.get(position).setInstalling(true);//开始安装
         //mInstallDatas.add(mDatas.get(position));//加入安装中集合
         //mDatas.get(position).setInstall(true);//positon传递
-        //mView.refreshItem(position);
-        int result = InstallPkgUtils.installApp(mDatas.get(position).getFliePath());
-        if(result == 0){
+        //mView.refreshAll();
+        //String path = Environment.getExternalStorageDirectory().getPath().toString() + File.separator + "Movies"+File.separator;
+        String fliePath = mDatas.get(position).getFliePath();
+        int result = InstallPkgUtils.installApp2(fliePath);
+        if (result == 1) {
             mDatas.get(position).setInstalling(false);
             mDatas.get(position).setInstall(true);
-            isInstalled(mDatas.get(position).getPackageName());
-        }else{
+            //isInstalled(mDatas.get(position).getPackageName());
+            //mView.refreshAll();
+        } else {
             mDatas.get(position).setInstalling(false);
-            //mView.refreshItem(position);
+            //mView.refreshAll();
         }
     }
 

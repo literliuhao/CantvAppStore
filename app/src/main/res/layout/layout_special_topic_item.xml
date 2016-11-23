@@ -17,6 +17,7 @@
         />
     <TextView
         android:id="@+id/subject_item_title_tv"
+        android:background="@drawable/bg_horizontal_linear"
         android:layout_alignBottom="@+id/subject_item_imgvi"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimen_64px"

@@ -20,7 +20,7 @@
             android:id="@+id/iv_icon"
             android:layout_width="@dimen/dimen_200px"
             android:layout_height="@dimen/dimen_200px"
-            android:background="@drawable/bg_icon_item"
+            android:background="@drawable/bg_detail_icon_item"
             android:scaleType="centerInside"
             custom:cornerSize="@dimen/dimen_36px"/>
 
@@ -118,6 +118,8 @@
             android:layout_height="@dimen/dimen_80px"
             android:max="100"
             android:nextFocusForward="@id/bt_download"
+            android:nextFocusLeft="@+id/bt_download"
+            android:nextFocusUp="@+id/bt_download"
             android:progressDrawable="@drawable/layer_list_app_detail_download_focus"
             android:textColor="@color/app_name_color"
             android:textSize="@dimen/fontsize_36px"/>
@@ -148,6 +150,7 @@
             android:background="@android:color/transparent"
             android:gravity="center"
             android:nextFocusForward="@id/bt_Introduction"
+            android:nextFocusUp="@+id/bt_Introduction"
             android:text="@string/detail_app_Introduction"
             android:textColor="@color/app_name_color"
             android:textSize="@dimen/fontsize_34px"/>
@@ -162,6 +165,7 @@
             android:background="@android:color/transparent"
             android:gravity="center"
             android:nextFocusRight="@id/bt_recommend"
+            android:nextFocusUp="@id/bt_recommend"
             android:text="@string/detail_app_recommend"
             android:textColor="@color/app_name_color"
             android:textSize="@dimen/fontsize_34px"/>
@@ -220,8 +224,8 @@
 
             <LinearLayout
                 android:id="@+id/ll_introduce_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen_190px"
                 android:layout_below="@+id/crlv_introduce_grid"
                 android:layout_marginBottom="@dimen/dimen_100px"
                 android:layout_marginEnd="@dimen/dimen_140px"
@@ -244,7 +248,18 @@
                     android:ellipsize="end"
                     android:includeFontPadding="false"
                     android:lineSpacingExtra="@dimen/dimen_9px"
-                    android:maxLines="3"
+                    android:maxLines="2"
+                    android:textColor="@color/app_name_color"
+                    android:textSize="@dimen/fontsize_34px"/>
+
+                <TextView
+                    android:id="@+id/tv_app_developer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen_7px"
+                    android:ellipsize="end"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
                     android:textColor="@color/app_name_color"
                     android:textSize="@dimen/fontsize_34px"/>
 
@@ -252,9 +267,9 @@
                     android:id="@+id/tv_add_function"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dimen_7px"
                     android:ellipsize="end"
                     android:includeFontPadding="false"
+                    android:layout_marginTop="@dimen/dimen_7px"
                     android:maxLines="1"
                     android:textColor="@color/app_name_color"
                     android:textSize="@dimen/fontsize_34px"/>

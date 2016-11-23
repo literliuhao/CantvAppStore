@@ -5,17 +5,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.CustomDialog;
-import com.can.appstore.appdetail.tempfile.CanDialog;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.Result;
 import com.can.appstore.http.CanCall;
 import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
+import com.can.appstore.widgets.CanDialog;
 
 import java.io.File;
 import java.io.Serializable;
@@ -50,7 +51,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public final static float DOWNLOAD_INIT_PROGRESS = 0f;//初始时进度
     public final static float DOWNLOAD_FINISH_PROGRESS = 100f;//完成时进度
     public final static String ARGUMENT_APPID = "appID";
-    public final static String ARGUMENT_TOPICID = "topicID";
+    public final static String ARGUMENT_TOPICID = "topicid";
     private final static String INSTALL_PATH = Environment.getExternalStorageDirectory().getPath() + "/can_downloadApk/";
     public int downlaodErrorCode = 0;//下载错误
     private Context mContext;
@@ -248,6 +249,9 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         } else if (!NetworkUtils.isNetworkConnected(mContext)) { // 网络连接断开时不能点击
             mView.showToast(mContext.getResources().getString(R.string.network_connection_disconnect));
             return;
+        } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {   // 下载错误 , 设置取消,重新添加任务
+            downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
+            mDownloadManager.addDownloadTask(downloadTask, AppDetailPresenter.this);
         } else if (downloadStatus == AppInstallListener.APP_INSTALL_FAIL) {   //安装失败,可能内存不足，安装包出现问题,删除安装包重新下载
             if (mInstallApkFileMD5.equals(mAppInfo.getMd5())) {  // MD5值相同  安装
                 silentInstall(mAppInfo.getName());
@@ -274,11 +278,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
             clickRefreshButtonStatus(isClickUpdateButton, per);
             mDownloadManager.resume(mTaskId);
-        } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {
-            if (downlaodErrorCode != DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR) {//重试
-                clickRefreshButtonStatus(isClickUpdateButton, per);
-                mDownloadManager.resume(mTaskId);
-            }
         }
     }
 
@@ -500,7 +499,12 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
      */
     public void showIntroduceDialog() {
         CustomDialog.Builder builder = new CustomDialog.Builder(mContext);
-        builder.setUpdatelogText(mAppInfo.getUpdateLog());
+        String updateLog = mAppInfo.getUpdateLog();
+        if (!TextUtils.isEmpty(updateLog)) {
+            builder.setUpdatelogText(updateLog);
+        } else {
+            builder.setUpdatelogText(mContext.getResources().getString(R.string.not_update_log));
+        }
         builder.setAboutText(mAppInfo.getAbout());
         mCustomDialog = builder.create();
         mCustomDialog.show();
@@ -564,16 +568,12 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         String ok = mContext.getResources().getString(R.string.ok);
         String hint = mContext.getResources().getString(R.string.space_inequacy_hint);
         mCanDialog = new CanDialog(mContext);
-        mCanDialog.setmTvDialogTitle(title).setmTvDialogTopLeftContent(hint).setmBtnDialogPositive(ok).setOnCanBtnClickListener(new CanDialog.OnCanBtnClickListener() {
+        mCanDialog.setTitle(title).setTitleMessage(hint).setPositiveButton(ok).setOnCanBtnClickListener(new CanDialog.OnClickListener() {
             @Override
             public void onClickPositive() {
                 dismissInsufficientStorageSpaceDialog();
             }
 
-            @Override
-            public void onClickNegative() {
-
-            }
         });
         mCanDialog.show();
     }

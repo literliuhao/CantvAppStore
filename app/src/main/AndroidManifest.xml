@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.can.appstore">
+          package="com.can.appstore">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.GET_PACKAGE_SIZE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
-    <uses-permission android:name="android.permission.INSTALL_PACKAGES" />
-    <uses-permission android:name="android.permission.DELETE_PACKAGES" />
-    <uses-permission android:name="android.permission.REAGE_NETWORK_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.GET_PACKAGE_SIZE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+    <uses-permission android:name="android.permission.INSTALL_PACKAGES"/>
+    <uses-permission android:name="android.permission.DELETE_PACKAGES"/>
+    <uses-permission android:name="android.permission.REAGE_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.CHAND_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_LOGS"/>
 
 
     <application
@@ -29,17 +29,20 @@
         android:theme="@style/AppTheme">
         <activity android:name=".search.SearchActivity">
             <intent-filter>
-                <action android:name="com.can.appstore.ACTION.ACTIVITY_SEARCH" />
+                <action android:name="com.can.appstore.ACTION.ACTIVITY_SEARCH"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity android:name=".specialdetail.SpecialDetailActivity">
             <intent-filter>
-                <action android:name="com.can.appstore.ACTION.TOPIC_DETAIL" />
+                <action android:name="com.can.appstore.ACTION_TOPIC_DETAIL"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity android:name=".active.ActiveActivity">
             <intent-filter>
-                <action android:name="com.can.appstore.ACTION.ACTIVITY_DETAIL" />
+                <action android:name="com.can.appstore.ACTION_ACTIVITY_DETAIL"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity
@@ -47,9 +50,9 @@
             android:hardwareAccelerated="false"
             android:theme="@style/AppTheme.Translucent.FadeIn">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity"/>
@@ -58,76 +61,81 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
             <intent-filter>
-                <action android:name="com.can.appstore.ACTION.ACTIVITY_INDEX" />
+                <action android:name="com.can.appstore.ACTION_INDEX"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity android:name=".myapps.addappsview.AddAppsActivity">
-
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
         </activity>
         <activity android:name=".myapps.allappsview.AllAppsActivity">
             <intent-filter>
-                <action android:name="com.can.appstore.applist.ACTION.ACTIVITY_ALLAPPS" />
+                <action android:name="com.can.appstore.ACTION_ALLAPPS"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity android:name=".update.UpdateManagerActivity">
             <intent-filter>
-                <action android:name="com.can.appstore.ACTION.ACTIVITY_UPDATE" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="com.can.appstore.ACTION_UPDATE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity android:name=".installpkg.InstallManagerActivity">
             <intent-filter>
-                <action android:name="com.can.appstore.ACTION.ACTIVITY_INSTALL" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="com.can.appstore.ACTION_INSTALL"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity android:name=".myapps.ui.SystemAppsActivity">
             <intent-filter>
-                <action android:name="com.can.appstore.applist.ACTION.ACTIVITY_SYSTEMAPPS" />
+                <action android:name="com.can.appstore.ACTION_SYSTEMAPPS"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".download.DownloadActivity"
             android:theme="@style/AppTheme.Translucent.FadeIn">
             <intent-filter>
-                <action android:name="com.can.appstore.action.DOWNLOAD" />
+                <action android:name="com.can.appstore.ACTION_DOWNLOAD"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".specialtopic.SpecialActivity"
             android:theme="@style/AppTheme.Translucent.FadeIn">
             <intent-filter>
-                <action android:name="com.can.appstore.action.SPECIAL_TOPIC" />
+                <action android:name="com.can.appstore.ACTION_SPECIAL_TOPIC"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity android:name=".applist.AppListActivity">
             <intent-filter>
-                <action android:name="com.can.appstore.applist.ACTION.applist" />
+                <action android:name="com.can.appstore.ACTION_APPLIST"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity android:name=".download.DownloadLeadAcitivity"></activity>
 
         <activity
             android:name=".uninstallmanager.UninstallManagerActivity"
-            android:exported="true"
             android:theme="@style/AppTheme.Translucent.FadeIn">
             <intent-filter>
-                <action android:name="com.can.appstore.action.UNINSTALL_MANAGER" />
+                <action android:name="com.can.appstore.ACTION_UNINSTALL_MANAGER"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
         <activity
             android:name=".appdetail.AppDetailActivity"
-            android:exported="true"
             android:theme="@android:style/Theme.Black.NoTitleBar">
             <intent-filter>
-                <action android:name="com.can.appstore.action.APP_DETAIL" />
+                <action android:name="com.can.appstore.ACTION_APP_DETAIL"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
@@ -137,14 +145,15 @@
 
         <service android:name=".upgrade.UpgradeService">
             <intent-filter>
-                <action android:name="com.can.appstore.upgrade.UpgradeService" />
+                <action android:name="com.can.appstore.upgrade.UpgradeService"/>
             </intent-filter>
         </service>
+
         <activity android:name="com.can.appstore.message.MessageStartActivity"></activity>
         <activity android:name="com.can.appstore.message.MessageHomeActivity"></activity>
         <activity android:name="com.can.appstore.message.MessageActivity">
             <intent-filter>
-                <action android:name="com.can.appstore.ACTION.MESSAGE" />
+                <action android:name="com.can.appstore.ACTION_MESSAGE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -152,6 +161,7 @@
         <service android:name=".upgrade.bugly.BuglyUpgradeService">
             <intent-filter>
                 <action android:name="com.can.appstore.upgrade..bugly.BuglyUpgradeService"/>
+
             </intent-filter>
         </service>
 

@@ -6,23 +6,16 @@
                 android:orientation="horizontal"
     >
 
-    <ImageView
-        android:id="@+id/iv_app_list_icon"
-        android:layout_width="@dimen/px6"
-        android:layout_height="@dimen/px35"
-        android:layout_marginLeft="@dimen/px424"
-        android:layout_marginTop="@dimen/px80"
-        android:background="@color/colorYellow"
-        />
-
     <TextView
         android:id="@+id/tv_type_name"
         style="@style/NormalText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/px20"
+        android:layout_marginLeft="@dimen/px424"
         android:layout_marginTop="@dimen/px70"
-        android:layout_toRightOf="@id/iv_app_list_icon"
+        android:drawablePadding="@dimen/px20"
+        android:drawableLeft="@drawable/ic_vertical_linear"
+        android:visibility="invisible"
         android:textSize="@dimen/fontsize_38"/>
 
     <TextView
@@ -46,7 +39,7 @@
         android:layout_marginBottom="@dimen/px80"
         android:layout_marginLeft="@dimen/px140"
         android:layout_marginRight="@dimen/px20"
-        android:layout_marginTop="@dimen/px130"
+        android:layout_marginTop="@dimen/px145"
         android:orientation="vertical"
         >
 

@@ -123,20 +123,20 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                         refreshRecyclerItem(msg , position);
                         break;
                     case ActionConstants.ACTION_APP_DETAIL:
-                       ToastUtil.toastShort("跳转到应用详情页,消息ID:"+msg.getMsgId());
+                       ToastUtil.toastShort("跳转到应用详情页");
                        String appDetailActionData = msg.getActionData();
-                       AppDetailActivity.actionStart(MessageActivity.this , appDetailActionData , null);
+                       AppDetailActivity.actionStart(MessageActivity.this , appDetailActionData );
                        refreshRecyclerItem(msg , position);
                         break;
                     case ActionConstants.ACTION_TOPIC_DETAIL:
-                        ToastUtil.toastShort("跳转到专题详情页"+msg.getMsgId());
+                        ToastUtil.toastShort("跳转到专题详情页");
                         // TODO: 2016/11/23  
 //                        String topicActionData = msg.getActionData();
 //                        SpecialDetailActivity.actionStart(MessageActivity.this , topicActionData);
                         refreshRecyclerItem(msg , position);
                         break;
                     case ActionConstants.ACTION_ACTIVITY_DETAIL:
-                        ToastUtil.toastShort("跳转到活动详情页"+msg.getMsgId());
+                        ToastUtil.toastShort("跳转到活动详情页");
                         // TODO: 2016/11/23
 //                        String activityActionData = msg.getActionData();
 //                        ActiveActivity.actionStart(MessageActivity.this , activityActionData);
@@ -156,7 +156,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         mAdapter.setOnItemRemoveListener(new MessageAdapter.OnItemRemoveListener() {
             @Override
             public void onRemoveItem(int position) {
-                focusMoveUtil.hideFocusForShowDelay(700);
+                focusMoveUtil.hideFocusForShowDelay(400);
                 int msgCount = msgList.size();
                 refreshTotalText(msgCount);
                 if (msgCount == 0) {
@@ -291,9 +291,9 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     }
 
     @Override
-    protected void onHomeKeyListener() {
+    protected void onHomeKeyDown() {
         finish();
-        super.onHomeKeyListener();
+        super.onHomeKeyDown();
     }
 
     @Override

@@ -8,11 +8,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.target.Target;
 import com.can.appstore.R;
 import com.can.appstore.entity.AppInfo;
 
 import java.util.List;
 
+import cn.can.tvlib.imageloader.GlideLoadTask;
+import cn.can.tvlib.imageloader.ImageLoader;
+import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
@@ -46,22 +51,31 @@ public class RecommedGridAdapter extends CanRecyclerViewAdapter {
     @Override
     protected void bindContentData(Object mDatas, RecyclerView.ViewHolder holder, int position) {
         AppInfo appInfo = mRecommedApps.get(position);
-        RecommendGridViewHolder recommendGridViewHolder = ((RecommendGridViewHolder) holder);
+        final RecommendGridViewHolder recommendGridViewHolder = ((RecommendGridViewHolder) holder);
         String text = String.format(mRecommendAppsInfo, appInfo.getSizeStr(), appInfo.getDownloadCount());
         recommendGridViewHolder.itemName.setText(appInfo.getName());
         recommendGridViewHolder.itemSize.setText(text);
+        ImageLoader.getInstance().load(mContext, recommendGridViewHolder.itemIcon, appInfo.getIcon(), android.R.anim.fade_in,
+                R.mipmap.icon_load_default, R.mipmap.icon_loading_fail, new GlideLoadTask.SuccessCallback() {
+                    @Override
+                    public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        recommendGridViewHolder.itemIcon.setScaleType(ImageView.ScaleType.FIT_XY);
+                        recommendGridViewHolder.itemIcon.setImageDrawable(resource);
+                        return true;
+                    }
+                }, null);
     }
 
     class RecommendGridViewHolder extends CanRecyclerView.ViewHolder {
         TextView itemSize;
         TextView itemName;
-        ImageView itemIcon;
+        RoundCornerImageView itemIcon;
 
         public RecommendGridViewHolder(View itemView) {
             super(itemView);
             itemSize = (TextView) itemView.findViewById(R.id.tv_recommend_item_size);
             itemName = (TextView) itemView.findViewById(R.id.tv_recommend_item_name);
-            itemIcon = (ImageView) itemView.findViewById(R.id.iv_recommend_item_icon);
+            itemIcon = (RoundCornerImageView) itemView.findViewById(R.id.iv_recommend_item_icon);
         }
     }
 }

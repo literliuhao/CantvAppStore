@@ -32,6 +32,12 @@ public interface UninstallManagerContract {
 
         void refreshSelectCount(int count);
 
+        void uninstallLastPosition(int position);//卸载最后一个位置,让刷新后的最后一个位置请求焦点
+
+        void clickNegativeRefreshPage(int position, int count);//按取消时刷新页面选择的数量
+
+        void refreshSelectPosition(int[] selectPosition);//当有应用安装时刷新后选择之前选择的应用
+
         void refreshRows(SpannableStringBuilder rows);
     }
 }
