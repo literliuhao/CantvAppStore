@@ -23,6 +23,7 @@ import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
+import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 
@@ -271,7 +272,7 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
     }
 
     class UpdateViewHolder extends RecyclerView.ViewHolder {
-        ImageView appIcon;
+        RoundCornerImageView appIcon;
         TextView appName;
         TextView appVersioncode;
         TextView appSize;
@@ -284,7 +285,7 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
             appName = (TextView) view.findViewById(R.id.tv_updateapp_name);
             appSize = (TextView) view.findViewById(R.id.tv_updateapp_size);
             appVersioncode = (TextView) view.findViewById(R.id.tv_updateapp_versioncode);
-            appIcon = (ImageView) view.findViewById(R.id.iv_updateapp_icon);
+            appIcon = (RoundCornerImageView) view.findViewById(R.id.iv_updateapp_icon);
             progressbar = (ProgressBar) view.findViewById(R.id.pb_updateapp_progressbar);
             updatedIcon = (ImageView) view.findViewById(R.id.iv_updateapp_updatedicon);
             downloading = (TextView) view.findViewById(R.id.tv_updateapp_downloading);

@@ -11,13 +11,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
+        <cn.can.tvlib.ui.view.RoundCornerImageView
             android:id="@+id/iv_installpkg_icon"
             android:layout_width="@dimen/px136"
             android:layout_height="@dimen/px136"
             android:layout_marginLeft="@dimen/px24"
             android:layout_marginTop="@dimen/px24"
-            android:scaleType="centerCrop"
+            android:scaleType="fitXY"
             android:src="@mipmap/ic_launcher" />
 
         <TextView

@@ -210,7 +210,7 @@ public class InstallPkgUtils {
     }
 
     /**
-     * 静默安装1
+     * 更新管理静默安装1
      */
     public static int installApp(String path) {
 
@@ -243,7 +243,7 @@ public class InstallPkgUtils {
     }
 
     /**
-     * 静默安装
+     * 安装包管理静默安装
      */
     //final String path = Environment.getExternalStorageDirectory() + File.separator + "baidu"+File.separator + "360MobileSa
     public static int installApp2(String path) {
@@ -259,7 +259,7 @@ public class InstallPkgUtils {
         //ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r" + path, false);
         //Log.i("shen", "installApp: " + result);
         //成功
-        if (result.equals("Success")) {
+        if (result.contains("Success")) {
             return 0;
         } else {
             return 1;
