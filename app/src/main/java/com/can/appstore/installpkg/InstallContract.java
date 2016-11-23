@@ -20,7 +20,7 @@ public interface InstallContract {
 
         void hideNoData();
 
-        void showSDProgressbar(int currentsize,int total,String sdinfo);
+        void showSDProgressbar(int currentsize,String sdinfo);
 
         void refreshItem(int position);
 

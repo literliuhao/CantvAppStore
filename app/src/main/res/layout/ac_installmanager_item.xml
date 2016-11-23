@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="424px"
-    android:layout_height="185px"
-    android:layout_margin="18px"
+    android:layout_width="@dimen/px424"
+    android:layout_height="@dimen/px184"
     android:background="@drawable/selector_updateitem"
+    android:descendantFocusability="blocksDescendants"
     android:focusable="true">
 
     <RelativeLayout
@@ -13,54 +13,55 @@
 
         <ImageView
             android:id="@+id/iv_installpkg_icon"
-            android:layout_width="136px"
-            android:layout_height="136px"
-            android:layout_marginLeft="24px"
-            android:layout_marginTop="24px"
+            android:layout_width="@dimen/px136"
+            android:layout_height="@dimen/px136"
+            android:layout_marginLeft="@dimen/px24"
+            android:layout_marginTop="@dimen/px24"
             android:scaleType="centerCrop"
             android:src="@mipmap/ic_launcher" />
 
         <TextView
             android:id="@+id/tv_installpkg_name"
-            android:layout_width="180px"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="24px"
-            android:layout_marginTop="34px"
+            android:layout_marginLeft="@dimen/px24"
+            android:layout_marginTop="@dimen/px34"
+            android:layout_marginRight="@dimen/px20"
             android:layout_toRightOf="@id/iv_installpkg_icon"
+            android:ellipsize="marquee"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:marqueeRepeatLimit="marquee_forever"
-            android:ellipsize="marquee"
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:text="@string/install_title"
             android:textColor="#ccffffff"
-            android:textSize="32px" />
+            android:textSize="@dimen/px32" />
 
         <TextView
             android:id="@+id/tv_installpkg_versioncode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/tv_installpkg_name"
-            android:layout_marginLeft="24px"
-            android:layout_marginTop="6px"
+            android:layout_marginLeft="@dimen/px24"
+            android:layout_marginTop="@dimen/px6"
             android:layout_toRightOf="@id/iv_installpkg_icon"
             android:singleLine="true"
             android:text="@string/install_app_versionname"
             android:textColor="#80ffffff"
-            android:textSize="24px" />
+            android:textSize="@dimen/px24" />
 
         <TextView
             android:id="@+id/tv_installpkg_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/tv_installpkg_versioncode"
-            android:layout_marginLeft="24px"
-            android:layout_marginTop="1px"
+            android:layout_marginLeft="@dimen/px24"
+            android:layout_marginTop="@dimen/px1"
             android:layout_toRightOf="@id/iv_installpkg_icon"
             android:text="@string/install_app_size"
             android:textColor="#80ffffff"
-            android:textSize="24px" />
+            android:textSize="@dimen/px24" />
     </RelativeLayout>
 
     <ImageView
@@ -74,50 +75,17 @@
 
     <TextView
         android:id="@+id/tv_install_installing"
-        android:layout_width="76px"
-        android:layout_height="36px"
+        android:layout_width="@dimen/px100"
+        android:layout_height="@dimen/px36"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="28px"
-        android:layout_marginRight="24px"
+        android:layout_marginBottom="@dimen/px28"
+        android:layout_marginRight="@dimen/px24"
         android:background="@drawable/button_installing"
         android:gravity="center"
         android:text="@string/install_installing"
         android:textColor="#cc0e0f12"
-        android:textSize="22px"
+        android:textSize="@dimen/px22"
         android:visibility="gone" />
 
-    <RelativeLayout
-        android:id="@+id/rl_installpkg_delete"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        android:background="@android:color/white"
-        android:focusable="true"
-        android:gravity="center"
-        android:visibility="gone">
-
-        <Button
-            android:id="@+id/bt_installpkg_start"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="true"
-            android:text="安装"
-            android:textColor="@android:color/black"
-            android:textSize="20dp" />
-
-        <Button
-            android:id="@+id/bt_installpkg_delete"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/bt_installpkg_start"
-            android:layout_marginTop="5dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:text="删除"
-            android:textColor="@android:color/black"
-            android:textSize="20dp" />
-
-    </RelativeLayout>
 </RelativeLayout>
