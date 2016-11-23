@@ -1,5 +1,7 @@
 package com.can.appstore.index;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
@@ -8,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.entity.ListResult;
@@ -24,6 +25,7 @@ import com.can.appstore.index.interfaces.IOnPagerListener;
 import com.can.appstore.index.model.ShareData;
 import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.index.ui.FragmentBody;
+import com.can.appstore.index.ui.LiteText;
 import com.can.appstore.index.ui.ManagerFragment;
 import com.can.appstore.index.ui.TitleBar;
 import com.can.appstore.message.MessageActivity;
@@ -211,7 +213,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             @Override
             public void onExtraPageScrollStateChanged(int state, View view) {
                 if (state == SCROLLING) {
-                    if (!(IndexActivity.this.getCurrentFocus() instanceof TextView)) {
+                    if (!(IndexActivity.this.getCurrentFocus() instanceof LiteText)) {
                         mFocusUtils.hideFocus();
                     }
                 } else if (state == SCROLLED) {
@@ -221,7 +223,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                         mFocusUtils.showFocus();
                         return;
                     }
-                    if (!(IndexActivity.this.getCurrentFocus() instanceof TextView)) {
+                    if (!(IndexActivity.this.getCurrentFocus() instanceof LiteText)) {
                         view.requestFocus();
                         mFocusUtils.setFocusView(view, SCALE);
                         mFocusUtils.startMoveFocus(view, SCALE);
@@ -252,7 +254,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         if (hasFocus) {
             if (v == null) return;
             Log.i("addFocusListener", v.getId() + "");
-            if (v instanceof TextView) {
+            if (v instanceof LiteText) {
                 v.callOnClick();
             } else {
                 v.bringToFront();
@@ -286,5 +288,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     @Override
     public void onFocusChange(View view, boolean b) {
         Log.i("IndexActivity", "view...." + view.getId());
+    }
+
+    public static void actionStart(Context context, String topicId) {
+        Intent intent = new Intent(context, IndexActivity.class);
+        context.startActivity(intent);
     }
 }

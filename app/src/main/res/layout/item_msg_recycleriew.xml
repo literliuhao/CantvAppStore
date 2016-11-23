@@ -53,13 +53,14 @@
         android:includeFontPadding="false"
         />
 </LinearLayout>
-
     <ImageView
         android:id="@+id/iv_btn_delete"
-        android:layout_width="@dimen/px48"
-        android:layout_height="@dimen/px48"
+        android:layout_width="@dimen/px51"
+        android:layout_height="@dimen/px51"
         android:src="@drawable/msg_del"
         android:layout_marginRight="@dimen/px16"
+        android:paddingLeft="@dimen/px3"
+        android:paddingRight="@dimen/px2"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:focusable="true"

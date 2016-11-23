@@ -2,6 +2,7 @@ package com.can.appstore.http;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -52,6 +53,10 @@ public class CanCall<T> {
 
             @Override
             public void onFailure(Call<T> call, final Throwable t) {
+                if (call.isCanceled()) {
+                    Log.d("CanCall", "onFailure: canceled");
+                    return;
+                }
                 HANDLER.post(new Runnable() {
                     @Override
                     public void run() {
