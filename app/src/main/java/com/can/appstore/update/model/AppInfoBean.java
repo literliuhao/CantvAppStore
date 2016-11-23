@@ -23,6 +23,15 @@ public class AppInfoBean {
     private boolean isInstalling;//是否开始安装
     private boolean isUpdated;//更新完成
     private boolean isInstalled;//安装结束
+    private boolean isInstalledFalse;//安装失败
+
+    public boolean getInstalledFalse() {
+        return isInstalledFalse;
+    }
+
+    public void setInstalledFalse(boolean installedFalse) {
+        isInstalledFalse = installedFalse;
+    }
 
     public boolean getUpdated() {
         return isUpdated;

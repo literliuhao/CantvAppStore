@@ -57,7 +57,7 @@ public class DownloadManager implements AppInstallListener {
     private static DownloadManager mInstance;
     private static DownloadDao mDownloadDao;
     private Context mContext;
-    private int mPoolSize = 2;//Runtime.getRuntime().availableProcessors();
+    private int mPoolSize = 3;//Runtime.getRuntime().availableProcessors();
     private int mLimitSpace = 50;
     private ExecutorService mExecutorService;
     private OkHttpClient mOkHttpClient;
