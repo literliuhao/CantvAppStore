@@ -398,7 +398,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         /**
          * @param position content 列表中的位置（不包括header、footer）
          */
-        public abstract void onSelectChanged(int position, boolean selected, Object data);
+        public abstract boolean onSelectChanged(int position, boolean selected, Object data);
     }
 
     final public void setOnItemSelectListener(OnItemSelectChangeListener listener) {
@@ -450,18 +450,30 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         if (mSelectMode == MODE_NORMAL || !hasData() || position < 0 || position >= getDataCount()) {
             return;
         }
+        boolean handle = false;
+        if (mItemSelectListener != null) {
+            handle = mItemSelectListener.onSelectChanged(position, true, mDatas.get(position));
+        }
+        if(handle){
+            return;
+        }
         DataType data = mDatas.get(position);
         if (data != null && data instanceof Selectable) {
             ((Selectable) data).setSelected(true);
         }
         refreshTagViewSelectStatus(position, true);
-        if (mItemSelectListener != null) {
-            mItemSelectListener.onSelectChanged(position, true, mDatas.get(position));
-        }
+
     }
 
     public void setItemUnselected(int position) {
         if (mSelectMode == MODE_NORMAL || !hasData() || position < 0 || position >= getDataCount()) {
+            return;
+        }
+        boolean handle = false;
+        if (mItemSelectListener != null) {
+            handle = mItemSelectListener.onSelectChanged(position, false, mDatas.get(position));
+        }
+        if(handle){
             return;
         }
         DataType data = mDatas.get(position);
@@ -469,9 +481,6 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
             ((Selectable) data).setSelected(false);
         }
         refreshTagViewSelectStatus(position, false);
-        if (mItemSelectListener != null) {
-            mItemSelectListener.onSelectChanged(position, false, mDatas.get(position));
-        }
     }
 
     private void refreshTagViewSelectStatus(int position, boolean selected) {
