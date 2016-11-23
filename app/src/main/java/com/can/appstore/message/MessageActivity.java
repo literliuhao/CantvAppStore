@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.can.appstore.ActionConstants;
 import com.can.appstore.R;
+import com.can.appstore.active.ActiveActivity;
 import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.message.adapter.MessageAdapter;
@@ -20,6 +21,7 @@ import com.can.appstore.message.db.entity.MessageInfo;
 import com.can.appstore.message.manager.GreenDaoManager;
 import com.can.appstore.message.manager.MessageManager;
 import com.can.appstore.search.ToastUtil;
+import com.can.appstore.specialdetail.SpecialDetailActivity;
 
 import java.util.List;
 
@@ -53,7 +55,9 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
         initView();
-        showLoadingDialog();
+        //showLoadingDialog();
+        // TODO: 2016/11/23  孙炎龙方法，顶部有黑边阴影
+        showAppInfoLoadingDialog();
         initData();
         initFocusView();
     }
@@ -88,7 +92,8 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
             }
         };
         msgList = queryData();
-        hideLoadingDialog();
+        //hideLoadingDialog();
+        hideAppInfoLoadingDialog();
         if (msgList != null && !msgList.isEmpty()) {
             initAdapter();
             initRecyclerView();
@@ -123,23 +128,18 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                         refreshRecyclerItem(msg , position);
                         break;
                     case ActionConstants.ACTION_APP_DETAIL:
-                       ToastUtil.toastShort("跳转到应用详情页");
                        String appDetailActionData = msg.getActionData();
                        AppDetailActivity.actionStart(MessageActivity.this , appDetailActionData );
                        refreshRecyclerItem(msg , position);
                         break;
                     case ActionConstants.ACTION_TOPIC_DETAIL:
-                        ToastUtil.toastShort("跳转到专题详情页");
-                        // TODO: 2016/11/23  
-//                        String topicActionData = msg.getActionData();
-//                        SpecialDetailActivity.actionStart(MessageActivity.this , topicActionData);
+                        String topicActionData = msg.getActionData();
+                        SpecialDetailActivity.actionStart(MessageActivity.this , topicActionData);
                         refreshRecyclerItem(msg , position);
                         break;
                     case ActionConstants.ACTION_ACTIVITY_DETAIL:
-                        ToastUtil.toastShort("跳转到活动详情页");
-                        // TODO: 2016/11/23
-//                        String activityActionData = msg.getActionData();
-//                        ActiveActivity.actionStart(MessageActivity.this , activityActionData);
+                        String activityActionData = msg.getActionData();
+                        ActiveActivity.actionStart(MessageActivity.this , activityActionData);
                         refreshRecyclerItem(msg , position);
                         break;
                 }
