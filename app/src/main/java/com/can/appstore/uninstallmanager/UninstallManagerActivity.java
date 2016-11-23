@@ -287,7 +287,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
 
         mUninstallManagerAdapter.setOnItemSelectListener(new CanRecyclerViewAdapter.OnItemSelectChangeListener() {//选择模式的点击事件
             @Override
-            public void onSelectChanged(int position, boolean selected, Object data) {
+            public boolean onSelectChanged(int position, boolean selected, Object data) {
                 Log.d(TAG, "onSelectChanged = " + position + ",    " + selected);
                 PackageUtil.AppInfo info = (PackageUtil.AppInfo) data;
                 if (mSelectPackageName == null) {
@@ -303,6 +303,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
                     }
                 }
                 mSelectCount.setText(mSelectPackageName.size() + "");
+                return false;
             }
         });
 

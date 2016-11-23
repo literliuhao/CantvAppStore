@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.can.appstore.R;
@@ -25,13 +24,12 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
-
 /**
  * Created by wei on 2016/10/26.
  */
 
 public class AddAppsActivity extends BaseActivity implements AddAppsContract.View {
+    private static final  String TAG = "AddAppsActivity";
     private CanRecyclerView mAddRecyclerView;
     private AddAppsPresenter mAddAppsPresenter;
     private AddAppsRvAdapter mAddAppsRecyclerViewAdapter;
@@ -117,6 +115,7 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
 
     private void baseSetting() {
         mAddRecyclerView.setAdapter(mAddAppsRecyclerViewAdapter);
+        mAddAppsRecyclerViewAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_SELECT);//设置为选择模式
         mFocusMoveUtil.hideFocusForShowDelay(50);
         mAddRecyclerView.postDelayed(new Runnable() {
             @Override
@@ -225,34 +224,64 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
                 }
             }
         });
-        //RecyclerView的点击事件
-        mAddAppsRecyclerViewAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
+
+        mAddAppsRecyclerViewAdapter.setOnItemSelectListener(new CanRecyclerViewAdapter.OnItemSelectChangeListener() {
             @Override
-            public void onClick(View view, int position, Object data) {
-                ImageView imSelect = (ImageView) view.findViewById(R.id.addapps_iv_check);
-                AppInfo app = (AppInfo) data;
-                if (mSelectAppInfo == null) {
+            public boolean onSelectChanged(int position, boolean selected, Object data) {
+                Log.d(TAG,"setOnItemSelectListener.onSelectChanged");
+                AppInfo appInfo = (AppInfo)data;
+                if(mSelectAppInfo == null){
                     mSelectAppInfo = new ArrayList<AppInfo>();
                 }
-                if (mSelectAppInfo.size() >= canSelect) {
-                    if (mSelectAppInfo.contains(app)) {
-                        imSelect.setBackgroundResource(R.drawable.unselect);
-                        mSelectAppInfo.remove(app);
-                    } else {
+                if(selected){
+                    if(mSelectAppInfo.size() >= canSelect){
                         ToastUtil.toastShort("当前桌面已满，无法继续添加");
+                        tv_select.setText(""+mSelectAppInfo.size());
+                        return true;
+                    }else{
+                        mSelectAppInfo.add(appInfo);
+                        tv_select.setText(""+mSelectAppInfo.size());
+                        return false;
                     }
-                } else {
-                    if (mSelectAppInfo.contains(app)) {
-                        imSelect.setBackgroundResource(R.drawable.unselect);
-                        mSelectAppInfo.remove(app);
-                    } else {
-                        imSelect.setBackgroundResource(R.drawable.select);
-                        mSelectAppInfo.add(app);
+                }else{
+                    for (int i = mSelectAppInfo.size()-1; i >= 0 ; i--) {
+                        if (mSelectAppInfo.get(i).packageName.equals(appInfo.packageName)) {
+                            mSelectAppInfo.remove(i);
+                        }
                     }
+                    tv_select.setText(""+mSelectAppInfo.size());
+                    return false;
                 }
-                tv_select.setText("" + mSelectAppInfo.size());
             }
+
         });
+
+
+
+        //RecyclerView的点击事件
+//        mAddAppsRecyclerViewAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
+//            @Override
+//            public void onClick(View view, int position, Object data) {
+//                AppInfo app = (AppInfo) data;
+//                if (mSelectAppInfo == null) {
+//                    mSelectAppInfo = new ArrayList<AppInfo>();
+//                }
+//                if (mSelectAppInfo.size() >= canSelect) {
+//                    if (mSelectAppInfo.contains(app)) {
+//                        mSelectAppInfo.remove(app);
+//                    } else {
+//                        ToastUtil.toastShort("当前桌面已满，无法继续添加");
+//                    }
+//                } else {
+//                    if (mSelectAppInfo.contains(app)) {
+//                        mSelectAppInfo.remove(app);
+//                    } else {
+//                        mSelectAppInfo.add(app);
+//                    }
+//                }
+//                tv_select.setText("" + mSelectAppInfo.size());
+//            }
+//        });
         //RecyclerView的焦点事件
         mAddAppsRecyclerViewAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
             @Override
