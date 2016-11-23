@@ -21,9 +21,8 @@ import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
 import com.can.appstore.search.SearchActivity;
-
 import java.util.List;
-
+import com.can.appstore.specialtopic.SpecialActivity;
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
@@ -44,8 +43,9 @@ public class SpecialDetailActivity extends Activity {
     private Button mRetryBtn;
     private String mTopicId;
 
-    public static void startAc(Context context) {
-        Intent intent = new Intent(context, SpecialDetailActivity.class);
+    public static void actionStart(Context context, String topicId){
+        Intent intent = new Intent(context, SpecialActivity.class);
+        intent.putExtra("topicId", topicId);
         context.startActivity(intent);
     }
 
@@ -189,8 +189,9 @@ public class SpecialDetailActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mSpecialTopic != null) {
+        if(mSpecialTopic!=null){
             mSpecialTopic.cancel();
+            mSpecialTopic = null;
         }
         if (mFocusMoveUtil != null) {
             mFocusMoveUtil.release();

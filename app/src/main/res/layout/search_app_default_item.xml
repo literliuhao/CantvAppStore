@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="220px"
-    android:layout_height="61px"
-    android:layout_marginBottom="18px"
-    android:layout_marginLeft="10px"
-    android:layout_marginRight="6px"
-    android:layout_marginTop="10px"
+    android:layout_width="@dimen/px220"
+    android:layout_height="@dimen/px61"
+    android:layout_marginBottom="@dimen/px18"
+    android:layout_marginLeft="@dimen/px10"
+    android:layout_marginRight="@dimen/px6"
+    android:layout_marginTop="@dimen/px10"
     android:background="@drawable/search_keyboard_shape"
     android:clickable="true"
     android:focusable="true"
@@ -18,5 +18,5 @@
         android:gravity="center"
         android:text="分类app"
         android:textColor="#D9DADC"
-        android:textSize="32px" />
+        android:textSize="@dimen/px32" />
 </LinearLayout>

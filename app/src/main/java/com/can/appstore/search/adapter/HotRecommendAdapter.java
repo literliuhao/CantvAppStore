@@ -10,8 +10,6 @@ import android.widget.TextView;
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.entity.AppInfo;
-import com.can.appstore.search.ToastUtil;
-import com.can.appstore.search.widget.YIBaseCompatFocusAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,32 +20,12 @@ import cn.can.tvlib.imageloader.ImageLoader;
  * Created by yibh on 2016/10/14 18:48 .
  */
 
-public class HotRecommendAdapter extends YIBaseCompatFocusAdapter {
-    private List mDataList;
+public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapter.HotViewHolder> {
+    public List mDataList;
     public List<View> mViewList = new ArrayList<>(); //存每个Key的View
 
     public HotRecommendAdapter(List datas) {
-        super(datas);
         mDataList = datas;
-    }
-
-    @Override
-    protected RecyclerView.ViewHolder generateViewHolder(ViewGroup parent, int viewType) {
-        setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onClick(View view, int position, Object data) {
-                AppInfo searchApp = (AppInfo) mDataList.get(position);
-                ToastUtil.toastShort("点击 " + searchApp.getName());
-            }
-        });
-        View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_app_item, parent, false);
-        mViewList.add(inflate);
-        return new HotViewHolder(inflate);
-    }
-
-    @Override
-    protected void bindContentData(Object mDatas, RecyclerView.ViewHolder holder, int position) {
-        ((HotViewHolder) holder).setContent(position);
     }
 
     public class HotViewHolder extends RecyclerView.ViewHolder {
@@ -76,5 +54,41 @@ public class HotRecommendAdapter extends YIBaseCompatFocusAdapter {
         }
 
     }
+
+    public void setDataList(List list) {
+        mDataList = list;
+        notifyDataSetChanged();
+    }
+
+
+    @Override
+    public HotViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_app_item, parent, false);
+        inflate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                mOnFocusChangeListener.onFocusChange(view, b);
+            }
+        });
+        mViewList.add(inflate);
+        return new HotViewHolder(inflate);
+    }
+
+    @Override
+    public void onBindViewHolder(HotViewHolder holder, int position) {
+        holder.setContent(position);
+    }
+
+    @Override
+    public int getItemCount() {
+        return mDataList.size();
+    }
+
+    private View.OnFocusChangeListener mOnFocusChangeListener;
+
+    public void setMyOnFocusChangeListener(View.OnFocusChangeListener onFocusChangeListener) {
+        this.mOnFocusChangeListener = onFocusChangeListener;
+    }
+
 
 }

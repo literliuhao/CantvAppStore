@@ -24,8 +24,8 @@ import com.can.appstore.R;
 import com.can.appstore.search.adapter.HotRecommendAdapter;
 import com.can.appstore.search.adapter.KeyboardAdapter;
 import com.can.appstore.search.adapter.SearchAppListAdapter;
-import com.can.appstore.search.widget.YIGridLayoutManager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -76,11 +76,14 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
     private View mFocusedListChild;
     private ScaleFocusChangeListener mScaleFocusChangeListener;
     private RelativeLayout mTopView;
-    private YIGridLayoutManager mGridLayoutManager;
+    private GridLayoutManager mGridLayoutManager;
     private View mLeftView;
     private int mWinH;
     private int mWinW;
-
+    private boolean setRightNextFocus;  //设置右侧热词和热门推荐之间焦点跳转
+    private View mRLNoNetworkView;
+    private List mHotRomList = new ArrayList();
+    private List mSearchList = new ArrayList();
 
     public static void startAc(Context context) {
         Intent intent = new Intent(context, SearchActivity.class);
@@ -114,6 +117,9 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
         mKeyboard_recy = (RecyclerView) findViewById(R.id.keyboard_recycleview);
         mContent_cl_view = (TextView) findViewById(R.id.con_clear_view);
         mContent_del_view = (TextView) findViewById(R.id.con_del_view);
+
+        //无网络展示的布局
+        mRLNoNetworkView = findViewById(R.id.rl_no_network);
 
         //右侧布局
         mTopView = (RelativeLayout) findViewById(R.id.top_view);
@@ -169,6 +175,11 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
             }
         });
 
+        //搜索内容
+        mAppListAdapter = new SearchAppListAdapter(mSearchList, this);
+        //"热门推荐"数据
+        mHotRecommendAdapter = new HotRecommendAdapter(mHotRomList);
+
         mContent_del_view.setOnClickListener(this);
         mContent_cl_view.setOnClickListener(this);
 
@@ -187,7 +198,7 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
      * 得到"大家都在搜"的数据
      */
     private void initData() {
-        mGridLayoutManager = new YIGridLayoutManager(this, SEARCH_APP_SPANCOUNT, LinearLayoutManager.VERTICAL, false);
+        mGridLayoutManager = new GridLayoutManager(this, SEARCH_APP_SPANCOUNT, LinearLayoutManager.VERTICAL, false);
         mSearAppList_recycle.setLayoutManager(mGridLayoutManager);
 
         mSearAppList_recycle.addOnScrollListener(getOnBottomListener());
@@ -279,17 +290,13 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
      */
     @Override
     public void getHotRecomAppList(List list) {
-        //"热门推荐"数据
-        mHotRecommendAdapter = new HotRecommendAdapter(list);
+        mHotRecommendAdapter.setDataList(list);
         mBottom_re_recycle.setAdapter(mHotRecommendAdapter);
         mHotRecommendAdapter.setMyOnFocusChangeListener(mScaleFocusChangeListener);
-        mSearAppList_recycle.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Log.w("search_post", "");
-                setDefaultNextFocus();
-            }
-        }, 3000);
+        showGoneView(TAG_SHOW_TOP_BOTTOM);
+        if (!setRightNextFocus) {
+            setRNextFocus();
+        }
     }
 
     /**
@@ -300,7 +307,7 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
     @Override
     public void getHotKeyList(List list) {
         //"大家都在搜"数据
-        mAppListAdapter = new SearchAppListAdapter(list, this);
+        mAppListAdapter.setDefaultApplist(list);
         mSearAppList_recycle.setAdapter(mAppListAdapter);
         mAppListAdapter.setOnInitialsListener(new SearchAppListAdapter.OnInitialsListener() {
             @Override
@@ -308,6 +315,8 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
                 getInitials(con);
             }
         });
+
+        showGoneView(TAG_SHOW_TOP_BOTTOM);
 
         //对显示行号的处理
         mAppListAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
@@ -332,13 +341,14 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
                 view.setSelected(hasFocus);
             }
         });
-        mSearAppList_recycle.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Log.w("search_post", "");
-                setDefaultNextFocus();
-            }
-        }, 6000);
+        if (!setRightNextFocus) {
+            setRNextFocus();
+        }
+    }
+
+    @Override
+    public void noNetWork() {
+        mRLNoNetworkView.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -346,8 +356,13 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
      */
     public void resetDefaultList() {
         mleft_top.setText(getResources().getText(R.string.search_left_top_prompt1));
-        mAppListAdapter.setDefaultApplist();
-        showGoneView(TAG_SHOW_TOP_BOTTOM);
+        //热词/热门推荐都有数据是不再重新请求,否则要重新请求数据
+        if (mAppListAdapter.mDefaultList.size() > 0 && mHotRecommendAdapter.mDataList.size() > 0) {
+            mAppListAdapter.setDefaultApplist();
+            showGoneView(TAG_SHOW_TOP_BOTTOM);
+        } else {
+            mSearchPresenter.getDefaultList();
+        }
     }
 
     /**
@@ -378,6 +393,7 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
             }
             view.setSelected(hasFocus);
         }
+
     }
 
     /**
@@ -393,6 +409,7 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
             mBottom_re_ll.setVisibility(View.VISIBLE);  //热门推荐
             mSearch_null.setVisibility(View.GONE);  //没有到结果对应的布局
             mright_top.setVisibility(View.GONE);
+            mRLNoNetworkView.setVisibility(View.GONE);
         }
 
         //没有搜到内容
@@ -402,15 +419,16 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
             mSearch_null.setVisibility(View.VISIBLE);
             mBottom_re_ll.setVisibility(View.VISIBLE);  //热门推荐
             mright_top.setVisibility(View.GONE);
+            mRLNoNetworkView.setVisibility(View.GONE);
         }
 
         //搜到内容
         if (tag == TAG_S_TOP_APPLIST_G_BOTTOM) {
-//            mright_top.setVisibility(View.VISIBLE);
             mTopView.setVisibility(View.VISIBLE); //"大家都在搜"
             mSearAppList_recycle.setVisibility(View.VISIBLE);   //搜索结果对应的布局
             mSearch_null.setVisibility(View.GONE);
             mBottom_re_ll.setVisibility(View.GONE);  //热门推荐
+            mRLNoNetworkView.setVisibility(View.GONE);
         }
 
     }
@@ -481,36 +499,17 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
     }
 
     long time;
-    long mTime;
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-//        switch (event.getAction()) {
-//            case KeyEvent.ACTION_DOWN:
-//                if (System.currentTimeMillis() - time > 80) {
-//                    time = System.currentTimeMillis();
-//                   return super.dispatchKeyEvent(event);
-////                    return false;
-//                } else {
-//                    time = System.currentTimeMillis();
-////                    return true;
-//                }
-//                break;
-//        }
-//
-//
-//        return super.dispatchKeyEvent(event);
-        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            long time = System.currentTimeMillis();
-            if (mTime == 0) {
-                mTime = System.currentTimeMillis();
-                return super.dispatchKeyEvent(event);
-            } else if (time - mTime < 200) {
-                Log.d("", "dispatchKeyEvent: " + System.currentTimeMillis());
-                return true;
-            } else {
-                mTime = System.currentTimeMillis();
-            }
+        switch (event.getAction()) {
+            //控制按键响应的速度
+            case KeyEvent.ACTION_DOWN:
+                if (System.currentTimeMillis() - time > 200) {
+                    time = System.currentTimeMillis();
+                } else {
+                    return true;
+                }
         }
         return super.dispatchKeyEvent(event);
     }
@@ -528,7 +527,7 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
     }
 
     /**
-     * 设置左侧大家都在搜,热门推荐的上下焦点
+     * 设置右侧大家都在搜,热门推荐的上下焦点
      */
     private void setDefaultNextFocus() {
         Log.w("setDefaultNextFocus", "");
@@ -566,11 +565,19 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
                         hotRecomViewList.get(i).setNextFocusUpId(hotKeyViewList.get(hotKeyViewList.size() - 1).getId());
                     }
                 }
-
-
             }
+            setRightNextFocus = true;
             Log.w("设置焦点完成", "");
         }
+    }
+
+    private void setRNextFocus() {
+        mSearAppList_recycle.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setDefaultNextFocus();
+            }
+        }, 3000);
     }
 
 }

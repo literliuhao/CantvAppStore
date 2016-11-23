@@ -147,7 +147,7 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
             }
         }
         final LinearLayout view = (LinearLayout) views.get(views.size() - 1);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(490, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams((int) getResources().getDimension(R.dimen.px490), LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.rightMargin = 0;
         view.setLayoutParams(layoutParams);
 

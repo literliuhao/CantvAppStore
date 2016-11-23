@@ -2,6 +2,7 @@ package com.can.appstore.active;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -47,15 +48,21 @@ public class ActiveActivity extends Activity implements ActiveContract.Operation
     private FocusMoveUtil mFocusMoveUtil;
     private String mActiveId;
 
+    public static void actionStart(Context context, String activeId){
+        Intent intent = new Intent(context, ActiveActivity.class);
+        intent.putExtra("activeId", activeId);
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_active);
         Intent intent = getIntent();
-        if(intent != null){
+        if (intent != null) {
             mActiveId = intent.getStringExtra("activeId");
         }
-        mActiveId = TextUtils.isEmpty(mActiveId)?"52":mActiveId;
+        mActiveId = TextUtils.isEmpty(mActiveId) ? "52" : mActiveId;
         initUI();
         mActivePresenter = new ActivePresenter(this, ActiveActivity.this);
         mActivePresenter.requestActiveData(mActiveId);
