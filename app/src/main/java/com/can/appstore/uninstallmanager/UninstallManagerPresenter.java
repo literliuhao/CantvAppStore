@@ -46,8 +46,9 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     private DownloadManager mDownloadManager;
     private String mCurUninstallApkName = "";
     private CanDialog mCanDialog;
-    public boolean isFirstIntoRefresh = true;
-    private boolean isClickBatchUninstall = false;
+    public boolean isFirstIntoRefresh = true;  //是否是第一次进入
+    private boolean isClickBatchUninstall = false;  //是否是点击批量卸载
+    private boolean isAppInstallRefresh = false;  // 是否应用安装刷新页面
 
     public UninstallManagerPresenter(UninstallManagerContract.View view, Context context) {
         this.mView = view;
@@ -149,18 +150,23 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     }
 
     /**
-     * 当有应用安装时刷新选择的位置,
+     * 当有应用安装刷新后选择之前的选择的应用
      */
     public void refreshSelectPosition() {
-        Log.d(TAG, "refreshSelectPosition: isFirstIntoRefresh : " + isFirstIntoRefresh + "  mSelectPackageName : " +
-                mSelectPackageName.size() + "  mAppInfoList : " + mAppInfoList.size());
-        if (!isFirstIntoRefresh) {
-            for (int i = 0; i < mSelectPackageName.size(); i++) {
-                for (int j = 0; j < mAppInfoList.size(); j++) {
-                    if (mSelectPackageName.get(i).equals(mAppInfoList.get(j).packageName)) {
-                        mView.refreshSelectPosition(j);
+        if (mSelectPackageName != null && mSelectPackageName.size() > 0) {
+            Log.d(TAG, "refreshSelectPosition: isAppInstallRefresh : " + isAppInstallRefresh + "  mSelectPackageName : " +
+                    mSelectPackageName.size() + "  mAppInfoList : " + mAppInfoList.size());
+            if (isAppInstallRefresh) {
+                int[] selectPositon = new int[mSelectPackageName.size()];
+                for (int i = 0; i < mSelectPackageName.size(); i++) {
+                    for (int j = 0; j < mAppInfoList.size(); j++) {
+                        if (mSelectPackageName.get(i).equals(mAppInfoList.get(j).packageName)) {
+                            selectPositon[i] = j;
+                        }
                     }
                 }
+                mSelectPackageName.clear();
+                mView.refreshSelectPosition(selectPositon);
             }
         }
     }
@@ -206,6 +212,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
             if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)) {
                 String packageName = intent.getDataString().substring(8);
                 Log.d(TAG, "install packageName : " + packageName);
+                isAppInstallRefresh = true;
                 mLoaderManager.restartLoader(LOADER_ID, null, UninstallManagerPresenter.this);
             } else if (intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)) {
                 String packageName = intent.getData().getSchemeSpecificPart();
@@ -246,6 +253,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
         for (int j = 0; j < mAppInfoList.size(); j++) {
             if (packageName.equals(mAppInfoList.get(j).packageName)) {
                 mAppInfoList.remove(j);
+                isAppInstallRefresh = false;
                 mView.loadAllAppInfoSuccess(mAppInfoList);
             }
         }

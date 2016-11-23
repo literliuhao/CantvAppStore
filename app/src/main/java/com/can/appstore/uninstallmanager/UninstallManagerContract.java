@@ -36,7 +36,7 @@ public interface UninstallManagerContract {
 
         void clickNegativeRefreshPage(int position, int count);//按取消时刷新页面选择的数量
 
-        void refreshSelectPosition(int selectPosition);//当有应用安装时刷新选择的位置
+        void refreshSelectPosition(int[] selectPosition);//当有应用安装时刷新后选择之前选择的应用
 
         void refreshRows(SpannableStringBuilder rows);
     }

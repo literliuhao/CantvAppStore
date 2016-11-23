@@ -403,7 +403,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             conTypePic.setLayoutParams(controllerTypePic);
             conTypePic.setScaleType(ImageView.ScaleType.FIT_CENTER);
             mRelativeLayuotOperatingEquipment.addView(conTypePic, controllerTypePic);
-            //            int selectOperationPic = mAppDetailPresenter.getOperationPic(type.get(i));  // TODO
+            //              int selectOperationPic = mAppDetailPresenter.getOperationPic(type.get(i));  // TODO
             //            conTypePic.setImageResource(selectOperationPic);
             ImageLoader.getInstance().load(AppDetailActivity.this, conTypePic, type.get(i), new GlideLoadTask.SuccessCallback() {
                 @Override
@@ -741,5 +741,15 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         intent.putExtra(AppDetailPresenter.ARGUMENT_APPID, appID);
         intent.putExtra(AppDetailPresenter.ARGUMENT_TOPICID, topicID);
         context.startActivity(intent);
+    }
+
+    /**
+     * 打开应用详情页面
+     *
+     * @param context
+     * @param appID   应用id
+     */
+    public static void actionStart(Context context, String appID) {
+        actionStart(context, appID, null);
     }
 }

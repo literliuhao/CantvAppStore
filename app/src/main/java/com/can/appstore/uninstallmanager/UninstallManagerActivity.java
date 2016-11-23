@@ -37,6 +37,8 @@ import cn.can.tvlib.utils.PackageUtil;
 public class UninstallManagerActivity extends BaseActivity implements UninstallManagerContract.View {
     public static final String TAG = "UninstallManagerActivi";
     public static final int MIN_DOWN_INTERVAL = 80;//响应点击事件的最小间隔事件
+    public static final int APP_INSTALL_REFRESH_DELAYE = 200;//应用安装刷新此时选择的位置
+    public static final int UNINSTALL_LAST_POSITION_DELAYE = 490;//卸载最后一个位置延时请求焦点
     private CanRecyclerView mCanRecyclerView;
     private FocusMoveUtil mFocusMoveUtil;
     private FocusScaleUtil mScaleUtil;
@@ -209,7 +211,12 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             addSetting();
         } else {
             mUninstallManagerAdapter.notifyDataSetChanged();
-            //            mPresenter.refreshSelectPosition();
+            mCanRecyclerView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mPresenter.refreshSelectPosition();
+                }
+            }, APP_INSTALL_REFRESH_DELAYE);
         }
     }
 
@@ -231,7 +238,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         if (position >= 0) {
             isLastRemove = true;
         }
-        mFocusMoveUtil.hideFocusForShowDelay(1000);
+        mFocusMoveUtil.hideFocusForShowDelay(500);
         mCanRecyclerView.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -244,7 +251,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
                     mBtBatchUninstall.requestFocus();
                 }
             }
-        }, 500);
+        }, UNINSTALL_LAST_POSITION_DELAYE);
     }
 
     @Override
@@ -255,9 +262,14 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     }
 
     @Override
-    public void refreshSelectPosition(int selectPosition) {
-        Log.d(TAG, "refreshSelectPosition: " + selectPosition);
-        mUninstallManagerAdapter.setItemSelected(selectPosition);
+    public void refreshSelectPosition(int[] selectPosition) {
+        if (mSelectPackageName != null && mSelectPackageName.size() > 0) {
+            mSelectPackageName.clear();
+        }
+        for (int i = 0; i < selectPosition.length; i++) {
+            Log.d(TAG, "refreshSelectPosition: " + selectPosition[i]);
+            mUninstallManagerAdapter.setItemSelected(selectPosition[i]);
+        }
     }
 
     @Override
