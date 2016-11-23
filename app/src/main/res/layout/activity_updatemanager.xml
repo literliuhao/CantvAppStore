@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawablePadding="@dimen/px20"
-                android:drawableStart="@drawable/title_line"
+                android:drawableStart="@mipmap/title_line"
                 android:text="@string/update_title"
                 android:textColor="#ccffffff"
                 android:textSize="@dimen/px38" />

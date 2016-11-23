@@ -11,11 +11,12 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
@@ -51,7 +52,7 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
 
     private int temp = 0;
 
-    private List<TextView> textViewList;
+    private List<LiteText> textViewList;
     private int mCurrentIndex = 0;
     private IAddFocusListener mFocusListener;
 
@@ -61,6 +62,9 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
 
     public TitleBar(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+//        LinearLayout.LayoutParams mainParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+//        this.setLayoutParams(mainParams);
 
         // 获得自定义属性，tab的数量
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TitleBar);
@@ -74,7 +78,7 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
 //        mPaint.setColor(Color.parseColor("#ffffffff"));
 //        mPaint.setStyle(Style.FILL);
 //        mPaint.setPathEffect(new CornerPathEffect(3));
-        textViewList = new ArrayList<TextView>();
+        textViewList = new ArrayList<>();
     }
 
     /**
@@ -134,14 +138,14 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
             this.mTabTitles = datas;
 
             for (int i = 0; i < mTabTitles.size(); i++) {
-                TextView textView = generateTextView(mTabTitles.get(i));
+                LiteText liteText = generateTextView(mTabTitles.get(i));
                 if (0 == i) {
-                    textView.requestFocus();
+                    liteText.requestFocus();
                 }
-                addView(textView, i);
+                addView(liteText, i);
             }
             //得到最后titleBar进行相关设置
-            TextView lastBar = (TextView) this.getChildAt(mTabTitles.size() - 1);
+            LiteText lastBar = (LiteText) this.getChildAt(mTabTitles.size() - 1);
             lastBar.setId(R.id.tv_index_title_last);
             lastBar.setNextFocusRightId(R.id.rl_search);
             // 设置item的click事件
@@ -187,7 +191,7 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
                 mCurrentIndex = position;
                 // 设置字体颜色高亮
                 resetTextViewColor();
-                highLightTextView(position);
+//                highLightTextView(position);
                 // 回调
                 if (onPageChangeListener != null) {
                     onPageChangeListener.onPageSelected(position);
@@ -206,7 +210,6 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
                 if (onPageChangeListener != null) {
                     onPageChangeListener.onPageScrolled(position, positionOffset, positionOffsetPixels);
                 }
-
             }
 
             @Override
@@ -216,14 +219,10 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
                 } else {
                     isScrolling = false;
                 }
-//                TextView btn = (TextView) ViewPagerIndicator.this.getChildAt(state);
-//                btn.setFocusable(false);
-
                 // 回调
                 if (onPageChangeListener != null) {
                     onPageChangeListener.onPageScrollStateChanged(state);
                 }
-
             }
         });
 
@@ -233,19 +232,23 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
 //                Log.i("TitleBar", "onGlobalFocusChanged old " + String.valueOf(oldFocus));
 //                Log.i("TitleBar", "onGlobalFocusChanged new " + String.valueOf(newFocus));
 
-                if (!(oldFocus instanceof TextView) && newFocus instanceof TextView) {
+                if (!(oldFocus instanceof LiteText) && newFocus instanceof LiteText) {
                     newFocus = textViewList.get(mViewPager.getCurrentItem());
                     newFocus.requestFocus();
+                    resetTextViewColor();
                     mFocusListener.addFocusListener(newFocus, true);
-                } else if (oldFocus instanceof TextView && newFocus instanceof TextView) {
+                } else if (oldFocus instanceof LiteText && newFocus instanceof LiteText) {
                     if (null == oldFocus || null == newFocus) return;
                     mFocusListener.addFocusListener(newFocus, true);
+                } else if (oldFocus instanceof LiteText && !(newFocus instanceof LiteText)) {
+                    if (null == oldFocus || null == newFocus) return;
+                    highLightTextView(mCurrentIndex);
                 }
             }
         });
         // 设置当前页
         mViewPager.setCurrentItem(pos);
-        highLightTextView(pos);
+//        highLightTextView(pos);
     }
 
     /**
@@ -255,10 +258,14 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
      */
     protected void highLightTextView(int position) {
         View view = getChildAt(position);
-        if (view instanceof TextView) {
-            ((TextView) view).setTextColor(COLOR_TEXT_HIGHLIGHTCOLOR);
+        if (view instanceof LiteText) {
+            view.setBackground(getResources().getDrawable(R.drawable.index_title_normal));
+//            for (int i = 0; i < ((LiteText) view).getChildCount(); i++) {
+//                if (((LiteText) view).getChildAt(i) instanceof ImageView) {
+//                    ((LiteText) view).getChildAt(i).setVisibility(View.VISIBLE);
+//                }
+//            }
         }
-
     }
 
     /**
@@ -267,8 +274,13 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
     private void resetTextViewColor() {
         for (int i = 0; i < getChildCount(); i++) {
             View view = getChildAt(i);
-            if (view instanceof TextView) {
-                ((TextView) view).setTextColor(COLOR_TEXT_NORMAL);
+            if (view instanceof LiteText) {
+                view.setBackgroundResource(0);
+//                for (int j = 0; j < ((LiteText) view).getChildCount(); j++) {
+//                    if (((LiteText) view).getChildAt(j) instanceof ImageView) {
+//                        ((LiteText) view).getChildAt(j).setVisibility(View.GONE);
+//                    }
+//                }
             }
         }
     }
@@ -294,26 +306,37 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
      * 根据标题生成TextView
      *
      * @param text
-     * @return
+     * @return LiteText
      */
-    private TextView generateTextView(String text) {
-        final TextView textView = new TextView(getContext());
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+    private LiteText generateTextView(String text) {
+        LiteText textLayout = new LiteText(getContext());
+        textLayout.setPadding((int) getResources().getDimension(R.dimen.px20), (int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px20), (int) getResources().getDimension(R.dimen.px0));
+//        textLayout.setBackground(getResources().getDrawable(R.drawable.index_title_normal));
+        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        textParams.setMargins((int) getResources().getDimension(R.dimen.px30), (int) getResources().getDimension(R.dimen.px10), (int) getResources().getDimension(R.dimen.px30), (int) getResources().getDimension(R.dimen.px10));
+        textLayout.setLayoutParams(textParams);
+        textLayout.setFocusable(true);
+        textLayout.setOnFocusChangeListener(this);
 
-        int marginLR = (int) getResources().getDimension(R.dimen.px40);
+        ImageView imageView = new ImageView(getContext());
+        RelativeLayout.LayoutParams imageParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        imageParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        imageView.setLayoutParams(imageParams);
+        imageView.setBackground(getResources().getDrawable(R.drawable.index_title_normal));
+
+        TextView textView = new TextView(getContext());
+        RelativeLayout.LayoutParams txtParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        txtParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        textView.setLayoutParams(txtParams);
+
         int textSize = (int) getResources().getDimension(R.dimen.px38);
-
-        lp.setMargins(marginLR, 0, marginLR, 0);
-        textView.setGravity(Gravity.CENTER);
         textView.setTextColor(COLOR_TEXT_NORMAL);
         textView.setText(text);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-        textView.setLayoutParams(lp);
-        textView.setFocusable(true);
-        textView.setOnFocusChangeListener(this);
-        textView.setPadding((int) getResources().getDimension(R.dimen.px15), 0, (int) getResources().getDimension(R.dimen.px15), 0);
-        textViewList.add(textView);
-        return textView;
+//        textLayout.addView(imageView);
+        textLayout.addView(textView);
+        textViewList.add(textLayout);
+        return textLayout;
     }
 
     /**
@@ -342,9 +365,7 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
         if (offset > 0 && position >= (mTabVisibleCount - 2) && getChildCount() > mTabVisibleCount) {
             if (mTabVisibleCount != 1) {
                 this.scrollTo((position - (mTabVisibleCount - 2)) * tabWidth + (int) (tabWidth * offset), 0);
-            } else
-            // 为count为1时 的特殊处理
-            {
+            } else {
                 this.scrollTo(position * tabWidth + (int) (tabWidth * offset), 0);
             }
         }

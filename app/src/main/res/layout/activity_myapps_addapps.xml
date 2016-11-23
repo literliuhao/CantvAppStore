@@ -7,7 +7,7 @@
         android:id="@+id/bt_batch_addapps"
         android:layout_width="@dimen/px200"
         android:layout_height="@dimen/px72"
-        android:layout_marginLeft="@dimen/px160"
+        android:layout_marginStart="@dimen/px160"
         android:layout_marginTop="@dimen/px150"
         android:background="@drawable/shape_bg_app_detail_item_focus"
         android:text="确认添加"
@@ -19,7 +19,7 @@
         android:layout_width="@dimen/px200"
         android:layout_height="@dimen/px128"
         android:layout_alignEnd="@+id/bt_batch_addapps"
-        android:layout_alignLeft="@+id/bt_batch_addapps"
+        android:layout_alignStart="@+id/bt_batch_addapps"
         android:layout_below="@+id/bt_batch_addapps"
         android:layout_marginTop="@dimen/px10"
         android:background="@drawable/bjs"
@@ -51,7 +51,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/px80"
-        android:layout_toRightOf="@+id/bt_batch_addapps"
+        android:layout_toEndOf="@+id/bt_batch_addapps"
         android:orientation="vertical">
 
         <LinearLayout
@@ -64,8 +64,8 @@
             <ImageView
                 android:layout_width="@dimen/px7"
                 android:layout_height="@dimen/px38"
-                android:background="@drawable/title_line"
-                android:layout_marginRight="@dimen/px20"
+                android:layout_marginEnd="@dimen/px20"
+                android:background="@mipmap/title_line"
                 />
 
             <TextView
@@ -76,12 +76,12 @@
                 android:textSize="@dimen/fontsize_38"/>
 
             <TextView
+                android:id="@+id/tv_canadd_cut"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/px40"
-                android:textSize="@dimen/fontsize_32"
+                android:layout_marginStart="@dimen/px40"
                 android:textColor="#ffffff"
-                android:id="@+id/tv_canadd_cut"
+                android:textSize="@dimen/fontsize_32"
                 />
 
 
@@ -91,24 +91,25 @@
             android:id="@+id/addapps_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/px142"
             android:layout_marginStart="@dimen/px42"
             android:layout_marginTop="@dimen/px_minus_7"
-            android:layout_marginEnd="@dimen/px142"
-            android:layout_toRightOf="@+id/bt_batch_addapps"
+            android:layout_toEndOf="@+id/bt_batch_addapps"
             android:clipChildren="false"
             android:clipToPadding="false"
-            android:paddingLeft="@dimen/px23"
+            android:paddingStart="@dimen/px23"
             android:paddingTop="@dimen/px23"
             />
 
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="@dimen/px100"
+        android:layout_width="@dimen/px130"
         android:layout_height="@dimen/px36"
-        android:layout_alignParentRight="true"
-        android:layout_marginEnd="@dimen/px180"
-        android:layout_marginTop="@dimen/px86">
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/px210"
+        android:layout_marginTop="@dimen/px86"
+        android:gravity="end">
 
         <TextView
             android:id="@+id/addapps_tv_currows"

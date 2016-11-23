@@ -5,9 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.can.appstore.R;
-import com.can.appstore.myapps.model.MyAppsListDataUtil;
+import com.can.appstore.myapps.utils.MyAppsListDataUtil;
 import com.can.appstore.search.ToastUtil;
 
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ import cn.can.tvlib.ui.widgets.LoadingDialog;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
+import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
+
 /**
  * Created by wei on 2016/11/3.
  */
@@ -24,7 +27,6 @@ import cn.can.tvlib.utils.PackageUtil.AppInfo;
 public class AddAppsPresenter implements AddAppsContract.Presenter {
     private AddAppsContract.View mView;
     private Context mContext;
-    private BroadcastReceiver mHomeReceivcer;
     //数据
     private MyAppsListDataUtil mMyAppListData;
     private List<AppInfo> isShown;
@@ -32,6 +34,11 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
     private List<AppInfo> mAllAppList;
 
     private LoadingDialog mLoadingDialog;
+    //隐藏应用
+//    private List<String>  hideList = null;
+//    private  ShareData mShareData;
+
+    private AddAppsPresenter.AppInstallReceiver mAppInstallReceiver;
 
     public AddAppsPresenter(AddAppsContract.View view, Context context) {
         this.mView = view;
@@ -51,6 +58,9 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
             @Override
             protected Void doInBackground(Void... params) {
                 mMyAppListData = new MyAppsListDataUtil(mContext);
+                if(addShowList != null){
+                    addShowList.clear();
+                }
                 isShown = mMyAppListData.getShowList(isShown);
                 mAllAppList = PackageUtil.findAllThirdPartyApps(mContext, mAllAppList);
                 for (AppInfo app : mAllAppList) {
@@ -65,6 +75,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
                         addShowList.add(app);
                     }
                 }
+
                 return null;
             }
             //加载完数据
@@ -79,7 +90,44 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
 
     @Override
     public void addListener() {
-        registHomeBoradCast();
+        registerInstallReceiver();
+    }
+    /**
+     * 注册应用安装卸载的广播
+     */
+    private void registerInstallReceiver() {
+        if (mAppInstallReceiver == null) {
+            mAppInstallReceiver = new AddAppsPresenter.AppInstallReceiver();
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(Intent.ACTION_PACKAGE_ADDED);
+            filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+            filter.addAction(Intent.ACTION_VIEW);
+            filter.addDataScheme("package");
+            mContext.registerReceiver(mAppInstallReceiver, filter);
+        }
+    }
+    class AppInstallReceiver extends BroadcastReceiver {
+
+        public void onReceive(Context context, Intent intent) {
+            // 接收广播：设备上新安装了一个应用程序包后自动启动新安装应用程序。
+            if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)) {
+                String packageName = intent.getDataString().substring(8);
+                Log.d(TAG, "install packageName : " + packageName);
+                startLoad();
+            } else if (intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)) {
+                String packageName = intent.getData().getSchemeSpecificPart();
+                Log.d(TAG, "uninstall packageName : " + packageName);
+                refreshItemInListPosition(packageName);
+            }
+        }
+    }
+    private void refreshItemInListPosition(String packageName) {
+        for (int j = 0; j < addShowList.size(); j++) {
+            if (packageName.equals(addShowList.get(j).packageName)) {
+                addShowList.remove(j);
+                mView.loadAddAppInfoSuccess(addShowList);
+            }
+        }
     }
 
     @Override
@@ -143,31 +191,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
         mView.showCanSelectCount(canSelect, alreadyShown);
     }
 
-    /**
-     * 注册按主页键的广播
-     */
-    private void registHomeBoradCast() {
-        mHomeReceivcer = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (action.equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)) {
-                    mView.onClickHomeKey();
-                    return;
-                }
-            }
-        };
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-        mContext.registerReceiver(mHomeReceivcer, filter);
-    }
 
-    public void unRegiestr() {
-        if (mHomeReceivcer != null) {
-            mContext.unregisterReceiver(mHomeReceivcer);
-            mHomeReceivcer = null;
-        }
-    }
 
     public void saveSelectlist(List<AppInfo> list) {
         boolean b = isShown.addAll(list);
@@ -177,6 +201,12 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
             ToastUtil.toastShort("添加失败");
         }
         mMyAppListData.saveShowList(isShown);
+    }
+    public void unRegiestr() {
+        if (mAppInstallReceiver != null) {
+            mContext.unregisterReceiver(mAppInstallReceiver);
+            mAppInstallReceiver = null;
+        }
     }
 
 }

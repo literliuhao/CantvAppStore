@@ -21,10 +21,12 @@ public interface SearchContract {
         void getHotRecomAppList(List list); //热门推荐
 
         void getHotKeyList(List list); //大家都在搜
+
+        void noNetWork();
     }
 
     interface Presenter {
-        void getSearchList(String searCon);
+        void getSearchList(String searCon, int pageIndex);
 
         void getDefaultList();
     }

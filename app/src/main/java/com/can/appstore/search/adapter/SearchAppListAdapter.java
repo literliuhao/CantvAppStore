@@ -1,5 +1,6 @@
 package com.can.appstore.search.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,31 +12,36 @@ import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.PopularWord;
+import com.can.appstore.search.SearchActivity;
 import com.can.appstore.search.ToastUtil;
-import com.can.appstore.search.widget.YIBaseCompatFocusAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.tvlib.imageloader.ImageLoader;
+import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 
 /**
  * Created by yibh on 2016/10/13 17:36 .
  */
 
-public class SearchAppListAdapter extends YIBaseCompatFocusAdapter {
-    private List mDataList;
-    private List mDefaultList;  //"大家都在搜"的数据
+public class SearchAppListAdapter extends CanRecyclerViewAdapter {
+    public List mDataList;
+    public List mDefaultList;  //"大家都在搜"的数据
     private OnInitialsListener mOnInitialsListener;
+    public List<View> mHotKeyViewList = new ArrayList<>(); //存每个热词的View
+    private SearchActivity mActivity;
 
-    public SearchAppListAdapter(List datas) {
+    public SearchAppListAdapter(List datas, Context context) {
         super(datas);
         mDataList = datas;
         mDefaultList = datas;
+        mActivity = (SearchActivity) context;
     }
 
-    private static final int DEFAULT_APPLIST_TYPE = 11;    //默认大家都在搜的类型
-    private static final int SEARCH_APPLIST_TYPE = 12;     //搜索出来的类型
+    public static final int DEFAULT_APPLIST_TYPE = 11;    //默认大家都在搜的类型
+    public static final int SEARCH_APPLIST_TYPE = 12;     //搜索出来的类型
 
 
     @Override
@@ -60,12 +66,14 @@ public class SearchAppListAdapter extends YIBaseCompatFocusAdapter {
         switch (viewType) {
             case DEFAULT_APPLIST_TYPE:
                 View inflate = mLayoutInflater.inflate(R.layout.search_app_default_item, parent, false);
+                if (!mHotKeyViewList.contains(inflate)) {
+                    mHotKeyViewList.add(inflate);
+                }
                 return new DefaultSearchViewHolder(inflate);
             case SEARCH_APPLIST_TYPE:
                 View view = mLayoutInflater.inflate(R.layout.search_app_item, parent, false);
                 return new SearchViewHolder(view);
         }
-
         return new RecyclerView.ViewHolder(null) {
         };
     }
@@ -81,6 +89,11 @@ public class SearchAppListAdapter extends YIBaseCompatFocusAdapter {
             ((SearchViewHolder) holder).mAppName.setText(app.getName());
             ((SearchViewHolder) holder).mAppSize.setText(app.getSizeStr());
             ((SearchViewHolder) holder).mAppDownloadCount.setText(app.getDownloadCount());
+            ((SearchViewHolder) holder).mView.setId(position + 10000);
+            //第一行向上焦点是自己
+            if (position < mActivity.SEARCH_APP_SPANCOUNT) {
+                ((SearchViewHolder) holder).mView.setNextFocusUpId(((SearchViewHolder) holder).mView.getId());
+            }
         }
     }
 
@@ -108,6 +121,8 @@ public class SearchAppListAdapter extends YIBaseCompatFocusAdapter {
         public void setContent(int position) {
             PopularWord app = (PopularWord) mDataList.get(position);
             mAppName.setText(app.getWord());
+            //+1000是为了防止在搜索页出现相同的id
+            mView.setId(position + 1000);
         }
     }
 
@@ -121,9 +136,11 @@ public class SearchAppListAdapter extends YIBaseCompatFocusAdapter {
         ImageView mAppIcon;
         TextView mAppSize;  //app大小
         TextView mAppDownloadCount; //下载量
+        View mView;
 
         public SearchViewHolder(View itemView) {
             super(itemView);
+            mView = itemView;
             mAppIcon = (ImageView) itemView.findViewById(R.id.app_icon);
             mAppName = (TextView) itemView.findViewById(R.id.app_name_view);
             mAppSize = (TextView) itemView.findViewById(R.id.app_size_view);
@@ -158,6 +175,15 @@ public class SearchAppListAdapter extends YIBaseCompatFocusAdapter {
      */
     public void setDefaultApplist() {
         setDataList(mDefaultList);
+    }
+
+    /**
+     * 设置默认数据
+     * @param list
+     */
+    public void setDefaultApplist(List list) {
+        mDefaultList = list;
+        setDefaultApplist();
     }
 
     /**

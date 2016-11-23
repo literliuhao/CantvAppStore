@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="104px"
+                android:layout_height="@dimen/px104"
                 android:clickable="true"
                 android:descendantFocusability="blocksDescendants"
                 android:focusable="true">
 
     <ImageView
         android:id="@+id/icon_view"
-        android:layout_width="80px"
-        android:layout_height="80px"
+        android:layout_width="@dimen/px80"
+        android:layout_height="@dimen/px80"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="24px"
+        android:layout_marginLeft="@dimen/px24"
         android:src="@mipmap/ic_launcher"/>
 
     <TextView
@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="@dimen/px10"
         android:layout_toRightOf="@id/icon_view"
         android:duplicateParentState="true"
         android:ellipsize="end"
@@ -29,5 +29,5 @@
         android:singleLine="true"
         android:text="测试名称"
         android:textColor="#ffffff"
-        android:textSize="32px"/>
+        android:textSize="@dimen/px32"/>
 </RelativeLayout>

@@ -13,9 +13,7 @@ import cn.can.tvlib.utils.PackageUtil.AppInfo;
 public interface AddAppsContract {
     interface Presenter {
         void startLoad();
-
         void addListener();
-
         void release();
     }
 
@@ -24,13 +22,12 @@ public interface AddAppsContract {
 
         void hideLoading();
 
-        void onClickHomeKey();
-
         void loadAddAppInfoSuccess(List<PackageUtil.AppInfo> infoList);
 
         void showCanSelectCount(int cansel, int alreadyshow);
 
         void saveSelectInfo(List<AppInfo> list);
+
     }
 
 }

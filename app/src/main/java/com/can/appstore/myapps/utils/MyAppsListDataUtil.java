@@ -1,25 +1,19 @@
-package com.can.appstore.myapps.model;
+package com.can.appstore.myapps.utils;
 
 import android.content.Context;
 import android.text.TextUtils;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
-import com.can.appstore.entity.ListResult;
-import com.can.appstore.http.CanCall;
-import com.can.appstore.http.CanCallback;
-import com.can.appstore.http.CanErrorWrapper;
-import com.can.appstore.http.HttpManager;
+import com.can.appstore.index.model.ShareData;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
 import cn.can.tvlib.utils.PreferencesUtils;
-import retrofit2.Response;
 
 
 /**
@@ -36,6 +30,7 @@ public class MyAppsListDataUtil {
 
     /**
      * 主页：我的应用显示的列表，可编辑。所有第三方应用中的一部分
+     * 除去黑名单
      * 列表数据已包名拼接字符串的形式存在SP文件中
      * 首次：SP存在，获取本地所有应用最多添加16个
      *
@@ -48,7 +43,7 @@ public class MyAppsListDataUtil {
             mShowList.clear();
         }
         List<AppInfo> allAppsList = new ArrayList<>();
-        allAppsList = PackageUtil.findAllThirdPartyApps(context, allAppsList);
+        allAppsList = PackageUtil.findAllThirdPartyAppsNoDelay(context, allAppsList);
         if (!PreferencesUtils.getString(context, "myappsshowlist", "0").equals("0")) {
             //存在，证明我在本地已写过过文件
             mShowList = getList(mShowList);
@@ -70,7 +65,7 @@ public class MyAppsListDataUtil {
 
     /**
      * 全部应用Activity显示的列表
-     * 本地已安装的所有非系统应用和在白名单中的系统应用
+     * 本地已安装的所有非系统应用 + 白名单中的系统应用 - 黑名单
      *
      * @return
      */
@@ -80,7 +75,7 @@ public class MyAppsListDataUtil {
         } else {
             allAppslist.clear();
         }
-        allAppslist = PackageUtil.findAllComplexApps(context, allAppslist, MyApp.PRE_APPS);
+        allAppslist = PackageUtil.findAllComplexAppsNoDelay(context, allAppslist, MyApp.PRE_APPS);
         ComparatorAppInfo comparatorAppInfo = new ComparatorAppInfo();
         Collections.sort(allAppslist, comparatorAppInfo);
 
@@ -120,27 +115,13 @@ public class MyAppsListDataUtil {
 
         for (int i = 0; i < split.length; i++) {
             AppInfo info = PackageUtil.getAppInfo(context, split[i]);
-            if (info != null) {
+            if (info != null ) {//TODO 除去获取的黑名单里的应用
                 list.add(info);
             }
         }
         return list;
     }
 
-
-    /**
-     * 全部应用排序
-     */
-    private class ComparatorAppInfo implements Comparator<AppInfo> {
-        @Override
-        public int compare(AppInfo o1, AppInfo o2) {
-            if (o1.installtime == o2.installtime)
-                return 0;
-            if (o1.installtime < o2.installtime)
-                return 1;
-            return -1;
-        }
-    }
 
 
     /**
@@ -156,73 +137,45 @@ public class MyAppsListDataUtil {
         }
         for (int i = 0; i < MyApp.PRE_APPS.size(); i++) {
             AppInfo appInfo = PackageUtil.getAppInfo(context, MyApp.PRE_APPS.get(i));
+            //如果该应用已卸载，返回为空
             if (appInfo != null) {
                 list.add(appInfo);
             }
         }
         return list;
     }
-
-    /**
-     * 获取可添加到桌面的应用
-     * 在全部第三方应用中，不在我的应用桌面
-     */
-    public List<AppInfo> getAddApp(List<AppInfo> list) {
-        if (list == null) {
-            list = new ArrayList<>();
-        } else {
-            list.clear();
-        }
-
-
-        return list;
-    }
-
-    /**
-     * 获取 隐藏应用
-     */
-    public static List<String> hideList = new ArrayList<>();
-
-    public void getHideApps() {
-        CanCall<ListResult<String>> hiddenApps = HttpManager.getApiService().getHiddenApps();
-        hiddenApps.enqueue(new CanCallback<ListResult<String>>() {
-            @Override
-            public void onResponse(CanCall<ListResult<String>> call, Response<ListResult<String>> response) throws Exception {
-                ListResult<String> body = response.body();
-                hideList = (List<String>) body;
-            }
-
-            @Override
-            public void onFailure(CanCall<ListResult<String>> call, CanErrorWrapper errorWrapper) {
-
-            }
-        });
-    }
+    //隐藏应用
+    public static List<String>  hideList = null;
+    private ShareData mShareData;
 
     /**
      * 从列表里删除隐藏应用
      */
     public List<AppInfo> removeHideApp(List<AppInfo> appList) {
+        mShareData = ShareData.getInstance();
+        hideList = mShareData.getHiddenApps(hideList);
         if (appList == null) {
             return null;
         }
         if (hideList == null || hideList.size() == 0) {
             return appList;
         }
-        List<AppInfo> hideAppList = new ArrayList<>();
-        for (AppInfo appInfo : appList) {
-            boolean isHide = false;
-            for (String s : hideList) {
-                if (appInfo.packageName.equals(s)) {
-                    isHide = true;
+        if (hideList.size() != 0) {
+            for (int i = appList.size() - 1; i >= 0; i--) {
+                AppInfo appInfo = appList.get(i);
+                for (int j = hideList.size() - 1; j >= 0; j--) {
+                    if (hideList.get(j).equals(appInfo.packageName)) {
+                        //  hideList.remove(j);
+                        appList.remove(i);
+                        break;
+                    }
                 }
             }
-            if (isHide) {
-                hideAppList.add(appInfo);
-            }
         }
-        appList.removeAll(hideAppList);
         return appList;
     }
+
+
+
 
 }

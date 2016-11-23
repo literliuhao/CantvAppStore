@@ -8,7 +8,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.can.appstore.R;
-import com.can.appstore.myapps.model.MyAppsListDataUtil;
+import com.can.appstore.myapps.utils.MyAppsListDataUtil;
 
 import java.util.List;
 
@@ -35,7 +35,6 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
     private Context mContext;
 
     private AppInstallReceiver mAppInstallReceiver;
-    private BroadcastReceiver mHomeReceivcer;
 
     private DownloadManager mDownloadManager;
     private String mUninstallApkName;
@@ -65,7 +64,6 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
             protected Void doInBackground(Void... params) {
                 mMyAppsListDataUtil = new MyAppsListDataUtil(mContext);
                 allAppsList = mMyAppsListDataUtil.getAllAppList(allAppsList);
-                allAppsList = mMyAppsListDataUtil.removeHideApp(allAppsList);
                 return null;
             }
 
@@ -74,14 +72,19 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
             protected void onPostExecute(Void aVoid) {
                 mView.loadAllAppInfoSuccess(allAppsList);
                 mView.hideLoading();
+                removeHideApps();
             }
         }.execute();
 
     }
 
+    private void removeHideApps() {
+        allAppsList = mMyAppsListDataUtil.removeHideApp(allAppsList);
+        mView.loadAllAppInfoSuccess(allAppsList);
+    }
+
     @Override
     public void addListener() {
-        registHomeBoradCast();
         registerInstallReceiver();
     }
 
@@ -111,24 +114,7 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
         }
     }
 
-    /**
-     * 注册按主页键的广播
-     */
-    private void registHomeBoradCast() {
-        mHomeReceivcer = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (action.equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)) {
-                    mView.onClickHomeKey();
-                    return;
-                }
-            }
-        };
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-        mContext.registerReceiver(mHomeReceivcer, filter);
-    }
+
 
     /**
      * 注册应用安装卸载的广播
@@ -231,10 +217,6 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
         if (mAppInstallReceiver != null) {
             mContext.unregisterReceiver(mAppInstallReceiver);
             mAppInstallReceiver = null;
-        }
-        if (mHomeReceivcer != null) {
-            mContext.unregisterReceiver(mHomeReceivcer);
-            mHomeReceivcer = null;
         }
     }
 

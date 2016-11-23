@@ -8,6 +8,9 @@ import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import retrofit2.Response;
 
 /**
@@ -16,7 +19,8 @@ import retrofit2.Response;
 
 public class ShareData {
 
-    private ShareData() {}
+    private ShareData() {
+    }
 
     private static ShareData shareData;
 
@@ -45,8 +49,16 @@ public class ShareData {
         });
     }
 
-    public ListResult<String> getHiddenApps() {
-        return hiddenList;
+    public List<String> getHiddenApps(List<String> list) {
+        if (list == null) {
+            list = new ArrayList<String>();
+            execute();
+        } else {
+            list.clear();
+        }
+//        list = hiddenList.getData();
+        list.add("com.cantv.media");
+        return list;
     }
 
 }

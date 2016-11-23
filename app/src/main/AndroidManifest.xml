@@ -153,8 +153,8 @@
         <activity android:name="com.can.appstore.message.MessageHomeActivity"></activity>
         <activity android:name="com.can.appstore.message.MessageActivity">
             <intent-filter>
-                <action android:name="com.can.appstore.ACTION_MESSAGE"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.can.appstore.ACTION_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 

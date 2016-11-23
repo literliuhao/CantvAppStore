@@ -1,16 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#252930">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#252930">
+    <!--热门推荐-->
+    <LinearLayout
+        android:id="@+id/ll_recommed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:visibility="gone">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/px82"
+            android:text="@string/search_bottom_recommend_st"
+            android:textColor="#D9DADC"
+            android:textSize="@dimen/px32"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recommend_app_recycle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/px70"
+            android:layout_marginRight="@dimen/px110"/>
+
+    </LinearLayout>
+
+    <!--显示行数-->
     <RelativeLayout
         android:id="@+id/top_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="82px"
-        android:layout_marginRight="120px"
-        android:layout_marginTop="120px">
+        android:layout_marginLeft="@dimen/px82"
+        android:layout_marginRight="@dimen/px120"
+        android:layout_marginTop="@dimen/px120">
 
         <TextView
             android:id="@+id/left_top_view"
@@ -19,7 +45,7 @@
             android:gravity="center"
             android:text="@string/search_left_top_prompt1"
             android:textColor="#D9DADC"
-            android:textSize="32px" />
+            android:textSize="@dimen/px32"/>
 
         <TextView
             android:id="@+id/right_top_view"
@@ -29,34 +55,12 @@
             android:gravity="center"
             android:text="1/5行"
             android:textColor="#D9DADC"
-            android:textSize="32px" />
+            android:textSize="@dimen/px32"
+            android:visibility="gone"/>
 
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/ll_recommed"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="82px"
-            android:text="@string/search_bottom_recommend_st"
-            android:textColor="#D9DADC"
-            android:textSize="32px" />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recommend_app_recycle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="75px"
-            android:layout_marginRight="110px" />
-
-    </LinearLayout>
-
+    <!--搜索结果-->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -66,17 +70,23 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/applist_recycle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="75px"
-            android:layout_marginRight="110px" />
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/px75"
+            android:layout_marginRight="@dimen/px110"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/px40"
+            android:paddingTop="@dimen/px20"
+            />
 
     </RelativeLayout>
 
+
+    <!--没搜索到内容-->
     <LinearLayout
         android:id="@+id/search_null"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="246px"
+        android:layout_marginTop="@dimen/px246"
         android:gravity="center"
         android:orientation="horizontal"
         android:visibility="gone">
@@ -84,19 +94,20 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/noapp" />
+            android:src="@drawable/noapp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:layout_marginLeft="16px"
+            android:layout_marginLeft="@dimen/px16"
             android:gravity="center"
             android:text="@string/search_null"
             android:textColor="#D9DADC"
-            android:textSize="36px" />
+            android:textSize="@dimen/px36"/>
 
     </LinearLayout>
 
+    <include layout="@layout/search_no_network"/>
 
 </RelativeLayout>

@@ -20,7 +20,7 @@
             android:layout_width="@dimen/px7"
             android:layout_height="@dimen/px38"
             android:layout_marginRight="@dimen/px20"
-            android:background="@drawable/title_line"
+            android:background="@mipmap/title_line"
             android:layout_gravity="center_vertical"
             />
 
@@ -54,10 +54,11 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="@dimen/px100"
+        android:layout_width="@dimen/px130"
         android:layout_height="@dimen/px36"
         android:layout_alignParentRight="true"
-        android:layout_marginEnd="@dimen/px160"
+        android:gravity="right"
+        android:layout_marginEnd="@dimen/px190"
         android:layout_marginTop="@dimen/px80">
 
         <TextView
