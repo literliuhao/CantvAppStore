@@ -13,6 +13,7 @@ import com.can.appstore.update.model.AppInfoBean;
 
 import java.util.List;
 
+import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 /**
@@ -45,10 +46,11 @@ public class InstallManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
         Installholder.appIcon.setImageDrawable(mDatas.get(position).getIcon());
         Installholder.installIcon.setVisibility(mDatas.get(position).getInstall() ? View.VISIBLE : View.INVISIBLE);
         Installholder.installing.setVisibility(mDatas.get(position).getIsInstalling() ? (mDatas.get(position).getInstall() ? View.INVISIBLE : View.VISIBLE) : View.INVISIBLE);
+        Installholder.installing.setText(mDatas.get(position).getInstalledFalse() ? "安装失败" : "安装中");
     }
 
     class InstallViewHolder extends RecyclerView.ViewHolder {
-        ImageView appIcon;
+        RoundCornerImageView appIcon;
         TextView appName;
         TextView appVersioncode;
         TextView appSize;
@@ -60,7 +62,7 @@ public class InstallManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
             appName = (TextView) view.findViewById(R.id.tv_installpkg_name);
             appSize = (TextView) view.findViewById(R.id.tv_installpkg_size);
             appVersioncode = (TextView) view.findViewById(R.id.tv_installpkg_versioncode);
-            appIcon = (ImageView) view.findViewById(R.id.iv_installpkg_icon);
+            appIcon = (RoundCornerImageView) view.findViewById(R.id.iv_installpkg_icon);
             installIcon = (ImageView) view.findViewById(R.id.iv_installpkg_installicon);
             installing = (TextView) view.findViewById(R.id.tv_install_installing);
         }

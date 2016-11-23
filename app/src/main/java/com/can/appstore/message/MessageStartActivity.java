@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.can.appstore.ActionConstants;
 import com.can.appstore.R;
 import com.can.appstore.entity.Message;
 import com.can.appstore.entity.MessageContainer;
@@ -73,9 +74,9 @@ public class MessageStartActivity extends AppCompatActivity {
                         msgInfo.setMsgExpires(msg.getExpires());
                         msgInfo.setMsgTitle(msg.getTitle());
                         msgInfo.setStatus(true);
-                        //异常数据处理
+                        //接口数据异常处理
                         if (TextUtils.isEmpty(msg.getAction()) || TextUtils.isEmpty(msg.getActionData())){
-                            msgInfo.setAction("action_nothing");
+                            msgInfo.setAction(ActionConstants.ACTION_NOTHIN);
                         }else{
                             msgInfo.setAction(msg.getAction().trim());  //处理数据首尾空格（经测试会出现首尾有空格情况）
                             msgInfo.setActionData(msg.getActionData());

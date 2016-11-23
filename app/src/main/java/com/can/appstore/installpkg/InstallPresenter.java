@@ -79,6 +79,7 @@ public class InstallPresenter implements InstallContract.Presenter {
         mView.refreshAll();
         mView.showNoData();
         setNum(0);
+        getSDInfo();
     }
 
     /**
@@ -99,6 +100,7 @@ public class InstallPresenter implements InstallContract.Presenter {
             mView.showNoData();
         }
         setNum(0);
+        getSDInfo();
     }
 
     /**
@@ -115,6 +117,7 @@ public class InstallPresenter implements InstallContract.Presenter {
             mView.showNoData();
         }
         setNum(0);
+        getSDInfo();
     }
 
     @Override
@@ -197,14 +200,16 @@ public class InstallPresenter implements InstallContract.Presenter {
         //String path = Environment.getExternalStorageDirectory().getPath().toString() + File.separator + "Movies"+File.separator;
         String fliePath = mDatas.get(position).getFliePath();
         int result = InstallPkgUtils.installApp2(fliePath);
-        if (result == 1) {
+        if (result == 0) {
             mDatas.get(position).setInstalling(false);
             mDatas.get(position).setInstall(true);
             //isInstalled(mDatas.get(position).getPackageName());
             //mView.refreshAll();
         } else {
-            mDatas.get(position).setInstalling(false);
-            //mView.refreshAll();
+            mDatas.get(position).setInstalling(true);
+            mDatas.get(position).setInstall(false);
+            mDatas.get(position).setInstalledFalse(true);
+            mView.refreshAll();
         }
     }
 

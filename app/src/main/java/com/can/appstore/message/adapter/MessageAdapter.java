@@ -24,18 +24,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
 
     private List<MessageInfo> msgList;
     private OnMsgFocusLayoutClickListener msgFocusLayoutClickListener;
-    private OnMsgDeleteClickListener msgDeleteClickListener;
     private OnMsgFocusLayoutFocusChangeListener msgFocusLayoutFocusChangeListener;
     private View.OnFocusChangeListener mFocusListener;
     private OnItemRemoveListener mRemoveListener;
-    private View mFocusedDeteleBtn;
+    private View mFocusedDeleteBtn;
     private LayoutInflater mLayoutInflater;
     private Handler mHandler = new Handler();
     Runnable showMsgDelete = new Runnable() {
         @Override
         public void run() {
-            if (mFocusedDeteleBtn != null) {
-                mFocusedDeteleBtn.setVisibility(View.VISIBLE);
+            if (mFocusedDeleteBtn != null) {
+                mFocusedDeleteBtn.setVisibility(View.VISIBLE);
             }
         }
     };
@@ -49,27 +48,19 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
     }
 
     public interface OnMsgFocusLayoutClickListener {
-        void onllMsgClick(View view, int position);
+        void onMsgFocusLayoutClick(View view, int position);
     }
 
-    public void setOnllMsgClickListener(OnMsgFocusLayoutClickListener msgFocusLayoutClickListener) {
+    public void setOnMsgFocusLayoutClickListener(OnMsgFocusLayoutClickListener msgFocusLayoutClickListener) {
         this.msgFocusLayoutClickListener = msgFocusLayoutClickListener;
     }
 
     public interface OnMsgFocusLayoutFocusChangeListener {
-        void onllMsgFocusChange(View view, int position);
+        void onMsgFocusLayoutFocusChange(View view, int position);
     }
 
-    public void setOnllMsgFocusChangeListener(OnMsgFocusLayoutFocusChangeListener msgFocusLayoutFocusChangeListener) {
+    public void setOnMsgFocusLayoutFocusChangeListener(OnMsgFocusLayoutFocusChangeListener msgFocusLayoutFocusChangeListener) {
         this.msgFocusLayoutFocusChangeListener = msgFocusLayoutFocusChangeListener;
-    }
-
-    public interface OnMsgDeleteClickListener {
-        void onDeleteClick(View view, int position);
-    }
-
-    public void setOnMsgDeleteClickListener(OnMsgDeleteClickListener msgDeleteClickListener) {
-        this.msgDeleteClickListener = msgDeleteClickListener;
     }
 
     public void setFocusListener(View.OnFocusChangeListener focusListener) {
@@ -90,7 +81,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
             mLayoutInflater = LayoutInflater.from(parent.getContext());
         }
         View view = mLayoutInflater.inflate(R.layout.item_msg_recycleriew, parent, false);
-        MessageAdapter.MyViewHolder holder = new MessageAdapter.MyViewHolder(view, msgFocusLayoutClickListener, msgDeleteClickListener, msgFocusLayoutFocusChangeListener);
+        MessageAdapter.MyViewHolder holder = new MessageAdapter.MyViewHolder(view, msgFocusLayoutClickListener, msgFocusLayoutFocusChangeListener);
         view.setOnFocusChangeListener(mFocusListener);
         return holder;
     }
@@ -118,21 +109,19 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnFocusChangeListener, View.OnKeyListener {
         private OnMsgFocusLayoutClickListener mFocusClickListener;
         private OnMsgFocusLayoutFocusChangeListener mFocusChangeListener;
-        private OnMsgDeleteClickListener msgDeleteClickListener;
         TextView msgTitle, msgDate;
         ImageView greenDot, msgDelete;
         LinearLayout msgFocusLayout;
 
-        public MyViewHolder(View view, OnMsgFocusLayoutClickListener msgClickListener, OnMsgDeleteClickListener msgDeleteClickListener, OnMsgFocusLayoutFocusChangeListener msgFocusChangeListener) {
+        public MyViewHolder(View view, OnMsgFocusLayoutClickListener msgClickListener, OnMsgFocusLayoutFocusChangeListener msgFocusChangeListener) {
             super(view);
             this.mFocusClickListener = msgClickListener;
             this.mFocusChangeListener = msgFocusChangeListener;
-            this.msgDeleteClickListener = msgDeleteClickListener;
-            greenDot = (ImageView) view.findViewById(R.id.green_dot);
-            msgTitle = (TextView) view.findViewById(R.id.item_tv_title);
-            msgDate = (TextView) view.findViewById(R.id.item_tv_date);
-            msgDelete = (ImageView) view.findViewById(R.id.iv_btn_delete);
-            msgFocusLayout = (LinearLayout) view.findViewById(R.id.ll_focus_msg);
+            greenDot = (ImageView) view.findViewById(R.id.item_green_dot);
+            msgTitle = (TextView) view.findViewById(R.id.item_tv_msg_title);
+            msgDate = (TextView) view.findViewById(R.id.item_tv_msg_date);
+            msgDelete = (ImageView) view.findViewById(R.id.item_iv_btn_delete);
+            msgFocusLayout = (LinearLayout) view.findViewById(R.id.item_ll_focus_msg);
             msgDelete.setOnClickListener(this);
             msgDelete.setOnKeyListener(this);
             msgDelete.setOnFocusChangeListener(this);
@@ -144,7 +133,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.iv_btn_delete:
+                case R.id.item_iv_btn_delete:
                     MessageManager.deleteMsg(msgList.get(getLayoutPosition()).getMsgId());
                     msgList.remove(getLayoutPosition());
                     notifyItemRemoved(getLayoutPosition());
@@ -152,16 +141,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
                         mRemoveListener.onRemoveItem(getLayoutPosition());
                     }
                     break;
-                case R.id.ll_focus_msg:
-                    /*MessageInfo msg = msgList.get(getLayoutPosition());
-                    if (msg.getStatus()){
-                        MessageManager.updateStatus(msg.getMsgId());
-                        msg.setStatus(false);
-                        msgList.set(getLayoutPosition(), msg);
-                        notifyItemChanged(getLayoutPosition());
-                    }*/
+                case R.id.item_ll_focus_msg:
                     if (mFocusClickListener != null) {
-                        mFocusClickListener.onllMsgClick(v, getLayoutPosition());
+                        mFocusClickListener.onMsgFocusLayoutClick(v, getLayoutPosition());
                     }
                     break;
             }
@@ -182,11 +164,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
                 mFocusListener.onFocusChange(v, hasFocus);
             }
             if (mFocusChangeListener != null) {
-                mFocusChangeListener.onllMsgFocusChange(v, getLayoutPosition());
+                mFocusChangeListener.onMsgFocusLayoutFocusChange(v, getLayoutPosition());
             }
             if (msgDelete.hasFocus() || msgFocusLayout.hasFocus()) {
                 msgFocusLayout.setSelected(true);
-                mFocusedDeteleBtn = msgDelete;
+                mFocusedDeleteBtn = msgDelete;
                 mHandler.removeCallbacks(showMsgDelete);
                 mHandler.postDelayed(showMsgDelete, 200);
             } else {

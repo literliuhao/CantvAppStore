@@ -24,7 +24,7 @@
                 android:layout_width="@dimen/px120"
                 android:layout_height="@dimen/px120"
                 android:layout_marginEnd="@dimen/px24"
-                app:cornerSize="@dimen/px8"
+                app:cornerSize="@dimen/px24"
                 tools:src="@mipmap/ic_launcher" />
 
             <TextView
