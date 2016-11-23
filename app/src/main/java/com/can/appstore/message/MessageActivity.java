@@ -137,7 +137,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                         break;
                     case ActionConstants.ACTION_ACTIVITY_DETAIL:
                         ToastUtil.toastShort("跳转到活动详情页"+msg.getMsgId());
-                        // TODO: 2016/11/23  
+                        // TODO: 2016/11/23
 //                        String activityActionData = msg.getActionData();
 //                        ActiveActivity.actionStart(MessageActivity.this , activityActionData);
                         refreshRecyclerItem(msg , position);
@@ -156,7 +156,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         mAdapter.setOnItemRemoveListener(new MessageAdapter.OnItemRemoveListener() {
             @Override
             public void onRemoveItem(int position) {
-                focusMoveUtil.hideFocusForShowDelay(300);
+                focusMoveUtil.hideFocusForShowDelay(700);
                 int msgCount = msgList.size();
                 refreshTotalText(msgCount);
                 if (msgCount == 0) {
@@ -171,13 +171,13 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                     focusMsgItem(position - 1);
                     return;
                 }
-                /*int first = llManager.findFirstVisibleItemPosition();
+                int first = llManager.findFirstVisibleItemPosition();
                 int last = llManager.findLastVisibleItemPosition();
                 if (first != 0 && last == msgCount) {
                     focusMsgItem(position - 1);
                     return;
-                }*/
-                deleteLastItem = position == msgCount - 1;
+                }
+                deleteLastItem = position == msgCount + 1;
                 final int posi = deleteLastItem ? position - 1 : position;
                 focusMsgItem(posi);
                 focusViewMoveEnable = false;
@@ -186,7 +186,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                     public void run() {
                         focusMsgItemInRunnable(posi);
                     }
-                }, 500);
+                }, 400);
             }
         });
     }
@@ -232,7 +232,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                     if (deleteLastItem) {
                         focusViewMoveEnable = true;
                     }
-                    mHandler.postDelayed(mFocusMoveRunnable, 400);
+                    mHandler.postDelayed(mFocusMoveRunnable, 300);
                 }
             }
         });
@@ -356,12 +356,6 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
 
     @Override
     protected void onStop() {
-        if (dbManager != null) {
-            dbManager = null;
-        }
-        if (msgList != null) {
-            msgList.clear();
-        }
         super.onStop();
     }
 
@@ -370,6 +364,12 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         if (focusMoveUtil != null) {
             focusMoveUtil.release();
             focusMoveUtil = null;
+        }
+        if (dbManager != null) {
+            dbManager = null;
+        }
+        if (msgList != null) {
+            msgList.clear();
         }
         if (mAdapter != null) {
             mAdapter.setFocusListener(null);
