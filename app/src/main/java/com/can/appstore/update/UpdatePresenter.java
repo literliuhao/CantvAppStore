@@ -91,6 +91,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                     mView.hideLoadingDialog();
                     mView.hideNoData();
                     //进行网络请求获取更新包信息
+                    mDatas.clear();
                     mDatas.addAll(appList);
                     UpdateAppList.list.addAll(appList);
                     mView.showInstallPkgList(mDatas);
