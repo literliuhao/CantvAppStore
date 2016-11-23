@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.can.appstore.ActionConstants;
 import com.can.appstore.R;
+import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.message.adapter.MessageAdapter;
 import com.can.appstore.message.db.entity.MessageInfo;
@@ -110,8 +111,11 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
             public void onllMsgClick(View view, int position) {
                 boolean isNetConnected = NetworkUtils.isNetworkConnected(MessageActivity.this);
                 MessageInfo msg = msgList.get(position);
-                if (!isNetConnected && msg.getAction() != ActionConstants.ACTION_NOTHIN){
-                    ToastUtil.toastShort("网络链接失败");
+                if(msg == null){
+                    return;
+                }
+                if (!isNetConnected &&  !msg.getAction().equals(ActionConstants.ACTION_NOTHIN)){
+                    ToastUtil.toastShort("网络连接失败");
                     return;
                 }
                 switch (msg.getAction()) {
@@ -119,16 +123,24 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                         refreshRecyclerItem(msg , position);
                         break;
                     case ActionConstants.ACTION_APP_DETAIL:
-                           ToastUtil.toastShort("跳转到应用详情页");
-                           refreshRecyclerItem(msg , position);
+                       ToastUtil.toastShort("跳转到应用详情页,消息ID:"+msg.getMsgId());
+                       String appDetailActionData = msg.getActionData();
+                       AppDetailActivity.actionStart(MessageActivity.this , appDetailActionData , null);
+                       refreshRecyclerItem(msg , position);
                         break;
                     case ActionConstants.ACTION_TOPIC_DETAIL:
-                            ToastUtil.toastShort("跳转到专题详情页");
-                            refreshRecyclerItem(msg , position);
+                        ToastUtil.toastShort("跳转到专题详情页"+msg.getMsgId());
+                        // TODO: 2016/11/23  
+//                        String topicActionData = msg.getActionData();
+//                        SpecialDetailActivity.actionStart(MessageActivity.this , topicActionData);
+                        refreshRecyclerItem(msg , position);
                         break;
                     case ActionConstants.ACTION_ACTIVITY_DETAIL:
-                            refreshRecyclerItem(msg , position);
-                            ToastUtil.toastShort("跳转到活动详情页");
+                        ToastUtil.toastShort("跳转到活动详情页"+msg.getMsgId());
+                        // TODO: 2016/11/23  
+//                        String activityActionData = msg.getActionData();
+//                        ActiveActivity.actionStart(MessageActivity.this , activityActionData);
+                        refreshRecyclerItem(msg , position);
                         break;
                 }
             }
@@ -144,13 +156,14 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         mAdapter.setOnItemRemoveListener(new MessageAdapter.OnItemRemoveListener() {
             @Override
             public void onRemoveItem(int position) {
-                focusMoveUtil.hideFocusForShowDelay(650);
+                focusMoveUtil.hideFocusForShowDelay(300);
                 int msgCount = msgList.size();
                 refreshTotalText(msgCount);
                 if (msgCount == 0) {
                     itemTotal.setVisibility(View.INVISIBLE);
                     itemPos.setVisibility(View.INVISIBLE);
                     mRecyclerView.setVisibility(View.INVISIBLE);
+                    btnClear.setVisibility(View.INVISIBLE);
                     empty.setVisibility(View.VISIBLE);
                     return;
                 }

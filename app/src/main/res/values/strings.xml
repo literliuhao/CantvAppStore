@@ -140,5 +140,4 @@
     <string name="btn_tag_msg">全标为已读</string>
     <string name="btn_clear_msg">清空</string>
     <string name="txt_empty_msg">暂无消息</string>
-
 </resources>
