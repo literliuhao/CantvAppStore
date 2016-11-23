@@ -197,6 +197,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             mNotUninstallApp.setVisibility(View.VISIBLE);
             mCanRecyclerView.setVisibility(View.INVISIBLE);
             mTvItemCurRows.setVisibility(View.INVISIBLE);
+            hideSelectAppCount();
             mBtBatchUninstall.setNextFocusRightId(mBtBatchUninstall.getId());
             return;
         } else {

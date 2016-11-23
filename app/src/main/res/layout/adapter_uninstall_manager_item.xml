@@ -79,7 +79,6 @@
         android:layout_width="@dimen/dimen_36px"
         android:layout_height="@dimen/dimen_36px"
         android:layout_marginStart="@dimen/dimen_4px"
-        android:layout_marginTop="@dimen/dimen_4px"
-        android:src="@drawable/unselect"/>
+        android:layout_marginTop="@dimen/dimen_4px"/>
 
 </FrameLayout>
