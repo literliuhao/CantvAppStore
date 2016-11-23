@@ -1,7 +1,6 @@
 package com.can.appstore.http;
 
 import java.io.IOException;
-
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.Request;
