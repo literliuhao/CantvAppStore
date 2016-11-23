@@ -55,7 +55,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         setContentView(R.layout.activity_message);
         initView();
         // TODO: 2016/11/23
-        showAppInfoLoadingDialog();
+        showLoadingDialog();
         initData();
         initFocusView();
     }
@@ -91,7 +91,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         };
         msgList = queryData();
         // TODO: 2016/11/23
-        hideAppInfoLoadingDialog();
+        hideLoadingDialog();
         if (msgList != null && !msgList.isEmpty()) {
             initAdapter();
             initRecyclerView();
