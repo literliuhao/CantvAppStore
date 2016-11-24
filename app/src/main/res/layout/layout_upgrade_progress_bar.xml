@@ -21,7 +21,7 @@
         android:textColor="@color/white_opa80"
         android:textSize="@dimen/px40"
         />
-    <com.can.appstore.upgrade.UpgradeProgressBar
+    <com.can.appstore.upgrade.widgets.UpgradeProgressBar
         android:id="@+id/pb_upgrade"
         android:layout_width="@dimen/px722"
         android:layout_height="wrap_content"

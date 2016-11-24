@@ -20,7 +20,7 @@
         android:textSize="40px"
         />
 
-    <com.can.appstore.upgrade.UpgradeInfoScrollView
+    <com.can.appstore.upgrade.widgets.UpgradeInfoScrollView
         android:id="@+id/sv_upgrade_info"
         android:layout_width="@dimen/px800"
         android:layout_height="@dimen/px430"
@@ -76,9 +76,9 @@
                 android:textSize="@dimen/px34"
                 />
         </LinearLayout>
-    </com.can.appstore.upgrade.UpgradeInfoScrollView>
+    </com.can.appstore.upgrade.widgets.UpgradeInfoScrollView>
 
-    <com.can.appstore.upgrade.UpgradeInfoNoticeCursor
+    <com.can.appstore.upgrade.widgets.UpgradeInfoNoticeCursor
         android:id="@+id/user_notice_cursor"
         android:layout_width="@dimen/px9"
         android:layout_height="@dimen/px430"
@@ -93,7 +93,7 @@
         scrollbar:cursorColor="@color/white_opa80"
         scrollbar:barColor="@color/white_opa65"
         >
-    </com.can.appstore.upgrade.UpgradeInfoNoticeCursor>
+    </com.can.appstore.upgrade.widgets.UpgradeInfoNoticeCursor>
 
 
     <TextView
