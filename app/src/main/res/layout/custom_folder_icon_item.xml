@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="@dimen/px234"
-                android:layout_height="@dimen/px162"
-                android:orientation="vertical"
+                android:layout_height="@dimen/px164"
                 android:gravity="center"
+                android:orientation="vertical"
     >
 
     <LinearLayout
-        android:layout_width="@dimen/px208"
-        android:layout_height="@dimen/px136"
-        android:layout_marginLeft="@dimen/px8"
-        android:layout_marginTop="@dimen/px8"
+        android:layout_width="@dimen/px234"
+        android:layout_height="@dimen/px164"
         android:orientation="vertical"
         >
 
         <LinearLayout
-            android:layout_width="@dimen/px208"
+            android:layout_width="@dimen/px234"
             android:layout_height="@dimen/px64"
+            android:layout_marginTop="@dimen/px8"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
+            android:paddingEnd="@dimen/px8"
+            android:paddingStart="@dimen/px8"
             >
 
             <ImageView
@@ -47,12 +48,14 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="@dimen/px208"
+            android:layout_width="@dimen/px234"
             android:layout_height="@dimen/px64"
             android:layout_marginTop="@dimen/px8"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
-
+            android:paddingEnd="@dimen/px8"
+            android:paddingStart="@dimen/px8"
+            android:layout_marginBottom="@dimen/px8"
             >
 
             <ImageView

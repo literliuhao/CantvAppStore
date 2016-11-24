@@ -47,9 +47,6 @@ public class MyAppsListDataUtil {
         if (!PreferencesUtils.getString(context, "myappsshowlist", "0").equals("0")) {
             //存在，证明我在本地已写过过文件
             mShowList = getList(mShowList);
-            if(mShowList.size()<16){
-
-            }
         } else {
             //文件不存在，初次
             if (allAppsList.size() <= 16) {

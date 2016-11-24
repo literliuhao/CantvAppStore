@@ -46,7 +46,7 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
     public static final int APP_INSTALL_REFRESH_DELAYE = 200;//应用安装刷新此时选择的位置
 
     //布局控件
-    private Button addBut;
+    private TextView addBut;
     private TextView tv_select;
     private TextView tv_canSelect;
     private TextView tv_curRows;
@@ -66,7 +66,7 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
 
 
     private void initView() {
-        addBut = (Button) findViewById(R.id.bt_batch_addapps);
+        addBut = (TextView) findViewById(R.id.bt_batch_addapps);
         tv_canSelect = (TextView) findViewById(R.id.tv_canadd_cut);
         tv_select = (TextView) findViewById(R.id.tv_addselect_count);
         tv_curRows = (TextView) findViewById(R.id.addapps_tv_currows);

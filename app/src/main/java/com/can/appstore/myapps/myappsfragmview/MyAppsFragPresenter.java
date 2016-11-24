@@ -84,8 +84,14 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
         if (mDrawablelist.size() != 0) {
             mDrawablelist.clear();
         }
-        for (int i = 0; i < list.size(); i++) {
-            mDrawablelist.add(list.get(i).appIcon);
+        if(list.size()<7){
+            for (int i = 0; i < list.size(); i++) {
+                mDrawablelist.add(list.get(i).appIcon);
+            }
+        }else{
+            for (int i = 0; i < 6; i++) {
+                mDrawablelist.add(list.get(i).appIcon);
+            }
         }
         return mDrawablelist;
     }

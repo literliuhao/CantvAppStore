@@ -9,8 +9,8 @@
 
     <com.can.appstore.myapps.ui.CustomFolderIcon
         android:id="@+id/my_icons"
-        android:layout_width="@dimen/px224"
-        android:layout_height="@dimen/px152"
+        android:layout_width="@dimen/px234"
+        android:layout_height="@dimen/px164"
         android:layout_centerInParent="true"
         android:background="@drawable/folder_bj"
         android:focusable="false"

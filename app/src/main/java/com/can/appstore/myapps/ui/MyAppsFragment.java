@@ -70,7 +70,7 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         View view = inflater.inflate(R.layout.fragment_myapps, container, false);
         mAppsRecyclerView = (CanRecyclerView) view.findViewById(R.id.cr_myapps);
         mAppsRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(getActivity(), 6, GridLayoutManager.VERTICAL, false));
-        mAppsRecyclerView.addItemDecoration(new CanRecyclerViewDivider(Color.TRANSPARENT, 10, 0));
+        mAppsRecyclerView.addItemDecoration(new CanRecyclerViewDivider(Color.TRANSPARENT, 8, 8));
 
         mMyAppsFramPresenter = new MyAppsFragPresenter(this, getContext());
         mMyAppsFramPresenter.startLoad();
