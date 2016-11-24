@@ -60,11 +60,6 @@ public class MyApp extends Application {
         PRE_APPS.add("com.tvkou.linker");
         PRE_APPS.add("com.tvm.suntv.news.client.activity");
         PRE_APPS.add("com.cantv.market");
-//        PRE_APPS.add("com.can.appstore");
-        PRE_APPS.add("com.tv.shipinjiasu");
-        PRE_APPS.add("cn.gloud.cantv14");
-        PRE_APPS.add("laizi.tvddz");
-        PRE_APPS.add("com.Yinyou.sdjqTV");
 
 
         //所有的第三方应用
