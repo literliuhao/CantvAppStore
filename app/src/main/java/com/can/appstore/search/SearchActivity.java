@@ -178,7 +178,7 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
         //搜索内容
         mAppListAdapter = new SearchAppListAdapter(mSearchList, this);
         //"热门推荐"数据
-        mHotRecommendAdapter = new HotRecommendAdapter(mHotRomList);
+        mHotRecommendAdapter = new HotRecommendAdapter(mHotRomList, this);
 
         mContent_del_view.setOnClickListener(this);
         mContent_cl_view.setOnClickListener(this);
