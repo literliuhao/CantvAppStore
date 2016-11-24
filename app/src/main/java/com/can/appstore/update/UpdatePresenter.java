@@ -8,6 +8,11 @@ import android.widget.Toast;
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.entity.AppInfo;
+import com.can.appstore.entity.ListResult;
+import com.can.appstore.http.CanCall;
+import com.can.appstore.http.CanCallback;
+import com.can.appstore.http.CanErrorWrapper;
+import com.can.appstore.http.HttpManager;
 import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.update.utils.UpdateUtils;
 
@@ -23,6 +28,7 @@ import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.SystemUtil;
 import cn.can.tvlib.utils.ToastUtils;
+import retrofit2.Response;
 
 /**
  * Created by shenpx on 2016/11/10 0010.
@@ -63,7 +69,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         mDatas.clear();
         UpdateAppList.list.clear();
         //进行网络请求获取更新包信息
-        /*AppInfo appInfo1 = new AppInfo();
+        AppInfo appInfo1 = new AppInfo();
         appInfo1.setPackageName("cn.cibntv.ott");
         appInfo1.setVersionCode(4);
         AppInfo appInfo2 = new AppInfo();
@@ -88,7 +94,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
             public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
 
             }
-        });*/
+        });
         if (appList.size() < 1 || appList == null) {
             mView.showNoData();
         } else {
