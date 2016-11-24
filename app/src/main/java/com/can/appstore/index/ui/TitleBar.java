@@ -14,7 +14,6 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -47,7 +46,7 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
     private List<String> mTabTitles;
     public ViewPager mViewPager;
 
-    private static final int COLOR_TEXT_NORMAL = 0x77FFFFFF;
+    private static final int COLOR_TEXT_NORMAL = 0xCCFFFFFF;
     private static final int COLOR_TEXT_HIGHLIGHTCOLOR = 0xFFFFFFFF;
 
     private int temp = 0;
@@ -55,6 +54,8 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
     private List<LiteText> textViewList;
     private int mCurrentIndex = 0;
     private IAddFocusListener mFocusListener;
+    private View mCurrentView;
+    private View mFirstView;
 
     public TitleBar(Context context) {
         this(context, null);
@@ -139,9 +140,6 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
 
             for (int i = 0; i < mTabTitles.size(); i++) {
                 LiteText liteText = generateTextView(mTabTitles.get(i));
-                if (0 == i) {
-                    liteText.requestFocus();
-                }
                 addView(liteText, i);
             }
             //得到最后titleBar进行相关设置
@@ -150,8 +148,12 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
             lastBar.setNextFocusRightId(R.id.rl_search);
             // 设置item的click事件
             setItemClickEvent();
-        }
 
+        }
+    }
+
+    public View getFirstView(){
+        return mFirstView = this.getChildAt(2);
     }
 
     @Override
@@ -189,9 +191,10 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
             public void onPageSelected(int position) {
                 Log.i("onPageSelected", position + "");
                 mCurrentIndex = position;
-                // 设置字体颜色高亮
                 resetTextViewColor();
-//                highLightTextView(position);
+                if(!(mCurrentView instanceof LiteText)){
+                    highLightTextView(position);
+                }
                 // 回调
                 if (onPageChangeListener != null) {
                     onPageChangeListener.onPageSelected(position);
@@ -231,15 +234,16 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
             public void onGlobalFocusChanged(View oldFocus, View newFocus) {
 //                Log.i("TitleBar", "onGlobalFocusChanged old " + String.valueOf(oldFocus));
 //                Log.i("TitleBar", "onGlobalFocusChanged new " + String.valueOf(newFocus));
-
+                mCurrentView = newFocus;
                 if (!(oldFocus instanceof LiteText) && newFocus instanceof LiteText) {
                     newFocus = textViewList.get(mViewPager.getCurrentItem());
                     newFocus.requestFocus();
-                    resetTextViewColor();
                     mFocusListener.addFocusListener(newFocus, true);
+                    resetTextViewColor();
                 } else if (oldFocus instanceof LiteText && newFocus instanceof LiteText) {
                     if (null == oldFocus || null == newFocus) return;
                     mFocusListener.addFocusListener(newFocus, true);
+                    resetTextViewColor();
                 } else if (oldFocus instanceof LiteText && !(newFocus instanceof LiteText)) {
                     if (null == oldFocus || null == newFocus) return;
                     highLightTextView(mCurrentIndex);
@@ -260,11 +264,6 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
         View view = getChildAt(position);
         if (view instanceof LiteText) {
             view.setBackground(getResources().getDrawable(R.drawable.index_title_normal));
-//            for (int i = 0; i < ((LiteText) view).getChildCount(); i++) {
-//                if (((LiteText) view).getChildAt(i) instanceof ImageView) {
-//                    ((LiteText) view).getChildAt(i).setVisibility(View.VISIBLE);
-//                }
-//            }
         }
     }
 
@@ -276,11 +275,6 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
             View view = getChildAt(i);
             if (view instanceof LiteText) {
                 view.setBackgroundResource(0);
-//                for (int j = 0; j < ((LiteText) view).getChildCount(); j++) {
-//                    if (((LiteText) view).getChildAt(j) instanceof ImageView) {
-//                        ((LiteText) view).getChildAt(j).setVisibility(View.GONE);
-//                    }
-//                }
             }
         }
     }
@@ -310,19 +304,15 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
      */
     private LiteText generateTextView(String text) {
         LiteText textLayout = new LiteText(getContext());
-        textLayout.setPadding((int) getResources().getDimension(R.dimen.px20), (int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px20), (int) getResources().getDimension(R.dimen.px0));
+        textLayout.setPadding((int) getResources().getDimension(R.dimen.px20), (int) getResources().getDimension(R.dimen.px5), (int) getResources().getDimension(R.dimen.px20), (int) getResources().getDimension(R.dimen.px5));
 //        textLayout.setBackground(getResources().getDrawable(R.drawable.index_title_normal));
         LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         textParams.setMargins((int) getResources().getDimension(R.dimen.px30), (int) getResources().getDimension(R.dimen.px10), (int) getResources().getDimension(R.dimen.px30), (int) getResources().getDimension(R.dimen.px10));
+        textLayout.setClipToPadding(false);
+        textLayout.setClipChildren(false);
         textLayout.setLayoutParams(textParams);
         textLayout.setFocusable(true);
         textLayout.setOnFocusChangeListener(this);
-
-        ImageView imageView = new ImageView(getContext());
-        RelativeLayout.LayoutParams imageParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        imageParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        imageView.setLayoutParams(imageParams);
-        imageView.setBackground(getResources().getDrawable(R.drawable.index_title_normal));
 
         TextView textView = new TextView(getContext());
         RelativeLayout.LayoutParams txtParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -333,7 +323,6 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
         textView.setTextColor(COLOR_TEXT_NORMAL);
         textView.setText(text);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-//        textLayout.addView(imageView);
         textLayout.addView(textView);
         textViewList.add(textLayout);
         return textLayout;
