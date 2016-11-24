@@ -39,6 +39,7 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PreferencesUtils;
+import cn.can.tvlib.utils.ToastUtils;
 
 
 /**
@@ -74,13 +75,14 @@ public class InstallManagerActivity extends Activity implements InstallContract.
     private String mCurVersionCode = "";//当前版本号
     private InstallPresenter mPresenter;
     private CanDialog canDialog;
+    private GridLayoutManager mGridLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_installmanager);
         mInstallDatas = new ArrayList<AppInfoBean>();
-        mPresenter = new InstallPresenter(this,InstallManagerActivity.this);
+        mPresenter = new InstallPresenter(this, InstallManagerActivity.this);
         initView();
         initData();
         initFocusChange();
@@ -113,9 +115,8 @@ public class InstallManagerActivity extends Activity implements InstallContract.
                 public void onReceive(Context context, Intent intent) {
                     if (intent.getAction().equals("android.intent.action.PACKAGE_ADDED") || intent.getAction().equals("android.intent.action.PACKAGE_REPLACED")) {
                         String packageName = intent.getDataString().substring(8);
-                        //刷新图标（可能多重版本）通过广播获取安装完成刷新ui  +&& bean.getVersionCode().equals(String.valueOf(versonCode))
                         int versonCode = UpdateUtils.getVersonCode(MyApp.mContext, packageName);
-                        mPresenter.isInstalled(packageName);
+                        mPresenter.isInstalled(packageName,versonCode);
                         Toast.makeText(MyApp.mContext, packageName + "安装成功啦!!!", Toast.LENGTH_LONG).show();
                     } else if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
                         Toast.makeText(MyApp.mContext, "安装失败", Toast.LENGTH_LONG).show();
@@ -253,7 +254,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
         mRecyclerAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, int position, Object data) {
-                initDialog(view,position);
+                initDialog(view, position);
             }
         });
     }
@@ -276,7 +277,8 @@ public class InstallManagerActivity extends Activity implements InstallContract.
         mFocusMoveUtil = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
         mFocusScaleUtil = new FocusScaleUtil();
         myFocusRunnable = new MyFocusRunnable();
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        mGridLayoutManager = new GridLayoutManager(this, 3);
+        mRecyclerView.setLayoutManager(mGridLayoutManager);
         CanRecyclerViewDivider canRecyclerViewDivider = new CanRecyclerViewDivider(0, getResources().getDimensionPixelSize(R.dimen.px38), 0);
         mRecyclerView.addItemDecoration(canRecyclerViewDivider);
         mRecyclerView.setHasFixedSize(true);
@@ -343,7 +345,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
 
     @Override
     public void showCurrentNum(int current, int total) {
-        mCurrentnum.setText(current+"");
+        mCurrentnum.setText(current + "");
         mTotalnum.setText("/" + total + "行");
     }
 
@@ -354,6 +356,28 @@ public class InstallManagerActivity extends Activity implements InstallContract.
         }
         mRecyclerView.setAdapter(mRecyclerAdapter);
         mRecyclerAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void deleteLastItem(final int position) {
+        if (position <= 0) {
+            return;
+        }
+        mFocusMoveUtil.hideFocusForShowDelay(500);
+        mRecyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                View childAt = mRecyclerView.getChildAt(position - 1);
+                if (childAt != null) {
+                    mDeleteAllButton.setFocusable(false);
+                    childAt.setFocusable(true);
+                    childAt.requestFocus();
+                } else {
+                    mDeleteAllButton.setFocusable(true);
+                    mDeleteAllButton.requestFocus();
+                }
+            }
+        }, 500);
     }
 
     private class MyFocusRunnable implements Runnable {
@@ -397,11 +421,10 @@ public class InstallManagerActivity extends Activity implements InstallContract.
         startActivity(new Intent(this, UpdateManagerActivity.class));
     }
 
-    private void initDialog(final View view,final int position) {
+    private void initDialog(final View view, final int position) {
         canDialog = new CanDialog(InstallManagerActivity.this);
         AppInfoBean bean = mPresenter.getItem(position);
         if (bean != null) {
-            //int imageId,String title,String positive,String cancel   .setmIvDialogTitle(bean.getIcon())
             canDialog.setTitle(bean.getAppName()).setIcon(bean.getIcon()).setRlCOntent(false).setNegativeButton("删除").setPositiveButton("安装");
             canDialog.setOnCanBtnClickListener(new CanDialog.OnClickListener() {
                 @Override
@@ -410,7 +433,12 @@ public class InstallManagerActivity extends Activity implements InstallContract.
                     mInstalling.setVisibility(View.VISIBLE);
                     //mPresenter.installApk(position);
                     canDialog.dismiss();
-                    mPresenter.installApp(position);
+                    int versonCode = mPresenter.getVersonCode(InstallManagerActivity.this, position);
+                    if (versonCode == 0) {
+                        ToastUtils.showMessageLong(InstallManagerActivity.this, "安装包版本低于已安装版本,请先卸载原应用");
+                    } else {
+                        mPresenter.installApp(position);
+                    }
                 }
 
                 @Override
@@ -426,9 +454,10 @@ public class InstallManagerActivity extends Activity implements InstallContract.
 
     /**
      * 启动安装包管理
+     *
      * @param context
      */
-    public static void actionStart(Context context){
+    public static void actionStart(Context context) {
         Intent intent = new Intent(context, InstallManagerActivity.class);
         context.startActivity(intent);
     }
