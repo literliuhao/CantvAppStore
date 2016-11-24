@@ -7,9 +7,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.can.appstore.upgrade.UpgradeFailDialog;
-import com.can.appstore.upgrade.UpgradeInFoDialog;
-import com.can.appstore.upgrade.Util;
+import com.can.appstore.upgrade.view.UpgradeFailDialog;
+import com.can.appstore.upgrade.view.UpgradeInFoDialog;
+import com.can.appstore.upgrade.UpgradeUtil;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
 import com.tencent.bugly.beta.download.DownloadListener;
@@ -43,7 +43,7 @@ public class BuglyUpgradeService extends IntentService {
                         public void onClick() {
                             //先清空本地存放Apk的空间
                             mUpdatePath = "/storage/emulated/0/Download/com.can.appstore";
-                            Util.delAllDateFile(mUpdatePath);
+                            UpgradeUtil.delAllDateFile(mUpdatePath);
                             DownloadTask downloadTask = Beta.startDownload();
                             Log.d(TAG, "checkUpgradeInfo: " + downloadTask.getSaveFile());
                         }

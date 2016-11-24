@@ -1,4 +1,4 @@
-package com.can.appstore.upgrade;
+package com.can.appstore.upgrade.view;
 
 import android.app.Dialog;
 import android.content.Context;
