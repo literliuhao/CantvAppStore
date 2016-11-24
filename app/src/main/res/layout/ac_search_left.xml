@@ -59,7 +59,7 @@
             android:paddingLeft="@dimen/px8"
             android:paddingRight="@dimen/px8"
             android:text="@string/search_content_clear"
-            android:textColor="#D9DADC"
+            android:textColor="@color/tr_20_white_color"
             android:textSize="@dimen/px32"/>
         <!--android:background="@drawable/search_keyboard_shape"-->
 
@@ -76,7 +76,7 @@
             android:paddingLeft="@dimen/px8"
             android:paddingRight="@dimen/px8"
             android:text="@string/search_content_del"
-            android:textColor="#D9DADC"
+            android:textColor="@color/tr_20_white_color"
             android:textSize="@dimen/px32"/>
         <!--android:background="@drawable/search_keyboard_shape"-->
 
@@ -97,7 +97,7 @@
         android:layout_marginTop="@dimen/px40"
         android:gravity="center"
         android:text="@string/search_prompt1"
-        android:textColor="#75777B"
+        android:textColor="@color/tr_50_white_color"
         android:textSize="@dimen/px32"/>
 
     <LinearLayout
@@ -112,7 +112,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/search_prompt2"
-            android:textColor="#75777B"
+            android:textColor="@color/tr_50_white_color"
             android:textSize="@dimen/px32"/>
 
         <TextView
@@ -120,7 +120,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/search_prompt3"
-            android:textColor="#B9B56A"
+            android:textColor="@color/tr_20_gold_color"
             android:textSize="@dimen/px32"/>
 
         <TextView
@@ -128,7 +128,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/search_prompt4"
-            android:textColor="#75777B"
+            android:textColor="@color/tr_50_white_color"
             android:textSize="@dimen/px32"/>
 
     </LinearLayout>

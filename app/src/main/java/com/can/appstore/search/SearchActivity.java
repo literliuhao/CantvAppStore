@@ -333,9 +333,11 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
                         mright_top.setVisibility(View.VISIBLE);
                         //行数
                         int lineNumber = position / SEARCH_APP_SPANCOUNT + 1;
+                        int totalItemCount = mSearAppList_recycle.getLayoutManager().getItemCount();
                         //列数
                         int colNumber = (position + 1) % SEARCH_APP_SPANCOUNT == 0 ? SEARCH_APP_SPANCOUNT : (position + 1) % SEARCH_APP_SPANCOUNT;
-                        mright_top.setText(colNumber + "/" + lineNumber + "行");
+//                        mright_top.setText(colNumber + "/" + lineNumber + "行");
+                        mright_top.setText(lineNumber + "/" + totalItemCount + "行");
                     }
                     mFocusedListChild = view;
                     view.postDelayed(myFocusRunnable, 50);

@@ -88,7 +88,15 @@
     <color name="h_rank_tiem_bg3">#448914</color>
     <color name="h_rank_tiem_bg4">#6e53ca</color>
     <color name="h_rank_tiem_bg5">#c45241</color>
-    <!--透明颜色-->
+    <!--首页排行榜透明颜色-->
     <color name="h_rank_transulcent">#16262626</color>
+    <!--搜索页-->
+    <!--白色透明20%-->
+    <color name="tr_20_white_color">#ccffffff</color>
+    <!--白色透明50%-->
+    <color name="tr_50_white_color">#80ffffff</color>
+    <!--金色透明20%-->
+    <color name="tr_20_gold_color">#ccfdf352</color>
+
 
 </resources>

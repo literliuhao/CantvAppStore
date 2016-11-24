@@ -17,6 +17,6 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:text="分类app"
-        android:textColor="#D9DADC"
+        android:textColor="@color/tr_20_white_color"
         android:textSize="@dimen/px32" />
 </LinearLayout>

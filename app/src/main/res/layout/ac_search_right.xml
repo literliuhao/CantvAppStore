@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/px82"
             android:text="@string/search_bottom_recommend_st"
-            android:textColor="#D9DADC"
+            android:textColor="@color/tr_20_white_color"
             android:textSize="@dimen/px32"/>
 
         <android.support.v7.widget.RecyclerView
@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/search_left_top_prompt1"
-            android:textColor="#D9DADC"
+            android:textColor="@color/tr_20_white_color"
             android:textSize="@dimen/px32"/>
 
         <TextView
@@ -54,7 +54,7 @@
             android:layout_alignParentRight="true"
             android:gravity="center"
             android:text="1/5行"
-            android:textColor="#D9DADC"
+            android:textColor="@color/tr_20_white_color"
             android:textSize="@dimen/px32"
             android:visibility="gone"/>
 
@@ -103,7 +103,7 @@
             android:layout_marginLeft="@dimen/px16"
             android:gravity="center"
             android:text="@string/search_null"
-            android:textColor="#D9DADC"
+            android:textColor="@color/tr_20_white_color"
             android:textSize="@dimen/px36"/>
 
     </LinearLayout>
