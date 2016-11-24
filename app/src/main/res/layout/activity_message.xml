@@ -3,104 +3,108 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/msg_bg"
-                >
+    >
+
     <Button
         android:id="@+id/btn_tag"
         android:layout_width="@dimen/px200"
         android:layout_height="@dimen/px72"
+        android:layout_marginLeft="@dimen/px160"
+        android:layout_marginTop="@dimen/px150"
+        android:background="@drawable/msg_btn_rect_gray"
         android:text="@string/btn_tag_msg"
         android:textColor="@color/msg_white_80"
         android:textSize="@dimen/fontsize_34"
-        android:background="@drawable/msg_btn_rect_gray"
-        android:layout_marginLeft="@dimen/px160"
-        android:layout_marginTop="@dimen/px150"
         />
 
     <Button
         android:id="@+id/btn_clear"
         android:layout_width="@dimen/px200"
         android:layout_height="@dimen/px72"
-        android:text="@string/btn_clear_msg"
-        android:textSize="@dimen/fontsize_34"
-        android:textColor="@color/msg_white_80"
-        android:background="@drawable/msg_btn_rect_gray"
-        android:layout_below="@+id/btn_tag"
         android:layout_alignEnd="@+id/btn_tag"
-        android:layout_marginTop="@dimen/px24"/>
+        android:layout_below="@+id/btn_tag"
+        android:layout_marginTop="@dimen/px24"
+        android:background="@drawable/msg_btn_rect_gray"
+        android:text="@string/btn_clear_msg"
+        android:textColor="@color/msg_white_80"
+        android:textSize="@dimen/fontsize_34"
+        android:visibility="gone"/>
 
     <TextView
-        android:id="@+id/tv_msg"
+        android:id="@+id/tv_title_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title_msg"
-        android:textColor="@color/msg_white_80"
-        android:textSize="@dimen/fontsize_38"
-        android:layout_toEndOf="@+id/btn_tag"
         android:layout_marginLeft="@dimen/px64"
         android:layout_marginTop="@dimen/px80"
+        android:layout_toEndOf="@+id/btn_tag"
         android:drawableLeft="@drawable/msg_rect_yellow"
         android:drawablePadding="@dimen/px20"
         android:includeFontPadding="false"
+        android:text="@string/title_msg"
+        android:textColor="@color/msg_white_80"
+        android:textSize="@dimen/fontsize_38"
         />
 
     <TextView
         android:id="@+id/tv_item_pos"
         android:layout_width="@dimen/px150"
         android:layout_height="@dimen/px50"
-        android:textSize="@dimen/fontsize_32"
-        android:textColor="@color/msg_white_80"
+        android:layout_alignBottom="@+id/tv_item_total"
         android:layout_marginTop="@dimen/px86"
         android:layout_toLeftOf="@+id/tv_item_total"
-        android:layout_alignBottom="@+id/tv_item_total"
         android:gravity="right"
+        android:textColor="@color/msg_white_80"
+        android:textSize="@dimen/fontsize_32"
+        android:visibility="gone"
         />
 
     <TextView
         android:id="@+id/tv_item_total"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/fontsize_32"
-        android:textColor="@color/msg_white_50"
-        android:layout_marginTop="@dimen/px86"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="@dimen/px165"/>
+        android:layout_marginEnd="@dimen/px165"
+        android:layout_marginTop="@dimen/px86"
+        android:textColor="@color/msg_white_50"
+        android:textSize="@dimen/fontsize_32"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/tv_empty_msg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/txt_empty_msg"
-        android:textColor="@color/msg_white_80"
-        android:layout_marginEnd="@dimen/px160"
-        android:layout_marginBottom="@dimen/px64"
+        android:layout_alignStart="@+id/tv_title_msg"
         android:layout_alignTop="@+id/btn_tag"
-        android:layout_alignStart="@+id/tv_msg"
-        android:textStyle="bold"
-        android:textSize="@dimen/fontsize_36"
+        android:layout_marginBottom="@dimen/px64"
+        android:layout_marginEnd="@dimen/px160"
         android:gravity="center"
         android:includeFontPadding="false"
+        android:text="@string/txt_empty_msg"
+        android:textColor="@color/msg_white_80"
+        android:textSize="@dimen/fontsize_36"
+        android:textStyle="bold"
         android:visibility="gone"
         />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/id_recyclerview"
+        android:id="@+id/rv_msg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginEnd="@dimen/px160"
+        android:layout_alignStart="@+id/tv_title_msg"
         android:layout_alignTop="@+id/btn_tag"
-        android:layout_alignStart="@+id/tv_msg"
-        android:visibility="gone"
+        android:layout_marginEnd="@dimen/px160"
         android:clipChildren="false"
-        android:paddingBottom="@dimen/px119"
         android:clipToPadding="false"
-        android:scrollbars="vertical"
+        android:paddingBottom="@dimen/px119"
         android:scrollbarStyle="insideInset"
+        android:scrollbars="vertical"
+        android:visibility="gone"
         />
 
     <ImageView
         android:id="@+id/iv_bottom_shadow"
         android:layout_width="match_parent"
         android:layout_height="@dimen/px150"
-        android:src="@drawable/msg_bottom_shadow"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/msg_bottom_shadow"/>
 </RelativeLayout>
