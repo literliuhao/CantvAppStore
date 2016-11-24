@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -39,6 +40,7 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PreferencesUtils;
+import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.ToastUtils;
 
 
@@ -76,6 +78,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
     private InstallPresenter mPresenter;
     private CanDialog canDialog;
     private GridLayoutManager mGridLayoutManager;
+    private static final String TAG = "installManagerActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,9 +120,11 @@ public class InstallManagerActivity extends Activity implements InstallContract.
                         String packageName = intent.getDataString().substring(8);
                         int versonCode = UpdateUtils.getVersonCode(MyApp.mContext, packageName);
                         mPresenter.isInstalled(packageName,versonCode);
-                        Toast.makeText(MyApp.mContext, packageName + "安装成功啦!!!", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(MyApp.mContext, packageName + "安装成功啦!!!", Toast.LENGTH_LONG).show();
+                        Log.i(TAG, "onReceive: "+packageName + "安装成功啦!!!");
                     } else if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
-                        Toast.makeText(MyApp.mContext, "安装失败", Toast.LENGTH_LONG).show();
+                        Log.i(TAG, "onReceive: "+"安装失败");
+                        //Toast.makeText(MyApp.mContext, "安装失败", Toast.LENGTH_LONG).show();
                     }
                 }
             };
@@ -293,19 +298,20 @@ public class InstallManagerActivity extends Activity implements InstallContract.
 
     }
 
-    @Override
     public void showLoadingDialog() {
         if (mLoadingDialog == null) {
-            mLoadingDialog = LoadingDialog.createLoadingDialog(this, getString(R.string.install_search_updateinfo));
+            mLoadingDialog = PromptUtils.showLoadingDialog(this);
+        } else if (mLoadingDialog.isShowing()) {
+            return;
+        } else {
+            mLoadingDialog.setCancelable(false);
             mLoadingDialog.show();
         }
     }
 
-    @Override
     public void hideLoadingDialog() {
-        if (mLoadingDialog != null) {
+        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
             mLoadingDialog.dismiss();
-            mLoadingDialog = null;
         }
     }
 
@@ -425,7 +431,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
         canDialog = new CanDialog(InstallManagerActivity.this);
         AppInfoBean bean = mPresenter.getItem(position);
         if (bean != null) {
-            canDialog.setTitle(bean.getAppName()).setIcon(bean.getIcon()).setRlCOntent(false).setNegativeButton("删除").setPositiveButton("安装");
+            canDialog.setTitle(bean.getAppName()).setIcon(bean.getIcon()).setRlCOntent(false).setNegativeButton(getResources().getString(R.string.install_dialog_delete)).setPositiveButton(getResources().getString(R.string.install_dialog_install));
             canDialog.setOnCanBtnClickListener(new CanDialog.OnClickListener() {
                 @Override
                 public void onClickPositive() {

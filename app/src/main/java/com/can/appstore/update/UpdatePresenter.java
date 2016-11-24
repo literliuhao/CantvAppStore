@@ -19,8 +19,10 @@ import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
+import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.SystemUtil;
+import cn.can.tvlib.utils.ToastUtils;
 
 /**
  * Created by shenpx on 2016/11/10 0010.
@@ -43,7 +45,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
 
     @Override
     public void getInstallPkgList(boolean isAutoUpdate) {
-        //mDatas.clear();
+        mDatas.clear();
         date.clear();
         mView.showInstallPkgList(mDatas);
         if (isAutoUpdate) {
@@ -51,9 +53,14 @@ public class UpdatePresenter implements UpdateContract.Presenter {
             mView.showStartAutoUpdate();
             return;
         }
+        if(!NetworkUtils.isNetworkConnected(mContext)){
+            mView.showInternetError();
+            ToastUtils.showMessage(mContext,"网络连接异常，请检查网络。");
+            return;
+        }
         mView.showLoadingDialog();
         final List appList = UpdateUtils.getAppList();
-        //mDatas.clear();
+        mDatas.clear();
         UpdateAppList.list.clear();
         //进行网络请求获取更新包信息
         /*AppInfo appInfo1 = new AppInfo();
@@ -91,7 +98,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                     mView.hideLoadingDialog();
                     mView.hideNoData();
                     //进行网络请求获取更新包信息
-                    mDatas.clear();
+                    //mDatas.clear();
                     mDatas.addAll(appList);
                     UpdateAppList.list.addAll(appList);
                     mView.showInstallPkgList(mDatas);
@@ -165,13 +172,11 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         for (int i = mDatas.size() - 1; i >= 0; i--) {
             AppInfoBean bean = mDatas.get(i);
             if (bean.getPackageName().equals(packageName)) {
-                //if (bean.getInstall()) {
                 bean.setUpdated(true);
                 bean.setInstalled(false);
                 mView.refreshAll();
                 Log.i(TAG, "isInstalled: " + packageName + "22222");
                 Toast.makeText(MyApp.mContext, packageName + "22222", Toast.LENGTH_LONG).show();
-                //}
             }
         }
     }

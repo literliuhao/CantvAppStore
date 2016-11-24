@@ -222,7 +222,7 @@ public class InstallPkgUtils {
             return 50;
         }
         ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r" + path, false);
-        Log.i("shen", "installApp: " + res.result);
+        Log.i("installPkgUtils", "installApp: " + res.result);
         //成功
         if (res.result == 0) {
             return 0;
@@ -259,7 +259,7 @@ public class InstallPkgUtils {
         String result = execCommand("pm", "install", "-r", path);
         Toast.makeText(MyApp.mContext, "安装结果:" + result, Toast.LENGTH_LONG).show();
         //ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r" + path, false);
-        //Log.i("shen", "installApp: " + result);
+        //Log.i("installPkgUtils", "installApp: " + result);
         //成功
         if (result.contains("Success")) {
             return 0;
