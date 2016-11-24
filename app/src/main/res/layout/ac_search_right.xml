@@ -71,7 +71,7 @@
             android:id="@+id/applist_recycle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/px75"
+            android:layout_marginLeft="@dimen/px70"
             android:layout_marginRight="@dimen/px110"
             android:clipToPadding="false"
             android:paddingBottom="@dimen/px40"

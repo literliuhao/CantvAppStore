@@ -84,6 +84,7 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
     private View mRLNoNetworkView;
     private List mHotRomList = new ArrayList();
     private List mSearchList = new ArrayList();
+    private View mSerch_icon;
 
     public static void startAc(Context context) {
         Intent intent = new Intent(context, SearchActivity.class);
@@ -113,6 +114,7 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
                 , "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0");
         //左侧布局
         mLeftView = findViewById(R.id.search_left_vew);
+        mSerch_icon = findViewById(R.id.search_icon);
         mSearch_con_view = (TextView) findViewById(R.id.show_se_con_view);
         mKeyboard_recy = (RecyclerView) findViewById(R.id.keyboard_recycleview);
         mContent_cl_view = (TextView) findViewById(R.id.con_clear_view);
@@ -165,7 +167,10 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
                 mHandler.removeMessages(START_SEARCH);
                 mHandler.removeCallbacks(searchRunner);
                 if (s.length() > 0) {
+                    mSerch_icon.setVisibility(View.GONE);
                     mHandler.postDelayed(searchRunner, 2000);
+                } else {
+                    mSerch_icon.setVisibility(View.VISIBLE);
                 }
             }
 

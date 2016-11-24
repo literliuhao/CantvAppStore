@@ -84,7 +84,7 @@ public interface ApiService {
      * @param key 搜索关键字
      */
     @GET("start/search")
-    CanCall<ListResult<AppInfo>> search(@Query("key") String key);
+    CanCall<ListResult<AppInfo>> search(@Query("key") String key,@Query("pageNumber") int pageNumber,@Query("pageSize") int pageSize);
 
     /**
      * 获取隐藏应用列表

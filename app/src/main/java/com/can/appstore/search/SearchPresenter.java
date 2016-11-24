@@ -42,22 +42,26 @@ public class SearchPresenter implements SearchContract.Presenter {
             mView.startSearch();
         }
 
-        HttpManager.getApiService().search(searCon).enqueue(new CanCallback<ListResult<AppInfo>>() {
+        HttpManager.getApiService().search(searCon, pageIndex, 18).enqueue(new CanCallback<ListResult<AppInfo>>() {
             @Override
             public void onResponse(CanCall<ListResult<AppInfo>> call, Response<ListResult<AppInfo>> response) throws Exception {
                 ListResult<AppInfo> body = response.body();
                 List<AppInfo> data = body.getData();
-                for (int i = 0; i < 20; i++) {
-                    AppInfo appInfo = new AppInfo();
-                    appInfo.setName(i + "测试数据");
-                    data.add(appInfo);
-                }
+//                for (int i = 0; i < 20; i++) {
+//                    AppInfo appInfo = new AppInfo();
+//                    appInfo.setName(i + "测试数据");
+//                    data.add(appInfo);
+//                }
                 //说明是刚搜索,有内容就清空
                 if (pageIndex == 1 && mAppInfoList.size() > 0) {
                     mAppInfoList.clear();
                 }
-                mAppInfoList.addAll(data);
-                mView.getAppList(mAppInfoList);
+                if (!(data.size() > 0) && pageIndex != 1) {
+                    ToastUtil.toastShortTimeLimit("没有更多数据!",6000);
+                } else {
+                    mAppInfoList.addAll(data);
+                    mView.getAppList(mAppInfoList);
+                }
             }
 
             @Override

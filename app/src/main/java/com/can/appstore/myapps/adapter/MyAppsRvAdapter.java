@@ -59,6 +59,7 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<PackageUtil.AppInfo>
         } else {
             mCustomSys = new ArrayList<Drawable>();
         }
+        notifyItemChanged(1);
     }
 
 
