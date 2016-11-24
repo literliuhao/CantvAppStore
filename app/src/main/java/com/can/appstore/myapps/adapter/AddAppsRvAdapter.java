@@ -55,7 +55,7 @@ public class AddAppsRvAdapter extends CanRecyclerViewAdapter {
 
     }
 
-    private class MyViewHolder extends RecyclerView.ViewHolder {
+    private class MyViewHolder extends TagViewHolder {
         ImageView imgIcon;
         TextView tvName;
         LinearLayout llbg;
@@ -67,7 +67,19 @@ public class AddAppsRvAdapter extends CanRecyclerViewAdapter {
             llbg = (LinearLayout) itemView.findViewById(R.id.addapps_llbg);
         }
 
+        @Override
+        protected int specifyTagViewId() {
+            return R.id.addapps_iv_check;
+        }
 
+        @Override
+        public void refreshTagViewOnSelectChanged(boolean selected) throws IllegalStateException {
+            if(selected){
+                getTagView().setBackgroundResource(R.drawable.select);
+            } else {
+                getTagView().setBackgroundResource(R.drawable.unselect);
+            }
+        }
     }
 
 

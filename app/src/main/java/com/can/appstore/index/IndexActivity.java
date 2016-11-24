@@ -253,10 +253,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case FIND_FOCUS:
-                    View first = mTitleBar.getFirstView();
-                    mFocusUtils.setFocusView(first, SCALE);
-                    mFocusUtils.showFocus();
-                    Log.i("IndexActivity","first " + first.toString());
+//                    View first = mTitleBar.getFirstView();
+//                    mFocusUtils.setFocusView(first, SCALE);
+//                    mFocusUtils.showFocus();
+//                    Log.i("IndexActivity","first " + first.toString());
 //                    first.requestFocus();
                     break;
             }

@@ -57,6 +57,7 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
     private CanRecyclerViewAdapter.OnFocusChangeListener myFocusChangesListener;
     private long mTime;
     public static final int MIN_DOWN_INTERVAL = 80;//响应点击事件的最小间隔事件
+    public static final int UNINSTALL_LAST_POSITION_DELAYE = 490;//卸载最后一个位置延时请求焦点
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +110,26 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
         //设置右上角总行数
         int total = mAllAppsPresenter.calculateCurTotalRows();
         tvTotalRows.setText(total + "行");
+    }
+
+    /**
+     * 卸载最后一个位置的应用时，让其上一个应用item获取焦点
+     * @param position
+     */
+    @Override
+    public void uninstallLastPosition(final int position) {
+    focusMoveUtil.hideFocusForShowDelay(600);
+        mAllAppsRecyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                View curItem = mAllAppsRecyclerView.getChildAt(position);
+                if(curItem!= null){
+                    curItem.setFocusable(true);
+                    curItem.requestFocus();
+                }
+            }
+        },UNINSTALL_LAST_POSITION_DELAYE);
+
     }
 
     private void baseSetting() {

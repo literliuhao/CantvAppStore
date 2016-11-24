@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
+                android:layout_width="@dimen/px490"
                 android:layout_height="@dimen/px104"
                 android:clickable="true"
                 android:descendantFocusability="blocksDescendants"
@@ -13,6 +13,34 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/px24"
         android:src="@mipmap/ic_launcher"/>
+
+    <RelativeLayout
+        android:layout_width="@dimen/px56"
+        android:layout_height="@dimen/px78"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/px24">
+
+        <ImageView
+            android:id="@+id/rank_r_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            />
+
+        <TextView
+            android:id="@+id/rank_r_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="5"
+            android:textColor="#56f5f5f5"
+            android:textSize="@dimen/px32"
+            android:textStyle="italic|bold"
+            />
+    </RelativeLayout>
+
 
     <TextView
         android:id="@+id/app_name_view"
@@ -30,4 +58,6 @@
         android:text="测试名称"
         android:textColor="#ffffff"
         android:textSize="@dimen/px32"/>
+
+
 </RelativeLayout>

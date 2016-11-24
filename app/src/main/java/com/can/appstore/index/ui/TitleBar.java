@@ -55,7 +55,6 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
     private int mCurrentIndex = 0;
     private IAddFocusListener mFocusListener;
     private View mCurrentView;
-    private View mFirstView;
 
     public TitleBar(Context context) {
         this(context, null);
@@ -152,9 +151,9 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
         }
     }
 
-    public View getFirstView(){
-        return mFirstView = this.getChildAt(2);
-    }
+//    public View getFirstView(){
+//        return mFirstView = this.getChildAt(2);
+//    }
 
     @Override
     public void onFocusChange(View view, boolean b) {
@@ -304,8 +303,7 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
      */
     private LiteText generateTextView(String text) {
         LiteText textLayout = new LiteText(getContext());
-        textLayout.setPadding((int) getResources().getDimension(R.dimen.px20), (int) getResources().getDimension(R.dimen.px5), (int) getResources().getDimension(R.dimen.px20), (int) getResources().getDimension(R.dimen.px5));
-//        textLayout.setBackground(getResources().getDrawable(R.drawable.index_title_normal));
+        textLayout.setPadding((int) getResources().getDimension(R.dimen.px20), (int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px20), (int) getResources().getDimension(R.dimen.px0));
         LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         textParams.setMargins((int) getResources().getDimension(R.dimen.px30), (int) getResources().getDimension(R.dimen.px10), (int) getResources().getDimension(R.dimen.px30), (int) getResources().getDimension(R.dimen.px10));
         textLayout.setClipToPadding(false);
@@ -315,6 +313,8 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
         textLayout.setOnFocusChangeListener(this);
 
         TextView textView = new TextView(getContext());
+        textView.setPadding((int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px5), (int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px5));
+
         RelativeLayout.LayoutParams txtParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         txtParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
         textView.setLayoutParams(txtParams);
