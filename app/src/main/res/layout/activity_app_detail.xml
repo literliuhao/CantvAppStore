@@ -97,7 +97,7 @@
 
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/dimen_f1px"
@@ -106,7 +106,6 @@
         android:layout_marginTop="@dimen/dimen_5px"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:orientation="horizontal"
         android:paddingBottom="@dimen/dimen_5px"
         android:paddingStart="@dimen/dimen_25px"
         android:paddingTop="@dimen/dimen_25px">
@@ -133,6 +132,7 @@
             android:layout_marginStart="@dimen/dimen_40px"
             android:focusable="true"
             android:max="100"
+            android:layout_toRightOf="@+id/bt_download"
             android:nextFocusForward="@id/bt_update"
             android:nextFocusLeft="@id/bt_download"
             android:nextFocusUp="@id/bt_update"
@@ -146,10 +146,10 @@
             android:layout_width="@dimen/dimen_160px"
             android:layout_height="@dimen/dimen_64px"
             android:layout_marginStart="@dimen/dimen_700px"
-            android:layout_marginTop="@dimen/dimen_6px"
+            android:layout_marginTop="@dimen/dimen_35px"
             android:background="@android:color/transparent"
-            android:gravity="center"
             android:nextFocusForward="@id/bt_Introduction"
+            android:layout_toRightOf="@+id/bt_update"
             android:nextFocusUp="@+id/bt_Introduction"
             android:text="@string/detail_app_Introduction"
             android:textColor="@color/app_name_color"
@@ -161,23 +161,23 @@
             android:layout_width="@dimen/dimen_160px"
             android:layout_height="@dimen/dimen_64px"
             android:layout_marginStart="@dimen/dimen_40px"
-            android:layout_marginTop="@dimen/dimen_6px"
+            android:layout_marginTop="@dimen/dimen_35px"
             android:background="@android:color/transparent"
-            android:gravity="center"
             android:nextFocusRight="@id/bt_recommend"
             android:nextFocusUp="@id/bt_recommend"
+            android:layout_toRightOf="@+id/bt_Introduction"
             android:text="@string/detail_app_recommend"
             android:textColor="@color/app_name_color"
             android:textSize="@dimen/fontsize_34px"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimen_4px"
         android:layout_marginEnd="@dimen/dimen_160px"
         android:layout_marginStart="@dimen/dimen_160px"
-        android:layout_marginTop="@dimen/dimen_24px"
+        android:layout_marginTop="@dimen/dimen_7px"
         >
 
         <View
@@ -193,9 +193,7 @@
             android:layout_marginStart="@dimen/dimen_1240px"
             android:src="@drawable/tab_line"
             android:visibility="visible"/>
-
     </FrameLayout>
-
 
     <ViewFlipper
         android:id="@+id/flipper"
@@ -225,12 +223,12 @@
             <LinearLayout
                 android:id="@+id/ll_introduce_text"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dimen_190px"
+                android:layout_height="@dimen/dimen_230px"
                 android:layout_below="@+id/crlv_introduce_grid"
-                android:layout_marginBottom="@dimen/dimen_100px"
+                android:layout_marginBottom="@dimen/dimen_90px"
                 android:layout_marginEnd="@dimen/dimen_140px"
                 android:layout_marginStart="@dimen/dimen_140px"
-                android:layout_marginTop="@dimen/dimen_f7px"
+                android:layout_marginTop="@dimen/dimen_f22px"
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 android:descendantFocusability="blocksDescendants"
@@ -238,6 +236,8 @@
                 android:nextFocusLeft="@id/ll_introduce_text"
                 android:orientation="vertical"
                 android:paddingEnd="@dimen/dimen_20px"
+                android:paddingTop="@dimen/dimen_15px"
+                android:paddingBottom="@dimen/dimen_f15px"
                 android:paddingStart="@dimen/dimen_20px">
 
                 <TextView

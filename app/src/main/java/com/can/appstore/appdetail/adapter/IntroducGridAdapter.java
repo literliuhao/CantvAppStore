@@ -27,13 +27,11 @@ public class IntroducGridAdapter extends CanRecyclerViewAdapter {
     private Context mContext;
     private List<String> mIntroduceList;
     private LayoutInflater mInflater;
-    private int roundSize;
 
     public IntroducGridAdapter(Context context, List<String> datas) {
         super(datas);
         this.mContext = context;
         this.mIntroduceList = datas;
-        roundSize = mContext.getResources().getDimensionPixelSize(R.dimen.dimen_12px);
         mInflater = LayoutInflater.from(mContext);
     }
 

@@ -190,6 +190,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         switch (view.getId()) {
             case R.id.bt_download:
                 if (hasFocus) {
+                    //                    mIvTabLine.setVisibility(View.VISIBLE);
                     mButtonDownload.setProgressDrawable(getResources().getDrawable(R.drawable.layer_list_app_detail_download_focus));
                 } else {
                     if (ApkUtils.isAvailable(AppDetailActivity.this, mAppDetailPresenter.getCurAppPackageName())) {//应用已经安装
@@ -201,6 +202,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 break;
             case R.id.bt_update:
                 if (hasFocus) {
+                    //                    mIvTabLine.setVisibility(View.VISIBLE);
                     mButtonUpdate.setProgressDrawable(getResources().getDrawable(R.drawable.layer_list_app_detail_download_focus));
                 } else {
                     mButtonUpdate.setProgressDrawable(getResources().getDrawable(R.drawable.layer_list_app_detail_download));
@@ -208,6 +210,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 break;
             case R.id.bt_Introduction:
                 if (hasFocus) {
+                    //                    mIvTabLine.setVisibility(View.GONE);
                     if (isTabLineMoveToRecommend) {
                         startMoveAnmi(TO_MOVE_LEFT);
                     }
@@ -215,6 +218,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 break;
             case R.id.bt_recommend:
                 if (hasFocus) {
+                    //                    mIvTabLine.setVisibility(View.GONE);
                     if (!isTabLineMoveToRecommend) {
                         startMoveAnmi(TO_MOVE_RIGHT);
                     }
@@ -261,11 +265,17 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             case KeyEvent.KEYCODE_DPAD_UP:
                 if (mButtonUpdate.isFocused() || mButtonDownload.isFocused() || mBtIntroduction.isFocused() || mBtRecommend.isFocused()) {
                     return true;
-                } else if (mRecommendGrid.isShown() && isRecommendGridFirstRow) {
-                    requestFocus(mButtonDownload);
-                } else if (mIntroducGrid.isShown() && !mLayoutIntroduceText.isFocused()) {
-                    requestFocus(mButtonDownload);
                 }
+                //                else if (mRecommendGrid.isShown() && isRecommendGridFirstRow) {
+                //                    requestFocus(mButtonDownload);
+                //                } else if (mIntroducGrid.isShown() && !mLayoutIntroduceText.isFocused()) {
+                //                    requestFocus(mButtonDownload);
+                //                }
+            case KeyEvent.KEYCODE_DPAD_DOWN:
+                if (mBtRecommend.isFocused() && mAppinfo.getRecommend().size() == 0 || mAppinfo.getRecommend() == null) {
+                    return true;
+                }
+                break;
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -313,13 +323,8 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     }
 
     private void startMoveAnmi(int moveDirection) {
-        if (moveDirection == TO_MOVE_RIGHT) {
-            startMoveLayout(TO_MOVE_RIGHT);
-            startTabLineAnimation(TO_MOVE_RIGHT);
-        } else if (moveDirection == TO_MOVE_LEFT) {
-            startMoveLayout(TO_MOVE_LEFT);
-            startTabLineAnimation(TO_MOVE_LEFT);
-        }
+        startMoveLayout(moveDirection);
+        startTabLineAnimation(moveDirection);
     }
 
     private void recommendGridPositionRequestFocus(final int hideFocusTime, final int position) {
@@ -403,8 +408,6 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             conTypePic.setLayoutParams(controllerTypePic);
             conTypePic.setScaleType(ImageView.ScaleType.FIT_CENTER);
             mRelativeLayuotOperatingEquipment.addView(conTypePic, controllerTypePic);
-            //              int selectOperationPic = mAppDetailPresenter.getOperationPic(type.get(i));  // TODO
-            //            conTypePic.setImageResource(selectOperationPic);
             ImageLoader.getInstance().load(AppDetailActivity.this, conTypePic, type.get(i), new GlideLoadTask.SuccessCallback() {
                 @Override
                 public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
@@ -467,7 +470,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     public void refreshButtonProgress(int refreshButtonProgress, String buttonText, float progress) {
         if (mButtonDownload != null && refreshButtonProgress == MESSAGE_TYPE_DOWNLAOD) {
-            if (!buttonText.equals(getResources().getString(R.string.detail_app_run))) {
+            if (!buttonText.equals(getResources().getString(R.string.detail_app_run)) && !mButtonDownload.isFocused()) {
                 mButtonDownload.setProgressDrawable(getResources().getDrawable(R.drawable.layer_list_app_detail_download));
             }
             mButtonDownload.setProgress((int) progress);
@@ -539,6 +542,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
                 if (hasFocus) {
+                    //                    mIvTabLine.setVisibility(View.VISIBLE);
                     mFocusedListChild = view;
                     mIntroducGrid.postDelayed(mListFocusMoveRunnable, 50);
                 } else {
@@ -601,6 +605,10 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     }
 
     private void setRecommendAdapter() {
+        if (mAppinfo.getRecommend().size() == 0 || mAppinfo.getRecommend() == null) {
+            mBtRecommend.setNextFocusDownId(mBtIntroduction.getId());
+            return;
+        }
         if (mRecommedGridAdapter == null) {
             mRecommedGridAdapter = new RecommedGridAdapter(AppDetailActivity.this, mAppinfo.getRecommend());
             addRecommendGridListener();
@@ -616,6 +624,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
                 Log.d(TAG, "mRecommedGridAdapter onItemFocusChanged: " + view + "   position : " + position);
                 if (hasFocus) {
+                    //                    mIvTabLine.setVisibility(View.VISIBLE);
                     mFocusedListChild = view;
                     mRecommendGrid.postDelayed(mListFocusMoveRunnable, 50);
                     view.setBackgroundResource(R.drawable.shape_bg_uninstall_manager_item_focus);

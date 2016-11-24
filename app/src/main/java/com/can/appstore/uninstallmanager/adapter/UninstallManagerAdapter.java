@@ -23,6 +23,7 @@ import cn.can.tvlib.utils.StringUtils;
  */
 
 public class UninstallManagerAdapter extends CanRecyclerViewAdapter<PackageUtil.AppInfo> {
+    private static final String TAG = "UninstallManagerAdapter";
     private List<PackageUtil.AppInfo> mInfos = new ArrayList<PackageUtil.AppInfo>();
     private Context mContext;
     private LayoutInflater mInflater;
@@ -44,7 +45,7 @@ public class UninstallManagerAdapter extends CanRecyclerViewAdapter<PackageUtil.
     @Override
     protected void bindContentData(PackageUtil.AppInfo mDatas, RecyclerView.ViewHolder holder, int position) {
         PackageUtil.AppInfo appInfo = mInfos.get(position);
-        Log.d("fjm", "bindContentData: " + appInfo.toString());
+        Log.d(TAG, "bindContentData: " + appInfo.toString());
         UninstallViewHolder uninstallViewHolder = ((UninstallViewHolder) holder);
         uninstallViewHolder.imgIcon.setImageDrawable(appInfo.appIcon);
         uninstallViewHolder.tvName.setText(appInfo.appName);
