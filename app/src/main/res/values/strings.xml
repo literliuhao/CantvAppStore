@@ -86,6 +86,9 @@
     <string name="download_installed">安装完成</string>
     <string name="download_open_app_error">打开应用出现问题</string>
     <string name="download_file_error">文件异常</string>
+    <string name="download_no_downloading_task">当前没有可暂停的任务!</string>
+    <string name="download_no_resume_task">当前没有可恢复的任务!</string>
+
 
 
     <!--卸载管理-->

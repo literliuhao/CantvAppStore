@@ -115,6 +115,9 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
             // 接收广播：设备上新安装了一个应用程序包后自动启动新安装应用程序。
             if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)) {
                 String packageName = intent.getDataString().substring(8);
+//                if(!alreadyEdit && MyApp.myAppList.size()<16){
+//                    TODO 首页排序
+//                }
                 startLoad();
             } else if (intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)) {
                 String packageName = intent.getData().getSchemeSpecificPart();
@@ -169,5 +172,4 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
             mAppInstallReceiver = null;
         }
     }
-
 }

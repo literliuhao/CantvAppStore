@@ -1,4 +1,4 @@
-package com.can.appstore.upgrade;
+package com.can.appstore.upgrade.view;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -7,6 +7,7 @@ import android.os.Message;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 import com.can.appstore.R;
+import com.can.appstore.upgrade.widgets.UpgradeProgressBar;
 
 /**
  * Created by syl on 2016/11/1.

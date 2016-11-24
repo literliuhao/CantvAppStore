@@ -28,6 +28,7 @@ public interface AddAppsContract {
 
         void saveSelectInfo(List<AppInfo> list);
 
+        void setAlreadySelectApp(int[] alreadySelect);
     }
 
 }

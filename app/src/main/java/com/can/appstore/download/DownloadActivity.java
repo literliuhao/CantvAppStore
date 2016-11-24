@@ -215,7 +215,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
                 if (hasFocus) {
                     mFocusView = view;
                     if (lastFocusPos == pos) {
-                        focusMoveDelay(DELAY_MILLIS_RESOLVE_FOCUS-10);
+                        focusMoveDelay(DELAY_MILLIS_RESOLVE_FOCUS - 10);
                     } else {
                         focusMoveDelay();
                     }
@@ -244,7 +244,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
                         mFocusMoveUtil.hideFocusForShowDelay(DELAY_MILLIS_RESOLVE_FOCUS);
                         if (pos == tasks.size() - 1) {
                             focusMoveEnable = false;
-                            hanlder.postDelayed(mFocusResolveRunnable, DELAY_MILLIS_RESOLVE_FOCUS-10);
+                            hanlder.postDelayed(mFocusResolveRunnable, DELAY_MILLIS_RESOLVE_FOCUS - 10);
                         }
                     }
                 }

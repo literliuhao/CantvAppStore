@@ -37,7 +37,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     public static final int COLUMN_COUNT = 4;
     public static final int FOCUS_IMAGE = R.mipmap.image_focus;
     public static final int FOCUS_BUTTON = R.mipmap.btn_focus;
-    public static final int DELAY_MILLIS = 500;
+    public static final int DELAY_MILLIS = 400;
 
     private TextView mRowTv, mRemindTv;
     private RelativeLayout mRemindLayout;
@@ -81,6 +81,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
 
         mLayoutManager = new GridLayoutManager(this, COLUMN_COUNT);
         mRecyclerView = (CanRecyclerView) findViewById(special_recyclerview);
+        mRecyclerView.setKeyCodeEffectInterval(CanRecyclerView.KEYCODE_EFFECT_INTERVAL_NORMAL);
         mRecyclerView.addItemDecoration(itemDecoration);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
@@ -113,14 +114,15 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
 
     private void setListener() {
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            int scrollDy=0;
+            int scrollDy = 0;
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 if (RecyclerView.SCROLL_STATE_IDLE == newState) {
                     if (!isDestroyed()) {
                         ImageLoader.getInstance().resumeTask(SpecialActivity.this);
                         int lastPos = mLayoutManager.findLastVisibleItemPosition();
-                        if(scrollDy>0){
+                        if (scrollDy > 0) {
                             mPresenter.loadMore(lastPos);
                         }
                     }
@@ -132,10 +134,10 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (dx == 0 && dy == 0) {
-                    scrollDy=0;
+                    scrollDy = 0;
                     return;
                 }
-                scrollDy=dy;
+                scrollDy = dy;
                 mHandler.removeCallbacks(mFocusMoveRunnable);
                 mHandler.postDelayed(mFocusMoveRunnable, 50);
             }
@@ -165,6 +167,15 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
                 }
                 mFocusMoveUtils.hideFocus();
                 mPresenter.startLoad();
+            }
+        });
+
+        mRecyclerView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus && mCurrFocusView != null && mRecyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
+                    mCurrFocusView.requestFocus();
+                }
             }
         });
     }
@@ -205,17 +216,17 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
         mAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, int position, Object data) {
-                if(!NetworkUtils.isNetworkConnected(getContext())){
+                if (!NetworkUtils.isNetworkConnected(getContext())) {
                     // TODO: 2016/11/22
                     showToast(R.string.network_connection_disconnect);
                     return;
                 }
-                SpecialTopic topic= (SpecialTopic) data;
-                if(topic!=null&&topic.getId()!=null){
-                    Intent intent=new Intent(SpecialActivity.this, SpecialDetailActivity.class);
-                    intent.putExtra(SpecialDetailActivity.EXTRA_TOPIC_ID,topic.getId());
+                SpecialTopic topic = (SpecialTopic) data;
+                if (topic != null && topic.getId() != null) {
+                    Intent intent = new Intent(SpecialActivity.this, SpecialDetailActivity.class);
+                    intent.putExtra(SpecialDetailActivity.EXTRA_TOPIC_ID, topic.getId());
                     startActivity(intent);
-                }else{
+                } else {
                     showToast(R.string.data_error);
                 }
             }

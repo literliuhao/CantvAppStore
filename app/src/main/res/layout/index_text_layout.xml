@@ -10,10 +10,10 @@
 
 
         <ImageView
-            android:layout_width="100px"
-            android:layout_height="60px"
+            android:layout_width="300px"
+            android:layout_height="300px"
             android:layout_centerHorizontal="true"
-            android:background="@drawable/index_title_normal"/>
+            android:src="@drawable/index_title_normal"/>
 
         <TextView
             android:layout_width="wrap_content"

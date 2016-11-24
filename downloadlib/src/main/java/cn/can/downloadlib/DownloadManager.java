@@ -519,6 +519,11 @@ public class DownloadManager implements AppInstallListener {
                 mTaskManager.put(task);
             }
         }
+        /**读取数据库task，不轮询提交任务问题 xingzhaolei 2016-11-23 17:53:25 start*/
+        if(list!=null&&list.size()>0){
+            mHander.removeMessages(MSG_SUBMIT_TASK);
+            mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
+        }
     }
 
     /**
