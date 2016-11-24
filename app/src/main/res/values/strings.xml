@@ -109,8 +109,8 @@
     <!--应用详情页-->
     <string name="detail_app_name">%1$s&#160;V%2$s</string>
     <string name="detail_app_size">大小&#160;:&#160;%s</string>
-    <string name="detail_app_update_date">更新&#160;:&#160;%s</string>
-    <string name="detail_app_downlaod_count">下载&#160;:&#160;%s</string>
+    <string name="detail_app_update_date">更新时间&#160;:&#160;%s</string>
+    <string name="detail_app_downlaod_count">下载量&#160;:&#160;%s</string>
     <string name="detail_app_free_stroage">可用空间&#160;:&#160;%s</string>
     <string name="detail_app_operating_equipment">操作设备&#160;:</string>
     <string name="detail_developer">开发者&#160;:&#160;%s</string>

@@ -448,34 +448,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     }
 
     /**
-     * 根据操作类型选择图片
-     *
-     * @param conType
-     * @return
-     */
-    public int getOperationPic(String conType) {
-        int type = Integer.parseInt(conType);
-        int drawableID = 0;
-        switch (type) {
-            case 1:
-                drawableID = R.drawable.hand_shank; // 手柄
-                break;
-            case 2:
-                drawableID = R.drawable.remote_control;// 遥控器
-                break;
-            case 3:
-                drawableID = R.drawable.phone;// 手机
-                break;
-            case 4:
-                drawableID = R.drawable.microphone;// 麦克风
-                break;
-            default:
-                break;
-        }
-        return drawableID;
-    }
-
-    /**
      * 进入到图片放大页面
      *
      * @param currentIndex
