@@ -84,12 +84,18 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
         if (holder instanceof DefaultSearchViewHolder) {
             ((DefaultSearchViewHolder) holder).setContent(position);
         } else {
-            AppInfo app = (AppInfo) mDataList.get(position);
+            final AppInfo app = (AppInfo) mDataList.get(position);
             ImageLoader.getInstance().load(MyApp.mContext, ((SearchViewHolder) holder).mAppIcon, app.getIcon());
             ((SearchViewHolder) holder).mAppName.setText(app.getName());
             ((SearchViewHolder) holder).mAppSize.setText(app.getSizeStr());
             ((SearchViewHolder) holder).mAppDownloadCount.setText(app.getDownloadCount());
             ((SearchViewHolder) holder).mView.setId(position + 10000);
+            ((SearchViewHolder) holder).mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+//                    AppDetailActivity.actionStart(mActivity,app.getId());
+                }
+            });
             //第一行向上焦点是自己
             if (position < mActivity.SEARCH_APP_SPANCOUNT) {
                 ((SearchViewHolder) holder).mView.setNextFocusUpId(((SearchViewHolder) holder).mView.getId());
@@ -179,6 +185,7 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
 
     /**
      * 设置默认数据
+     *
      * @param list
      */
     public void setDefaultApplist(List list) {

@@ -12,19 +12,27 @@ import java.util.List;
 
 public interface SpecialContract {
 
-    public static interface SpecialPresenter extends BasePresenter{
+    public static interface SpecialPresenter extends BasePresenter {
         void startLoad();
+
         void onItemFocused(int position);
+
         void remindNoData();
+
         void loadMore(int lastVisiablePos);
     }
 
-    public static interface SubjectView extends BaseView<SpecialPresenter>{
+    public static interface SubjectView extends BaseView<SpecialPresenter> {
         void refreshData(List<SpecialTopic> datas);
+
         void refreshRowNum(CharSequence formatRow);
+
         void showNoDataView();
+
         void showRetryView();
+
         void hideRetryView();
+
         void onLoadMore(int startInsertPos, int endInsertPos);
     }
 

@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.can.appstore.upgrade.view.UpgradeFailDialog;
+import com.can.appstore.upgrade.view.UpgradeInFoDialog;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
 
@@ -99,8 +101,8 @@ public class UpgradeService extends IntentService {
      */
     private void checkUpgradeInfo() {
         mUpdatePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/updateapk";
-        if (!Util.isFileExist(mUpdatePath)) {
-            Util.creatDir(mUpdatePath);
+        if (!UpgradeUtil.isFileExist(mUpdatePath)) {
+            UpgradeUtil.creatDir(mUpdatePath);
         }
         mFileName = mUpdatePath + "/" + mUpgradeInfo.versionCode + ".apk";
         //获取本地的版本号
@@ -121,7 +123,7 @@ public class UpgradeService extends IntentService {
         } else {
             //先清空本地存放Apk的空间
             // TODO: 2016/11/16 要不要清空
-            Util.delAllDateFile(mUpdatePath);
+            UpgradeUtil.delAllDateFile(mUpdatePath);
             downLoadApk(mUpgradeInfo.apkUrl);
         }
     }
@@ -130,8 +132,8 @@ public class UpgradeService extends IntentService {
      * 检测是否存在已经下载完成但没有安装的最新版本
      */
     private boolean checkIsExistApk() {
-        if (Util.isFileExist(mFileName)) {
-            String localMD5 = Util.getFileMD5(mFileName);
+        if (UpgradeUtil.isFileExist(mFileName)) {
+            String localMD5 = UpgradeUtil.getFileMD5(mFileName);
             if (mUpgradeInfo.apkMd5.equalsIgnoreCase(localMD5)) {
                 Log.d(TAG, "存在已下载未安装的apk");
                 return true;
@@ -221,7 +223,7 @@ public class UpgradeService extends IntentService {
 
 
     private void installApk() {
-        Util.install(this, mFileName, mUpgradeInfo.fileSize, new InstallApkListener() {
+        UpgradeUtil.install(this, mFileName, mUpgradeInfo.fileSize, new InstallApkListener() {
 
             @Override
             public void onInstallSuccess() {
@@ -238,9 +240,9 @@ public class UpgradeService extends IntentService {
     }
 
     private void onLoadingCompleted() {
-        String localMD5 = Util.getFileMD5(mFileName);
+        String localMD5 = UpgradeUtil.getFileMD5(mFileName);
         if (!mUpgradeInfo.apkMd5.equalsIgnoreCase(localMD5)) {
-            Util.delAllDateFile(mUpdatePath);
+            UpgradeUtil.delAllDateFile(mUpdatePath);
         } else {
             //显示安装apk对话框
             Message msg = Message.obtain();
@@ -266,6 +268,6 @@ public class UpgradeService extends IntentService {
         msg.obj = reason;
         mHandler.sendMessage(msg);
         //安装失败，清空文件夹
-        Util.delAllDateFile(mUpdatePath);
+        UpgradeUtil.delAllDateFile(mUpdatePath);
     }
 }

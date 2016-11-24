@@ -3,6 +3,8 @@ package com.can.appstore.index;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -62,6 +64,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private final int SCROLLING = 2;
     //滚动完成
     private final int SCROLLED = 0;
+    private final int FIND_FOCUS = 0X000001;
     private CanCall<ListResult<Navigation>> mNavigationCall;
 
     @Override
@@ -191,6 +194,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      */
     private void initFocus() {
         mFocusUtils = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
+//        mFocusUtils.hideFocus();
         mFocusScaleUtils = new FocusScaleUtil(DURATIONLARGE, DURATIONSMALL, SCALE, null, null);
     }
 
@@ -238,10 +242,26 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mViewPager.setPageMargin((int) getResources().getDimension(R.dimen.px165));
 //        mViewPager.setOnFocusChangeListener(this);
         mTitleBar.setViewPager(mViewPager, PAGERCURRENTITEM);
+        mHandler.sendEmptyMessageAtTime(FIND_FOCUS, 1000);
+
         //开始获取第三方屏蔽列表
         shareData.getInstance().execute();
 
     }
+
+    private Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case FIND_FOCUS:
+//                    View first = mTitleBar.getFirstView();
+//                    mFocusUtils.setFocusView(first, SCALE);
+//                    mFocusUtils.showFocus();
+//                    Log.i("IndexActivity","first " + first.toString());
+//                    first.requestFocus();
+                    break;
+            }
+        }
+    };
 
     /**
      * 自定义onFocusChange接口，首页所有Fragment实现后都可以在此做统一焦点处理
@@ -253,7 +273,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     public void addFocusListener(View v, boolean hasFocus) {
         if (hasFocus) {
             if (v == null) return;
-            Log.i("addFocusListener", v.getId() + "");
+            Log.i("IndexActivity", v.getId() + "");
             if (v instanceof LiteText) {
                 v.callOnClick();
             } else {

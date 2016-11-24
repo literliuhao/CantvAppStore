@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -22,8 +23,6 @@ import com.can.appstore.search.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import cn.can.tvlib.utils.ToastUtils;
 
 public class HomeRankFragment extends BaseFragment implements HomeRankContract.View {
 
@@ -117,11 +116,12 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
                 RecyclerView recyclerView = (RecyclerView) childView.findViewById(R.id.list_view);
                 //"更多" 布局
                 View ll_more_view = childView.findViewById(R.id.load_more_veiw);
+                ImageView categoryMoreImg = (ImageView) childView.findViewById(R.id.more_icon);
+                TextView categoryMoreText = (TextView) childView.findViewById(R.id.more_textview);
+
                 //设置布局背景
-//                setBG(recyclerView, ll_more_view, i);
                 setBG(childView, ll_more_view, i);
 
-                TextView categoryMore = (TextView) childView.findViewById(R.id.more_textview);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                 HomeRankAdapter homeRankAdapter = new HomeRankAdapter(mData.getData(), getActivity());
                 //焦点变化的监听
@@ -130,12 +130,10 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
 
                 recyclerView.setAdapter(homeRankAdapter);
 
-                categoryMore.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ToastUtils.showMessage(getActivity(), mData.getName());
-                    }
-                });
+                categoryMoreText.setText("更多" + mData.getName());
+
+
+                //查看更多
                 ll_more_view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -147,6 +145,7 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
             }
         }
         final LinearLayout view = (LinearLayout) views.get(views.size() - 1);
+        //将最后一个分类的右侧边距去除
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams((int) getResources().getDimension(R.dimen.px490), LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.rightMargin = 0;
         view.setLayoutParams(layoutParams);

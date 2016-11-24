@@ -9,14 +9,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 
-import com.can.appstore.R;
-
 import cn.can.tvlib.utils.PromptUtils;
 
 public abstract class BaseActivity extends FragmentActivity {
 
     private Dialog mLoadingDialog;
-    private Dialog mAppInfoLoadingDialog;
+    private Dialog mOffsetLoadingDialog;
     private BroadcastReceiver mHomeKeyReceiver;
 
     @Override
@@ -39,7 +37,7 @@ public abstract class BaseActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         hideLoadingDialog();
-        hideAppInfoLoadingDialog();
+        hideOffsetLoadingDialog();
         super.onDestroy();
     }
 
@@ -68,20 +66,19 @@ public abstract class BaseActivity extends FragmentActivity {
         }
     }
 
-    public void showAppInfoLoadingDialog() {
-        if (mAppInfoLoadingDialog == null) {
-            mAppInfoLoadingDialog = PromptUtils.showLoadingDialog(this, -2, getResources().getDimensionPixelSize(R.dimen
-                    .px132));
-        } else if (mAppInfoLoadingDialog.isShowing()) {
+    public void showOffsetLoadingDialog(int offsetX) {
+        if (mOffsetLoadingDialog == null) {
+            mOffsetLoadingDialog = PromptUtils.showLoadingDialog(this, -2, offsetX);
+        } else if (mOffsetLoadingDialog.isShowing()) {
             return;
         } else {
-            mAppInfoLoadingDialog.show();
+            mOffsetLoadingDialog.show();
         }
     }
 
-    public void hideAppInfoLoadingDialog() {
-        if (mAppInfoLoadingDialog != null && mAppInfoLoadingDialog.isShowing()) {
-            mAppInfoLoadingDialog.dismiss();
+    public void hideOffsetLoadingDialog() {
+        if (mOffsetLoadingDialog != null && mOffsetLoadingDialog.isShowing()) {
+            mOffsetLoadingDialog.dismiss();
         }
     }
 
@@ -90,7 +87,7 @@ public abstract class BaseActivity extends FragmentActivity {
     }
 
     public boolean isAppInfoLoadingDialogShowing() {
-        return mAppInfoLoadingDialog != null && mAppInfoLoadingDialog.isShowing();
+        return mOffsetLoadingDialog != null && mOffsetLoadingDialog.isShowing();
     }
 
     public Context getContext() {

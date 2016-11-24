@@ -34,12 +34,13 @@ public class SearchPresenter implements SearchContract.Presenter {
      */
     @Override
     public void getSearchList(final String searCon, final int pageIndex) {
-        if (!NetworkUtils.isNetworkConnected(MyApp.getContext())){
+        if (!NetworkUtils.isNetworkConnected(MyApp.getContext())) {
             mView.noNetWork();
             return;
         }
-
-        mView.startSearch();
+        if (pageIndex == 1) {   //加载更多就不用再显示"开始搜索"
+            mView.startSearch();
+        }
 
         HttpManager.getApiService().search(searCon).enqueue(new CanCallback<ListResult<AppInfo>>() {
             @Override
@@ -72,7 +73,7 @@ public class SearchPresenter implements SearchContract.Presenter {
     @Override
     public void getDefaultList() {
 
-        if (!NetworkUtils.isNetworkConnected(MyApp.getContext())){
+        if (!NetworkUtils.isNetworkConnected(MyApp.getContext())) {
             mView.noNetWork();
             return;
         }

@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.can.appstore.R;
@@ -25,13 +24,12 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
-
 /**
  * Created by wei on 2016/10/26.
  */
 
 public class AddAppsActivity extends BaseActivity implements AddAppsContract.View {
+    private static final  String TAG = "AddAppsActivity";
     private CanRecyclerView mAddRecyclerView;
     private AddAppsPresenter mAddAppsPresenter;
     private AddAppsRvAdapter mAddAppsRecyclerViewAdapter;
@@ -45,6 +43,7 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
     private boolean focusSearchFailed;
     private long mTime;
     public static final int MIN_DOWN_INTERVAL = 80;//响应点击事件的最小间隔事件
+    public static final int APP_INSTALL_REFRESH_DELAYE = 200;//应用安装刷新此时选择的位置
 
     //布局控件
     private Button addBut;
@@ -87,26 +86,26 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
         mAddRecyclerView.addItemDecoration(new CanRecyclerViewDivider(android.R.color.transparent, 40, 85));
     }
 
-    @Override
-    public void showLoading() {
-        mAddAppsPresenter.showLoading("加载中，请稍等...");
-    }
 
-    @Override
-    public void hideLoading() {
-        mAddAppsPresenter.hideLoading();
-    }
 
 
     @Override
     public void loadAddAppInfoSuccess(List<AppInfo> infoList) {
         if (mAddAppsRecyclerViewAdapter == null) {
+            Log.d(TAG,"loadAddAppInfoSuccess"+ "首次");
             mAddAppsRecyclerViewAdapter = new AddAppsRvAdapter(infoList);
             mAddAppsPresenter.canSelectCount();
             baseSetting();
             addViewListener();
         } else {
+            Log.d(TAG,"loadAddAppInfoSuccess"+ "非首次刷新");
             mAddAppsRecyclerViewAdapter.notifyDataSetChanged();
+            mAddRecyclerView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mAddAppsPresenter.refreshSelectDataPosition();
+                }
+            },APP_INSTALL_REFRESH_DELAYE);
         }
         //设置右上角总行数
         tv_curRows.setText("0");
@@ -117,6 +116,7 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
 
     private void baseSetting() {
         mAddRecyclerView.setAdapter(mAddAppsRecyclerViewAdapter);
+        mAddAppsRecyclerViewAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_SELECT);//设置为选择模式
         mFocusMoveUtil.hideFocusForShowDelay(50);
         mAddRecyclerView.postDelayed(new Runnable() {
             @Override
@@ -130,9 +130,11 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
                 }
             }
         }, 50);
+
         mAddRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                //滑动时屏蔽掉添加按钮
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == CanRecyclerView.SCROLL_STATE_SETTLING) {
                     addBut.setFocusable(false);
@@ -165,6 +167,16 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
         mAddAppsPresenter.saveSelectlist(list);
     }
 
+    @Override
+    public void setAlreadySelectApp(int[] alreadySelect) {
+        if (mSelectAppInfo != null && mSelectAppInfo.size()>0) {
+            mSelectAppInfo.clear();
+        }
+        for (int i = 0; i < alreadySelect.length; i++) {
+            Log.d(TAG,"setAlreadySelectApp"+alreadySelect[i]);
+            mAddAppsRecyclerViewAdapter.setItemSelected(alreadySelect[i]);
+        }
+    }
 
 
     class MyFocusRunnable implements Runnable {
@@ -202,6 +214,7 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
         addBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG,"addBut"+"的点击时间");
                 if (mSelectAppInfo == null || mSelectAppInfo.size() == 0) {
                     ToastUtil.toastShort("您没有选择任何应用");
                 } else {
@@ -225,34 +238,42 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
                 }
             }
         });
-        //RecyclerView的点击事件
-        mAddAppsRecyclerViewAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
+
+        mAddAppsRecyclerViewAdapter.setOnItemSelectListener(new CanRecyclerViewAdapter.OnItemSelectChangeListener() {
             @Override
-            public void onClick(View view, int position, Object data) {
-                ImageView imSelect = (ImageView) view.findViewById(R.id.addapps_iv_check);
-                AppInfo app = (AppInfo) data;
-                if (mSelectAppInfo == null) {
+            public boolean onSelectChanged(int position, boolean selected, Object data) {
+                Log.d(TAG,"setOnItemSelectListener.onSelectChanged"+"position"+position+"selected"+selected+"data"+data.toString());
+                AppInfo appInfo = (AppInfo)data;
+                if(mSelectAppInfo == null){
                     mSelectAppInfo = new ArrayList<AppInfo>();
                 }
-                if (mSelectAppInfo.size() >= canSelect) {
-                    if (mSelectAppInfo.contains(app)) {
-                        imSelect.setBackgroundResource(R.drawable.unselect);
-                        mSelectAppInfo.remove(app);
-                    } else {
+                if(selected){
+                    if(mSelectAppInfo.size() >= canSelect){
                         ToastUtil.toastShort("当前桌面已满，无法继续添加");
+                        mAddAppsPresenter.mSelectAppInfo = mSelectAppInfo;
+                        tv_select.setText(""+mSelectAppInfo.size());
+                        return true;
+                    }else{
+                        mSelectAppInfo.add(appInfo);
+                        mAddAppsPresenter.mSelectAppInfo = mSelectAppInfo;
+                        tv_select.setText(""+mSelectAppInfo.size());
+                        return false;
                     }
-                } else {
-                    if (mSelectAppInfo.contains(app)) {
-                        imSelect.setBackgroundResource(R.drawable.unselect);
-                        mSelectAppInfo.remove(app);
-                    } else {
-                        imSelect.setBackgroundResource(R.drawable.select);
-                        mSelectAppInfo.add(app);
+                }else{
+                    for (int i = mSelectAppInfo.size()-1; i >= 0 ; i--) {
+                        if (mSelectAppInfo.get(i).packageName.equals(appInfo.packageName)) {
+                            mSelectAppInfo.remove(i);
+                        }
                     }
+                    mAddAppsPresenter.mSelectAppInfo = mSelectAppInfo;
+                    tv_select.setText(""+mSelectAppInfo.size());
+                    return false;
                 }
-                tv_select.setText("" + mSelectAppInfo.size());
             }
+
         });
+
+
         //RecyclerView的焦点事件
         mAddAppsRecyclerViewAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
             @Override
@@ -269,7 +290,15 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
 
     }
 
+    @Override
+    public void showLoading() {
+        mAddAppsPresenter.showLoading("加载中，请稍等...");
+    }
 
+    @Override
+    public void hideLoading() {
+        mAddAppsPresenter.hideLoading();
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -295,10 +324,5 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
         if (mFocusMoveUtil != null) {
             mFocusMoveUtil.release();
         }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
     }
 }

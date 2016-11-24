@@ -1,5 +1,6 @@
 package com.can.appstore.search.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,10 +23,12 @@ import cn.can.tvlib.imageloader.ImageLoader;
 
 public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapter.HotViewHolder> {
     public List mDataList;
+    private Context mContext;
     public List<View> mViewList = new ArrayList<>(); //存每个Key的View
 
-    public HotRecommendAdapter(List datas) {
+    public HotRecommendAdapter(List datas, Context context) {
         mDataList = datas;
+        mContext = context;
     }
 
     public class HotViewHolder extends RecyclerView.ViewHolder {
@@ -46,11 +49,17 @@ public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapte
          * @param position
          */
         public void setContent(int position) {
-            AppInfo app = (AppInfo) mDataList.get(position);
+            final AppInfo app = (AppInfo) mDataList.get(position);
             mAppName.setText(app.getName());
             ImageLoader.getInstance().load(MyApp.mContext, mAppIcon, app.getIcon());
             //+100是为了防止在搜索页出现相同的id
             mView.setId(position + 100);
+            mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+//                    AppDetailActivity.actionStart(mContext,app.getId());
+                }
+            });
         }
 
     }
@@ -67,7 +76,9 @@ public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapte
         inflate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
-                mOnFocusChangeListener.onFocusChange(view, b);
+                if (null != mOnFocusChangeListener) {
+                    mOnFocusChangeListener.onFocusChange(view, b);
+                }
             }
         });
         mViewList.add(inflate);
@@ -75,7 +86,7 @@ public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapte
     }
 
     @Override
-    public void onBindViewHolder(HotViewHolder holder, int position) {
+    public void onBindViewHolder(HotViewHolder holder, final int position) {
         holder.setContent(position);
     }
 

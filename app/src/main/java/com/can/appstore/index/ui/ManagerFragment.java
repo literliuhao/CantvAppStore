@@ -1,6 +1,5 @@
 package com.can.appstore.index.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,7 +11,9 @@ import com.can.appstore.R;
 import com.can.appstore.download.DownloadActivity;
 import com.can.appstore.index.adapter.GridAdapter;
 import com.can.appstore.index.interfaces.IAddFocusListener;
+import com.can.appstore.installpkg.InstallManagerActivity;
 import com.can.appstore.uninstallmanager.UninstallManagerActivity;
+import com.can.appstore.update.UpdateManagerActivity;
 
 /**
  * Created by liuhao on 2016/10/21.
@@ -56,7 +57,7 @@ public class ManagerFragment extends BaseFragment {
                         break;
                     //更新管理
                     case 1:
-                        getActivity().startActivity(new Intent("com.can.appstore.ACTION.ACTIVITY_UPDATE"));
+                        UpdateManagerActivity.actionStart(getActivity());
                         break;
                     //文件管理
                     case 2:
@@ -73,7 +74,7 @@ public class ManagerFragment extends BaseFragment {
                         break;
                     //安装包管理
                     case 6:
-                        getActivity().startActivity(new Intent("com.can.appstore.ACTION.ACTIVITY_INSTALL"));
+                        InstallManagerActivity.actionStart(getActivity());
                         break;
                     //下载管理
                     case 7:

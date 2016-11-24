@@ -77,8 +77,10 @@ public class InstallPkgUtils {
                     bean.setFliePath(file.getAbsolutePath());
                     bean.setAppSize(new File(file.getAbsolutePath()).length() / 1024 / 1024 + "M");
                     /**获取文件名*/
-                    bean.setAppName(getFileNameNoEx(new File(file.getAbsolutePath()).getName()));
+                    //bean.setAppName(getFileNameNoEx(new File(file.getAbsolutePath()).getName()));
                     /**由包名获取应用名*/
+                    String label = appInfo.loadLabel(pm).toString();
+                    bean.setAppName(label);
                     /*String appName = UpdateUtils.getAppName(MyApp.mContext, packageName);
                     bean.setAppName(appName);*/
                     /** apk的版本名称 */
@@ -220,7 +222,7 @@ public class InstallPkgUtils {
             return 50;
         }
         ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r" + path, false);
-        Log.i("shen", "installApp: " + res.result);
+        Log.i("installPkgUtils", "installApp: " + res.result);
         //成功
         if (res.result == 0) {
             return 0;
@@ -254,10 +256,10 @@ public class InstallPkgUtils {
             return 50;
         }
 
-        String result = execCommand("pm","install","-r",path);
-        Toast.makeText(MyApp.mContext, "安装结果:"+result, Toast.LENGTH_LONG).show();
+        String result = execCommand("pm", "install", "-r", path);
+        Toast.makeText(MyApp.mContext, "安装结果:" + result, Toast.LENGTH_LONG).show();
         //ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r" + path, false);
-        //Log.i("shen", "installApp: " + result);
+        //Log.i("installPkgUtils", "installApp: " + result);
         //成功
         if (result.contains("Success")) {
             return 0;
@@ -265,8 +267,9 @@ public class InstallPkgUtils {
             return 1;
         }
     }
+
     /**
-     *静默安装方法
+     * 静默安装方法
      */
     public static String execCommand(String... command) {
         Process process = null;
@@ -297,4 +300,24 @@ public class InstallPkgUtils {
         }
         return result;
     }
+
+    /**
+     * 由包名获取版本号
+     *
+     * @param packname
+     * @return
+     */
+    public static int getVersonCode(Context context, String packname) {
+        PackageManager pm = context.getPackageManager();
+        PackageInfo packInfo = null;
+        try {
+            packInfo = pm.getPackageInfo(packname, 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        int versionCode = packInfo.versionCode;
+
+        return versionCode;
+    }
+
 }

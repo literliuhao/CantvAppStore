@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="490px"
+              android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:layout_marginRight="40px"
+              android:layout_marginRight="@dimen/px40"
               android:orientation="vertical"
-
               android:visibility="gone">
-              <!--android:background="@drawable/search_keyboard_shape"-->
+    <!--android:background="@drawable/search_keyboard_shape"-->
 
     <!--<TextView-->
     <!--android:id="@+id/rank_tag_view"-->
@@ -24,16 +23,17 @@
     <LinearLayout
         android:id="@+id/load_more_veiw"
         android:layout_width="match_parent"
-        android:layout_height="82px"
+        android:layout_height="@dimen/px82"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center">
 
         <ImageView
-            android:layout_width="72px"
+            android:id="@+id/more_icon"
+            android:layout_width="@dimen/px72"
             android:layout_height="match_parent"
-            android:padding="8px"
-            android:src="@mipmap/ic_launcher"/>
+            android:padding="@dimen/px8"
+            android:src="@drawable/ic_launcher"/>
 
         <TextView
             android:id="@+id/more_textview"
@@ -42,7 +42,7 @@
             android:gravity="center"
             android:text="更多"
             android:textColor="#ffffff"
-            android:textSize="32px"
+            android:textSize="@dimen/px32"
             android:textStyle="bold"/>
     </LinearLayout>
 </LinearLayout>

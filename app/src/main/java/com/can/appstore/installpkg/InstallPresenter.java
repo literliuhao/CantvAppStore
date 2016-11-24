@@ -75,7 +75,12 @@ public class InstallPresenter implements InstallContract.Presenter {
      */
     @Override
     public void deleteAll() {
-        mDatas.clear();
+        for (int i = mDatas.size() - 1; i >= 0; i--) {
+            AppInfoBean bean = mDatas.get(i);
+//                InstallPkgUtils.deleteApkPkg(mDatas.get(i).getFliePath());//可以删除安装包
+            mDatas.remove(i);
+        }
+        //mDatas.clear();
         mView.refreshAll();
         mView.showNoData();
         setNum(0);
@@ -90,8 +95,8 @@ public class InstallPresenter implements InstallContract.Presenter {
         for (int i = mDatas.size() - 1; i >= 0; i--) {
             AppInfoBean bean = mDatas.get(i);
             if (bean.getInstall()) {
-                mDatas.remove(i);
 //                InstallPkgUtils.deleteApkPkg(mDatas.get(i).getFliePath());//可以删除安装包
+                mDatas.remove(i);
                 //mView.removeItem(i);
             }
         }
@@ -118,6 +123,9 @@ public class InstallPresenter implements InstallContract.Presenter {
         }
         setNum(0);
         getSDInfo();
+        /*if (position == mDatas.size() - 1) {
+            mView.deleteLastItem(position);
+        }*/
     }
 
     @Override
@@ -125,12 +133,34 @@ public class InstallPresenter implements InstallContract.Presenter {
 
     }
 
+    /**
+     * 获取指定位置item
+     *
+     * @param position
+     * @return
+     */
     public AppInfoBean getItem(int position) {
         if (position < 0 || position > mDatas.size()) {
             return null;
         }
         AppInfoBean appInfoBean = mDatas.get(position);
         return appInfoBean;
+    }
+
+    /**
+     * 是否是最后一个item
+     *
+     * @param position
+     * @return
+     */
+    public boolean isLastItem(int position) {
+        if (position <= 0) {
+            return false;
+        }
+        if (position == mDatas.size() - 1) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -160,15 +190,15 @@ public class InstallPresenter implements InstallContract.Presenter {
 
     /**
      * 是否已安装
-     * 刷新图标（可能多重版本）通过广播获取安装完成刷新ui  +&& bean.getVersionCode().equals(String.valueOf(versonCode))
+     * 刷新图标（可能多重版本）通过广播获取安装完成刷新ui  +&& bean.getVersionCode().equals(String.valueOf(versionCode))
      *
      * @param packageName
      * @param //int       versonCode   && bean.getVersionCode().equals(String.valueOf(versonCode))
      */
-    public void isInstalled(String packageName) {
+    public void isInstalled(String packageName, int versionCode) {
         for (int i = mDatas.size() - 1; i >= 0; i--) {
             AppInfoBean bean = mDatas.get(i);
-            if (bean.getPackageName().equals(packageName)) {
+            if (bean.getPackageName().equals(packageName) && bean.getVersionCode().equals(String.valueOf(versionCode))) {
                 if (bean.getInstall()) {
                     //bean.setInstall(true);
                     mView.refreshAll();
@@ -210,6 +240,30 @@ public class InstallPresenter implements InstallContract.Presenter {
             mDatas.get(position).setInstall(false);
             mDatas.get(position).setInstalledFalse(true);
             mView.refreshAll();
+        }
+    }
+
+    /**
+     * 判断安装包版本与已安装应用大小差异
+     *
+     * @param context
+     * @param position
+     * @return
+     */
+    public int getVersonCode(Context context, int position) {
+        String packageName = mDatas.get(position).getPackageName();
+        if (!mDatas.get(position).getInstall()) {
+            return 1;
+        }
+        int installedVersonCode = UpdateUtils.getVersonCode(context, packageName);
+        String versionCode = mDatas.get(position).getVersionCode();
+        int currentVersionCode = Integer.parseInt(versionCode);
+        if (currentVersionCode < installedVersonCode) {
+            return 0;
+        } else if (currentVersionCode >= installedVersonCode) {
+            return 1;
+        } else {
+            return 2;
         }
     }
 
