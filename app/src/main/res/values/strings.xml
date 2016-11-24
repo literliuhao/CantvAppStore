@@ -151,4 +151,22 @@
     <string name="load_more_content">加载更多！</string>
     <string name="line">行</string>
     <string name="backslashes">/</string>
+
+    <!--我的应用-->
+    <string name="menu_management_of_sorting">按菜单可管理应用排序</string>
+    <string name="system_app">系统应用</string>
+    <string name="add_app">添加应用</string>
+    <string name="all_app">全部应用</string>
+    <string name="menu_get_more_function">按菜单键获取更多功能</string>
+    <string name="make_sure_add">确认添加</string>
+    <string name="already_select_count">已选择应用数</string>
+    <string name="already_add_">已添加</string>
+    <string name="_app_also_can_add_">个应用，还可以添加</string>
+    <string name="_individual">个</string>
+    <string name="app_top">置顶</string>
+    <string name="app_remove">移除</string>
+    <string name="table_full_cant_add">当前桌面已满，无法继续添加</string>
+    <string name="no_select_anyone">您没有选择任何应用</string>
+    <string name="start_app">启动</string>
+    <string name="uninstall_app">卸载</string>
 </resources>

@@ -3,14 +3,16 @@
                 android:layout_height="match_parent"
                 android:background="@color/two_page_bg">
 
-    <Button
+    <TextView
         android:id="@+id/bt_batch_addapps"
         android:layout_width="@dimen/px200"
         android:layout_height="@dimen/px72"
         android:layout_marginStart="@dimen/px160"
         android:layout_marginTop="@dimen/px150"
         android:background="@drawable/shape_bg_app_detail_item_focus"
-        android:text="确认添加"
+        android:focusable="true"
+        android:gravity="center"
+        android:text="@string/make_sure_add"
         android:textColor="@color/app_name_color"
         android:textSize="@dimen/fontsize_34"/>
 

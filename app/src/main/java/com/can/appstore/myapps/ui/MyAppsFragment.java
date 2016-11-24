@@ -44,7 +44,7 @@ import static android.app.Activity.RESULT_OK;
  */
 
 public class MyAppsFragment extends BaseFragment implements MyAppsFramentContract.View {
-
+    public static String TAG = "MyAppsFragment";
     private MyAppsFragPresenter mMyAppsFramPresenter;
     //表格布局
     private CanRecyclerView mAppsRecyclerView;
@@ -66,24 +66,22 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.i("myappfragment", "----onCreatView()");
+        Log.d(TAG, "----onCreatView()");
         View view = inflater.inflate(R.layout.fragment_myapps, container, false);
         mAppsRecyclerView = (CanRecyclerView) view.findViewById(R.id.cr_myapps);
         mAppsRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(getActivity(), 6, GridLayoutManager.VERTICAL, false));
-        mAppsRecyclerView.addItemDecoration(new CanRecyclerViewDivider(Color.TRANSPARENT, 10, 0));
+        mAppsRecyclerView.addItemDecoration(new CanRecyclerViewDivider(Color.TRANSPARENT, 8, 8));
 
         mMyAppsFramPresenter = new MyAppsFragPresenter(this, getContext());
         mMyAppsFramPresenter.startLoad();
+        mMyAppsFramPresenter.addListener();
+
         return view;
     }
 
     @Override
     public void onResume() {
-        Log.i("myappfragment", "----onResume()");
-        if (mMyAppsFramPresenter != null) {
-            mMyAppsFramPresenter.addListener();
-        }
-
+        Log.d(TAG, "----onResume()");
         super.onResume();
     }
 
@@ -92,7 +90,7 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
     public void loadAppInfoSuccess(List<AppInfo> infoList) {
         mShowList = infoList;
         if (infoList.size() - 2 < MyApp.myAppList.size() && infoList.size() < 18 && !infoList.get(infoList.size() - 1).packageName.isEmpty()) {
-            infoList.add(new AppInfo("添加应用", getActivity().getResources().getDrawable(R.drawable.addapp_icon)));
+            infoList.add(new AppInfo(getResources().getString(R.string.add_app), getActivity().getResources().getDrawable(R.drawable.addapp_icon)));
         }
         if (mMyAppsRvAdapter == null) {
             mMyAppsRvAdapter = new MyAppsRvAdapter(infoList);
@@ -107,8 +105,6 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         //系统应用的图标集合
         mMyAppsRvAdapter.setCustomData(mDrawbleList);
     }
-
-
 
 
     private void baseSetting() {
@@ -135,7 +131,7 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
             @Override
             public boolean onItemKeyEvent(int position, View item, int keyCode, KeyEvent event) {
 
-                if (keyCode == KeyEvent.KEYCODE_MENU && mShowList.get(position).packageName != "" && event.getAction() == KeyEvent.ACTION_DOWN) {
+                if (keyCode == KeyEvent.KEYCODE_MENU && !"".equals(mShowList.get(position).packageName) && event.getAction() == KeyEvent.ACTION_DOWN) {
                     showEditView(position, item);
                     return true;
                 }
@@ -159,12 +155,12 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
                     Intent intent = new Intent(getActivity(), SystemAppsActivity.class);
                     startActivity(intent);
                 } else {
-                    if (mShowList.get(position).packageName == "") {
+                    if ("".equals(mShowList.get(position).packageName)) {
                         //添加更多
                         Intent i = new Intent(getActivity(), AddAppsActivity.class);
                         int add = 16 - mShowList.size();
                         i.putExtra("add", add);
-                        startActivityForResult(i, 0);
+                        startActivityForResult(i, 2);
                     } else {
                         PackageManager pm = getActivity().getPackageManager();
                         Intent intent = pm.getLaunchIntentForPackage(mShowList.get(position).packageName);//获取启动的包名
@@ -177,14 +173,13 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (0 == requestCode && resultCode == RESULT_OK) {
+        if (2 == requestCode && resultCode == RESULT_OK) {
             Bundle bundle = data.getExtras();
             boolean isAdd = bundle.getBoolean("isAdd");
             if (isAdd) {
                 mMyAppsFramPresenter.startLoad();
             }
         }
-
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -200,10 +195,10 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         Window dialogWindow = dialog.getWindow();
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
         dialogWindow.setGravity(Gravity.LEFT | Gravity.TOP);
-        lp.x = location[0] + 2; // 新位置X坐标
-        lp.y = location[1] + 2; // 新位置Y坐标
-        lp.width = (int) (270 * 1.04f); // 宽度
-        lp.height = (int) (180 * 1.04f); // 高度
+        lp.x = location[0] + 1; // 新位置X坐标
+        lp.y = location[1] + 1; // 新位置Y坐标
+        lp.width = (int) (270 * 1.095f); // 宽度
+        lp.height = (int) (180 * 1.093f); // 高度
         dialogWindow.setAttributes(lp);
         dialog.show();
         editItem(position, item);
@@ -216,7 +211,6 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         mTopAppBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AppInfo appInfo = mShowList.get(position);
                 mMyAppsFramPresenter.topApp(position);
                 hideEditView(position, item);
             }
@@ -265,37 +259,24 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
     }
 
     @Override
-    public void onStop() {
-        Log.i("myappfragment", "----onStop()");
+    public void onDestroyView() {
+        Log.d(TAG, "----onDestory()");
         if (mMyAppsFramPresenter != null) {
             mMyAppsFramPresenter.unRegiestr();
+            mMyAppsFramPresenter.release();
         }
-        super.onStop();
-    }
-
-    @Override
-    public void onDestroyView() {
-        Log.i("myappfragment", "----onDestory()");
-        mMyAppsFramPresenter.release();
         super.onDestroyView();
     }
 
     @Override
-    public void onStart() {
-        Log.i("myappfragment", "----onStart()");
-        super.onStart();
-    }
-
-    @Override
     public void onPause() {
-        Log.i("myappfragment", "----onPause()");
+        Log.d(TAG, "----onPause()");
         super.onPause();
     }
 
 
+    @Override
     public View getLastView() {
         return null;
     }
-
-
 }

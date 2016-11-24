@@ -19,7 +19,6 @@ import cn.can.tvlib.ui.widgets.LoadingDialog;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.ToastUtils;
 
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
 /**
  * Created by wei on 2016/11/8.
@@ -27,7 +26,7 @@ import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
 public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallListener {
 
-
+    public static String TAG = "AllAppsPresenter";
     private LoadingDialog mLoadingDialog;
     private AllAppsContract.View mView;
     private MyAppsListDataUtil mMyAppsListDataUtil;
@@ -70,6 +69,7 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
             //加载完数据
             @Override
             protected void onPostExecute(Void aVoid) {
+                Log.d(TAG, "onPostExecute");
                 mView.loadAllAppInfoSuccess(allAppsList);
                 mView.hideLoading();
                 removeHideApps();
@@ -115,7 +115,6 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
     }
 
 
-
     /**
      * 注册应用安装卸载的广播
      */
@@ -156,7 +155,6 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
     }
 
 
-
     class AppInstallReceiver extends BroadcastReceiver {
 
         public void onReceive(Context context, Intent intent) {
@@ -178,24 +176,26 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
 
     /**
      * 判断当前卸载的位置是否为列表的最后一位
+     *
      * @param packageName
      */
     private void refreshListFocusPosition(String packageName) {
+        Log.d(TAG, "refreshListFocusPosition" + packageName);
         int pos = getUninstallAppPosition(packageName);
-        if(pos == allAppsList.size()- 1){
-            mView.uninstallLastPosition(pos-1);
+        if (pos == allAppsList.size() - 1) {
+            mView.uninstallLastPosition(pos - 1);
         }
     }
 
 
-
     /**
      * 通过包名获取该应用在list中的位置
+     *
      * @param packageName
      */
     public int getUninstallAppPosition(String packageName) {
         for (int i = 0; i < allAppsList.size(); i++) {
-            if(packageName.equals(allAppsList.get(i).packageName)){
+            if (packageName.equals(allAppsList.get(i).packageName)) {
                 return i;
             }
         }
@@ -208,6 +208,7 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
 
     /**
      * 卸载后刷新页面数据
+     *
      * @param packageName
      */
     private void refreshItemInListPosition(String packageName) {

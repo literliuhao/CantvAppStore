@@ -15,6 +15,7 @@ import com.can.appstore.myapps.utils.MyAppsListDataUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 /**
@@ -22,6 +23,7 @@ import cn.can.tvlib.utils.PackageUtil.AppInfo;
  */
 
 public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
+    public static String TAG = "MyAppsFragPresenter";
     private MyAppsFramentContract.View mView;
     private Context mContext;
     private MyAppsListDataUtil mMyAppsListDataUtil;
@@ -82,8 +84,14 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
         if (mDrawablelist.size() != 0) {
             mDrawablelist.clear();
         }
-        for (int i = 0; i < list.size(); i++) {
-            mDrawablelist.add(list.get(i).appIcon);
+        if(list.size()<7){
+            for (int i = 0; i < list.size(); i++) {
+                mDrawablelist.add(list.get(i).appIcon);
+            }
+        }else{
+            for (int i = 0; i < 6; i++) {
+                mDrawablelist.add(list.get(i).appIcon);
+            }
         }
         return mDrawablelist;
     }
@@ -115,20 +123,16 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
             // 接收广播：设备上新安装了一个应用程序包后自动启动新安装应用程序。
             if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)) {
                 String packageName = intent.getDataString().substring(8);
-//                if(!alreadyEdit && MyApp.myAppList.size()<16){
-//                    TODO 首页排序
-//                }
-                startLoad();
+                Log.d(TAG, "installapp" + packageName);
+                if (mShowList.size() < 18) {
+                    mShowList.add(PackageUtil.getAppInfo(mContext, packageName));
+                    mMyAppsListDataUtil.saveShowList(mShowList);
+                }
             } else if (intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)) {
                 String packageName = intent.getData().getSchemeSpecificPart();
-                int position = 0;
-                for (int i = 0; i < mShowList.size(); i++) {
-                    if (packageName.equals(mShowList.get(i).packageName)) {
-                        position = i;
-                    }
-                }
-                removeApp(position);
+                Log.d(TAG, "uninstallapp" + packageName);
             }
+            startLoad();
         }
     }
 

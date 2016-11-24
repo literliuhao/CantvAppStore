@@ -61,6 +61,7 @@ public class MyApp extends Application {
         PRE_APPS.add("com.tvm.suntv.news.client.activity");
         PRE_APPS.add("com.cantv.market");
 
+
         //所有的第三方应用
         myAppList = PackageUtil.findAllThirdPartyAppsNoDelay(this,myAppList);
         registerInstallReceiver();
