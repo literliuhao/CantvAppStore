@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
+import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.PopularWord;
 import com.can.appstore.search.SearchActivity;
@@ -58,6 +59,7 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
                     case SEARCH_APPLIST_TYPE:
                         AppInfo searchApp = (AppInfo) mDataList.get(position);
                         ToastUtil.toastShort("点击 " + searchApp.getName());
+                        AppDetailActivity.actionStart(mActivity, searchApp.getId());
                         break;
                 }
             }
@@ -90,12 +92,6 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
             ((SearchViewHolder) holder).mAppSize.setText(app.getSizeStr());
             ((SearchViewHolder) holder).mAppDownloadCount.setText(app.getDownloadCount());
             ((SearchViewHolder) holder).mView.setId(position + 10000);
-            ((SearchViewHolder) holder).mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-//                    AppDetailActivity.actionStart(mActivity,app.getId());
-                }
-            });
             //第一行向上焦点是自己
             if (position < mActivity.SEARCH_APP_SPANCOUNT) {
                 ((SearchViewHolder) holder).mView.setNextFocusUpId(((SearchViewHolder) holder).mView.getId());

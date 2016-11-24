@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
+import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.entity.AppInfo;
 
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class HomeRankAdapter extends RecyclerView.Adapter<HomeRankAdapter.RankAp
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                AppDetailActivity.actionStart(mContext,mApp.getId());
+                AppDetailActivity.actionStart(mContext,mApp.getId());
             }
         });
         setAppRImg(holder.mAppRImg, holder.mAPPRText, position);
