@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.can.appstore.R;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.myapps.adapter.AddAppsRvAdapter;
-import com.can.appstore.search.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +22,14 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
+import cn.can.tvlib.utils.ToastUtils;
 
 /**
  * Created by wei on 2016/10/26.
  */
 
 public class AddAppsActivity extends BaseActivity implements AddAppsContract.View {
-    private static final  String TAG = "AddAppsActivity";
+    private static final String TAG = "AddAppsActivity";
     private CanRecyclerView mAddRecyclerView;
     private AddAppsPresenter mAddAppsPresenter;
     private AddAppsRvAdapter mAddAppsRecyclerViewAdapter;
@@ -87,25 +87,23 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
     }
 
 
-
-
     @Override
     public void loadAddAppInfoSuccess(List<AppInfo> infoList) {
         if (mAddAppsRecyclerViewAdapter == null) {
-            Log.d(TAG,"loadAddAppInfoSuccess"+ "首次");
+            Log.d(TAG, "loadAddAppInfoSuccess" + "首次");
             mAddAppsRecyclerViewAdapter = new AddAppsRvAdapter(infoList);
             mAddAppsPresenter.canSelectCount();
             baseSetting();
             addViewListener();
         } else {
-            Log.d(TAG,"loadAddAppInfoSuccess"+ "非首次刷新");
+            Log.d(TAG, "loadAddAppInfoSuccess" + "非首次刷新");
             mAddAppsRecyclerViewAdapter.notifyDataSetChanged();
             mAddRecyclerView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mAddAppsPresenter.refreshSelectDataPosition();
                 }
-            },APP_INSTALL_REFRESH_DELAYE);
+            }, APP_INSTALL_REFRESH_DELAYE);
         }
         //设置右上角总行数
         tv_curRows.setText("0");
@@ -154,7 +152,7 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
     @Override
     public void showCanSelectCount(int cansel, int alreadyshow) {
         this.canSelect = cansel;
-        tv_canSelect.setText("已添加" + alreadyshow + "个应用，还可以添加" + cansel + "个");
+        tv_canSelect.setText(getResources().getString(R.string.already_add_) + alreadyshow + getResources().getString(R.string._app_also_can_add_) + cansel + getResources().getString(R.string._individual));
     }
 
     /**
@@ -169,11 +167,11 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
 
     @Override
     public void setAlreadySelectApp(int[] alreadySelect) {
-        if (mSelectAppInfo != null && mSelectAppInfo.size()>0) {
+        if (mSelectAppInfo != null && mSelectAppInfo.size() > 0) {
             mSelectAppInfo.clear();
         }
         for (int i = 0; i < alreadySelect.length; i++) {
-            Log.d(TAG,"setAlreadySelectApp"+alreadySelect[i]);
+            Log.d(TAG, "setAlreadySelectApp" + alreadySelect[i]);
             mAddAppsRecyclerViewAdapter.setItemSelected(alreadySelect[i]);
         }
     }
@@ -214,9 +212,9 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
         addBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG,"addBut"+"的点击时间");
+                Log.d(TAG, "addBut" + "的点击时间");
                 if (mSelectAppInfo == null || mSelectAppInfo.size() == 0) {
-                    ToastUtil.toastShort("您没有选择任何应用");
+                    ToastUtils.showMessage(getContext(), getResources().getString(R.string.no_select_anyone));
                 } else {
                     saveSelectInfo(mSelectAppInfo);
                     Intent intent = new Intent();
@@ -242,31 +240,31 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
         mAddAppsRecyclerViewAdapter.setOnItemSelectListener(new CanRecyclerViewAdapter.OnItemSelectChangeListener() {
             @Override
             public boolean onSelectChanged(int position, boolean selected, Object data) {
-                Log.d(TAG,"setOnItemSelectListener.onSelectChanged"+"position"+position+"selected"+selected+"data"+data.toString());
-                AppInfo appInfo = (AppInfo)data;
-                if(mSelectAppInfo == null){
+                Log.d(TAG, "setOnItemSelectListener.onSelectChanged" + "position" + position + "selected" + selected + "data" + data.toString());
+                AppInfo appInfo = (AppInfo) data;
+                if (mSelectAppInfo == null) {
                     mSelectAppInfo = new ArrayList<AppInfo>();
                 }
-                if(selected){
-                    if(mSelectAppInfo.size() >= canSelect){
-                        ToastUtil.toastShort("当前桌面已满，无法继续添加");
+                if (selected) {
+                    if (mSelectAppInfo.size() >= canSelect) {
+                        ToastUtils.showMessage(getContext(), getResources().getString(R.string.table_full_cant_add));
                         mAddAppsPresenter.mSelectAppInfo = mSelectAppInfo;
-                        tv_select.setText(""+mSelectAppInfo.size());
+                        tv_select.setText("" + mSelectAppInfo.size());
                         return true;
-                    }else{
+                    } else {
                         mSelectAppInfo.add(appInfo);
                         mAddAppsPresenter.mSelectAppInfo = mSelectAppInfo;
-                        tv_select.setText(""+mSelectAppInfo.size());
+                        tv_select.setText("" + mSelectAppInfo.size());
                         return false;
                     }
-                }else{
-                    for (int i = mSelectAppInfo.size()-1; i >= 0 ; i--) {
+                } else {
+                    for (int i = mSelectAppInfo.size() - 1; i >= 0; i--) {
                         if (mSelectAppInfo.get(i).packageName.equals(appInfo.packageName)) {
                             mSelectAppInfo.remove(i);
                         }
                     }
                     mAddAppsPresenter.mSelectAppInfo = mSelectAppInfo;
-                    tv_select.setText(""+mSelectAppInfo.size());
+                    tv_select.setText("" + mSelectAppInfo.size());
                     return false;
                 }
             }
@@ -292,17 +290,18 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
 
     @Override
     public void showLoading() {
-        mAddAppsPresenter.showLoading("加载中，请稍等...");
+        mAddAppsPresenter.showLoading("");
     }
 
     @Override
     public void hideLoading() {
         mAddAppsPresenter.hideLoading();
     }
+
     @Override
     protected void onResume() {
         super.onResume();
-        if(mAddAppsPresenter!= null){
+        if (mAddAppsPresenter != null) {
             mAddAppsPresenter.addListener();
         }
     }
@@ -310,7 +309,7 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
     @Override
     protected void onStop() {
         super.onStop();
-        if(mAddAppsPresenter!= null){
+        if (mAddAppsPresenter != null) {
             mAddAppsPresenter.unRegiestr();
         }
     }

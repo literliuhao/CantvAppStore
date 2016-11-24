@@ -12,7 +12,8 @@
         android:layout_centerHorizontal="true"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:paddingLeft="@dimen/px20"
+        android:paddingStart="@dimen/px20"
+        android:paddingEnd="@dimen/px20"
         android:paddingTop="@dimen/px20"
         ></cn.can.tvlib.ui.view.recyclerview.CanRecyclerView>
 
@@ -20,9 +21,9 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@id/cr_myapps"
+        android:layout_alignEnd="@id/cr_myapps"
         android:layout_below="@+id/cr_myapps"
-        android:layout_marginRight="@dimen/px10"
+        android:layout_marginEnd="@dimen/px10"
         android:orientation="horizontal"
         >
 
@@ -36,8 +37,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/px8"
-            android:text="按菜单可管理应用排序"
+            android:layout_marginStart="@dimen/px8"
+            android:text="@string/menu_management_of_sorting"
             android:textColor="@color/tv_menu_guanli_color"
             android:textSize="@dimen/fontsize_32"
             />
