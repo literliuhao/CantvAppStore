@@ -14,7 +14,6 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -55,6 +54,7 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
     private List<LiteText> textViewList;
     private int mCurrentIndex = 0;
     private IAddFocusListener mFocusListener;
+    private View lastView;
 
     public TitleBar(Context context) {
         this(context, null);
@@ -191,7 +191,9 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
                 mCurrentIndex = position;
                 // 设置字体颜色高亮
                 resetTextViewColor();
-//                highLightTextView(position);
+                if (!(lastView instanceof LiteText)) {
+                    highLightTextView(position);
+                }
                 // 回调
                 if (onPageChangeListener != null) {
                     onPageChangeListener.onPageSelected(position);
@@ -231,7 +233,7 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
             public void onGlobalFocusChanged(View oldFocus, View newFocus) {
 //                Log.i("TitleBar", "onGlobalFocusChanged old " + String.valueOf(oldFocus));
 //                Log.i("TitleBar", "onGlobalFocusChanged new " + String.valueOf(newFocus));
-
+                lastView = newFocus;
                 if (!(oldFocus instanceof LiteText) && newFocus instanceof LiteText) {
                     newFocus = textViewList.get(mViewPager.getCurrentItem());
                     newFocus.requestFocus();
@@ -311,20 +313,15 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
     private LiteText generateTextView(String text) {
         LiteText textLayout = new LiteText(getContext());
         textLayout.setPadding((int) getResources().getDimension(R.dimen.px20), (int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px20), (int) getResources().getDimension(R.dimen.px0));
-//        textLayout.setBackground(getResources().getDrawable(R.drawable.index_title_normal));
         LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         textParams.setMargins((int) getResources().getDimension(R.dimen.px30), (int) getResources().getDimension(R.dimen.px10), (int) getResources().getDimension(R.dimen.px30), (int) getResources().getDimension(R.dimen.px10));
         textLayout.setLayoutParams(textParams);
         textLayout.setFocusable(true);
         textLayout.setOnFocusChangeListener(this);
 
-        ImageView imageView = new ImageView(getContext());
-        RelativeLayout.LayoutParams imageParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        imageParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        imageView.setLayoutParams(imageParams);
-        imageView.setBackground(getResources().getDrawable(R.drawable.index_title_normal));
-
         TextView textView = new TextView(getContext());
+        textView.setPadding((int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px5), (int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px5));
+
         RelativeLayout.LayoutParams txtParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         txtParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
         textView.setLayoutParams(txtParams);
@@ -333,7 +330,6 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
         textView.setTextColor(COLOR_TEXT_NORMAL);
         textView.setText(text);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-//        textLayout.addView(imageView);
         textLayout.addView(textView);
         textViewList.add(textLayout);
         return textLayout;
