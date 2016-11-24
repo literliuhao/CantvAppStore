@@ -26,6 +26,9 @@ public interface AllAppsContract{
         void showUninstallDialog(PackageUtil.AppInfo app);
 
         void loadAllAppInfoSuccess(List<PackageUtil.AppInfo> infoList);
+
+        void uninstallLastPosition(int position);//卸载最后一个位置,让刷新后的最后一个位置请求焦点
+
     }
 
 }
