@@ -24,7 +24,7 @@
     <com.can.appstore.index.ui.CustomPager
         android:id="@+id/id_vp"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/px660"
+        android:layout_height="wrap_content"
         android:layout_below="@id/id_indicator"
         android:layout_centerHorizontal="true"
         android:scrollbars="none"

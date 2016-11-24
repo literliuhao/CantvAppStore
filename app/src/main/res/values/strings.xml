@@ -72,6 +72,7 @@
     <string name="download_installing">正在安装</string>
     <string name="download_installed">安装完成</string>
     <string name="download_open_app_error">打开应用出现问题</string>
+    <string name="download_file_error">文件异常</string>
 
 
     <!--卸载管理-->

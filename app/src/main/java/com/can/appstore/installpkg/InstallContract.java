@@ -32,6 +32,8 @@ public interface InstallContract {
 
         void showInstallPkgList(List<AppInfoBean> mDatas);
 
+        void deleteLastItem(int position);
+
     }
 
     //业务接口
