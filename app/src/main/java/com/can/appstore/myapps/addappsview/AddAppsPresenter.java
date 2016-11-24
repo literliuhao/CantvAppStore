@@ -18,13 +18,12 @@ import cn.can.tvlib.ui.widgets.LoadingDialog;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
-
 /**
  * Created by wei on 2016/11/3.
  */
 
 public class AddAppsPresenter implements AddAppsContract.Presenter {
+    public final static String TAG = "AddAppsPresenter";
     private AddAppsContract.View mView;
     private Context mContext;
     //数据
@@ -34,9 +33,8 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
     private List<AppInfo> mAllAppList;
 
     private LoadingDialog mLoadingDialog;
-    //隐藏应用
-//    private List<String>  hideList = null;
-//    private  ShareData mShareData;
+    //当前被选择的应用
+    public List<AppInfo> mSelectAppInfo = new ArrayList<>();
 
     private AddAppsPresenter.AppInstallReceiver mAppInstallReceiver;
 
@@ -81,6 +79,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
             //加载完数据
             @Override
             protected void onPostExecute(Void aVoid) {
+                Log.d(TAG,"onPostExecute");
                 mView.loadAddAppInfoSuccess(addShowList);
                 mView.hideLoading();
             }
@@ -96,6 +95,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
      * 注册应用安装卸载的广播
      */
     private void registerInstallReceiver() {
+        Log.d(TAG,"registerInstallReceiver");
         if (mAppInstallReceiver == null) {
             mAppInstallReceiver = new AddAppsPresenter.AppInstallReceiver();
             IntentFilter filter = new IntentFilter();
@@ -106,6 +106,26 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
             mContext.registerReceiver(mAppInstallReceiver, filter);
         }
     }
+
+    /**
+     * 刷新之前已经选择的数据
+     */
+    public void refreshSelectDataPosition() {
+        Log.d(TAG,"refreshSelectDataPosition");
+        if(mSelectAppInfo!= null && mSelectAppInfo.size()> 0){
+            int[]  alreadySelect = new int[mSelectAppInfo.size()];
+            for (int i = 0; i < mSelectAppInfo.size(); i++) {
+                for (int j = 0; j < addShowList.size(); j++) {
+                    if(mSelectAppInfo.get(i).packageName.equals(addShowList.get(j).packageName)){
+                        alreadySelect[i] = j;
+                    }
+                }
+            }
+            mSelectAppInfo.clear();
+            mView.setAlreadySelectApp(alreadySelect);
+        }
+    }
+
     class AppInstallReceiver extends BroadcastReceiver {
 
         public void onReceive(Context context, Intent intent) {

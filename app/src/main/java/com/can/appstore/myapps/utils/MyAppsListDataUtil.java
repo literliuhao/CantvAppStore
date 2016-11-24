@@ -52,7 +52,7 @@ public class MyAppsListDataUtil {
             if (allAppsList.size() <= 16) {
                 mShowList = allAppsList;
             } else {
-                for (int i = 0; i < 15; i++) {
+                for (int i = 0; i < 16; i++) {
                     mShowList.add(allAppsList.get(i));
                 }
             }
