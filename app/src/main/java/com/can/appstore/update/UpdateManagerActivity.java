@@ -12,9 +12,11 @@ import android.os.Message;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -74,12 +76,20 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
     private List<AppInfoBean> mUpdateList;
     private cn.can.downloadlib.DownloadManager mDownloadManager;
     private String mCurrentId;
+    private int mWinH;
+    private int mWinW;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_updatemanager);
         mPresenter = new UpdatePresenter(this, UpdateManagerActivity.this);
+        //获取到屏幕的宽高
+        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(outMetrics);
+        mWinH = outMetrics.heightPixels;
+        mWinW = outMetrics.widthPixels;
         mAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
         initView();
         initData();
@@ -163,11 +173,26 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == CanRecyclerView.SCROLL_STATE_SETTLING) {
-                    mDetectionButton.setFocusable(false);
-                    mAutoButton.setFocusable(false);
+                    //限制移动区域
+                    mRecyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            int[] posi = new int[2];
+                            mRecyclerView.getLocationInWindow(posi);
+                            mFocusMoveUtil.setFocusActiveRegion(posi[0], posi[1] + mRecyclerView.getPaddingTop(),
+                                    posi[0] + mRecyclerView.getWidth(),
+                                    posi[1] + mRecyclerView.getHeight() - mRecyclerView.getPaddingBottom() - getResources().getDimensionPixelSize(R.dimen.px40));
+                        }
+                    });
+                    setLeftLayoutFocus(false);
                 } else if (newState == CanRecyclerView.SCROLL_STATE_IDLE) {
-                    mDetectionButton.setFocusable(true);
-                    mAutoButton.setFocusable(true);
+                    mRecyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mFocusMoveUtil.setFocusActiveRegion(0, 0, mWinW, mWinH);
+                        }
+                    });
+                    setLeftLayoutFocus(true);
                 }
             }
 
@@ -179,6 +204,16 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
         });
     }
 
+    /**
+     * 设置左侧焦点
+     *
+     * @param focusable
+     */
+    private void setLeftLayoutFocus(boolean focusable) {
+        mDetectionButton.setFocusable(focusable);
+        mAutoButton.setFocusable(focusable);
+    }
+
     private void initClick() {
 
         mDetectionButton.setOnClickListener(new View.OnClickListener() {
@@ -187,13 +222,16 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 mAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
                 if (mAutoUpdate) {
                     mPresenter.clearList();
-                    mPresenter.setNum(0);
+                    mCurrentnum.setVisibility(View.INVISIBLE);
+                    mTotalnum.setVisibility(View.INVISIBLE);
                     mReminder.setVisibility(View.VISIBLE);
                     mReminder.setText(R.string.update_start_autoupdate);
                     Toast.makeText(MyApp.mContext, R.string.update_start_autoupdate, Toast.LENGTH_LONG).show();
                     return;
                 } else {
                     mPresenter.getInstallPkgList(mAutoUpdate);
+                    mCurrentnum.setVisibility(View.VISIBLE);
+                    mTotalnum.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -242,7 +280,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 } else {
                     downloadTask = new DownloadTask();
                     String md5 = MD5.MD5(downloadUrl);
-                    downloadTask.setFileName(md5+".apk");
+                    downloadTask.setFileName(md5 + ".apk");
                     downloadTask.setId(md5);
                     downloadTask.setSaveDirPath(MyApp.mContext.getExternalCacheDir().getPath() + "/");
                     downloadTask.setUrl(downloadUrl);
@@ -251,25 +289,25 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                         @Override
                         public void onPrepare(DownloadTask downloadTask) {
                             Log.d(TAG, "onPrepare: ");
-                            refreshStatus(downloadTask,status,progress,updatedIcon);
+                            refreshStatus(downloadTask, status, progress, updatedIcon);
                         }
 
                         @Override
                         public void onStart(DownloadTask downloadTask) {
                             Log.d(TAG, "onStart: ");
-                            refreshStatus(downloadTask,status,progress,updatedIcon);
+                            refreshStatus(downloadTask, status, progress, updatedIcon);
                         }
 
                         @Override
                         public void onDownloading(final DownloadTask downloadTask) {
                             Log.d(TAG, "onDownloading: ");
-                            refreshStatus(downloadTask,status,progress,updatedIcon);
+                            refreshStatus(downloadTask, status, progress, updatedIcon);
                         }
 
                         @Override
                         public void onPause(DownloadTask downloadTask) {
                             Log.d(TAG, "onPause: ");
-                            refreshStatus(downloadTask,status,progress,updatedIcon);
+                            refreshStatus(downloadTask, status, progress, updatedIcon);
                         }
 
                         @Override
@@ -291,22 +329,22 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                         @Override
                         public void onError(DownloadTask downloadTask, int errorCode) {
                             Log.d(TAG, "onError: ");
-                            refreshStatus(downloadTask,status,progress,updatedIcon);
+                            refreshStatus(downloadTask, status, progress, updatedIcon);
                             switch (errorCode) {
                                 case DOWNLOAD_ERROR_FILE_NOT_FOUND:
-                                    ToastUtils.showMessage(UpdateManagerActivity.this,"未找到下载文件");
+                                    ToastUtils.showMessage(UpdateManagerActivity.this, "未找到下载文件");
                                     Log.i(TAG, "未找到下载文件: ");
                                     break;
                                 case DOWNLOAD_ERROR_IO_ERROR:
-                                    ToastUtils.showMessage(UpdateManagerActivity.this,"IO异常");
+                                    ToastUtils.showMessage(UpdateManagerActivity.this, "IO异常");
                                     Log.i(TAG, "IO异常: ");
                                     break;
                                 case DOWNLOAD_ERROR_NETWORK_ERROR:
-                                    ToastUtils.showMessage(UpdateManagerActivity.this,"网络异常，请重试！");
+                                    ToastUtils.showMessage(UpdateManagerActivity.this, "网络异常，请重试！");
                                     Log.i(TAG, "网络异常，请重试！");
                                     break;
                                 case DOWNLOAD_ERROR_UNKONW_ERROR:
-                                    ToastUtils.showMessage(UpdateManagerActivity.this,"未知错误");
+                                    ToastUtils.showMessage(UpdateManagerActivity.this, "未知错误");
                                     Log.i(TAG, "未知错误: ");
                                     break;
                                 default:
@@ -324,6 +362,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
 
     /**
      * 安装状态刷新
+     *
      * @param progress
      * @param status
      * @param updatedIcon
@@ -354,6 +393,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
 
     /**
      * 下载监听刷新
+     *
      * @param downloadTask
      * @param status
      * @param progress
@@ -567,9 +607,10 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
 
     /**
      * 启动更新管理
+     *
      * @param context
      */
-    public static void actionStart(Context context){
+    public static void actionStart(Context context) {
         Intent intent = new Intent(context, UpdateManagerActivity.class);
         context.startActivity(intent);
     }

@@ -146,18 +146,7 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                     updateHolder.updatedIcon.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            int result = InstallPkgUtils.installApp(downloadTask.getSaveDirPath());
-                            if (result == 0) {
-                                updateHolder.downloading.setVisibility(View.INVISIBLE);
-                                //updateHolder.downloading.setText("安装成功");
-                                updateHolder.updatedIcon.setVisibility(View.VISIBLE);
-                                Log.i(TAG, "run: " + "安装成功");
-                            } else {
-                                updateHolder.downloading.setVisibility(View.VISIBLE);
-                                updateHolder.downloading.setText(MyApp.mContext.getResources().getString(R.string.update_download_installfalse));
-                                updateHolder.updatedIcon.setVisibility(View.INVISIBLE);
-                                Log.i(TAG, "run: " + "安装失败");
-                            }
+                            getInstallStatus(downloadTask, updateHolder);
                         }
                     }, 1000);
                 }
@@ -193,6 +182,21 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
             updateHolder.downloading.setVisibility(View.INVISIBLE);
             updateHolder.progressbar.setVisibility(View.INVISIBLE);
             updateHolder.updatedIcon.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void getInstallStatus(DownloadTask downloadTask, UpdateViewHolder updateHolder) {
+        int result = InstallPkgUtils.installApp(downloadTask.getSaveDirPath());
+        if (result == 0) {
+            updateHolder.downloading.setVisibility(View.INVISIBLE);
+            //updateHolder.downloading.setText("安装成功");
+            updateHolder.updatedIcon.setVisibility(View.VISIBLE);
+            Log.i(TAG, "run: " + "安装成功");
+        } else {
+            updateHolder.downloading.setVisibility(View.VISIBLE);
+            updateHolder.downloading.setText(MyApp.mContext.getResources().getString(R.string.update_download_installfalse));
+            updateHolder.updatedIcon.setVisibility(View.INVISIBLE);
+            Log.i(TAG, "run: " + "安装失败");
         }
     }
 

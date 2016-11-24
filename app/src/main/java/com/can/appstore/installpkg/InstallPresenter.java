@@ -133,12 +133,34 @@ public class InstallPresenter implements InstallContract.Presenter {
 
     }
 
+    /**
+     * 获取指定位置item
+     *
+     * @param position
+     * @return
+     */
     public AppInfoBean getItem(int position) {
         if (position < 0 || position > mDatas.size()) {
             return null;
         }
         AppInfoBean appInfoBean = mDatas.get(position);
         return appInfoBean;
+    }
+
+    /**
+     * 是否是最后一个item
+     *
+     * @param position
+     * @return
+     */
+    public boolean isLastItem(int position) {
+        if (position <= 0) {
+            return false;
+        }
+        if (position == mDatas.size() - 1) {
+            return true;
+        }
+        return false;
     }
 
     /**

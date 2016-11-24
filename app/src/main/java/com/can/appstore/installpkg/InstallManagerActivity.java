@@ -8,12 +8,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -57,7 +60,6 @@ public class InstallManagerActivity extends Activity implements InstallContract.
     private Button mDeleteButton;
     private Button mDeleteAllButton;
     private Button mUpdateButton;
-    private boolean isVisibility = false;
     private int mCurrentPositon;
     private RelativeLayout deleteLayout;
     private TextView mRoomSize;
@@ -79,6 +81,8 @@ public class InstallManagerActivity extends Activity implements InstallContract.
     private CanDialog canDialog;
     private GridLayoutManager mGridLayoutManager;
     private static final String TAG = "installManagerActivity";
+    private int mWinH;
+    private int mWinW;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +90,12 @@ public class InstallManagerActivity extends Activity implements InstallContract.
         setContentView(R.layout.activity_installmanager);
         mInstallDatas = new ArrayList<AppInfoBean>();
         mPresenter = new InstallPresenter(this, InstallManagerActivity.this);
+        //获取到屏幕的宽高
+        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(outMetrics);
+        mWinH = outMetrics.heightPixels;
+        mWinW = outMetrics.widthPixels;
         initView();
         initData();
         initFocusChange();
@@ -206,7 +216,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
                 if (hasFocus) {
                     mFocusedListChild = view;
-                    mRecyclerView.postDelayed(myFocusRunnable, 50);
+                    mRecyclerView.postDelayed(myFocusRunnable, 80);
                     mPresenter.setNum(position);
                     mCurrentPositon = position;
 
@@ -221,13 +231,26 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == CanRecyclerView.SCROLL_STATE_SETTLING) {
-                    mDeleteButton.setFocusable(false);
-                    mDeleteAllButton.setFocusable(false);
-                    mUpdateButton.setFocusable(false);
+                    //限制移动区域
+                    mRecyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            int[] posi = new int[2];
+                            mRecyclerView.getLocationInWindow(posi);
+                            mFocusMoveUtil.setFocusActiveRegion(posi[0], posi[1] + mRecyclerView.getPaddingTop(),
+                                    posi[0] + mRecyclerView.getWidth(),
+                                    posi[1] + mRecyclerView.getHeight() - mRecyclerView.getPaddingBottom()-getResources().getDimensionPixelSize(R.dimen.px40));
+                        }
+                    });
+                    setLeftLayoutFocus(false);
                 } else if (newState == CanRecyclerView.SCROLL_STATE_IDLE) {
-                    mDeleteButton.setFocusable(true);
-                    mDeleteAllButton.setFocusable(true);
-                    mUpdateButton.setFocusable(true);
+                    mRecyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mFocusMoveUtil.setFocusActiveRegion(0, 0, mWinW, mWinH);
+                        }
+                    });
+                    setLeftLayoutFocus(true);
                 }
             }
 
@@ -238,6 +261,16 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             }
         });
 
+    }
+
+    /**
+     * 设置左侧布局焦点
+     * @param focusable
+     */
+    private void setLeftLayoutFocus(boolean focusable) {
+        mDeleteButton.setFocusable(focusable);
+        mDeleteAllButton.setFocusable(focusable);
+        mUpdateButton.setFocusable(focusable);
     }
 
     private void initClick() {
@@ -443,13 +476,27 @@ public class InstallManagerActivity extends Activity implements InstallContract.
                     if (versonCode == 0) {
                         ToastUtils.showMessageLong(InstallManagerActivity.this, "安装包版本低于已安装版本,请先卸载原应用");
                     } else {
-                        mPresenter.installApp(position);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                mPresenter.installApp(position);
+                            }
+                        },1000);
                     }
                 }
 
                 @Override
                 public void onClickNegative() {
                     //删除键
+                    if(mPresenter.isLastItem(position)){
+                        mFocusMoveUtil.hideFocus();
+                        setLeftLayoutFocus(false);
+                        View childAt = mRecyclerView.getChildAt(position - 1);
+                        childAt.requestFocus();
+                        childAt.setFocusable(true);
+                        mFocusMoveUtil.showFocus(100);
+                        setLeftLayoutFocus(true);
+                    }
                     mPresenter.deleteOne(mCurrentPositon);
                     canDialog.dismiss();
                 }
