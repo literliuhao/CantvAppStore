@@ -35,12 +35,10 @@ import cn.can.tvlib.utils.PackageUtil;
 
 public class UninstallManagerActivity extends BaseActivity implements UninstallManagerContract.View {
     public static final String TAG = "UninstallManagerActivi";
-    public static final int MIN_DOWN_INTERVAL = 80;//响应点击事件的最小间隔事件
     public static final int APP_INSTALL_REFRESH_DELAYE = 200;//应用安装刷新此时选择的位置
     public static final int UNINSTALL_LAST_POSITION_DELAYE = 600;//卸载最后一个位置延时请求焦点
     private CanRecyclerView mCanRecyclerView;
     private FocusMoveUtil mFocusMoveUtil;
-    private FocusScaleUtil mScaleUtil;
     private UninstallManagerAdapter mUninstallManagerAdapter;
     private View mFocusedListChild;
     private ListFocusMoveRunnable mListFocusMoveRunnable;
@@ -52,9 +50,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     private TextView mSelectCount;
     private TextView mNotUninstallApp;
     private LinearLayout mLinearLayoutSelectApp;
-    private long mTime;
     private boolean isSelect;
-    private boolean focusSearchFailed;
     private boolean isLastRemove = false;
     private CanRecyclerView.CanGridLayoutManager mLayoutManager;
 
@@ -71,8 +67,6 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
 
     public void initFocus() {
         mFocusMoveUtil = new FocusMoveUtil(UninstallManagerActivity.this, getWindow().getDecorView(), R.mipmap.btn_focus);
-        mScaleUtil = new FocusScaleUtil();
-        mScaleUtil.setFocusScale(1.0f);
         measureFocusActiveRegion();
         mListFocusMoveRunnable = new ListFocusMoveRunnable();
     }
@@ -84,7 +78,8 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
                 int[] location = new int[2];
                 mCanRecyclerView.getLocationInWindow(location);
                 mFocusMoveUtil.setFocusActiveRegion(0, location[1] + mCanRecyclerView.getPaddingTop(), getWindowManager().
-                        getDefaultDisplay().getWidth(), location[1] + mCanRecyclerView.getMeasuredHeight());
+                        getDefaultDisplay().getWidth(), location[1] + mCanRecyclerView.getMeasuredHeight()
+                        - getResources().getDimensionPixelSize(R.dimen.dimen_32px));
             }
         });
     }
@@ -104,18 +99,8 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         mNotUninstallApp = (TextView) findViewById(R.id.tv_no_data);
         mLinearLayoutSelectApp = (LinearLayout) findViewById(R.id.ll_select_app);
         mLayoutManager = new CanRecyclerView.CanGridLayoutManager(UninstallManagerActivity.this, 3, CanRecyclerView.CanGridLayoutManager.VERTICAL, false);
-        new CanRecyclerView.OnFocusSearchCallback() {
-            @Override
-            public void onSuccess(View view, View focused, int focusDirection, RecyclerView.Recycler recycler, RecyclerView.State state) {
-                focusSearchFailed = false;
-            }
-
-            @Override
-            public void onFail(View focused, int focusDirection, RecyclerView.Recycler recycler, RecyclerView.State state) {
-                focusSearchFailed = false;
-            }
-        };
         mCanRecyclerView.setLayoutManager(mLayoutManager);
+        mCanRecyclerView.setKeyCodeEffectInterval(CanRecyclerView.KEYCODE_EFFECT_INTERVAL_NORMAL);
         mPresenter.calculateCurStoragePropgress();
         mBtBatchUninstall.post(new Runnable() {
             @Override
@@ -161,7 +146,6 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
                     mListFocusMoveRunnable.run();
                     mBtBatchUninstall.setBackgroundResource(R.drawable.shape_bg_uninstall_manager_item_focus);
                 } else {
-                    mScaleUtil.scaleToNormal(view);
                     mBtBatchUninstall.setBackgroundResource(R.drawable.shape_bg_batch_uninstall_bt);
                 }
             }
@@ -320,7 +304,6 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
                     mListFocusMoveRunnable.run();
                     view.setBackgroundResource(R.drawable.shape_bg_uninstall_manager_item_focus);
                 } else {
-                    mScaleUtil.scaleToNormal();
                     view.setBackgroundResource(R.drawable.shape_bg_uninstall_manager_item);
                 }
                 if (mPresenter != null) {
@@ -375,7 +358,6 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
                 Log.d(TAG, "onScrolled: ");
                 mListFocusMoveRunnable.run();
             }
@@ -392,12 +374,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         @Override
         public void run() {
             if (mFocusedListChild != null) {
-                mScaleUtil.scaleToLarge(mFocusedListChild);
-                if (focusSearchFailed) {
-                    mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f);
-                } else {
-                    mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f, 0);
-                }
+                mFocusMoveUtil.startMoveFocus(mFocusedListChild, 2);
             }
         }
     }
@@ -413,25 +390,6 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         Log.d(TAG, "onWindowFocusChanged: hasFocus " + hasFocus);
         super.onWindowFocusChanged(hasFocus);
     }
-
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-
-        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            long time = System.currentTimeMillis();
-            if (mTime == 0) {
-                mTime = System.currentTimeMillis();
-                return super.dispatchKeyEvent(event);
-            } else if (time - mTime < MIN_DOWN_INTERVAL) {
-                Log.d(TAG, "dispatchKeyEvent: " + System.currentTimeMillis());
-                return true;
-            } else {
-                mTime = System.currentTimeMillis();
-            }
-        }
-        return super.dispatchKeyEvent(event);
-    }
-
 
     @Override
     protected void onStop() {
