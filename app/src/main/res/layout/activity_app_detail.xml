@@ -4,7 +4,6 @@
               android:id="@+id/ll_app_detail"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="@color/two_page_bg"
               android:orientation="vertical"
               android:visibility="invisible">
 
