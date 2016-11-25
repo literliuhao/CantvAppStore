@@ -92,8 +92,9 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
         mPositiveBtn = (Button) dialogView.findViewById(R.id.btn_dialog_positive);
         mNegativeBtn = (Button) dialogView.findViewById(R.id.btn_dialog_negative);
         mRlContent = (RelativeLayout) dialogView.findViewById(R.id.rl_content);
-        Drawable drawable = BitmapUtils.blurBitmap(mContext);
-        dialogView.setBackground(drawable);
+//        Drawable drawable = BitmapUtils.blurBitmap(mContext);
+//        dialogView.setBackground(drawable);
+        dialogView.setBackgroundResource(R.color.black_opa90);
     }
 
     public CanDialog setTitle(String title) {

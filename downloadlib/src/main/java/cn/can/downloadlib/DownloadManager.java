@@ -614,7 +614,23 @@ public class DownloadManager implements AppInstallListener {
         new Thread(task).start();
     }
 
-    public DownloadTask getSingleTask(String taskId) {
+    public DownloadTask addSingleTaskListener(String taskId, DownloadTaskListener downloadTaskListener,AppInstallListener
+            appInstallListener) {
+        if(mSingleTaskMap != null){
+            DownloadTask task =  mSingleTaskMap.get(taskId);
+            if (task == null) {
+                return null;
+            }
+            task.addDownloadListener(downloadTaskListener);
+            return task;
+        }
+        return null;
+    }
+
+    public DownloadTask getSigleTaskById(String taskId){
+        if(mSingleTaskMap == null){
+            return null;
+        }
         return mSingleTaskMap.get(taskId);
     }
 
@@ -725,5 +741,4 @@ public class DownloadManager implements AppInstallListener {
         msg.setData(bundle);
         mHander.sendMessage(msg);
     }
-
 }

@@ -115,12 +115,6 @@ public class MyApp extends Application {
         Beta.showInterruptedStrategy = false;
         Beta.upgradeListener = new UpgradeListener() {
             @Override
-            public boolean onUpgrade(aa aa, int i, String s) {
-                Log.d(TAG, "onUpgrade: aa");
-                return false;
-            }
-
-            @Override
             public void onUpgrade(int ret, UpgradeInfo strategy, boolean isManual, boolean isSilence) {
                 if (strategy != null) {
                     Log.d(TAG, "onUpgrade: 更新");

@@ -18,7 +18,7 @@ public class ActiveContract {
 
         void refreshTextProgressbarTextStatus(int status);
 
-        void showToast(String toastContent);
+        void showToast(int toastStrId);
 
         void loadwebview(String url);
 

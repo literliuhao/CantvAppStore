@@ -111,11 +111,11 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
     }
 
     @Override
-    public void showToast(String toastContent) {
+    public void showToast(int toastStrId) {
         mHandler.removeMessages(SHOW_TOAST);
         Message msg = mHandler.obtainMessage();
         msg.what = SHOW_TOAST;
-        msg.obj = toastContent;
+        msg.arg1 = toastStrId;
         mHandler.sendMessage(msg);
     }
 
@@ -164,7 +164,7 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
                     mActiveTextProgressBar.setProgress(msg.arg1);
                     break;
                 case SHOW_TOAST:
-                    ToastUtil.toastShort((String) msg.obj);
+                    ToastUtil.toastShort(getString(msg.arg1));
                     break;
             }
         }
