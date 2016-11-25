@@ -2,6 +2,12 @@ package com.can.appstore.update.model;
 
 import android.graphics.drawable.Drawable;
 
+import com.can.appstore.entity.AppInfo;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
 /**
  * Created by shenpx on 2016/10/12 0012.
  * app信息bean
@@ -24,6 +30,15 @@ public class AppInfoBean {
     private boolean isUpdated;//更新完成
     private boolean isInstalled;//安装结束
     private boolean isInstalledFalse;//安装失败
+    private String md5;
+
+    public String getMd5() {
+        return md5;
+    }
+
+    public void setMd5(String md5) {
+        this.md5 = md5;
+    }
 
     public boolean getInstalledFalse() {
         return isInstalledFalse;
@@ -158,5 +173,93 @@ public class AppInfoBean {
                 ", downloadUrl='" + downloadUrl + '\'' +
                 ", progress_updateapp=" + progress +
                 '}';
+    }
+
+    /**
+     * AppInfoBean装换为AppInfo
+     *
+     * @param bean
+     * @return
+     */
+    public static AppInfo getAppInfo(AppInfoBean bean) {
+        if (bean != null) {
+            AppInfo appInfo = new AppInfo();
+            appInfo.setName(bean.getAppName());
+            appInfo.setPackageName(bean.getPackageName());
+            appInfo.setVersionCode(Integer.parseInt(bean.getVersionCode()));
+            appInfo.setIcon(bean.getIconUrl());
+            appInfo.setMd5(bean.getMd5());
+            appInfo.setVersionName(bean.getVersionName());
+            appInfo.setUrl(bean.getDownloadUrl());
+            appInfo.setSizeStr(bean.getAppSize());
+            return appInfo;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * AppInfo装换为AppInfoBean
+     *
+     * @param bean
+     * @return
+     */
+    public static AppInfoBean getAppInfoBean(AppInfo bean) {
+        if (bean != null) {
+            AppInfoBean appInfoBean = new AppInfoBean();
+            appInfoBean.setAppName(bean.getName());
+            appInfoBean.setPackageName(bean.getPackageName());
+            appInfoBean.setVersionCode(String.valueOf(bean.getVersionCode()));
+            appInfoBean.setIconUrl(bean.getIcon());//图片url
+            appInfoBean.setMd5(bean.getMd5());//MD5值
+            appInfoBean.setVersionName(bean.getVersionName());//版本名
+            appInfoBean.setDownloadUrl(bean.getUrl());//下载地址
+            appInfoBean.setAppSize(bean.getSizeStr());//apk大小
+            return appInfoBean;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * List<AppInfo>转化为List<AppInfoBean>
+     * @param mList
+     * @return
+     */
+    public static List<AppInfoBean> getAppInfoBeanList(List<AppInfo> mList){
+
+        List<AppInfoBean> mAppInfoBeanList = new ArrayList<AppInfoBean>();
+        for (int i=0;i<mList.size();i++){
+            AppInfo bean = mList.get(i);
+            AppInfoBean appInfoBean = new AppInfoBean();
+            appInfoBean.setAppName(bean.getName());
+            appInfoBean.setPackageName(bean.getPackageName());
+            appInfoBean.setVersionCode(String.valueOf(bean.getVersionCode()));
+            appInfoBean.setIconUrl(bean.getIcon());//图片url
+            appInfoBean.setMd5(bean.getMd5());//MD5值
+            appInfoBean.setVersionName(bean.getVersionName());//版本名
+            appInfoBean.setDownloadUrl(bean.getUrl());//下载地址
+            appInfoBean.setAppSize(bean.getSizeStr());//apk大小
+            mAppInfoBeanList.add(appInfoBean);
+        }
+        return mAppInfoBeanList;
+    }
+
+    /**
+     * List<AppInfoBean>转化为List<AppInfo>
+     * @param mList
+     * @return
+     */
+    public static List<AppInfo> getAppInfoList(List<AppInfoBean> mList){
+
+        List<AppInfo> mAppInfoList = new ArrayList<AppInfo>();
+        for (int i=0;i<mList.size();i++){
+            AppInfoBean bean = mList.get(i);
+            AppInfo appInfo = new AppInfo();
+            appInfo.setPackageName(bean.getPackageName());
+            appInfo.setVersionCode(Integer.parseInt(bean.getVersionCode()));
+            mAppInfoList.add(appInfo);
+        }
+        return mAppInfoList;
     }
 }

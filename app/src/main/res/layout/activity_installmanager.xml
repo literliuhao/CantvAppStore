@@ -17,6 +17,7 @@
         android:textColor="#ccffffff"
         android:textSize="35px"
         android:nextFocusUp="@id/bt_install_deleteall"
+        android:nextFocusLeft="@id/bt_install_deleteall"
         android:visibility="visible" />
 
     <Button
@@ -31,9 +32,12 @@
         android:text="@string/install_bt_deleteinstall"
         android:textColor="#ccffffff"
         android:textSize="35px"
+        android:nextFocusUp="@id/bt_install_deleteall"
+        android:nextFocusDown="@id/bt_install_delete"
+        android:nextFocusLeft="@id/bt_install_delete"
         android:visibility="visible" />
 
-    <Button
+    <!--<Button
         android:id="@+id/bt_install_update"
         android:layout_width="@dimen/px200"
         android:layout_height="@dimen/px72"
@@ -47,7 +51,7 @@
         android:textColor="#ccffffff"
         android:textSize="35px"
         android:nextFocusDown="@id/bt_install_update"
-        android:visibility="visible" />
+        android:visibility="visible" />-->
 
     <LinearLayout
         android:layout_width="match_parent"
