@@ -226,7 +226,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                     mTotalnum.setVisibility(View.INVISIBLE);
                     mReminder.setVisibility(View.VISIBLE);
                     mReminder.setText(R.string.update_start_autoupdate);
-                    Toast.makeText(MyApp.mContext, R.string.update_start_autoupdate, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(MyApp.mContext, R.string.update_start_autoupdate, Toast.LENGTH_LONG).show();
                     return;
                 } else {
                     mPresenter.getInstallPkgList(mAutoUpdate);
@@ -243,14 +243,14 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                     PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", false);
                     mAutoUpdate = false;
                     initDialog(getResources().getString(R.string.update_setting_start));
-                    mReminder.setVisibility(View.INVISIBLE);
-                    Toast.makeText(UpdateManagerActivity.this, R.string.update_end_autoupdate, Toast.LENGTH_SHORT).show();
+//                    mReminder.setVisibility(View.INVISIBLE);
+                    //Toast.makeText(UpdateManagerActivity.this, R.string.update_start_autoupdate, Toast.LENGTH_SHORT).show();
                 } else {
                     PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", true);
                     mAutoUpdate = true;
                     initDialog(getResources().getString(R.string.update_setting_stop));
-                    mPresenter.getListSize();
-                    Toast.makeText(UpdateManagerActivity.this, R.string.update_start_autoupdate, Toast.LENGTH_SHORT).show();
+//                    mPresenter.getListSize();
+                    //Toast.makeText(UpdateManagerActivity.this, R.string.update_end_autoupdate, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -284,7 +284,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                     downloadTask.setId(md5);
                     downloadTask.setSaveDirPath(MyApp.mContext.getExternalCacheDir().getPath() + "/");
                     downloadTask.setUrl(downloadUrl);
-                    Toast.makeText(MyApp.mContext, downloadUrl, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MyApp.mContext, downloadUrl, Toast.LENGTH_SHORT).show();
                     mDownloadManager.addDownloadTask(downloadTask, new DownloadTaskListener() {
                         @Override
                         public void onPrepare(DownloadTask downloadTask) {
@@ -462,6 +462,8 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", true);
                 mAutoUpdate = true;
                 canDialog.dismiss();
+                mPresenter.getListSize();
+                //mPresenter.autoUpdate(UpdateManagerActivity.this);
             }
 
             @Override
@@ -469,6 +471,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", false);
                 mAutoUpdate = false;
                 canDialog.dismiss();
+                mReminder.setVisibility(View.INVISIBLE);
             }
         });
         canDialog.show();
@@ -527,6 +530,9 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
     @Override
     public void showNoData() {
         mReminder.setVisibility(View.VISIBLE);
+        mCurrentnum.setVisibility(View.INVISIBLE);
+        mTotalnum.setVisibility(View.INVISIBLE);
+
     }
 
     @Override
@@ -559,6 +565,8 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
 
     @Override
     public void showCurrentNum(int current, int total) {
+        mCurrentnum.setVisibility(View.VISIBLE);
+        mTotalnum.setVisibility(View.VISIBLE);
         mCurrentnum.setText(current + "");
         mTotalnum.setText("/" + total + "行");
     }

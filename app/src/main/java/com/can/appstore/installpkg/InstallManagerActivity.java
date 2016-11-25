@@ -59,7 +59,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
     private TextView mReminder;
     private Button mDeleteButton;
     private Button mDeleteAllButton;
-    private Button mUpdateButton;
+    //private Button mUpdateButton;
     private int mCurrentPositon;
     private RelativeLayout deleteLayout;
     private TextView mRoomSize;
@@ -129,11 +129,11 @@ public class InstallManagerActivity extends Activity implements InstallContract.
                     if (intent.getAction().equals("android.intent.action.PACKAGE_ADDED") || intent.getAction().equals("android.intent.action.PACKAGE_REPLACED")) {
                         String packageName = intent.getDataString().substring(8);
                         int versonCode = UpdateUtils.getVersonCode(MyApp.mContext, packageName);
-                        mPresenter.isInstalled(packageName,versonCode);
+                        mPresenter.isInstalled(packageName, versonCode);
                         //Toast.makeText(MyApp.mContext, packageName + "安装成功啦!!!", Toast.LENGTH_LONG).show();
-                        Log.i(TAG, "onReceive: "+packageName + "安装成功啦!!!");
+                        Log.i(TAG, "onReceive: " + packageName + "安装成功啦!!!");
                     } else if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
-                        Log.i(TAG, "onReceive: "+"安装失败");
+                        Log.i(TAG, "onReceive: " + "安装失败");
                         //Toast.makeText(MyApp.mContext, "安装失败", Toast.LENGTH_LONG).show();
                     }
                 }
@@ -199,7 +199,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             }
         });
 
-        mUpdateButton.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+       /* mUpdateButton.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
@@ -209,7 +209,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
                     mFocusScaleUtil.scaleToNormal(mUpdateButton);
                 }
             }
-        });
+        });*/
 
         mRecyclerAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
             @Override
@@ -239,7 +239,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
                             mRecyclerView.getLocationInWindow(posi);
                             mFocusMoveUtil.setFocusActiveRegion(posi[0], posi[1] + mRecyclerView.getPaddingTop(),
                                     posi[0] + mRecyclerView.getWidth(),
-                                    posi[1] + mRecyclerView.getHeight() - mRecyclerView.getPaddingBottom()-getResources().getDimensionPixelSize(R.dimen.px40));
+                                    posi[1] + mRecyclerView.getHeight() - mRecyclerView.getPaddingBottom() - getResources().getDimensionPixelSize(R.dimen.px40));
                         }
                     });
                     setLeftLayoutFocus(false);
@@ -265,12 +265,13 @@ public class InstallManagerActivity extends Activity implements InstallContract.
 
     /**
      * 设置左侧布局焦点
+     *
      * @param focusable
      */
     private void setLeftLayoutFocus(boolean focusable) {
         mDeleteButton.setFocusable(focusable);
         mDeleteAllButton.setFocusable(focusable);
-        mUpdateButton.setFocusable(focusable);
+        //mUpdateButton.setFocusable(focusable);
     }
 
     private void initClick() {
@@ -310,7 +311,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
         mReminder = (TextView) findViewById(R.id.tv_install_reminder);
         mDeleteAllButton = (Button) findViewById(R.id.bt_install_deleteall);
         mDeleteButton = (Button) findViewById(R.id.bt_install_delete);
-        mUpdateButton = (Button) findViewById(R.id.bt_install_update);
+        //mUpdateButton = (Button) findViewById(R.id.bt_install_update);
         mProgressBar = (TextProgressBar) findViewById(R.id.pb_install_progressbar);
         mFocusMoveUtil = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
         mFocusScaleUtil = new FocusScaleUtil();
@@ -456,13 +457,17 @@ public class InstallManagerActivity extends Activity implements InstallContract.
      *
      * @param v
      */
-    public void intoUpdate(View v) {
+    /*public void intoUpdate(View v) {
         startActivity(new Intent(this, UpdateManagerActivity.class));
-    }
+    }*/
 
     private void initDialog(final View view, final int position) {
         canDialog = new CanDialog(InstallManagerActivity.this);
         AppInfoBean bean = mPresenter.getItem(position);
+        if (bean != null && bean.getIsInstalling() && !bean.getInstalledFalse()) {
+            ToastUtils.showMessageLong(InstallManagerActivity.this, "安装包正在安装中，请稍后");
+            return;
+        }
         if (bean != null) {
             canDialog.setTitle(bean.getAppName()).setIcon(bean.getIcon()).setRlCOntent(false).setNegativeButton(getResources().getString(R.string.install_dialog_delete)).setPositiveButton(getResources().getString(R.string.install_dialog_install));
             canDialog.setOnCanBtnClickListener(new CanDialog.OnClickListener() {
@@ -482,14 +487,14 @@ public class InstallManagerActivity extends Activity implements InstallContract.
                             public void run() {
                                 mPresenter.installApp(position);
                             }
-                        },1000);
+                        }, 1000);
                     }
                 }
 
                 @Override
                 public void onClickNegative() {
                     //删除键
-                    if(mPresenter.isLastItem(position)){
+                    if (mPresenter.isLastItem(position)) {
                         mFocusMoveUtil.hideFocus();
                         setLeftLayoutFocus(false);
                         View childAt = mRecyclerView.getChildAt(position - 1);
