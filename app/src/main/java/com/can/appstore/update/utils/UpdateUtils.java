@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.os.StatFs;
 
 import com.can.appstore.MyApp;
+import com.can.appstore.entity.AppInfo;
 import com.can.appstore.update.model.AppInfoBean;
 
 import java.io.BufferedReader;
@@ -109,51 +110,18 @@ public class UpdateUtils {
     /**
      * 获取非系统应用信息列表
      */
-    public static List getAppList() {
-        ArrayList<AppInfoBean> appList = new ArrayList<AppInfoBean>();
-        int i = 30;
+    public static List<AppInfo> getAppList() {
+        ArrayList<AppInfo> appList = new ArrayList<AppInfo>();
         PackageManager pm = MyApp.mContext.getPackageManager();
         List<PackageInfo> packages = pm.getInstalledPackages(0);
         for (PackageInfo packageInfo : packages) {
             // 判断系统/非系统应用
             if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) // 非系统应用
             {
-                ++i;
-                AppInfoBean info = new AppInfoBean();
-                info.setAppName(packageInfo.applicationInfo.loadLabel(pm)
-                        .toString());
-                //info.setPackageName(packageInfo.packageName);
+                AppInfo info = new AppInfo();
+                info.setPackageName(packageInfo.packageName);
                 int versionCode = packageInfo.versionCode;
-                //info.setVersionCode(String.valueOf(versionCode));
-                String versionName = packageInfo.versionName;
-                info.setVersionName(versionName);
-                info.setAppSize(i + "M");
-                Drawable drawable = packageInfo.applicationInfo.loadIcon(pm);
-                info.setIcon(drawable);
-                if (i == 31) {
-                    info.setDownloadUrl("http://app.znds.com/down/20160909/dsj2.0-2.9.1-dangbei.apk");
-                    info.setPackageName("com.elinkway.tvlive2");
-                    info.setVersionCode(String.valueOf(101));
-                } else if (i == 32) {
-                    info.setDownloadUrl("http://app.znds.com/update/dangbeimarket_3.9.5_znds.apk");
-                    info.setPackageName("com.dangbeimarket");
-                    info.setVersionCode(String.valueOf(101));
-                }else if (i == 33) {
-                    info.setDownloadUrl("http://app.znds.com/down/20161118/dbzm_2.1.4.2_dangbei.apk");
-                    info.setPackageName("com.dangbei.tvlauncher");
-                    info.setVersionCode(String.valueOf(47));
-                }else if (i == 34) {
-                    info.setDownloadUrl("http://app.znds.com/down/20161117/douyu_1.1.6_dangbei.apk");
-                    info.setPackageName("com.douyu.xl.douyutv");
-                    info.setVersionCode(String.valueOf(110006));
-                }else if (i == 35) {
-                    info.setDownloadUrl("http://app.znds.com/down/20161111/qqyy_1.8.0.5_dangbei.apk");
-
-                }else{
-                    info.setDownloadUrl("http://");
-                }
-                // 获取该应用安装包的Intent，用于启动该应用
-                //info.appIntent = pm.getLaunchIntentForPackage(packageInfo.packageName);
+                info.setVersionCode(versionCode);
                 appList.add(info);
             } else {
                 //　　　　　　　　
@@ -202,10 +170,62 @@ public class UpdateUtils {
         return versionCode;
     }
 
-//    http://172.16.11.65:8080/download/20161018/F2_Launcher_V536_20161018191036.apk
-//    http://172.16.11.65:8080/download/20161018/F1_Launcher_V532_20161018192912.apk
-//    http://172.16.11.65:8080/download/20161018/F2_Launcher_V532_20161018192912.apk
-//    http://172.16.11.65:8080/download/20161018/F2_Launcher_V532_20161018192912.apk
+    /**
+     * 获取非系统应用信息列表
+     */
+    public static List<AppInfoBean> getAppInfoBeanList() {
+        ArrayList<AppInfoBean> appList = new ArrayList<AppInfoBean>();
+        int i = 30;
+        PackageManager pm = MyApp.mContext.getPackageManager();
+        List<PackageInfo> packages = pm.getInstalledPackages(0);
+        for (PackageInfo packageInfo : packages) {
+            // 判断系统/非系统应用
+            if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) // 非系统应用
+            {
+
+                ++i;
+                AppInfoBean info = new AppInfoBean();
+                info.setAppName(packageInfo.applicationInfo.loadLabel(pm)
+                        .toString());
+                //info.setPackageName(packageInfo.packageName);
+                int versionCode = packageInfo.versionCode;
+                //info.setVersionCode(String.valueOf(versionCode));
+                String versionName = packageInfo.versionName;
+                info.setVersionName(versionName);
+                info.setAppSize(i + "M");
+                Drawable drawable = packageInfo.applicationInfo.loadIcon(pm);
+                info.setIcon(drawable);
+                if (i == 31) {
+                    info.setDownloadUrl("http://app.znds.com/down/20160909/dsj2.0-2.9.1-dangbei.apk");
+                    info.setPackageName("com.elinkway.tvlive2");
+                    info.setVersionCode(String.valueOf(101));
+                } else if (i == 32) {
+                    info.setDownloadUrl("http://app.znds.com/update/dangbeimarket_3.9.5_znds.apk");
+                    info.setPackageName("com.dangbeimarket");
+                    info.setVersionCode(String.valueOf(101));
+                }else if (i == 33) {
+                    info.setDownloadUrl("http://app.znds.com/down/20161118/dbzm_2.1.4.2_dangbei.apk");
+                    info.setPackageName("com.dangbei.tvlauncher");
+                    info.setVersionCode(String.valueOf(47));
+                }else if (i == 34) {
+                    info.setDownloadUrl("http://app.znds.com/down/20161117/douyu_1.1.6_dangbei.apk");
+                    info.setPackageName("com.douyu.xl.douyutv");
+                    info.setVersionCode(String.valueOf(110006));
+                }else if (i == 35) {
+                    info.setDownloadUrl("http://app.znds.com/down/20161111/qqyy_1.8.0.5_dangbei.apk");
+                }else{
+                    info.setDownloadUrl("http://");
+                }
+                // 获取该应用安装包的Intent，用于启动该应用
+                //info.appIntent = pm.getLaunchIntentForPackage(packageInfo.packageName);
+                appList.add(info);
+            } else {
+                //　　　　　　　　
+            }
+
+        }
+        return appList;
+    }
 
 //    "http://app.znds.com/down/20160909/dsj2.0-2.9.1-dangbei.apk" 电视家
 //    http://app.znds.com/update/dangbeimarket_3.9.5_znds.apk   当贝市场

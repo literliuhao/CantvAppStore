@@ -25,10 +25,14 @@ import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
 import cn.can.tvlib.utils.NetworkUtils;
+import cn.can.tvlib.utils.PreferencesUtils;
 import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.SystemUtil;
 import cn.can.tvlib.utils.ToastUtils;
 import retrofit2.Response;
+
+import static android.R.attr.data;
+import static com.tencent.bugly.crashreport.inner.InnerApi.context;
 
 /**
  * Created by shenpx on 2016/11/10 0010.
@@ -41,6 +45,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     private Context mContext;
     private List<AppInfoBean> mDatas;//已安装应用
     private List<AppInfo> date;
+    private List<AppInfoBean> mAppInfoBeanList;
 
     public UpdatePresenter(UpdateContract.View mView, Context mContext) {
         this.mView = mView;
@@ -53,65 +58,50 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     public void getInstallPkgList(boolean isAutoUpdate) {
         mDatas.clear();
         date.clear();
+        mView.hideNoData();
         mView.showInstallPkgList(mDatas);
         if (isAutoUpdate) {
             mView.hideNoData();
             mView.showStartAutoUpdate();
             return;
         }
-        if(!NetworkUtils.isNetworkConnected(mContext)){
+        if (!NetworkUtils.isNetworkConnected(mContext)) {
             mView.showInternetError();
-            ToastUtils.showMessage(mContext,"网络连接异常，请检查网络。");
+            ToastUtils.showMessage(mContext, "网络连接异常，请检查网络。");
             return;
         }
         mView.showLoadingDialog();
         final List appList = UpdateUtils.getAppList();
+        //date = AppInfoBean.getAppInfoList(appList);
         mDatas.clear();
-        UpdateAppList.list.clear();
         //进行网络请求获取更新包信息
-        AppInfo appInfo1 = new AppInfo();
-        appInfo1.setPackageName("cn.cibntv.ott");
-        appInfo1.setVersionCode(4);
-        AppInfo appInfo2 = new AppInfo();
-        appInfo2.setPackageName("打怪");
-        appInfo2.setVersionCode(4);
-        date.add(appInfo1);
-        date.add(appInfo2);
-        CanCall<ListResult<AppInfo>> listResultCanCall = HttpManager.getApiService().checkUpdate(date);
+        CanCall<ListResult<AppInfo>> listResultCanCall = HttpManager.getApiService().checkUpdate(appList);
         listResultCanCall.enqueue(new CanCallback<ListResult<AppInfo>>() {
             @Override
             public void onResponse(CanCall<ListResult<AppInfo>> call, Response<ListResult<AppInfo>> response) throws Exception {
-                Log.i("shen",response.body().toString());
-                Log.i("shen",response.body()+"");
                 List<AppInfo> data = response.body().getData();
-                String url = data.get(0).getUrl();
-                Log.i("shen",data.toString());
-                Log.i("shen",data+"");
-                Log.i("shen",url+"");
+                mAppInfoBeanList = AppInfoBean.getAppInfoBeanList(data);
+                Log.i(TAG, data.size()+"");
+                if (mAppInfoBeanList.size() < 1 || mAppInfoBeanList == null) {
+                    mView.hideLoadingDialog();
+                    mView.showNoData();
+                } else {
+                    mView.hideLoadingDialog();
+                    mView.hideNoData();
+                    mDatas.addAll(mAppInfoBeanList);
+                    mView.showInstallPkgList(mDatas);
+                    setNum(0);
+                }
             }
 
             @Override
             public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
-
+                Log.i(TAG, "onFailure");
+                mView.hideLoadingDialog();
+                mView.showNoData();
             }
         });
-        if (appList.size() < 1 || appList == null) {
-            mView.showNoData();
-        } else {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mView.hideLoadingDialog();
-                    mView.hideNoData();
-                    //进行网络请求获取更新包信息
-                    //mDatas.clear();
-                    mDatas.addAll(appList);
-                    UpdateAppList.list.addAll(appList);
-                    mView.showInstallPkgList(mDatas);
-                    setNum(0);
-                }
-            }, 2000);
-        }
+
     }
 
     public List<AppInfoBean> getList() {
@@ -155,6 +145,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
      *
      * @param position
      */
+
     public void setNum(int position) {
         int total = mDatas.size() / 3;
         if (mDatas.size() % 3 != 0) {
@@ -168,22 +159,71 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     }
 
     /**
-     * 是否已安装
-     * 刷新图标（可能多重版本）通过广播获取安装完成刷新ui  +&& bean.getVersionCode().equals(String.valueOf(versonCode))
+     * 检测自动更新添加队列
      *
-     * @param packageName
-     * @param //int       versonCode   && bean.getVersionCode().equals(String.valueOf(versonCode))
+     * @param context
      */
-    public void isInstalled(String packageName, int versionCode) {
-        for (int i = mDatas.size() - 1; i >= 0; i--) {
-            AppInfoBean bean = mDatas.get(i);
-            if (bean.getPackageName().equals(packageName)) {
-                bean.setUpdated(true);
-                bean.setInstalled(false);
-                mView.refreshAll();
-                Log.i(TAG, "isInstalled: " + packageName + "22222");
-                Toast.makeText(MyApp.mContext, packageName + "22222", Toast.LENGTH_LONG).show();
+    public void autoUpdate(Context context) {
+        //判断是否开启自动更新
+        Log.i(TAG, "autoUpdate: "+111111);
+        boolean isAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
+        if (isAutoUpdate == false) {
+            return;
+        }
+        //检测网络获取更新包数据
+        if (!NetworkUtils.isNetworkConnected(context)) {
+            ToastUtils.showMessage(context, "网络连接异常，请检查网络。");
+            return;
+        }
+
+        final List appList = UpdateUtils.getAppList();
+       /* AppInfo appInfo1 = new AppInfo();
+        appInfo1.setPackageName("cn.cibntv.ott");
+        appInfo1.setVersionCode(4);
+        AppInfo appInfo2 = new AppInfo();
+        appInfo2.setPackageName("打怪");
+        appInfo2.setVersionCode(4);
+        date.add(appInfo1);
+        date.add(appInfo2);
+        appList.add(appInfo1);
+        appList.add(appInfo2);*/
+        final DownloadManager mDownloadManager = DownloadManager.getInstance(context);
+        Log.i(TAG, "autoUpdate: "+appList.toString());
+        CanCall<ListResult<AppInfo>> listResultCanCall = HttpManager.getApiService().checkUpdate(appList);
+        listResultCanCall.enqueue(new CanCallback<ListResult<AppInfo>>() {
+            @Override
+            public void onResponse(CanCall<ListResult<AppInfo>> call, Response<ListResult<AppInfo>> response) throws Exception {
+                List<AppInfo> data = response.body().getData();
+                //添加队列
+                addAutoUpdateTask(mDownloadManager, data);
+                //mView.refreshAll();
+                Log.i(TAG, "autoUpdate: "+444444);
+            }
+
+            @Override
+            public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
+
+            }
+        });
+    }
+
+    //添加自动更新队列
+    private void addAutoUpdateTask(DownloadManager mDownloadManager, List<AppInfo> data) {
+        for (int i = 0; i < data.size(); i++) {
+            String downloadUrl = data.get(i).getUrl();
+            DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(downloadUrl));
+            Log.i(TAG, "autoUpdate: "+222222);
+            if (downloadTask == null) {
+                downloadTask = new DownloadTask();
+                String md5 = MD5.MD5(downloadUrl);
+                downloadTask.setFileName(md5 + ".apk");
+                downloadTask.setId(md5);
+                downloadTask.setSaveDirPath(MyApp.mContext.getExternalCacheDir().getPath() + "/");
+                downloadTask.setUrl(downloadUrl);
+                mDownloadManager.addDownloadTask(downloadTask, null);
+                Log.i(TAG, "autoUpdate: "+333333);
             }
         }
     }
+
 }

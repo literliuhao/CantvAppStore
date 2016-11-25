@@ -17,8 +17,7 @@
             android:layout_height="@dimen/px136"
             android:layout_marginLeft="@dimen/px24"
             android:layout_marginTop="@dimen/px24"
-            android:scaleType="fitXY"
-            android:src="@mipmap/ic_launcher" />
+            android:scaleType="fitXY"/>
 
         <TextView
             android:id="@+id/tv_updateapp_name"
