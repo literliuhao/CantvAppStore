@@ -38,6 +38,7 @@ import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
+import cn.can.tvlib.ui.view.GlideRoundCornerImageView;
 import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
@@ -62,7 +63,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     private FocusMoveUtil mFocusMoveUtil;
     private FocusScaleUtil mScaleUtil;
     private AppDetailPresenter mAppDetailPresenter;
-    private RoundCornerImageView mImageViewIcon;
+    private GlideRoundCornerImageView mImageViewIcon;
     private TextView mAppName;
     private TextView mAppSize;
     private TextView mAppUodateDate;
@@ -134,7 +135,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     private void initView() {
         mViewFlipper = (ViewFlipper) findViewById(R.id.flipper);
-        mImageViewIcon = (RoundCornerImageView) findViewById(R.id.iv_icon);
+        mImageViewIcon = (GlideRoundCornerImageView) findViewById(R.id.iv_icon);
         mAppName = (TextView) findViewById(R.id.tv_app_name);
         mAppSize = (TextView) findViewById(R.id.tv_app_size);
         mAppUodateDate = (TextView) findViewById(R.id.tv_update_date);
@@ -371,15 +372,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     }
 
     private void setData() {
-        ImageLoader.getInstance().load(AppDetailActivity.this, mImageViewIcon, mAppinfo.getIcon(), android.R.anim.fade_in,
-                R.mipmap.icon_load_default, R.mipmap.icon_loading_fail, new GlideLoadTask.SuccessCallback() {
-                    @Override
-                    public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        mImageViewIcon.setScaleType(ImageView.ScaleType.FIT_XY);
-                        mImageViewIcon.setImageDrawable(resource);
-                        return true;
-                    }
-                }, null);
+        mImageViewIcon.load(mAppinfo.getIcon(), R.drawable.shap_app_list_icon_bg, R.mipmap.cibn_icon, R.mipmap.icon_loading_fail, true);
         mAppName.setText(String.format(getResources().getString(R.string.detail_app_name), mAppinfo.getName(), mAppinfo.getVersionName()));
         mAppSize.setText(String.format(getResources().getString(R.string.detail_app_size), mAppinfo.getSizeStr()));
         mAppUodateDate.setText(String.format(getResources().getString(R.string.detail_app_update_date), mAppinfo.getUpdateTime()));

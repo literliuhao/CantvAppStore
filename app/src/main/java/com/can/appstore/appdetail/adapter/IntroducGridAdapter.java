@@ -15,7 +15,7 @@ import java.util.List;
 
 import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
-import cn.can.tvlib.ui.view.RoundCornerImageView;
+import cn.can.tvlib.ui.view.GlideRoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
@@ -46,27 +46,16 @@ public class IntroducGridAdapter extends CanRecyclerViewAdapter {
     @Override
     protected void bindContentData(Object mDatas, RecyclerView.ViewHolder holder, int position) {
         final IntroducGridViewHolder introducGridViewHolder = (IntroducGridViewHolder) holder;
-        introducGridViewHolder.introducItem.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        ImageLoader.getInstance().load(mContext, introducGridViewHolder.introducItem, mIntroduceList.get(position), android.R.anim.fade_in,
-                R.mipmap.icon_load_default, R.mipmap.icon_loading_fail, new GlideLoadTask.SuccessCallback() {
-                    @Override
-                    public boolean onSuccess(GlideDrawable resource, String model,
-                                             Target<GlideDrawable> target,
-                                             boolean isFromMemoryCache,
-                                             boolean isFirstResource) {
-                        introducGridViewHolder.introducItem.setScaleType(ImageView.ScaleType.FIT_XY);
-                        introducGridViewHolder.introducItem.setImageDrawable(resource);
-                        return true;
-                    }
-                }, null);
+        introducGridViewHolder.introducItem.load(mIntroduceList.get(position), R.drawable.shap_app_list_icon_bg,
+                R.mipmap.cibn_picture, R.mipmap.icon_loading_fail, true);
     }
 
     class IntroducGridViewHolder extends CanRecyclerView.ViewHolder {
-        RoundCornerImageView introducItem;
+        GlideRoundCornerImageView introducItem;
 
         public IntroducGridViewHolder(View itemView) {
             super(itemView);
-            introducItem = (RoundCornerImageView) itemView.findViewById(R.id.iv_introduc_item);
+            introducItem = (GlideRoundCornerImageView) itemView.findViewById(R.id.iv_introduc_item);
         }
     }
 }
