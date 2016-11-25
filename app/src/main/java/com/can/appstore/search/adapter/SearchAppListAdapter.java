@@ -16,7 +16,6 @@ import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.PopularWord;
 import com.can.appstore.search.SearchActivity;
-import com.can.appstore.search.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,12 +57,10 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
                 switch (viewType) {
                     case DEFAULT_APPLIST_TYPE:
                         PopularWord defaultApp = (PopularWord) mDataList.get(position);
-                        ToastUtil.toastShort("点击 " + defaultApp.getWord());
                         setInitials(defaultApp.getPinyin());
                         break;
                     case SEARCH_APPLIST_TYPE:
                         AppInfo searchApp = (AppInfo) mDataList.get(position);
-                        ToastUtil.toastShort("点击 " + searchApp.getName());
                         AppDetailActivity.actionStart(mActivity, searchApp.getId());
                         break;
                 }

@@ -509,7 +509,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                         Log.w("totalItemCount", totalItemCount + "");
                         if ((lastItem >= totalItemCount - 1 - SEARCH_APP_SPANCOUNT)
                                 && mCurrLineNumber == mTotalLineCount) {
-                            ToastUtil.toastShort("正在加载更多数据...");
+//                            ToastUtil.toastShort("正在加载更多数据...");
                             mCurrPageIndex++;
                             mSearchPresenter.getSearchList(mSearch_con_view.getText().toString(), mCurrPageIndex);
                         }

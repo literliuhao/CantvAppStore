@@ -10,7 +10,7 @@ import com.can.appstore.MyApp;
  */
 public class ToastUtil {
     public static void toastShort(String msg) {
-
+        Toast.makeText(MyApp.mContext, msg, Toast.LENGTH_SHORT).show();
     }
 
     public static void toastLong(String msg) {
