@@ -4,7 +4,6 @@
     android:layout_height="@dimen/px61"
     android:layout_marginBottom="@dimen/px18"
     android:layout_marginLeft="@dimen/px15"
-    android:layout_marginRight="@dimen/px2"
     android:layout_marginTop="@dimen/px10"
     android:background="@drawable/search_keyboard_shape"
     android:clickable="true"

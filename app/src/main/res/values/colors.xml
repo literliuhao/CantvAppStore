@@ -88,6 +88,8 @@
     <color name="h_rank_tiem_bg3">#448914</color>
     <color name="h_rank_tiem_bg4">#6e53ca</color>
     <color name="h_rank_tiem_bg5">#c45241</color>
+    <!--半透明文字-->
+    <color name="h_rank_tiem_text_gray">#56f5f5f5</color>
     <!--首页排行榜透明颜色-->
     <color name="h_rank_transulcent">#16262626</color>
     <!--搜索页-->
