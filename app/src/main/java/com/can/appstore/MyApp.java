@@ -136,8 +136,8 @@ public class MyApp extends Application {
                 }
             }
         };
-        Bugly.init(getApplicationContext(), "900059606", true);//测试使用
-        //Bugly.init(getApplicationContext(), "e3c3b1806e", false);
+        //Bugly.init(getApplicationContext(), "900059606", true);//测试使用
+        Bugly.init(getApplicationContext(), "e3c3b1806e", false);
         Beta.checkUpgrade();
     }
 
