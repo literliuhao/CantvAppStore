@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.base.BaseActivity;
 import com.can.appstore.search.adapter.HotRecommendAdapter;
 import com.can.appstore.search.adapter.KeyboardAdapter;
 import com.can.appstore.search.adapter.SearchAppListAdapter;
@@ -33,7 +33,7 @@ import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
-public class SearchActivity extends AppCompatActivity implements SearchContract.View, View.OnClickListener {
+public class SearchActivity extends BaseActivity implements SearchContract.View, View.OnClickListener {
 
     private TextView mSearch_con_view;
     private RecyclerView mKeyboard_recy;
@@ -84,6 +84,9 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
     private View mRLNoNetworkView;
     private List mHotRomList = new ArrayList();
     private List mSearchList = new ArrayList();
+    private View mSerch_icon;
+    private int mCurrLineNumber;
+    private int mTotalLineCount;
 
     public static void startAc(Context context) {
         Intent intent = new Intent(context, SearchActivity.class);
@@ -113,6 +116,7 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
                 , "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0");
         //左侧布局
         mLeftView = findViewById(R.id.search_left_vew);
+        mSerch_icon = findViewById(R.id.search_icon);
         mSearch_con_view = (TextView) findViewById(R.id.show_se_con_view);
         mKeyboard_recy = (RecyclerView) findViewById(R.id.keyboard_recycleview);
         mContent_cl_view = (TextView) findViewById(R.id.con_clear_view);
@@ -165,7 +169,15 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
                 mHandler.removeMessages(START_SEARCH);
                 mHandler.removeCallbacks(searchRunner);
                 if (s.length() > 0) {
-                    mHandler.postDelayed(searchRunner, 2000);
+                    if (s.length() > 8) {
+                        mSearch_con_view.setText(s.toString().substring(0, 7));
+                        ToastUtil.toastShort("首字母过长,已经自动截取!");
+                    } else {
+                        mSerch_icon.setVisibility(View.GONE);
+                        mHandler.postDelayed(searchRunner, 2000);
+                    }
+                } else {
+                    mSerch_icon.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -198,6 +210,8 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
      * 得到"大家都在搜"的数据
      */
     private void initData() {
+        showLoadingDialog();
+
         mGridLayoutManager = new GridLayoutManager(this, SEARCH_APP_SPANCOUNT, LinearLayoutManager.VERTICAL, false);
         mSearAppList_recycle.setLayoutManager(mGridLayoutManager);
 
@@ -327,10 +341,14 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
                         //显示出行数View
                         mright_top.setVisibility(View.VISIBLE);
                         //行数
-                        int lineNumber = position / SEARCH_APP_SPANCOUNT + 1;
+                        mCurrLineNumber = position / SEARCH_APP_SPANCOUNT + 1;
+                        int totalItemCount = mSearAppList_recycle.getLayoutManager().getItemCount();
+                        //计算总行数
+                        mTotalLineCount = totalItemCount / SEARCH_APP_SPANCOUNT + (totalItemCount % SEARCH_APP_SPANCOUNT > 0 ? 1 : 0);
                         //列数
-                        int colNumber = (position + 1) % SEARCH_APP_SPANCOUNT == 0 ? SEARCH_APP_SPANCOUNT : (position + 1) % SEARCH_APP_SPANCOUNT;
-                        mright_top.setText(colNumber + "/" + lineNumber + "行");
+//                        int colNumber = (position + 1) % SEARCH_APP_SPANCOUNT == 0 ? SEARCH_APP_SPANCOUNT : (position + 1) % SEARCH_APP_SPANCOUNT;
+//                        mright_top.setText(colNumber + "/" + lineNumber + "行");
+                        mright_top.setText(mCurrLineNumber + "/" + mTotalLineCount + "行");
                     }
                     mFocusedListChild = view;
                     view.postDelayed(myFocusRunnable, 50);
@@ -346,9 +364,16 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
         }
     }
 
+    //显示无网络
     @Override
     public void noNetWork() {
         mRLNoNetworkView.setVisibility(View.VISIBLE);
+    }
+
+    //隐藏loading
+    @Override
+    public void hideLoading() {
+        hideLoadingDialog();
     }
 
     /**
@@ -356,7 +381,7 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
      */
     public void resetDefaultList() {
         mleft_top.setText(getResources().getText(R.string.search_left_top_prompt1));
-        //热词/热门推荐都有数据是不再重新请求,否则要重新请求数据
+        //热词/热门推荐都有数据时不再重新请求,否则要重新请求数据
         if (mAppListAdapter.mDefaultList.size() > 0 && mHotRecommendAdapter.mDataList.size() > 0) {
             mAppListAdapter.setDefaultApplist();
             showGoneView(TAG_SHOW_TOP_BOTTOM);
@@ -484,7 +509,8 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
 
                         Log.w("lastItem", lastItem + "");
                         Log.w("totalItemCount", totalItemCount + "");
-                        if (lastItem >= totalItemCount - 1 - SEARCH_APP_SPANCOUNT) {
+                        if ((lastItem >= totalItemCount - 1 - SEARCH_APP_SPANCOUNT)
+                                && mCurrLineNumber == mTotalLineCount) {
                             ToastUtil.toastShort("正在加载更多数据...");
                             mCurrPageIndex++;
                             mSearchPresenter.getSearchList(mSearch_con_view.getText().toString(), mCurrPageIndex);

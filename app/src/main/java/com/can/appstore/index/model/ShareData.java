@@ -56,8 +56,8 @@ public class ShareData {
         } else {
             list.clear();
         }
-//        list = hiddenList.getData();
-        list.add("com.cantv.media");
+        list = hiddenList.getData();
+//        list.add("com.cantv.media");
         return list;
     }
 

@@ -1,6 +1,7 @@
 package com.can.appstore.search.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,8 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.can.appstore.MyApp;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.target.Target;
 import com.can.appstore.R;
+import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.PopularWord;
 import com.can.appstore.search.SearchActivity;
@@ -18,8 +21,11 @@ import com.can.appstore.search.ToastUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
+
+import static com.can.appstore.MyApp.mContext;
 
 
 /**
@@ -58,6 +64,7 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
                     case SEARCH_APPLIST_TYPE:
                         AppInfo searchApp = (AppInfo) mDataList.get(position);
                         ToastUtil.toastShort("点击 " + searchApp.getName());
+                        AppDetailActivity.actionStart(mActivity, searchApp.getId());
                         break;
                 }
             }
@@ -80,22 +87,36 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
 
 
     @Override
-    protected void bindContentData(Object mDatas, RecyclerView.ViewHolder holder, int position) {
+    protected void bindContentData(Object mDatas, final RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof DefaultSearchViewHolder) {
             ((DefaultSearchViewHolder) holder).setContent(position);
         } else {
             final AppInfo app = (AppInfo) mDataList.get(position);
-            ImageLoader.getInstance().load(MyApp.mContext, ((SearchViewHolder) holder).mAppIcon, app.getIcon());
+            ImageLoader.getInstance().load(mContext, ((SearchViewHolder) holder).mAppIcon, app.getIcon(), R.mipmap
+                    .cibn_icon, R.mipmap.cibn_icon, new GlideLoadTask
+                    .SuccessCallback() {
+                @Override
+                public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean
+                        isFromMemoryCache, boolean isFirstResource) {
+                    ((SearchViewHolder) holder).mAppIcon.setScaleType(ImageView.ScaleType.FIT_XY);
+                    ((SearchViewHolder) holder).mAppIcon.setImageDrawable(resource);
+                    ((SearchViewHolder) holder).mAppIcon.setBackgroundColor(Color.TRANSPARENT);
+                    return true;
+                }
+            }, new GlideLoadTask.FailCallback() {
+                @Override
+                public boolean onFail(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                    ((SearchViewHolder) holder).mAppIcon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                    ((SearchViewHolder) holder).mAppIcon.setImageResource(R.mipmap.cibn_icon);
+                    ((SearchViewHolder) holder).mAppIcon.setBackgroundResource(R.drawable.shap_app_list_icon_bg);
+                    return true;
+                }
+            });
+
             ((SearchViewHolder) holder).mAppName.setText(app.getName());
             ((SearchViewHolder) holder).mAppSize.setText(app.getSizeStr());
             ((SearchViewHolder) holder).mAppDownloadCount.setText(app.getDownloadCount());
             ((SearchViewHolder) holder).mView.setId(position + 10000);
-            ((SearchViewHolder) holder).mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-//                    AppDetailActivity.actionStart(mActivity,app.getId());
-                }
-            });
             //第一行向上焦点是自己
             if (position < mActivity.SEARCH_APP_SPANCOUNT) {
                 ((SearchViewHolder) holder).mView.setNextFocusUpId(((SearchViewHolder) holder).mView.getId());

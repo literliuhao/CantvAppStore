@@ -84,7 +84,7 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
         FrameLayout mainLayout = new FrameLayout(context);
         ViewGroup.LayoutParams mainParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         mainLayout.setLayoutParams(mainParams);
-        mainLayout.setPadding((int) getResources().getDimension(R.dimen.px160), (int) getResources().getDimension(R.dimen.px50), (int) getResources().getDimension(R.dimen.px100), (int) getResources().getDimension(R.dimen.px50));
+        mainLayout.setPadding((int) getResources().getDimension(R.dimen.px160), (int) getResources().getDimension(R.dimen.px30), (int) getResources().getDimension(R.dimen.px100), (int) getResources().getDimension(R.dimen.px0));
         mainLayout.setClipToPadding(false);
         mainLayout.setClipChildren(false);
         mainLayout.setFocusable(false);

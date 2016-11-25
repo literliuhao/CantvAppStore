@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
+import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.entity.AppInfo;
 
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapte
             mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-//                    AppDetailActivity.actionStart(mContext,app.getId());
+                    AppDetailActivity.actionStart(mContext,app.getId());
                 }
             });
         }

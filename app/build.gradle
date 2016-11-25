@@ -11,12 +11,21 @@ android {
         versionCode 1
         versionName "1.0"
     }
+//    signingConfigs {
+//        appstore {
+//            keyAlias = '628'
+//            storePassword = 'launcher.cantv.cn'
+//            keyPassword = 'launcher.cantv.cn'
+//            storeFile = project.file('D:\\wei\\sign_and_jar\\launcher.jks')
+//        }
+//    }
 
     buildTypes {
         release {
             debuggable true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            signingConfig signingConfigs.appstore
         }
 
     }

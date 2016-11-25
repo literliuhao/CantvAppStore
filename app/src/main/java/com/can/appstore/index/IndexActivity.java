@@ -261,25 +261,25 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 } else if (state == SCROLLED) {
                     if (null == view) {
                         view = IndexActivity.this.getCurrentFocus();
-//                        if (!(view instanceof LiteText) && currentPage == TOP_INDEX) {
-//                            mFocusUtils.setFocusView(view);
-//                            mFocusUtils.startMoveFocus(view);
-//                        }else{
+                        if (!(view instanceof LiteText) && currentPage == TOP_INDEX) {
+                            mFocusUtils.setFocusView(view);
+                            mFocusUtils.startMoveFocus(view);
+                        }else{
                             mFocusUtils.setFocusView(view, SCALE);
                             mFocusUtils.startMoveFocus(view, SCALE);
-//                        }
+                        }
                         mFocusUtils.showFocus();
                         return;
                     }
                     if (!(IndexActivity.this.getCurrentFocus() instanceof LiteText)) {
                         view.requestFocus();
-//                        if (currentPage == TOP_INDEX) {
-//                            mFocusUtils.setFocusView(view);
-//                            mFocusUtils.startMoveFocus(view);
-//                        }else{
+                        if (currentPage == TOP_INDEX) {
+                            mFocusUtils.setFocusView(view);
+                            mFocusUtils.startMoveFocus(view);
+                        }else{
                             mFocusUtils.setFocusView(view, SCALE);
                             mFocusUtils.startMoveFocus(view, SCALE);
-//                        }
+                        }
                     }
                     mFocusUtils.showFocus();
                 }

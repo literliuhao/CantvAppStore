@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/px80"
         android:layout_below="@id/layout_top"
-        android:layout_marginLeft="@dimen/px110"
+        android:layout_marginLeft="@dimen/px100"
         android:layout_marginTop="@dimen/px30"
         android:focusable="false"
         android:orientation="horizontal">
