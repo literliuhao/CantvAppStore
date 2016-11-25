@@ -43,8 +43,8 @@ public class InstallPresenter implements InstallContract.Presenter {
         mView.showLoadingDialog();
         InstallPkgUtils.myFiles.clear();
         //mPath = Environment.getExternalStorageDirectory().getPath().toString();
-        mPath = Environment.getExternalStorageDirectory().getPath().toString() + File.separator + "Movies";
-        //mPath = MyApp.mContext.getExternalCacheDir().getPath().toString();
+        //mPath = Environment.getExternalStorageDirectory().getPath().toString() + File.separator + "Movies";
+        mPath = MyApp.mContext.getExternalCacheDir().getAbsolutePath();
         List appList = InstallPkgUtils.FindAllAPKFile(mPath);
         mDatas.clear();
         if (appList.size() < 1) {
@@ -77,7 +77,7 @@ public class InstallPresenter implements InstallContract.Presenter {
     public void deleteAll() {
         for (int i = mDatas.size() - 1; i >= 0; i--) {
             AppInfoBean bean = mDatas.get(i);
-//                InstallPkgUtils.deleteApkPkg(mDatas.get(i).getFliePath());//可以删除安装包
+            InstallPkgUtils.deleteApkPkg(mDatas.get(i).getFliePath());//可以删除安装包
             mDatas.remove(i);
         }
         //mDatas.clear();
@@ -95,7 +95,7 @@ public class InstallPresenter implements InstallContract.Presenter {
         for (int i = mDatas.size() - 1; i >= 0; i--) {
             AppInfoBean bean = mDatas.get(i);
             if (bean.getInstall()) {
-//                InstallPkgUtils.deleteApkPkg(mDatas.get(i).getFliePath());//可以删除安装包
+                InstallPkgUtils.deleteApkPkg(mDatas.get(i).getFliePath());//可以删除安装包
                 mDatas.remove(i);
             }
         }
@@ -115,7 +115,7 @@ public class InstallPresenter implements InstallContract.Presenter {
     @Override
     public void deleteOne(int position) {
         mDatas.remove(position);
-//        InstallPkgUtils.deleteApkPkg(mDatas.get(position).getFliePath());//可以删除安装包
+        InstallPkgUtils.deleteApkPkg(mDatas.get(position).getFliePath());//可以删除安装包
         mView.refreshAll();
         if (mDatas.size() == 0) {
             mView.showNoData();

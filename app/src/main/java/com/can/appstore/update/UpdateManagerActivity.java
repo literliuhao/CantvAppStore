@@ -132,7 +132,13 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 if (hasFocus) {
                     mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mDetectionButton, 1.0f);
-                    mPresenter.setNum(0);
+                    boolean isNull = mPresenter.isNull(0);
+                    if(isNull){
+                        mCurrentnum.setVisibility(View.INVISIBLE);
+                        mTotalnum.setVisibility(View.INVISIBLE);
+                    }else{
+                        mPresenter.setNum(0);
+                    }
                 } else {
                     mFocusScaleUtil.scaleToNormal(mDetectionButton);
                 }
@@ -145,7 +151,13 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 if (hasFocus) {
                     mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mAutoButton, 1.0f);
-                    mPresenter.setNum(0);
+                    boolean isNull = mPresenter.isNull(0);
+                    if(isNull){
+                        mCurrentnum.setVisibility(View.INVISIBLE);
+                        mTotalnum.setVisibility(View.INVISIBLE);
+                    }else{
+                        mPresenter.setNum(0);
+                    }
                 } else {
                     mFocusScaleUtil.scaleToNormal(mAutoButton);
                 }
@@ -282,7 +294,6 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                     String md5 = MD5.MD5(downloadUrl);
                     downloadTask.setFileName(md5 + ".apk");
                     downloadTask.setId(md5);
-                    downloadTask.setSaveDirPath(MyApp.mContext.getExternalCacheDir().getPath() + "/");
                     downloadTask.setUrl(downloadUrl);
                     //Toast.makeText(MyApp.mContext, downloadUrl, Toast.LENGTH_SHORT).show();
                     mDownloadManager.addDownloadTask(downloadTask, new DownloadTaskListener() {
