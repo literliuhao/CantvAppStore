@@ -10,7 +10,7 @@
         android:clipChildren="false"
         android:clipToPadding="false"
         android:orientation="vertical"
-        android:paddingLeft="@dimen/px100"
+        android:paddingLeft="@dimen/px160"
         android:paddingRight="@dimen/px100"
         android:paddingTop="@dimen/px55">
 
@@ -42,6 +42,8 @@
 
             </LinearLayout>
         </HorizontalScrollView>
+
+        <include layout="@layout/search_no_network"/>
 
     </LinearLayout>
 

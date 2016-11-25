@@ -39,6 +39,7 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
     private HorizontalScrollView mScrollView;
     private LinearLayout mLinearLayout;
     private IAddFocusListener mFocusListener;
+    private View mNoNetWorkView;
 
     public HomeRankFragment(IAddFocusListener focusListener) {
         this.mFocusListener = focusListener;
@@ -86,6 +87,7 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
         Log.w("onViewCreated", "onViewCreated");
         mScrollView = (HorizontalScrollView) view.findViewById(R.id.homeran_scrollview);
         mLinearLayout = (LinearLayout) view.findViewById(R.id.ll_par_view);
+        mNoNetWorkView = view.findViewById(R.id.rl_no_network);
     }
 
     @Override
@@ -160,6 +162,12 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
         }, 1500);
     }
 
+    @Override
+    public void noNetWork() {
+        mScrollView.setVisibility(View.GONE);
+        mNoNetWorkView.setVisibility(View.VISIBLE);
+    }
+
     /**
      * 设置每列排行的背景色
      *
@@ -205,12 +213,22 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
         }
     }
 
-    private View mLastView;
+    private View mLastView = null;
 
     @Override
     public View getLastView() {
         return mLastView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.w("HomeRank_onResume","");
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.w("HomeRank_onPause","");
+    }
 }

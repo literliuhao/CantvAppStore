@@ -169,8 +169,13 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                 mHandler.removeMessages(START_SEARCH);
                 mHandler.removeCallbacks(searchRunner);
                 if (s.length() > 0) {
-                    mSerch_icon.setVisibility(View.GONE);
-                    mHandler.postDelayed(searchRunner, 2000);
+                    if (s.length() > 8) {
+                        mSearch_con_view.setText(s.toString().substring(0, 7));
+                        ToastUtil.toastShort("首字母过长,已经自动截取!");
+                    } else {
+                        mSerch_icon.setVisibility(View.GONE);
+                        mHandler.postDelayed(searchRunner, 2000);
+                    }
                 } else {
                     mSerch_icon.setVisibility(View.VISIBLE);
                 }
