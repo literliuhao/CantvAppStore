@@ -520,12 +520,12 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                 }
             } else if (v.getId() == holder.appDeleteBtn.getId()) {
                 if (AppInstallListener.APP_INSTALLING == holder.downloadTask.getDownloadStatus()) {
-                    //安装中 安装成功 删除按钮不可点击
+                    //安装中  删除按钮不可点击
                     PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string.download_installing));
                     return;
                 }
                 if (AppInstallListener.APP_INSTALL_SUCESS != holder.downloadTask.getDownloadStatus()
-                        && AppInstallListener.APP_INSTALL_FAIL == holder.downloadTask.getDownloadStatus()) {
+                        && AppInstallListener.APP_INSTALL_FAIL != holder.downloadTask.getDownloadStatus()) {
                     DownloadManager.getInstance(v.getContext().getApplicationContext()).cancel(holder.downloadTask);
                 }
                 if (mOnItemEventListener != null) {
