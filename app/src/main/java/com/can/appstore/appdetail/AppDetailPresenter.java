@@ -24,6 +24,7 @@ import com.can.appstore.http.HttpManager;
 import com.can.appstore.widgets.CanDialog;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
 import cn.can.downloadlib.AppInstallListener;
@@ -484,7 +485,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         } else {
             builder.setUpdatelogText(mContext.getResources().getString(R.string.not_update_log));
         }
-        //        builder.setBulrBg(getCurPageBlur());
         builder.setAboutText(mAppInfo.getAbout());
         mCustomDialog = builder.create();
         mCustomDialog.show();
@@ -556,16 +556,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
         });
         mCanDialog.show();
-    }
-
-    public Drawable getCurPageBlur() {
-        Bitmap shots = Utils.getScreenShots((Activity) mContext);
-        Drawable drawable = Utils.blurBitmap(shots, (Activity) mContext);
-        BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-        Bitmap bitmap = bitmapDrawable.getBitmap();
-        Canvas canvas = new Canvas(bitmap);
-        canvas.drawARGB(0xD2, 23, 25, 29);
-        return drawable;
     }
 
     public void dismissInsufficientStorageSpaceDialog() {

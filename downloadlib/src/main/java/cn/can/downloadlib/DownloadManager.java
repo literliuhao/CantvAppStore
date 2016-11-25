@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.IOException;
@@ -61,6 +62,7 @@ public class DownloadManager implements AppInstallListener {
     private Context mContext;
     private int mPoolSize = 3;//Runtime.getRuntime().availableProcessors();
     private int mLimitSpace = 50;
+    private String mDownloadPath;
     private ExecutorService mExecutorService;
     private OkHttpClient mOkHttpClient;
     //    private AppInstallListener mAppInstallListener;
@@ -241,6 +243,9 @@ public class DownloadManager implements AppInstallListener {
      * @param okHttpClient
      */
     private void init(InputStream in, OkHttpClient okHttpClient) {
+        if (TextUtils.isEmpty(mDownloadPath)) {
+            mDownloadPath = mContext.getExternalCacheDir().getAbsolutePath();
+        }
         mHandlerThread = new HandlerThread("queue");
         mHandlerThread.start();
         mHander = new Handler(mHandlerThread.getLooper(), mCallback);
@@ -295,6 +300,7 @@ public class DownloadManager implements AppInstallListener {
         task.setDownloadDao(mDownloadDao);
         task.setHttpClient(mOkHttpClient);
         task.addDownloadListener(listener);
+        task.setSaveDirPath(mDownloadPath);
         task.setAppListener(this);
         if (getDBTaskById(task.getId()) == null) {
             DownloadDBEntity dbEntity = new DownloadDBEntity(task.getId(), task.getTotalSize(),
@@ -601,6 +607,7 @@ public class DownloadManager implements AppInstallListener {
         task.setHttpClient(mOkHttpClient);
         task.addDownloadListener(listener);
         task.setAppListener(this);
+        task.setSaveDirPath(mDownloadPath);
         if (getDBTaskById(task.getId()) == null) {
             DownloadDBEntity dbEntity = new DownloadDBEntity(task.getId(), task.getTotalSize(),
                     task.getCompletedSize(), task.getUrl(), task.getSaveDirPath(), task
@@ -636,6 +643,10 @@ public class DownloadManager implements AppInstallListener {
 
     public void setLimitSpace(int size) {
         mLimitSpace = size;
+    }
+
+    public String getDownloadPath(){
+        return mDownloadPath;
     }
 
     @Override

@@ -9,8 +9,8 @@ import android.util.Log;
 import android.view.WindowManager;
 
 import com.can.appstore.myapps.utils.MyAppsListDataUtil;
-import com.can.appstore.upgrade.service.UpgradeService;
 import com.can.appstore.upgrade.service.BuglyUpgradeService;
+import com.can.appstore.upgrade.service.UpgradeService;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
@@ -100,6 +100,7 @@ public class MyApp extends Application {
                 String packageName = intent.getData().getSchemeSpecificPart();
             }
             myAppList = new MyAppsListDataUtil(mContext).getAllAppList(myAppList);
+
         }
     }
 

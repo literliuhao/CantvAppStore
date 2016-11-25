@@ -10,14 +10,13 @@
     android:gravity="center_vertical"
     >
 
-    <cn.can.tvlib.ui.view.RoundCornerImageView
+    <cn.can.tvlib.ui.view.GlideRoundCornerImageView
         android:id="@+id/iv_recommend_item_icon"
         android:layout_width="@dimen/dimen_120px"
         android:layout_height="@dimen/dimen_120px"
         android:layout_centerVertical="true"
         android:layout_marginStart="@dimen/dimen_24px"
         android:scaleType="centerInside"
-        android:background="@drawable/bg_detail_list_icon_item"
         custom:cornerSize="@dimen/dimen_20px"
         />
 

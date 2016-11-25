@@ -54,8 +54,6 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
         initView();
-        // TODO: 2016/11/23
-        showLoadingDialog();
         initData();
         initFocusView();
     }
@@ -70,6 +68,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         itemPos = (TextView) findViewById(R.id.tv_item_pos);
         itemTotal = (TextView) findViewById(R.id.tv_item_total);
         empty = (TextView) findViewById(R.id.tv_empty_msg);
+        showLoadingDialog(getResources().getDimensionPixelSize(R.dimen.px132));
     }
 
     private void initFocusView() {
@@ -90,7 +89,6 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
             }
         };
         msgList = queryData();
-        // TODO: 2016/11/23
         hideLoadingDialog();
         if (msgList != null && !msgList.isEmpty()) {
             initAdapter();

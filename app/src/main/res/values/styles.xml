@@ -12,6 +12,11 @@
         <item name="android:windowAnimationStyle">@style/anim_fade_in</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
+    
+    <style name="common_page_style" parent="@style/AppTheme.Translucent.FadeIn">
+        <item name="android:windowBackground">@color/color_2D313A</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
 
     <style name="commen_textview">
         <item name="android:singleLine">true</item>

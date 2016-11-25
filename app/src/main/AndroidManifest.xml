@@ -26,7 +26,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/common_page_style">
         <activity android:name=".search.SearchActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION.ACTIVITY_SEARCH"/>
@@ -47,8 +47,7 @@
         </activity>
         <activity
             android:name=".PortalActivity"
-            android:hardwareAccelerated="false"
-            android:theme="@style/AppTheme.Translucent.FadeIn">
+            android:hardwareAccelerated="false">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -95,16 +94,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".download.DownloadActivity"
-            android:theme="@style/AppTheme.Translucent.FadeIn">
+            android:name=".download.DownloadActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION_DOWNLOAD"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity
-            android:name=".specialtopic.SpecialActivity"
-            android:theme="@style/AppTheme.Translucent.FadeIn">
+            android:name=".specialtopic.SpecialActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION_SPECIAL_TOPIC"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -120,8 +117,7 @@
         <activity android:name=".download.DownloadLeadAcitivity"></activity>
 
         <activity
-            android:name=".uninstallmanager.UninstallManagerActivity"
-            android:theme="@style/AppTheme.Translucent.FadeIn">
+            android:name=".uninstallmanager.UninstallManagerActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION_UNINSTALL_MANAGER"/>
 
@@ -130,8 +126,7 @@
         </activity>
 
         <activity
-            android:name=".appdetail.AppDetailActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar">
+            android:name=".appdetail.AppDetailActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION_APP_DETAIL"/>
 

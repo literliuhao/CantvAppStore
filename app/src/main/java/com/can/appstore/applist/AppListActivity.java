@@ -66,7 +66,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     public static final int APP_LIST_SPAN_COUNT = 3;     //应用列表每行app个数
     public static float APP_LIST_FOCUS_SCALE = 1.0f;   //应用列表焦点放大倍数；
     public static int CHANGE_FOCUSED_VIEW_BG_DELAY = 150;//右侧应用列表焦点移动时，修改背景为透明延迟的时间
-    public static int FOCUS_MOVE_OUTSIDE_APP_LIST = -1; //焦点移动出applist
     // 全局配置参数
     public static final int MIN_LOADING_SHOW_TIME = 1000; //loading消失延迟时间
     public static final int MIN_APPLIST_REFRES_TIME = 500; //loading消失延迟时间
@@ -435,7 +434,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                         mLineNumTv.setVisibility(View.INVISIBLE);
                     }
                     mPresenter.onMenuItemSelect(position);
-                    showOffsetLoadingDialog(mLoadOffset);
+                    showLoadingDialog(mLoadOffset);
                     mSelectedMenuChild = view;
                 }
             }
@@ -577,7 +576,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 public boolean onFocusMoveOutside(int currFocus, int direction) {
                     if (direction == View.FOCUS_LEFT) {
                         //焦点移出应用列表，改变行数文本
-                        mPresenter.onAppListItemSelectChanged(FOCUS_MOVE_OUTSIDE_APP_LIST);
                         if (mSearchBtn == mSelectedMenuChild) {
                             refreshFocusActiveRegion(NO_LIMIT_REGION);
                             mSearchBtn.setFocusable(true);
@@ -723,7 +721,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 SearchActivity.startAc(this);
                 break;
             case R.id.tv_load_retry:
-                showOffsetLoadingDialog(mLoadOffset);
+                showLoadingDialog(mLoadOffset);
                 mPresenter.loadAppListData();
                 if (mSelectedMenuChild != null) {
                     mSelectedMenuChild.requestFocus();

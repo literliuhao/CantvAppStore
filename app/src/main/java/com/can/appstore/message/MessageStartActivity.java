@@ -60,6 +60,10 @@ public class MessageStartActivity extends AppCompatActivity {
             public void onResponse(CanCall<Result<MessageContainer>> call, Response<Result<MessageContainer>> response) throws Exception {
                 Result<MessageContainer> body = response.body();
                 MessageContainer msgContainer = body.getData();
+                if (msgContainer == null){
+                    Log.w(TAG, "message data error");
+                    return;
+                }
                 long timestamp = msgContainer.getTimestamp();
                 MessageManager.deleteExceedMsg(timestamp); // 删除过期数据
                 List<Message> list = msgContainer.getMessages();
@@ -85,6 +89,8 @@ public class MessageStartActivity extends AppCompatActivity {
                         msgList.add(msgInfo);
                     }
                     MessageManager.insert(msgList); // 插入数据库
+                }else{
+                    Log.i(TAG, "no new message");
                 }
             }
 

@@ -7,11 +7,10 @@
               android:focusable="true"
               android:orientation="horizontal">
 
-    <cn.can.tvlib.ui.view.RoundCornerImageView
+    <cn.can.tvlib.ui.view.GlideRoundCornerImageView
         android:id="@+id/iv_introduc_item"
         android:layout_width="@dimen/dimen_513px"
         android:layout_height="@dimen/dimen_288px"
-        android:background="@drawable/bg_item"
         custom:cornerSize="@dimen/dimen_8px"/>
 
 </LinearLayout>

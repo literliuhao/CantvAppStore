@@ -66,7 +66,6 @@ public class AppListPresenter implements AppListContract.Presenter {
     private AppListContract.View mView;
     private Handler mHandler;
     private Context mContext;
-    private Runnable mLoadFailRunable;
 
 
     public AppListPresenter(AppListContract.View view, int pageType, String typeId, String topicId) {
@@ -92,12 +91,10 @@ public class AppListPresenter implements AppListContract.Presenter {
                 switch (msg.what) {
                     case REQUEST_DATA:
                         if (mMenuDataPosition == msg.arg1) {
-                            mView.hideOffsetLoadingDialog();
+                            mView.hideLoadingDialog();
                             //显示隐藏的UI
                             noLoadShowHideUI();
                         } else {
-                            //消除正在延时中还没有执行的runable
-                            mHandler.removeCallbacks(mLoadFailRunable);
 
                             mMenuDataPosition = msg.arg1;
                             loadAppListData(mTopics.get(mMenuDataPosition).getId());
@@ -107,7 +104,7 @@ public class AppListPresenter implements AppListContract.Presenter {
                         mView.refreshAppList(mAppInfos, REFRESH_APP);
                         break;
                     case HIDE_LOADING:
-                        mView.hideOffsetLoadingDialog();
+                        mView.hideLoadingDialog();
                         break;
                     case SHOW_APP_LIST_UI:
                         refreshLineInformation();
@@ -138,6 +135,7 @@ public class AppListPresenter implements AppListContract.Presenter {
         }
 
         mPage = 1;
+        mCurrentLine = 1;
         mView.showLoadingDialog();
         //初始化请求数据回调
         CanCallback<Result<AppInfoContainer>> canCallback = new CanCallback<Result<AppInfoContainer>>() {
@@ -180,7 +178,6 @@ public class AppListPresenter implements AppListContract.Presenter {
 
             @Override
             public void onFailure(CanCall<Result<AppInfoContainer>> call, CanErrorWrapper errorWrapper) {
-                // TODO: 2016/11/11  具体
                 if (call.isCanceled()) {
                     return;
                 }
@@ -210,6 +207,7 @@ public class AppListPresenter implements AppListContract.Presenter {
     @Override
     public void loadAppListData(final String topicId) {
         mPage = 1;
+        mCurrentLine = 1;
         mAppInfos.clear();
         mView.refreshAppList(mAppInfos, REFRESH_APP);
         if (!NetworkUtils.isNetworkConnected(mContext)) {
@@ -217,7 +215,7 @@ public class AppListPresenter implements AppListContract.Presenter {
             isLoadFail = true;
             long delayTime = calculateDelayTime();
             mHandler.sendEmptyMessageDelayed(HIDE_LOADING, delayTime);
-            mHandler.sendEmptyMessageDelayed(SHOW_LOAD_FAIL_UI,delayTime);
+            mHandler.sendEmptyMessageDelayed(SHOW_LOAD_FAIL_UI, delayTime);
             return;
         }
 
@@ -228,7 +226,6 @@ public class AppListPresenter implements AppListContract.Presenter {
                 isLoadFail = false;
                 //初始化分页信息
                 mPage = 2;
-                mCurrentLine = 0;
                 Result<AppInfoContainer> body = response.body();
                 Log.d(TAG, "onResponse: " + body.toString());
                 AppInfoContainer data = body.getData();
@@ -237,7 +234,7 @@ public class AppListPresenter implements AppListContract.Presenter {
 
                 //数据为空的情况下不刷新列表,隐藏loding框
                 if(mAppInfos.size() == 0){
-                    mView.hideOffsetLoadingDialog();
+                    mView.hideLoadingDialog();
                     return;
                 }
                 //计算总行数
@@ -247,7 +244,7 @@ public class AppListPresenter implements AppListContract.Presenter {
                 //刷新ui
                 mHandler.sendEmptyMessage(REFRESH_APP_LIST);
                 mHandler.sendEmptyMessageDelayed(HIDE_LOADING, delayTime);
-                mHandler.sendEmptyMessageDelayed(SHOW_APP_LIST_UI,delayTime);
+                mHandler.sendEmptyMessageDelayed(SHOW_APP_LIST_UI, delayTime);
             }
 
             @Override
@@ -255,7 +252,7 @@ public class AppListPresenter implements AppListContract.Presenter {
                 long delayTime = calculateDelayTime();
                 isLoadFail = true;
                 mHandler.sendEmptyMessageDelayed(HIDE_LOADING, delayTime);
-                mHandler.sendEmptyMessageDelayed(SHOW_LOAD_FAIL_UI,delayTime);
+                mHandler.sendEmptyMessageDelayed(SHOW_LOAD_FAIL_UI, delayTime);
                 Log.d(TAG, "onFailure:" + errorWrapper.getReason() + "-----" + errorWrapper.getThrowable());
             }
         };
@@ -284,8 +281,8 @@ public class AppListPresenter implements AppListContract.Presenter {
         }
         mView.showToast(mContext.getResources().getString(R.string.load_more_content));
         cancelCall();
-        mAppListInfoCall = HttpManager.getApiService().getAppinfos(mTopics.get(mMenuDataPosition).getId(), "5", mPage,
-                PAGE_SIZE);
+        mAppListInfoCall = HttpManager.getApiService().getAppinfos(mTopics.get(mMenuDataPosition).getId(), mTypeId,
+                mPage, PAGE_SIZE);
         mAppListInfoCall.enqueue(new CanCallback<Result<AppInfoContainer>>() {
             @Override
             public void onResponse(CanCall<Result<AppInfoContainer>> call, Response<Result<AppInfoContainer>>
@@ -294,8 +291,17 @@ public class AppListPresenter implements AppListContract.Presenter {
                 Log.d(TAG, "onResponse: " + body.toString());
                 AppInfoContainer data = body.getData();
                 List<AppInfo> appInfos = data.getData();
+
+                //数据总数错误，重新计算
+                if(appInfos.size() == 0){
+                    mTotalSize = mAppInfos.size();
+                    mTotalLine = calculateRowNumber(mTotalSize);
+                    refreshLineInformation();
+                    return;
+                }
+
                 mAppInfos.addAll(appInfos);
-                mView.refreshAppList(mAppInfos, (mPage - 1) * PAGE_SIZE); // TODO: 2016/10/21  请求的数据为空数据不足  更新total
+                mView.refreshAppList(mAppInfos, (mPage - 1) * PAGE_SIZE);
                 refreshLineInformation();
                 mPage++;//请求成功页数加1
             }
@@ -326,13 +332,7 @@ public class AppListPresenter implements AppListContract.Presenter {
 
     @Override
     public void onAppListItemSelectChanged(int position) {
-        Log.d(TAG, "refreshLineInformation: onAppListItemSelectChanged");
-
-        if (position == AppListActivity.FOCUS_MOVE_OUTSIDE_APP_LIST) {
-            mCurrentLine = 0;
-        } else {
-            mCurrentLine = calculateRowNumber(position + 1);
-        }
+        mCurrentLine = calculateRowNumber(position + 1);
         refreshLineInformation();
     }
 
@@ -364,7 +364,7 @@ public class AppListPresenter implements AppListContract.Presenter {
     /**
      * 取消网络请求
      */
-    private void cancelCall(){
+    private void cancelCall() {
         if (mPageType == AppListActivity.PAGE_TYPE_APP_LIST) {
             if (mAppListInfoCall != null) {
                 mAppListInfoCall.cancel();
@@ -380,7 +380,6 @@ public class AppListPresenter implements AppListContract.Presenter {
      * 刷新右上角行数显示信息
      */
     private void refreshLineInformation() {
-        Log.d(TAG, "refreshLineInformation: " + mCurrentLine + ",---" + mTotalLine);
         StringBuilder crowNumber = new StringBuilder();
         crowNumber.append(mCurrentLine);
         crowNumber.append(mContext.getResources().getString(R.string.backslashes));
@@ -415,7 +414,7 @@ public class AppListPresenter implements AppListContract.Presenter {
     /**
      * 获取当前的TopicId AppId
      *
-     * @return topicId 和 appId的数组
+     * @return topicId 和 appId 数组
      */
     public HashMap getIds(int position) {
         HashMap map = new HashMap();
@@ -428,9 +427,9 @@ public class AppListPresenter implements AppListContract.Presenter {
      * 上下移动menu，位置没有改变的时候，不加载数据，显示隐藏的UI
      */
     public void noLoadShowHideUI() {
-        if(isLoadFail){
+        if (isLoadFail) {
             mHandler.sendEmptyMessage(SHOW_LOAD_FAIL_UI);
-        }else if(mAppInfos.size() != 0){
+        } else if (mAppInfos.size() != 0) {
             mHandler.sendEmptyMessage(SHOW_APP_LIST_UI);
         }
         mHandler.sendEmptyMessage(HIDE_LOADING);
