@@ -469,6 +469,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
                 @Override
                 public void onClickPositive() {
                     final TextView mInstalling = (TextView) view.findViewById(R.id.tv_install_installing);
+                    mInstalling.setText(getResources().getString(R.string.install_installing));
                     mInstalling.setVisibility(View.VISIBLE);
                     //mPresenter.installApk(position);
                     canDialog.dismiss();

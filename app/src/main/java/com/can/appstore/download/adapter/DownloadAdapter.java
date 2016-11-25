@@ -524,7 +524,10 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string.download_installing));
                     return;
                 }
-                DownloadManager.getInstance(v.getContext().getApplicationContext()).cancel(holder.downloadTask);
+                if (AppInstallListener.APP_INSTALL_SUCESS != holder.downloadTask.getDownloadStatus()
+                        && AppInstallListener.APP_INSTALL_FAIL == holder.downloadTask.getDownloadStatus()) {
+                    DownloadManager.getInstance(v.getContext().getApplicationContext()).cancel(holder.downloadTask);
+                }
                 if (mOnItemEventListener != null) {
                     mOnItemEventListener.onDeleteButtonClick(v, holder.position, holder.downloadTask);
                 }

@@ -45,6 +45,7 @@
             android:layout_below="@id/tv_updateapp_name"
             android:layout_marginLeft="@dimen/px24"
             android:layout_marginTop="@dimen/px6"
+            android:layout_marginRight="@dimen/px20"
             android:layout_toRightOf="@id/iv_updateapp_icon"
             android:singleLine="true"
             android:text="@string/update_app_versionname"

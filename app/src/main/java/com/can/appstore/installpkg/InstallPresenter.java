@@ -41,7 +41,7 @@ public class InstallPresenter implements InstallContract.Presenter {
         mDatas.clear();
         mView.showInstallPkgList(mDatas);
         mView.showLoadingDialog();
-        InstallPkgUtils.myFiles.clear();
+        //InstallPkgUtils.myFiles.clear();
         //mPath = Environment.getExternalStorageDirectory().getPath().toString();
         mPath = Environment.getExternalStorageDirectory().getPath().toString() + File.separator + "Movies";
         //mPath = MyApp.mContext.getExternalCacheDir().getPath().toString();
