@@ -70,7 +70,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private final int DURATIONLARGE = 300;
     private final int DURATIONSMALL = 300;
     private final float SCALE = 1.1f;
-    private final int OFFSCREENPAGELIMIT = 3;
+    private final int OFFSCREENPAGELIMIT = 5;
     private final int PAGERCURRENTITEM = 0;
     //滚动中
     private final int SCROLLING = 2;
@@ -189,6 +189,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         }
         ManagerFragment managerFragment = new ManagerFragment(this);
         mFragmentLists.add(managerFragment);
+
         MyAppsFragment myAppsFragment = new MyAppsFragment(this);
         mFragmentLists.add(myAppsFragment);
 
@@ -370,8 +371,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     public void addFocusListener(View v, boolean hasFocus, FragmentEnum sourceEnum) {
         if (hasFocus) {
             if (null == v) return;
-            count++;
-            refreshUpdate();
+//            count++;
+//            refreshUpdate();
 //            if (scrollStatus != SCROLLED) {
 //                return;
 //            }
