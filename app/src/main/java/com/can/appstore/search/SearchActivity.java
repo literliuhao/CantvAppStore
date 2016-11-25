@@ -161,7 +161,6 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         mSearch_con_view.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
@@ -169,9 +168,8 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                 mHandler.removeMessages(START_SEARCH);
                 mHandler.removeCallbacks(searchRunner);
                 if (s.length() > 0) {
-                    if (s.length() > 8) {
-                        mSearch_con_view.setText(s.toString().substring(0, 7));
-                        ToastUtil.toastShort("首字母过长,已经自动截取!");
+                    if (s.length() > 10) {
+                        mSearch_con_view.setText(s.toString().substring(0, 10));
                     } else {
                         mSerch_icon.setVisibility(View.GONE);
                         mHandler.postDelayed(searchRunner, 2000);
@@ -511,7 +509,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                         Log.w("totalItemCount", totalItemCount + "");
                         if ((lastItem >= totalItemCount - 1 - SEARCH_APP_SPANCOUNT)
                                 && mCurrLineNumber == mTotalLineCount) {
-                            ToastUtil.toastShort("正在加载更多数据...");
+//                            ToastUtil.toastShort("正在加载更多数据...");
                             mCurrPageIndex++;
                             mSearchPresenter.getSearchList(mSearch_con_view.getText().toString(), mCurrPageIndex);
                         }
