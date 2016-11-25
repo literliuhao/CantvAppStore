@@ -9,8 +9,8 @@ import android.util.Log;
 import android.view.WindowManager;
 
 import com.can.appstore.myapps.utils.MyAppsListDataUtil;
-import com.can.appstore.upgrade.UpgradeService;
-import com.can.appstore.upgrade.bugly.BuglyUpgradeService;
+import com.can.appstore.upgrade.service.BuglyUpgradeService;
+import com.can.appstore.upgrade.service.UpgradeService;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
@@ -62,7 +62,7 @@ public class MyApp extends Application {
         PRE_APPS.add("com.cantv.market");
 
         //所有的第三方应用
-        myAppList = PackageUtil.findAllThirdPartyAppsNoDelay(this,myAppList);
+        myAppList = PackageUtil.findAllThirdPartyAppsNoDelay(this, myAppList);
         registerInstallReceiver();
         initBuly(true);
     }
@@ -76,6 +76,7 @@ public class MyApp extends Application {
      * 注册应用安装卸载的广播
      */
     public AppInstallReceiver mAppInstallReceiver;
+
     private void registerInstallReceiver() {
         if (mAppInstallReceiver == null) {
             mAppInstallReceiver = new AppInstallReceiver();
@@ -112,6 +113,7 @@ public class MyApp extends Application {
         Beta.autoCheckUpgrade = false;
         Beta.showInterruptedStrategy = false;
         Beta.upgradeListener = new UpgradeListener() {
+
             @Override
             public void onUpgrade(int ret, UpgradeInfo strategy, boolean isManual, boolean isSilence) {
                 if (strategy != null) {
@@ -128,8 +130,8 @@ public class MyApp extends Application {
                 }
             }
         };
-       // Bugly.init(getApplicationContext(), "900059606", true);//测试使用
-        Bugly.init(getApplicationContext(), "e3c3b1806e", true);
+        //Bugly.init(getApplicationContext(), "900059606", true);//测试使用
+        Bugly.init(getApplicationContext(), "e3c3b1806e", false);
         Beta.checkUpgrade();
     }
 

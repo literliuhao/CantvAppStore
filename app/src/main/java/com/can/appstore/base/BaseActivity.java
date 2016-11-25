@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 
+import com.can.appstore.R;
+
 import cn.can.tvlib.utils.PromptUtils;
 
 public abstract class BaseActivity extends FragmentActivity {
@@ -16,10 +18,16 @@ public abstract class BaseActivity extends FragmentActivity {
     private Dialog mLoadingDialog;
     private Dialog mOffsetLoadingDialog;
     private BroadcastReceiver mHomeKeyReceiver;
+    private int loadingSize;
+    private String loadingMsgText = "加载中,请稍后……";   //默认文案
+    private int mMsgTextSize = 35;
+    private int mMsgTextColor = 0xccffffff;
+    private int spaceInPixels = 40;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        loadingSize = getResources().getDimensionPixelSize(R.dimen.px136);
     }
 
     @Override
@@ -37,7 +45,6 @@ public abstract class BaseActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         hideLoadingDialog();
-        hideOffsetLoadingDialog();
         super.onDestroy();
     }
 
@@ -51,7 +58,7 @@ public abstract class BaseActivity extends FragmentActivity {
 
     public void showLoadingDialog() {
         if (mLoadingDialog == null) {
-            mLoadingDialog = PromptUtils.showLoadingDialog(this);
+            mLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, loadingMsgText, mMsgTextSize, mMsgTextColor, spaceInPixels);
         } else if (mLoadingDialog.isShowing()) {
             return;
         } else {
@@ -60,15 +67,20 @@ public abstract class BaseActivity extends FragmentActivity {
         }
     }
 
-    public void hideLoadingDialog() {
-        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
-            mLoadingDialog.dismiss();
+    public void showLoadingDialog(String msg) {
+        if (mLoadingDialog == null) {
+            mLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, msg, mMsgTextSize, mMsgTextColor, spaceInPixels);
+        } else if (mLoadingDialog.isShowing()) {
+            return;
+        } else {
+            mLoadingDialog.setCancelable(false);
+            mLoadingDialog.show();
         }
     }
 
-    public void showOffsetLoadingDialog(int offsetX) {
+    public void showLoadingDialog(int offsetX) {
         if (mOffsetLoadingDialog == null) {
-            mOffsetLoadingDialog = PromptUtils.showLoadingDialog(this, -2, offsetX);
+            mOffsetLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, offsetX, loadingMsgText, mMsgTextSize, mMsgTextColor, spaceInPixels);
         } else if (mOffsetLoadingDialog.isShowing()) {
             return;
         } else {
@@ -76,8 +88,20 @@ public abstract class BaseActivity extends FragmentActivity {
         }
     }
 
-    public void hideOffsetLoadingDialog() {
-        if (mOffsetLoadingDialog != null && mOffsetLoadingDialog.isShowing()) {
+    public void showLoadingDialog(String msg, int offsetX) {
+        if (mOffsetLoadingDialog == null) {
+            mOffsetLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, offsetX, msg, mMsgTextSize, mMsgTextColor, spaceInPixels);
+        } else if (mOffsetLoadingDialog.isShowing()) {
+            return;
+        } else {
+            mOffsetLoadingDialog.show();
+        }
+    }
+
+    public void hideLoadingDialog() {
+        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
+            mLoadingDialog.dismiss();
+        } else if (mOffsetLoadingDialog != null && mOffsetLoadingDialog.isShowing()) {
             mOffsetLoadingDialog.dismiss();
         }
     }
@@ -106,14 +130,14 @@ public abstract class BaseActivity extends FragmentActivity {
     /**
      * Home键监听
      */
-    protected void onHomeKeyDown(){
+    protected void onHomeKeyDown() {
     }
 
     class HomeKeyReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if(Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)){
+            if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)) {
                 onHomeKeyDown();
             }
         }

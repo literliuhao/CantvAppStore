@@ -131,6 +131,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     private boolean pageTypeIllegal() {
         int pageType = getIntent().getIntExtra(ENTRY_KEY_SRC_TYPE, PAGE_TYPE_ILLEGAL);
         if (pageType == PAGE_TYPE_ILLEGAL) {
+            showToast(getContext().getResources().getString(R.string.illegal_page_type));
             return true;
         }
         mPageType = pageType;
@@ -423,9 +424,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                     if (mSelectedMenuChild == view) {
                         return;
                     }
-
-                    showOffsetLoadingDialog(mLoadOffset);
-
                     //隐藏显示的应用列表范围的UI(应用列表，行数，加载失败UI)
                     if (mLoadFailView.getVisibility() == View.VISIBLE) {
                         mLoadFailView.setVisibility(View.INVISIBLE);
@@ -436,8 +434,8 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                     if (mLineNumTv.getVisibility() == View.VISIBLE) {
                         mLineNumTv.setVisibility(View.INVISIBLE);
                     }
-
                     mPresenter.onMenuItemSelect(position);
+                    showLoadingDialog(mLoadOffset);
                     mSelectedMenuChild = view;
                 }
             }
@@ -555,7 +553,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     }
 
     @Override
-    public void refreshAppList(List<AppInfo> appListData, int insertPosition, long delayTime) {
+    public void refreshAppList(List<AppInfo> appListData, int insertPosition) {
         mSelectedAppListChild = null;
         if (mAppListAdapter == null) {
             mAppListAdapter = new com.can.appstore.applist.adpter.AppListInfoAdapter(appListData);
@@ -625,17 +623,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
             mSelectedMenuChild.requestFocus();
             mSelectedMenuChild.setBackgroundColor(Color.TRANSPARENT);
         }
-
-        if (mAppList.getVisibility() != View.VISIBLE && delayTime != -1 && appListData.size() != 0) {
-            mAppList.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mAppList.setVisibility(View.VISIBLE);
-                    mLineNumTv.setVisibility(View.VISIBLE);
-                    mLoadFailView.setVisibility(View.GONE);
-                }
-            }, delayTime);
-        }
     }
 
     /**
@@ -696,6 +683,16 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
         }
     }
 
+    /**
+     * 显示加载失败的UI
+     */
+    @Override
+    public void hideFailUI() {
+        if (mLoadFailView.getVisibility() == View.VISIBLE) {
+            mLoadFailView.setVisibility(View.INVISIBLE);
+        }
+    }
+
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         switch (v.getId()) {
@@ -726,7 +723,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 SearchActivity.startAc(this);
                 break;
             case R.id.tv_load_retry:
-                showOffsetLoadingDialog(mLoadOffset);
+                showLoadingDialog(mLoadOffset);
                 mPresenter.loadAppListData();
                 if (mSelectedMenuChild != null) {
                     mSelectedMenuChild.requestFocus();

@@ -6,6 +6,7 @@ import android.graphics.Rect;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Animation;
@@ -151,7 +152,7 @@ public class LoadingTipsView extends RelativeLayout {
             mContentView.addView(mMsgView, mContentView.getChildCount(), msgLayoutParams);
         }
         mMsgView.setTextColor(mMsgTextColor);
-        mMsgView.setTextSize(mMsgTextSize);
+        mMsgView.setTextSize(TypedValue.COMPLEX_UNIT_PX,mMsgTextSize);
         mMsgView.setText(!TextUtils.isEmpty(msg) ? msg : this.msg);
     }
 
