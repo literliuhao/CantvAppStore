@@ -23,7 +23,7 @@ public class RequestParamsInterceptor implements Interceptor {
 //                .build();
         HttpUrl url = request.url()
                 .newBuilder()
-                .addQueryParameter("channelId", "12")
+                .addQueryParameter("channelId", "13")
                 .addQueryParameter("internalModel", "1")
                 .addQueryParameter("commercialModel", "f55")
                 .addQueryParameter("mac", "1")

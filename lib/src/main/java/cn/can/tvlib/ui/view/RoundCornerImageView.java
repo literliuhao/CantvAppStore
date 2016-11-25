@@ -49,6 +49,7 @@ public class RoundCornerImageView extends ImageView {
     private RectF mSrcRect;
     private Paint mMaskPaint;
     private RectF mMaskRect;
+    private RectF mDrawRect;
     private boolean maskParamsLegal;
     private boolean showMask;
     private static boolean changeBgEnable = true;
@@ -86,6 +87,7 @@ public class RoundCornerImageView extends ImageView {
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
         mSrcRect = new RectF();
+        mDrawRect = new RectF();
     }
 
     @Override
@@ -176,10 +178,21 @@ public class RoundCornerImageView extends ImageView {
         BitmapPool bitmapPool = Glide.get(getContext()).getBitmapPool();
         Bitmap finalBmp = bitmapPool.get(viewWidth, viewHeight, Bitmap.Config.ARGB_4444);
         if(finalBmp == null){
-            finalBmp = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.ARGB_4444);
+            try {
+                finalBmp = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.ARGB_4444);
+            } catch (OutOfMemoryError e) {
+                System.gc();
+                try {
+                    finalBmp = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.ARGB_4444);
+                } catch (OutOfMemoryError e1) {
+                }
+            }
         }
-        Canvas canvas = new Canvas(finalBmp);
+        if(finalBmp == null){
+            return null;
+        }
 
+        Canvas canvas = new Canvas(finalBmp);
         //draw bg
         Drawable bg = mBgDrawable;
         if (bg != null) {
@@ -189,8 +202,7 @@ public class RoundCornerImageView extends ImageView {
 
         //draw src
         Bitmap srcBmp = null;
-        int left = 0;
-        int top = 0;
+        RectF drawRect = this.mDrawRect;
         if (getDrawable() != null) {
             Drawable drawable = getDrawable().getCurrent();
             if (drawable instanceof BitmapDrawable) {
@@ -207,26 +219,18 @@ public class RoundCornerImageView extends ImageView {
             int bmpHeight = srcBmp.getHeight();
 
             if (scaleType == ScaleType.FIT_XY && (bmpWidth != viewWidth || bmpHeight != viewHeight)) {
-                try {
-                    srcBmp = Bitmap.createScaledBitmap(srcBmp, viewWidth, viewHeight, true);
-                } catch (OutOfMemoryError e) {
-                    System.gc();
-                    try {
-                        srcBmp = Bitmap.createScaledBitmap(srcBmp, viewWidth, viewHeight, true);
-                    } catch (Exception e1) {
-                    }
-                }
-
+                drawRect.set(0, 0, viewWidth, viewHeight);
             } else if (scaleType == ScaleType.CENTER_INSIDE) {
-                left = (viewWidth - bmpWidth) / 2;
-                top = (viewHeight - bmpHeight) / 2;
+                int left = (viewWidth - bmpWidth) / 2;
+                int top = (viewHeight - bmpHeight) / 2;
+                drawRect.set(left, top, left + bmpWidth, top + bmpHeight);
             }
         }
 
         if (srcBmp != null) {
             canvas.save();
             mPaint.setAlpha(animLoad ? mAlpha : 255);
-            canvas.drawBitmap(srcBmp, left, top, mPaint);
+            canvas.drawBitmap(srcBmp, null, drawRect, mPaint);
             canvas.restore();
         } else {
             mAlpha = 255;

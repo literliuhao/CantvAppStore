@@ -62,6 +62,7 @@ public class RotateView extends ImageView {
     public void stopRotate() {
         if (mRotateAnim.isStarted()) {
             mRotateAnim.pause();
+            mRotateAnim.removeAllUpdateListeners();
         }
     }
 
