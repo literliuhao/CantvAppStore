@@ -9,13 +9,12 @@ import android.util.Log;
 import android.view.WindowManager;
 
 import com.can.appstore.myapps.utils.MyAppsListDataUtil;
-import com.can.appstore.upgrade.service.UpgradeService;
 import com.can.appstore.upgrade.service.BuglyUpgradeService;
+import com.can.appstore.upgrade.service.UpgradeService;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
 import com.tencent.bugly.beta.upgrade.UpgradeListener;
-import com.tencent.bugly.proguard.aa;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,11 +113,6 @@ public class MyApp extends Application {
         Beta.autoCheckUpgrade = false;
         Beta.showInterruptedStrategy = false;
         Beta.upgradeListener = new UpgradeListener() {
-            @Override
-            public boolean onUpgrade(aa aa, int i, String s) {
-                Log.d(TAG, "onUpgrade: aa");
-                return false;
-            }
 
             @Override
             public void onUpgrade(int ret, UpgradeInfo strategy, boolean isManual, boolean isSilence) {
