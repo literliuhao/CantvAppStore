@@ -92,7 +92,7 @@ public class AppListPresenter implements AppListContract.Presenter {
                 switch (msg.what) {
                     case REQUEST_DATA:
                         if (mMenuDataPosition == msg.arg1) {
-                            mView.hideOffsetLoadingDialog();
+                            mView.hideLoadingDialog();
                             //显示隐藏的UI
                             noLoadShowHideUI();
                         } else {
@@ -107,7 +107,7 @@ public class AppListPresenter implements AppListContract.Presenter {
                         mView.refreshAppList(mAppInfos, REFRESH_APP);
                         break;
                     case HIDE_LOADING:
-                        mView.hideOffsetLoadingDialog();
+                        mView.hideLoadingDialog();
                         break;
                     case SHOW_APP_LIST_UI:
                         refreshLineInformation();
@@ -237,7 +237,7 @@ public class AppListPresenter implements AppListContract.Presenter {
 
                 //数据为空的情况下不刷新列表,隐藏loding框
                 if(mAppInfos.size() == 0){
-                    mView.hideOffsetLoadingDialog();
+                    mView.hideLoadingDialog();
                     return;
                 }
                 //计算总行数

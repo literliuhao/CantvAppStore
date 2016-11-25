@@ -68,7 +68,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         itemPos = (TextView) findViewById(R.id.tv_item_pos);
         itemTotal = (TextView) findViewById(R.id.tv_item_total);
         empty = (TextView) findViewById(R.id.tv_empty_msg);
-        showOffsetLoadingDialog(getResources().getDimensionPixelSize(R.dimen.px132));
+        showLoadingDialog(getResources().getDimensionPixelSize(R.dimen.px132));
     }
 
     private void initFocusView() {
@@ -89,7 +89,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
             }
         };
         msgList = queryData();
-        hideOffsetLoadingDialog();
+        hideLoadingDialog();
         if (msgList != null && !msgList.isEmpty()) {
             initAdapter();
             initRecyclerView();
