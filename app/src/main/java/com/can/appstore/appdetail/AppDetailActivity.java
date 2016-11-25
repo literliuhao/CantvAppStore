@@ -97,7 +97,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_detail);
         initView();
-        mFocusMoveUtil = new FocusMoveUtil(AppDetailActivity.this, getWindow().getDecorView(), R.mipmap.btn_focus);
+        mFocusMoveUtil = new FocusMoveUtil(AppDetailActivity.this, getWindow().getDecorView(), R.mipmap.image_focus);
         mScaleUtil = new FocusScaleUtil();
         mFocusMoveUtil.hideFocus();
         mListFocusMoveRunnable = new AppDetailActivity.ListFocusMoveRunnable();
@@ -542,10 +542,12 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
                 if (hasFocus) {
+                    mFocusMoveUtil.setFocusRes(AppDetailActivity.this, R.mipmap.image_focus);
                     setTabLine(View.VISIBLE, getResources().getColor(R.color.tabline_show_color));
                     mFocusedListChild = view;
                     mIntroducGrid.postDelayed(mListFocusMoveRunnable, 50);
                 } else {
+                    mFocusMoveUtil.setFocusRes(AppDetailActivity.this, R.mipmap.btn_focus);
                     mScaleUtil.scaleToNormal();
                 }
             }

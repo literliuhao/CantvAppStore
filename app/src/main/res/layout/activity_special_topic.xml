@@ -13,10 +13,11 @@
         android:layout_marginStart="@dimen/px160"
         android:layout_marginTop="@dimen/px80"
         android:textColor="@color/color_E0E0E0"
-        android:textSize="@dimen/fontsize_35"
+        android:textSize="@dimen/fontsize_40"
         android:drawableLeft="@drawable/ic_vertical_linear"
         android:drawablePadding="@dimen/px20"
         android:gravity="center_vertical"
+        android:includeFontPadding="false"
         android:text="专题"/>
     <TextView
         android:id="@+id/special_row_tv"
