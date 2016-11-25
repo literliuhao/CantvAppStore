@@ -1,9 +1,14 @@
 package com.can.appstore.appdetail;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -33,6 +38,7 @@ import cn.can.tvlib.utils.MD5Util;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtils;
+import cn.can.tvlib.utils.ToastUtils;
 import retrofit2.Response;
 
 /**
@@ -122,7 +128,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             @Override
             public void onFailure(CanCall<Result<AppInfo>> call, CanErrorWrapper errorWrapper) {
                 Log.d(TAG, "onFailure: " + errorWrapper.getReason());
-                mView.showToast(mContext.getResources().getString(R.string.load_data_faild));
+                ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.load_data_faild));
                 mView.hideLoadingDialog();
                 mView.loadDataFail();
             }
@@ -214,8 +220,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
      */
 
     public float calculatorPercent(long completedSize, long totalSize) {
-        float per = totalSize == 0 ? 0 : (float) (completedSize * 100f / totalSize);
-        return per;
+        return totalSize == 0 ? 0 : (float) (completedSize * 100f / totalSize);
     }
 
     public void initDownloadManager() {
@@ -247,7 +252,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_COMPLETED || downloadStatus == AppInstallListener.APP_INSTALLING) {//完成 , 并且正在安装时不能点击
             return;
         } else if (!NetworkUtils.isNetworkConnected(mContext)) { // 网络连接断开时不能点击
-            mView.showToast(mContext.getResources().getString(R.string.network_connection_disconnect));
+            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.network_connection_disconnect));
             return;
         } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {   // 下载错误 , 设置取消,重新添加任务
             downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
@@ -259,7 +264,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 silentInstall(mAppInfo.getName());
                 return;
             } else {
-                mView.showToast(mContext.getResources().getString(R.string.pares_install_apk_fail));
+                ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.pares_install_apk_fail));
                 //                mDownloadManager.removeTask(mTaskId);  // 应该需要从任务中移除
                 downloadStatus = DownloadStatus.DOWNLOAD_STATUS_INIT;
             }
@@ -408,16 +413,16 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         downlaodErrorCode = errorCode;
         float per = calculatorPercent(downloadTask.getCompletedSize(), downloadTask.getTotalSize());
         if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_FILE_NOT_FOUND) {
-            mView.showToast(mContext.getResources().getString(R.string.downlaod_error));
+            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.downlaod_error));
             refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
         } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_IO_ERROR) {
-            mView.showToast(mContext.getResources().getString(R.string.downlaod_error));
+            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.downlaod_error));
             refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
         } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR) {
-            mView.showToast(mContext.getResources().getString(R.string.network_connection_error));
+            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.network_connection_error));
             refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_PAUSE, per);
         } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_UNKONW_ERROR) {
-            mView.showToast(mContext.getResources().getString(R.string.unkonw_error));
+            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.unkonw_error));
             refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, per);
         }
     }
@@ -479,6 +484,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         } else {
             builder.setUpdatelogText(mContext.getResources().getString(R.string.not_update_log));
         }
+        //        builder.setBulrBg(getCurPageBlur());
         builder.setAboutText(mAppInfo.getAbout());
         mCustomDialog = builder.create();
         mCustomDialog.show();
@@ -550,6 +556,16 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
         });
         mCanDialog.show();
+    }
+
+    public Drawable getCurPageBlur() {
+        Bitmap shots = Utils.getScreenShots((Activity) mContext);
+        Drawable drawable = Utils.blurBitmap(shots, (Activity) mContext);
+        BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+        Bitmap bitmap = bitmapDrawable.getBitmap();
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawARGB(0xD2, 23, 25, 29);
+        return drawable;
     }
 
     public void dismissInsufficientStorageSpaceDialog() {
