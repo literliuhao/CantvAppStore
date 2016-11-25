@@ -33,8 +33,9 @@ public interface AppListContract {
         void showAppList();
         void showFailUI();
         void hideAppList();
+        void hideFailUI();
         void refreshMenuList(List<Topic> menuData, int focusPosition);
-        void refreshAppList(List<AppInfo> rightData, int InsertPosition,long delayTime);
+        void refreshAppList(List<AppInfo> rightData, int InsertPosition);
         void refreshRowNumber(SpannableStringBuilder spannable);
         void refreshTypeName(String typeName);
         void finish();

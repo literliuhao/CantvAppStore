@@ -162,9 +162,17 @@
     <string name="txt_empty_msg">暂无消息</string>
 
     <!--应用列表文本-->
+    <string name="illegal_page_type">非法页面类型！</string>
     <string name="no_network">没有网络，请检查您的网络连接！</string>
     <string name="no_more_content">没有更多了!</string>
     <string name="load_more_content">加载更多！</string>
     <string name="line">行</string>
     <string name="backslashes">/</string>
+
+    <!--自更新文本-->
+    <string name="system_upgrade">系统升级</string>
+    <string name="install">安装</string>
+    <string name="run_apk">运行apk</string>
+    <string name="load_error">下载异常，升级失败</string>
+    <string name="download">下载</string>
 </resources>

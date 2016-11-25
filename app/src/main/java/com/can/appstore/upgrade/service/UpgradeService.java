@@ -1,4 +1,4 @@
-package com.can.appstore.upgrade;
+package com.can.appstore.upgrade.service;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -7,7 +7,9 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-
+import com.can.appstore.R;
+import com.can.appstore.upgrade.InstallApkListener;
+import com.can.appstore.upgrade.UpgradeUtil;
 import com.can.appstore.upgrade.view.UpgradeFailDialog;
 import com.can.appstore.upgrade.view.UpgradeInFoDialog;
 import com.tencent.bugly.beta.Beta;
@@ -17,7 +19,6 @@ import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
-import cn.can.tvlib.utils.ToastUtils;
 
 /**
  * Created by syl on 2016/11/2.
@@ -27,9 +28,7 @@ import cn.can.tvlib.utils.ToastUtils;
 public class UpgradeService extends IntentService {
     public static final String TAG = "UpgradeService";
     public static final int SHOW_UPGRADE_INFO_DIALOG = 1;
-    public static final int SHOW_UPGRADE_INSTALL_COMPLETE = 2;
-    public static final int SHOW_UPGRADE_PROGRESSBAR_DIALOG = 3;
-    public static final int SHOW_UPGRADE_FAIL_DIALOG = 4;
+    public static final int SHOW_UPGRADE_FAIL_DIALOG = 2;
     private int mLocalVersion;
     private String mUpdatePath;
     private String mFileName;
@@ -47,25 +46,11 @@ public class UpgradeService extends IntentService {
                             installApk();
                         }
                     };
-                    UpgradeInFoDialog dialog = new UpgradeInFoDialog(UpgradeService.this, "系统升级", mUpgradeInfo
-                            .versionName, mUpgradeInfo.newFeature, "安装", listener);
+                    UpgradeInFoDialog dialog = new UpgradeInFoDialog(UpgradeService.this, getResources().getString(R
+                            .string.system_upgrade), mUpgradeInfo
+                            .versionName, mUpgradeInfo.newFeature, getResources().getString(R.string.install),
+                            listener);
                     dialog.show();
-                    break;
-                case SHOW_UPGRADE_INSTALL_COMPLETE:
-                    UpgradeInFoDialog.OnUpgradeClickListener listener1 = new UpgradeInFoDialog.OnUpgradeClickListener
-                            () {
-                        @Override
-                        public void onClick() {
-                            ToastUtils.showMessage(UpgradeService.this, "运行apk");
-                        }
-                    };
-                    UpgradeInFoDialog upgradeInfoDialog = new UpgradeInFoDialog(UpgradeService.this, "已经是最新版本了",
-                            mUpgradeInfo.versionName, mUpgradeInfo.newFeature, "运行", listener1);
-                    upgradeInfoDialog.show();
-                    break;
-                case SHOW_UPGRADE_PROGRESSBAR_DIALOG:
-                    //                    mProgressBarDialog = new UpgradeProgressBarDialog(UpgradeService.this);
-                    //                    mProgressBarDialog.show();
                     break;
                 case SHOW_UPGRADE_FAIL_DIALOG:
                     String content = (String) msg.obj;
@@ -83,12 +68,11 @@ public class UpgradeService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        ToastUtils.showMessage(this, "启动服务");
-        requsetInfo();
+        Log.d(TAG, "onHandleIntent: 启动更新服务");
+        getInfo();
     }
 
-    private void requsetInfo() {
-        // TODO: 2016/11/2  联网获取数据
+    private void getInfo() {
         mUpgradeInfo = Beta.getUpgradeInfo();
         if (mUpgradeInfo == null) {
             return;
@@ -135,10 +119,11 @@ public class UpgradeService extends IntentService {
         if (UpgradeUtil.isFileExist(mFileName)) {
             String localMD5 = UpgradeUtil.getFileMD5(mFileName);
             if (mUpgradeInfo.apkMd5.equalsIgnoreCase(localMD5)) {
-                Log.d(TAG, "存在已下载未安装的apk");
+                Log.d(TAG, "checkIsExistApk: true");
                 return true;
             }
         }
+        Log.d(TAG, "checkIsExistApk: false");
         return false;
     }
 
@@ -224,13 +209,6 @@ public class UpgradeService extends IntentService {
 
     private void installApk() {
         UpgradeUtil.install(this, mFileName, mUpgradeInfo.fileSize, new InstallApkListener() {
-
-            @Override
-            public void onInstallSuccess() {
-                Log.d(TAG, "onInstallSuccess: ");
-                onInstallComplete();
-            }
-
             @Override
             public void onInstallFail(String reason) {
                 Log.d(TAG, "onInstallFail: ");
@@ -254,13 +232,10 @@ public class UpgradeService extends IntentService {
     private void onLoadingError() {
         Message msg = Message.obtain();
         msg.what = SHOW_UPGRADE_FAIL_DIALOG;
-        msg.obj = "下载异常，升级失败";
+        msg.obj = getResources().getString(R.string.load_error);
         mHandler.sendMessage(msg);
     }
 
-    private void onInstallComplete() {
-        mHandler.sendEmptyMessage(SHOW_UPGRADE_INSTALL_COMPLETE);
-    }
 
     private void onInstallError(String reason) {
         Message msg = Message.obtain();
