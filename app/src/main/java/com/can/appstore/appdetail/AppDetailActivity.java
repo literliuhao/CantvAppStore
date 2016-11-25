@@ -3,6 +3,7 @@ package com.can.appstore.appdetail;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -60,7 +61,6 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     private AppDetailActivity.ListFocusMoveRunnable mListFocusMoveRunnable;
     private FocusMoveUtil mFocusMoveUtil;
     private FocusScaleUtil mScaleUtil;
-    private boolean focusSearchFailed;
     private AppDetailPresenter mAppDetailPresenter;
     private RoundCornerImageView mImageViewIcon;
     private TextView mAppName;
@@ -91,16 +91,14 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     private boolean isTabLineMoveToRecommend = false;//线是否移动到推荐
     private boolean isSwitchAnimatComplete = true;//底部动画是否切换完成
     private AppInfo mAppinfo;
+    private Rect mFocusRegion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_detail);
         initView();
-        mFocusMoveUtil = new FocusMoveUtil(AppDetailActivity.this, getWindow().getDecorView(), R.mipmap.image_focus);
-        mScaleUtil = new FocusScaleUtil();
-        mFocusMoveUtil.hideFocus();
-        mListFocusMoveRunnable = new AppDetailActivity.ListFocusMoveRunnable();
+        initFocusUtil();
         mAppDetailPresenter = new AppDetailPresenter(this, AppDetailActivity.this, getIntent());
         mAppDetailPresenter.startLoad();
     }
@@ -109,6 +107,29 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     protected void onResume() {
         mAppDetailPresenter.addBroadcastReceiverListener();
         super.onResume();
+    }
+
+    public void initFocusUtil() {
+        mFocusMoveUtil = new FocusMoveUtil(AppDetailActivity.this, getWindow().getDecorView(), R.mipmap.btn_focus);
+        mScaleUtil = new FocusScaleUtil();
+        mScaleUtil.setFocusScale(1.0f);
+        measureFocusActiveRegion();
+        mFocusMoveUtil.hideFocus();
+        mListFocusMoveRunnable = new AppDetailActivity.ListFocusMoveRunnable();
+    }
+
+    private void measureFocusActiveRegion() {
+        mFocusRegion = new Rect();
+        mIntroducGrid.post(new Runnable() {
+            @Override
+            public void run() {
+                int[] location = new int[2];
+                mIntroducGrid.getLocationInWindow(location);
+                mFocusRegion.set(location[0] + mIntroducGrid.getPaddingLeft(), 0,
+                        location[0] + mIntroducGrid.getMeasuredWidth() - mIntroducGrid.getPaddingRight(),
+                        getWindowManager().getDefaultDisplay().getHeight());
+            }
+        });
     }
 
     private void initView() {
@@ -141,17 +162,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     }
 
     private void setGridLayoutManager() {
-        mRecommendGrid.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(AppDetailActivity.this, 4, CanRecyclerView.CanGridLayoutManager.VERTICAL, false), new CanRecyclerView.OnFocusSearchCallback() {
-            @Override
-            public void onSuccess(View view, View focused, int focusDirection, RecyclerView.Recycler recycler, RecyclerView.State state) {
-                focusSearchFailed = false;
-            }
-
-            @Override
-            public void onFail(View focused, int focusDirection, RecyclerView.Recycler recycler, RecyclerView.State state) {
-                focusSearchFailed = true;
-            }
-        });
+        mRecommendGrid.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(AppDetailActivity.this, 4, CanRecyclerView.CanGridLayoutManager.VERTICAL, false));
         mIntroducLayoutManager = new CanRecyclerView.CanLinearLayoutManager(AppDetailActivity.this, CanRecyclerView.CanLinearLayoutManager.HORIZONTAL, false);
         mIntroducGrid.setLayoutManager(mIntroducLayoutManager);
     }
@@ -545,10 +556,13 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                     mFocusMoveUtil.setFocusRes(AppDetailActivity.this, R.mipmap.image_focus);
                     setTabLine(View.VISIBLE, getResources().getColor(R.color.tabline_show_color));
                     mFocusedListChild = view;
-                    mIntroducGrid.postDelayed(mListFocusMoveRunnable, 50);
+                    boolean isLastChild = position == mIntroducGridAdapter.getItemCount() - 1;
+                    mFocusMoveUtil.setFocusActiveRegion(mFocusRegion.left, mFocusRegion.top,
+                            mFocusRegion.right - (isLastChild ? 0 : getResources().getDimensionPixelSize(R.dimen.dimen_32px)),
+                            mFocusRegion.bottom);
+                    mListFocusMoveRunnable.run();
                 } else {
                     mFocusMoveUtil.setFocusRes(AppDetailActivity.this, R.mipmap.btn_focus);
-                    mScaleUtil.scaleToNormal();
                 }
             }
         });
@@ -560,7 +574,6 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                     if (position == mAppinfo.getThumbs().size() - 1) {
                         startMoveAnmi(TO_MOVE_RIGHT);
                         recommendGridPositionRequestFocus(500, 0);
-                        mScaleUtil.scaleToNormal(v);
                         return true;
                     }
                 } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -628,7 +641,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 if (hasFocus) {
                     setTabLine(View.VISIBLE, getResources().getColor(R.color.tabline_show_color));
                     mFocusedListChild = view;
-                    mRecommendGrid.postDelayed(mListFocusMoveRunnable, 50);
+                    mListFocusMoveRunnable.run();
                     view.setBackgroundResource(R.drawable.shape_bg_uninstall_manager_item_focus);
                 } else {
                     mScaleUtil.scaleToNormal();
@@ -722,13 +735,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         @Override
         public void run() {
             if (mFocusedListChild != null) {
-                mScaleUtil.scaleToLarge(mFocusedListChild);
-                mScaleUtil.setFocusScale(1.0f);
-                if (focusSearchFailed) {
-                    mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f);
-                } else {
-                    mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f, 0);
-                }
+                mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f);
             }
         }
     }
