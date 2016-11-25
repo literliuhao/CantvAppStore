@@ -59,7 +59,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public final static float DOWNLOAD_FINISH_PROGRESS = 100f;//完成时进度
     public final static String ARGUMENT_APPID = "appID";
     public final static String ARGUMENT_TOPICID = "topicid";
-    private final static String INSTALL_PATH = Environment.getExternalStorageDirectory().getPath() + "/can_downloadApk/";
+    private final static String INSTALL_PATH = "";
     public int downlaodErrorCode = 0;//下载错误
     private Context mContext;
     private AppDetailContract.View mView;
@@ -226,6 +226,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     public void initDownloadManager() {
         mDownloadManager = DownloadManager.getInstance(mContext);
+        INSTALL_PATH = mDownloadManager.getDownloadPath();
     }
 
     @Override
@@ -276,7 +277,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             String fileName = mTaskId;
             Task.setFileName(fileName);
             Task.setId(fileName);
-            Task.setSaveDirPath(INSTALL_PATH);
             Task.setUrl(Url);
             Task.setIcon(mAppInfo.getIcon());
             mDownloadManager.addDownloadTask(Task, AppDetailPresenter.this);
