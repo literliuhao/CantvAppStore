@@ -17,7 +17,7 @@
         android:drawablePadding="@dimen/px20"
         android:gravity="center_vertical"
         android:includeFontPadding="false"
-        android:text="下载"/>
+        android:text="下载管理"/>
     <com.can.appstore.appdetail.custom.TextProgressBar
         android:id="@+id/download_storage_progress"
         android:layout_width="@dimen/px340"
