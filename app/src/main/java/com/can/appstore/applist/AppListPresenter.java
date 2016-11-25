@@ -135,6 +135,7 @@ public class AppListPresenter implements AppListContract.Presenter {
         }
 
         mPage = 1;
+        mCurrentLine = 1;
         mView.showLoadingDialog();
         //初始化请求数据回调
         CanCallback<Result<AppInfoContainer>> canCallback = new CanCallback<Result<AppInfoContainer>>() {
@@ -206,6 +207,7 @@ public class AppListPresenter implements AppListContract.Presenter {
     @Override
     public void loadAppListData(final String topicId) {
         mPage = 1;
+        mCurrentLine = 1;
         mAppInfos.clear();
         mView.refreshAppList(mAppInfos, REFRESH_APP);
         if (!NetworkUtils.isNetworkConnected(mContext)) {
@@ -224,7 +226,6 @@ public class AppListPresenter implements AppListContract.Presenter {
                 isLoadFail = false;
                 //初始化分页信息
                 mPage = 2;
-                mCurrentLine = 0;
                 Result<AppInfoContainer> body = response.body();
                 Log.d(TAG, "onResponse: " + body.toString());
                 AppInfoContainer data = body.getData();
@@ -331,13 +332,7 @@ public class AppListPresenter implements AppListContract.Presenter {
 
     @Override
     public void onAppListItemSelectChanged(int position) {
-        Log.d(TAG, "refreshLineInformation: onAppListItemSelectChanged");
-
-        if (position == AppListActivity.FOCUS_MOVE_OUTSIDE_APP_LIST) {
-            mCurrentLine = 0;
-        } else {
-            mCurrentLine = calculateRowNumber(position + 1);
-        }
+        mCurrentLine = calculateRowNumber(position + 1);
         refreshLineInformation();
     }
 
@@ -385,7 +380,6 @@ public class AppListPresenter implements AppListContract.Presenter {
      * 刷新右上角行数显示信息
      */
     private void refreshLineInformation() {
-        Log.d(TAG, "refreshLineInformation: " + mCurrentLine + ",---" + mTotalLine);
         StringBuilder crowNumber = new StringBuilder();
         crowNumber.append(mCurrentLine);
         crowNumber.append(mContext.getResources().getString(R.string.backslashes));
