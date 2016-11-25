@@ -39,7 +39,6 @@ import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.GlideRoundCornerImageView;
-import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
@@ -236,6 +235,12 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                     setTabLine(View.GONE, Color.TRANSPARENT);
                 }
                 break;
+            case R.id.ll_introduce_text:
+                if (hasFocus) {
+                    mFocusMoveUtil.setFocusActiveRegion(mFocusRegion.left - getResources().getDimensionPixelSize(R.dimen.dimen_20px),
+                            mFocusRegion.top, mFocusRegion.right, mFocusRegion.bottom);
+                }
+                break;
         }
         buttonFocusSetting(hasFocus, view);
     }
@@ -372,7 +377,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     }
 
     private void setData() {
-        mImageViewIcon.load(mAppinfo.getIcon(), R.drawable.shap_app_list_icon_bg, R.mipmap.cibn_icon, R.mipmap.icon_loading_fail, true);
+        mImageViewIcon.load(mAppinfo.getIcon(), R.drawable.shap_detail_icon_bg, R.mipmap.cibn_icon, R.mipmap.icon_loading_fail, true);
         mAppName.setText(String.format(getResources().getString(R.string.detail_app_name), mAppinfo.getName(), mAppinfo.getVersionName()));
         mAppSize.setText(String.format(getResources().getString(R.string.detail_app_size), mAppinfo.getSizeStr()));
         mAppUodateDate.setText(String.format(getResources().getString(R.string.detail_app_update_date), mAppinfo.getUpdateTime()));
