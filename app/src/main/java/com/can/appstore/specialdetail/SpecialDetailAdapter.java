@@ -8,12 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.can.appstore.R;
 import com.can.appstore.entity.AppInfo;
+
 import java.util.List;
+
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 import cn.can.tvlib.ui.focus.CanRecyclerViewFocusHelper;
+import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 /**
@@ -21,7 +25,7 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
  * 专题详情适配器
  */
 
-public class SpecialDetailAdapter extends CanRecyclerViewAdapter<AppInfo>{
+public class SpecialDetailAdapter extends CanRecyclerViewAdapter<AppInfo> {
     private Context mContext;
 
     private List<AppInfo> mAppInfos;
@@ -43,8 +47,8 @@ public class SpecialDetailAdapter extends CanRecyclerViewAdapter<AppInfo>{
     @Override
     protected void bindContentData(AppInfo appInfo, RecyclerView.ViewHolder holder, int position) {
         MyViewHolder viewHolder = (MyViewHolder) holder;
-        ImageLoader.getInstance().buildTask(viewHolder.mAppImgView, appInfo.getIcon()).bitmapTransformation(new
-                GlideRoundTransform(mContext,12)).build().start(mContext);
+        ImageLoader.getInstance().buildTask(viewHolder.mAppImgView, appInfo.getIcon()).errorHolder(R.mipmap.icon_load_default)
+                .build().start(mContext);
         viewHolder.mAppNameView.setText(appInfo.getName());
         viewHolder.mAppSize.setText(appInfo.getSizeStr());
         viewHolder.mAppDownloadNum.setText(appInfo.getDownloadCount());
@@ -55,14 +59,14 @@ public class SpecialDetailAdapter extends CanRecyclerViewAdapter<AppInfo>{
      */
     private class MyViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView mAppImgView;
+        RoundCornerImageView mAppImgView;
         TextView mAppNameView;
         TextView mAppSize;
         TextView mAppDownloadNum;
 
         MyViewHolder(View itemView) {
             super(itemView);
-            mAppImgView = (ImageView) itemView.findViewById(R.id.special_detail_item_appicon);
+            mAppImgView = (RoundCornerImageView) itemView.findViewById(R.id.special_detail_item_appicon);
             mAppNameView = (TextView) itemView.findViewById(R.id.special_detail_item_appname);
             mAppSize = (TextView) itemView.findViewById(R.id.special_detail_item_appsize);
             mAppDownloadNum = (TextView) itemView.findViewById(R.id.special_detail_item_appdownloadnum);

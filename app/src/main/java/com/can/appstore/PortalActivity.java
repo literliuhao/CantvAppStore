@@ -11,10 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.can.appstore.active.ActiveActivity;
 import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.applist.AppListActivity;
 import com.can.appstore.download.DownloadLeadAcitivity;
 import com.can.appstore.message.MessageStartActivity;
+import com.can.appstore.specialdetail.SpecialDetailActivity;
 import com.can.appstore.uninstallmanager.UninstallManagerActivity;
 
 import java.util.ArrayList;
@@ -67,6 +69,10 @@ public class PortalActivity extends Activity {
                 list.add("首页");
             } else if (i == 8) {
                 list.add("排行榜列表");
+            } else if (i == 9) {
+                list.add("专题详情页");
+            } else if (i == 10) {
+                list.add("活动详情页");
             } else {
                 list.add(i + "");
             }
@@ -117,12 +123,16 @@ public class PortalActivity extends Activity {
                 } else if (position == 7) {
                     Intent intent = new Intent(PortalActivity.this, MainActivity.class);
                     startActivity(intent);
-                }else if (position == 8) {
+                } else if (position == 8) {
                     Intent intent = new Intent(PortalActivity.this, AppListActivity.class);
                     intent.putExtra(AppListActivity.ENTRY_KEY_SRC_TYPE, AppListActivity.PAGE_TYPE_RANKING);
                     intent.putExtra(AppListActivity.ENTRY_KEY_TOPIC_ID, "");
                     intent.putExtra(AppListActivity.ENTRY_KEY_TYPE_ID, "");
                     PortalActivity.this.startActivity(intent);
+                } else if (position == 9) {
+                    SpecialDetailActivity.actionStart(PortalActivity.this, "");
+                } else if (position == 10) {
+                    ActiveActivity.actionStart(PortalActivity.this, "");
                 }
             }
         });

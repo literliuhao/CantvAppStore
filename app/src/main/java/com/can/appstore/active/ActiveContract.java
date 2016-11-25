@@ -8,15 +8,15 @@ public class ActiveContract {
     interface TaskPresenter{
         void clickBtnDownload();
 
-        void removeAllListener();
-
         void requestActiveData(String id);
+
+        void release();
     }
 
     interface OperationView{
         void refreshProgressbarProgress(float progress);
 
-        void refreshTextProgressbarTextStatus(String status);
+        void refreshTextProgressbarTextStatus(int status);
 
         void showToast(String toastContent);
 

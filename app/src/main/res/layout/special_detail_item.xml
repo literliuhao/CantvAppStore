@@ -9,11 +9,10 @@
     android:gravity="center_horizontal"
     android:padding="@dimen/px24">
 
-    <ImageView
+    <cn.can.tvlib.ui.view.RoundCornerImageView
         android:layout_width="@dimen/px132"
         android:layout_height="@dimen/px132"
-        android:src="@mipmap/ic_launcher"
-        android:scaleType="centerCrop"
+        android:scaleType="fitXY"
         android:id="@+id/special_detail_item_appicon"/>
 
     <TextView

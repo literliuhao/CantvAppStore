@@ -74,6 +74,13 @@ public class TextProgressBar extends ProgressBar {
         }
     }
 
+    public void setTextFakeBoldText(boolean isBold) {
+        mPaint.setFakeBoldText(isBold);
+        if(this.str!=null){
+            mPaint.getTextBounds(str, 0,str.length(), mRect);
+        }
+    }
+
     // 设置文字内容
     public void setText(String text) {
         this.str = text;

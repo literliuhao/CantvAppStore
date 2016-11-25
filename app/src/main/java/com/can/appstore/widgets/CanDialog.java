@@ -1,7 +1,9 @@
 package com.can.appstore.widgets;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -15,6 +17,8 @@ import com.can.appstore.R;
 
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
+import cn.can.tvlib.utils.BitmapUtils;
+import cn.can.tvlib.utils.FastBlurUtil;
 
 /**
  * Created by Atangs on 2016/10/30.
@@ -22,7 +26,7 @@ import cn.can.tvlib.ui.focus.FocusMoveUtil;
  */
 
 public class CanDialog extends Dialog implements View.OnFocusChangeListener {
-    private Context mContext;
+    private Activity mContext;
     private TextView mDialogTitle;
     private TextView mDialogMsg;
     private TextView mDialogStateMsg;
@@ -64,11 +68,11 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
         ;
     }
 
-    public CanDialog(Context context) {
+    public CanDialog(Activity context) {
         this(context, R.style.CanDialog);
     }
 
-    public CanDialog(Context context, int themeResId) {
+    public CanDialog(Activity context, int themeResId) {
         super(context, themeResId);
         this.mContext = context;
         mFocusMoveUtil = new FocusMoveUtil(mContext, getWindow().getDecorView(), R.mipmap.btn_focus);
@@ -88,6 +92,8 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
         mPositiveBtn = (Button) dialogView.findViewById(R.id.btn_dialog_positive);
         mNegativeBtn = (Button) dialogView.findViewById(R.id.btn_dialog_negative);
         mRlContent = (RelativeLayout) dialogView.findViewById(R.id.rl_content);
+        Drawable drawable = BitmapUtils.blurBitmap(mContext);
+        dialogView.setBackground(drawable);
     }
 
     public CanDialog setTitle(String title) {

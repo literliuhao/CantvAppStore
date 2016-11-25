@@ -1,5 +1,6 @@
 package com.can.appstore.uninstallmanager;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -38,7 +39,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     private static final int LOADER_ID = 0;
     private static final int COLUMN_COUNT = 3;
     private UninstallManagerContract.View mView;
-    private Context mContext;
+    private Activity mContext;
     private static List<PackageUtil.AppInfo> mAppInfoList;
     private AppInstallReceiver mInstalledReceiver;
     public ArrayList<String> mSelectPackageName = new ArrayList<>();
@@ -52,7 +53,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
 
     public UninstallManagerPresenter(UninstallManagerContract.View view, Context context) {
         this.mView = view;
-        this.mContext = context;
+        this.mContext = (Activity) context;
         initDownloadManager();
         addListener();
     }
