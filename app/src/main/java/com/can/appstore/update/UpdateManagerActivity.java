@@ -243,13 +243,13 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                     PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", false);
                     mAutoUpdate = false;
                     initDialog(getResources().getString(R.string.update_setting_start));
-                    mReminder.setVisibility(View.INVISIBLE);
+//                    mReminder.setVisibility(View.INVISIBLE);
                     //Toast.makeText(UpdateManagerActivity.this, R.string.update_start_autoupdate, Toast.LENGTH_SHORT).show();
                 } else {
                     PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", true);
                     mAutoUpdate = true;
                     initDialog(getResources().getString(R.string.update_setting_stop));
-                    mPresenter.getListSize();
+//                    mPresenter.getListSize();
                     //Toast.makeText(UpdateManagerActivity.this, R.string.update_end_autoupdate, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -462,6 +462,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", true);
                 mAutoUpdate = true;
                 canDialog.dismiss();
+                mPresenter.getListSize();
                 //mPresenter.autoUpdate(UpdateManagerActivity.this);
             }
 
@@ -470,6 +471,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", false);
                 mAutoUpdate = false;
                 canDialog.dismiss();
+                mReminder.setVisibility(View.INVISIBLE);
             }
         });
         canDialog.show();

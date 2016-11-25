@@ -166,10 +166,10 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     public void autoUpdate(Context context) {
         //判断是否开启自动更新
         Log.i(TAG, "autoUpdate: "+111111);
-        boolean isAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
+        /*boolean isAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
         if (isAutoUpdate == false) {
             return;
-        }
+        }*/
         //检测网络获取更新包数据
         if (!NetworkUtils.isNetworkConnected(context)) {
             ToastUtils.showMessage(context, "网络连接异常，请检查网络。");
@@ -196,6 +196,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                 List<AppInfo> data = response.body().getData();
                 //添加队列
                 addAutoUpdateTask(mDownloadManager, data);
+                int size = data.size();
                 //mView.refreshAll();
                 Log.i(TAG, "autoUpdate: "+444444);
             }
@@ -224,6 +225,15 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                 Log.i(TAG, "autoUpdate: "+333333);
             }
         }
+    }
+
+    /**
+     * 获取可更新app数量
+     * @return
+     */
+    public int getUpdateApkNum(){
+
+        return mDatas.size();
     }
 
 }
