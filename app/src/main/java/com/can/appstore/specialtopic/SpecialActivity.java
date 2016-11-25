@@ -197,7 +197,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
 
     @Override
     public void refreshData(List<SpecialTopic> data) {
-        mAdapter = new SpecialAdapter(data, this);
+        mAdapter = new SpecialAdapter(data);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
             @Override
