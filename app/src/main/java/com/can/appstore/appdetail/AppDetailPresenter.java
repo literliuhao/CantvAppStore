@@ -59,7 +59,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public final static float DOWNLOAD_FINISH_PROGRESS = 100f;//完成时进度
     public final static String ARGUMENT_APPID = "appID";
     public final static String ARGUMENT_TOPICID = "topicid";
-    private final static String INSTALL_PATH = "";
     public int downlaodErrorCode = 0;//下载错误
     private Context mContext;
     private AppDetailContract.View mView;
@@ -72,6 +71,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     private String mTopicId = "";
     private CanCall<Result<AppInfo>> mAppDetailCall;
     private AppInfo mAppInfo;
+    private String downloadPath = "";
     private String mPackageName = "";
     private CustomDialog mCustomDialog;
     private int mLimitInstallSace = 50 * 1024 * 1024;
@@ -142,7 +142,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_RUN, DOWNLOAD_INIT_PROGRESS);
             return;
         }
-        mInstallApkPath = INSTALL_PATH + mTaskId;
+        mInstallApkPath = downloadPath + mTaskId;
         if (new File(mInstallApkPath).exists()) {
             mInstallApkFileMD5 = MD5Util.getFileMD5(mInstallApkPath);
         }
@@ -178,7 +178,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     private void initUpdateButtonStatus() {
         DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(Url));
-        mInstallApkPath = INSTALL_PATH + mTaskId;
+        mInstallApkPath = downloadPath + mTaskId;
         if (new File(mInstallApkPath).exists()) {
             mInstallApkFileMD5 = MD5Util.getFileMD5(mInstallApkPath);
         }
@@ -226,7 +226,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     public void initDownloadManager() {
         mDownloadManager = DownloadManager.getInstance(mContext);
-        INSTALL_PATH = mDownloadManager.getDownloadPath();
+        downloadPath = mDownloadManager.getDownloadPath();
     }
 
     @Override
