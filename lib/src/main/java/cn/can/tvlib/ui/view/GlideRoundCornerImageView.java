@@ -5,8 +5,8 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.Target;
@@ -19,7 +19,7 @@ import cn.can.tvlib.imageloader.ImageLoader;
  * Created by zhangbingyuan on 2016/11/24.
  */
 
-public class GlideRoundCornerImageView extends FrameLayout {
+public class GlideRoundCornerImageView extends RelativeLayout {
 
     private RoundCornerImageView mBackgroundView;
     private RoundCornerImageView mImageView;
@@ -64,7 +64,7 @@ public class GlideRoundCornerImageView extends FrameLayout {
         mImageView.setLayoutParams(new LayoutParams(-1, -1));
         mImageView.setScaleType(ImageView.ScaleType.FIT_XY);
         mImageView.setCornerRadius(cornerRadius);
-        mImageView.setMaskColor(maskColor, maskSize, maskSize > 0);
+        mImageView.setMaskColor(maskColor, maskSize, maskSize > 0 && maskColor != 0);
         setImageResource(imageResId);
         addView(mImageView);
     }
@@ -211,7 +211,8 @@ public class GlideRoundCornerImageView extends FrameLayout {
 
         builder.successCallback(new GlideLoadTask.SuccessCallback() {
             @Override
-            public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+            public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target,
+                                     boolean isFromMemoryCache, boolean isFirstResource) {
                 if (isFromMemoryCache) {
                     setImageDrawable(resource);
                     return true;

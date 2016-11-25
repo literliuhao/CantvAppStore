@@ -79,7 +79,7 @@ public class RoundCornerImageView extends ImageView {
         super.setBackgroundResource(0);
         changeBgEnable = true;
 
-        maskParamsLegal = mMaskSize != 0 && mMaskColor != 0;
+        maskParamsLegal = mMaskSize > 0 && mMaskColor != 0;
         showMask = maskParamsLegal;
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
@@ -255,7 +255,7 @@ public class RoundCornerImageView extends ImageView {
     public void setMaskColor(int maskColor, int maskSize, boolean showImmidate) {
         mMaskColor = maskColor;
         mMaskSize = maskSize;
-        maskParamsLegal = mMaskColor > 0 && mMaskSize > 0;
+        maskParamsLegal = mMaskSize > 0 && mMaskColor != 0;
         if (maskParamsLegal) {
             initMaskRect(getWidth(), getHeight());
         }
