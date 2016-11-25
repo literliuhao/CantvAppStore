@@ -73,6 +73,16 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         mView.showLoadingDialog();
         final List appList = UpdateUtils.getAppList();
         //date = AppInfoBean.getAppInfoList(appList);
+         /*AppInfo appInfo1 = new AppInfo();
+        appInfo1.setPackageName("cn.cibntv.ott");
+        appInfo1.setVersionCode(4);
+        AppInfo appInfo2 = new AppInfo();
+        appInfo2.setPackageName("打怪");
+        appInfo2.setVersionCode(4);
+        date.add(appInfo1);
+        date.add(appInfo2);
+        appList.add(appInfo1);
+        appList.add(appInfo2);*/
         mDatas.clear();
         //进行网络请求获取更新包信息
         CanCall<ListResult<AppInfo>> listResultCanCall = HttpManager.getApiService().checkUpdate(appList);
@@ -81,7 +91,8 @@ public class UpdatePresenter implements UpdateContract.Presenter {
             public void onResponse(CanCall<ListResult<AppInfo>> call, Response<ListResult<AppInfo>> response) throws Exception {
                 List<AppInfo> data = response.body().getData();
                 mAppInfoBeanList = AppInfoBean.getAppInfoBeanList(data);
-                Log.i(TAG, data.size()+"");
+                Log.i(TAG, data.size() + "");
+                Log.i(TAG, data.toString());
                 if (mAppInfoBeanList.size() < 1 || mAppInfoBeanList == null) {
                     mView.hideLoadingDialog();
                     mView.showNoData();
@@ -159,17 +170,30 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     }
 
     /**
+     * 是否无数据
+     *
+     * @param position
+     * @return
+     */
+    public boolean isNull(int position) {
+        if (mDatas.size() == 0 || mDatas == null) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * 检测自动更新添加队列
      *
      * @param context
      */
     public void autoUpdate(Context context) {
         //判断是否开启自动更新
-        Log.i(TAG, "autoUpdate: "+111111);
-        /*boolean isAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
+        Log.i(TAG, "autoUpdate: " + 111111);
+        boolean isAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
         if (isAutoUpdate == false) {
             return;
-        }*/
+        }
         //检测网络获取更新包数据
         if (!NetworkUtils.isNetworkConnected(context)) {
             ToastUtils.showMessage(context, "网络连接异常，请检查网络。");
@@ -188,7 +212,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         appList.add(appInfo1);
         appList.add(appInfo2);*/
         final DownloadManager mDownloadManager = DownloadManager.getInstance(context);
-        Log.i(TAG, "autoUpdate: "+appList.toString());
+        Log.i(TAG, "autoUpdate: " + appList.toString());
         CanCall<ListResult<AppInfo>> listResultCanCall = HttpManager.getApiService().checkUpdate(appList);
         listResultCanCall.enqueue(new CanCallback<ListResult<AppInfo>>() {
             @Override
@@ -198,7 +222,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                 addAutoUpdateTask(mDownloadManager, data);
                 int size = data.size();
                 //mView.refreshAll();
-                Log.i(TAG, "autoUpdate: "+444444);
+                Log.i(TAG, "autoUpdate: " + 444444);
             }
 
             @Override
@@ -213,25 +237,25 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         for (int i = 0; i < data.size(); i++) {
             String downloadUrl = data.get(i).getUrl();
             DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(downloadUrl));
-            Log.i(TAG, "autoUpdate: "+222222);
+            Log.i(TAG, "autoUpdate: " + 222222);
             if (downloadTask == null) {
                 downloadTask = new DownloadTask();
                 String md5 = MD5.MD5(downloadUrl);
                 downloadTask.setFileName(md5 + ".apk");
                 downloadTask.setId(md5);
-                downloadTask.setSaveDirPath(MyApp.mContext.getExternalCacheDir().getPath() + "/");
                 downloadTask.setUrl(downloadUrl);
                 mDownloadManager.addDownloadTask(downloadTask, null);
-                Log.i(TAG, "autoUpdate: "+333333);
+                Log.i(TAG, "autoUpdate: " + 333333);
             }
         }
     }
 
     /**
      * 获取可更新app数量
+     *
      * @return
      */
-    public int getUpdateApkNum(){
+    public int getUpdateApkNum() {
 
         return mDatas.size();
     }
