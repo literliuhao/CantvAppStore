@@ -140,7 +140,7 @@ public class PromptUtils {
             mToast.show();
             return;
         }
-        mToast = Toast.makeText(context, msg, Toast.LENGTH_SHORT);
+        mToast = Toast.makeText(context.getApplicationContext(), msg, Toast.LENGTH_SHORT);
         mToast.show();
     }
 

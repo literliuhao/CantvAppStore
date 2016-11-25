@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -226,7 +227,8 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
 
             @Override
             public void onItemContentClick(View view, int pos, DownloadTask downloadTask) {
-
+                // TODO: 2016/11/25  进入详情页
+                Log.i(TAG, "onItemContentClick: downloadTAsk="+downloadTask.toString());
             }
 
             @Override

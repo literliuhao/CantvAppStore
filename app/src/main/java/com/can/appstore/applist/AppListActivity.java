@@ -54,6 +54,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     // handler msg.what
     private final int MSG_HIDE_MENU_TOP_SHADOW = 0x101;
     private final int MSG_HIDE_MENU_BOTTOM_SHADOW = 0x102;
+    private final int HIDE_MENU_ITEM_BG = 0x103;
     // 页面类型
     private static final int PAGE_TYPE_ILLEGAL = 0x100;//非法页面类型
     public static final int PAGE_TYPE_APP_LIST = 0x101;//页面类型 （应用列表）
@@ -346,6 +347,14 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                             });
                         }
                         break;
+                    case HIDE_MENU_ITEM_BG:
+                        View view = (View) msg.obj;
+                        if (view != null) {
+                            view.setBackgroundColor(Color.TRANSPARENT);
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
         };
@@ -444,11 +453,13 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 if (direction == View.FOCUS_RIGHT) {
                     menuFocusMoveToRight();
                     if (mSelectedMenuChild != null) {
+                        mHandler.removeMessages(HIDE_MENU_ITEM_BG);
                         mSelectedMenuChild.setBackgroundResource(R.drawable.shap_app_list_menu);
                     }
 
                 } else if (direction == View.FOCUS_UP && mPageType == PAGE_TYPE_APP_LIST) {
                     if (mSelectedMenuChild != null) {
+                        mHandler.removeMessages(HIDE_MENU_ITEM_BG);
                         mSelectedMenuChild.setBackgroundResource(R.drawable.shap_app_list_menu);
                     }
                     refreshFocusActiveRegion(NO_LIMIT_REGION);
@@ -553,14 +564,12 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
 
     @Override
     public void refreshAppList(List<AppInfo> appListData, int insertPosition) {
-        mSelectedAppListChild = null;
         if (mAppListAdapter == null) {
             mAppListAdapter = new com.can.appstore.applist.adpter.AppListInfoAdapter(appListData);
             mAppList.setAdapter(mAppListAdapter);
             mAppListAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
                 @Override
                 public void onItemFocusChanged(View view, int position, boolean hasFocus) {
-                    //final View selectView = view;
                     if (hasFocus) {
                         mSelectedAppListChild = view;
                         mPresenter.onAppListItemSelectChanged(position);
@@ -575,7 +584,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 @Override
                 public boolean onFocusMoveOutside(int currFocus, int direction) {
                     if (direction == View.FOCUS_LEFT) {
-                        //焦点移出应用列表，改变行数文本
                         if (mSearchBtn == mSelectedMenuChild) {
                             refreshFocusActiveRegion(NO_LIMIT_REGION);
                             mSearchBtn.setFocusable(true);
@@ -585,13 +593,11 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                         }
                         if (mSelectedMenuChild != null) {
                             refreshMenuPaddingWithFocusRegion();
-                            mSelectedMenuChild.requestFocus();
-                            mMenu.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mSelectedMenuChild.setBackgroundColor(Color.TRANSPARENT);
-                                }
-                            }, CHANGE_FOCUSED_VIEW_BG_DELAY);
+                            //解决偶现menu焦点背景不消失问题
+                            final View view = mSelectedMenuChild;
+                            view.requestFocus();
+                            mHandler.sendMessageDelayed(Message.obtain(mHandler, HIDE_MENU_ITEM_BG, view),
+                                    CHANGE_FOCUSED_VIEW_BG_DELAY);
                             return true;
                         }
                     }
@@ -611,6 +617,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
             });
 
         } else if (insertPosition == AppListPresenter.REFRESH_APP) {
+            mSelectedAppListChild = null;//刷新整个列表的时候应用列表记录的item删除
             mAppListAdapter.notifyDataSetChanged();
         } else {
             mAppListAdapter.notifyItemInserted(insertPosition);

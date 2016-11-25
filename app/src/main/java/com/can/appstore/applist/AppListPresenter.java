@@ -72,9 +72,7 @@ public class AppListPresenter implements AppListContract.Presenter {
         mView = view;
         mContext = view.getContext();
         mPageType = pageType;
-        // TODO: 2016/11/10 测试使用type  后期删除
-        //mTypeId = typeId;
-        mTypeId = "5";
+        mTypeId = typeId;
         mTopicId = topicId;
         mView.setPresenter(this);
         mTopics = new ArrayList<>();
@@ -153,13 +151,6 @@ public class AppListPresenter implements AppListContract.Presenter {
                 List<AppInfo> appInfos = data.getData();
                 mTopics.addAll(topics);
                 mAppInfos.addAll(appInfos);
-                for (int i = 0; i < 6; i++) {
-                    Topic topic = new Topic();
-                    topic.setName(i + "");
-                    mTopics.add(topic);
-                }
-
-
                 if (mPageType == AppListActivity.PAGE_TYPE_APP_LIST) {
                     mView.showSearchView();
                 }
@@ -193,8 +184,7 @@ public class AppListPresenter implements AppListContract.Presenter {
             mAppListInfoCall = HttpManager.getApiService().getAppinfos("", mTypeId, mPage, PAGE_SIZE);
             mAppListInfoCall.enqueue(canCallback);
         } else {
-            // TODO: 2016/11/17 测试 id  页面对接时修改
-            mAppsRanking = HttpManager.getApiService().getAppsRanking("15");
+            mAppsRanking = HttpManager.getApiService().getAppsRanking(mTopicId);
             mAppsRanking.enqueue(canCallback);
         }
 
