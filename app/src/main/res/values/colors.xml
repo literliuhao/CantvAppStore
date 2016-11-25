@@ -55,6 +55,7 @@
     <color name="app_introduce_color">#33FFFFFF</color>
     <!--<color name="two_page_bg">#2D313A</color>-->
     <color name="download_button_bg">#0376a0</color>
+    <color name="tabline_show_color">#F2F2F2</color>
     <color name="update_button_bg">#42474B</color>
     <color name="download_progress_bg">#438b14</color>
     <color name="introduce_one_bg">#B2000000</color>

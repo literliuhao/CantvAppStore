@@ -2,6 +2,7 @@ package com.can.appstore.appdetail;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -75,7 +76,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     private TextProgressBar mButtonUpdate;
     private TextView mBtIntroduction;
     private Button mBtRecommend;
-    private ImageView mIvTabLine;
+    private View mIvTabLine;
     private TextView mTvAppIntroduc;
     private TextView mTvAddFuntion;
     private TextView mTvDeveloper;
@@ -88,7 +89,6 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     private LinearLayout mLayoutIntroduceText;
     private LinearLayout mLayoutAppDetail;
     private boolean isTabLineMoveToRecommend = false;//线是否移动到推荐
-    private boolean isRecommendGridFirstRow = false;//焦点是否在推荐列表的第一行
     private boolean isSwitchAnimatComplete = true;//底部动画是否切换完成
     private AppInfo mAppinfo;
 
@@ -97,7 +97,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_detail);
         initView();
-        mFocusMoveUtil = new FocusMoveUtil(AppDetailActivity.this, getWindow().getDecorView(), R.mipmap.btn_focus);
+        mFocusMoveUtil = new FocusMoveUtil(AppDetailActivity.this, getWindow().getDecorView(), R.mipmap.image_focus);
         mScaleUtil = new FocusScaleUtil();
         mFocusMoveUtil.hideFocus();
         mListFocusMoveRunnable = new AppDetailActivity.ListFocusMoveRunnable();
@@ -124,7 +124,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         mTvAppIntroduc = (TextView) findViewById(R.id.tv_app_introduc);
         mTvAddFuntion = (TextView) findViewById(R.id.tv_add_function);
         mTvDeveloper = (TextView) findViewById(R.id.tv_app_developer);
-        mIvTabLine = (ImageView) findViewById(R.id.iv_tab_line);
+        mIvTabLine = findViewById(R.id.iv_tab_line);
         mButtonDownload = (TextProgressBar) findViewById(R.id.bt_download);
         mButtonUpdate = (TextProgressBar) findViewById(R.id.bt_update);
         mRelativeLayuotOperatingEquipment = (RelativeLayout) findViewById(R.id.rl_operating_equipment);
@@ -190,7 +190,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         switch (view.getId()) {
             case R.id.bt_download:
                 if (hasFocus) {
-                    //                    mIvTabLine.setVisibility(View.VISIBLE);
+                    setTabLine(View.VISIBLE, getResources().getColor(R.color.tabline_show_color));
                     mButtonDownload.setProgressDrawable(getResources().getDrawable(R.drawable.layer_list_app_detail_download_focus));
                 } else {
                     if (ApkUtils.isAvailable(AppDetailActivity.this, mAppDetailPresenter.getCurAppPackageName())) {//应用已经安装
@@ -202,7 +202,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 break;
             case R.id.bt_update:
                 if (hasFocus) {
-                    //                    mIvTabLine.setVisibility(View.VISIBLE);
+                    setTabLine(View.VISIBLE, getResources().getColor(R.color.tabline_show_color));
                     mButtonUpdate.setProgressDrawable(getResources().getDrawable(R.drawable.layer_list_app_detail_download_focus));
                 } else {
                     mButtonUpdate.setProgressDrawable(getResources().getDrawable(R.drawable.layer_list_app_detail_download));
@@ -210,22 +210,27 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 break;
             case R.id.bt_Introduction:
                 if (hasFocus) {
-                    //                    mIvTabLine.setVisibility(View.GONE);
                     if (isTabLineMoveToRecommend) {
                         startMoveAnmi(TO_MOVE_LEFT);
                     }
+                    setTabLine(View.GONE, Color.TRANSPARENT);
                 }
                 break;
             case R.id.bt_recommend:
                 if (hasFocus) {
-                    //                    mIvTabLine.setVisibility(View.GONE);
                     if (!isTabLineMoveToRecommend) {
                         startMoveAnmi(TO_MOVE_RIGHT);
                     }
+                    setTabLine(View.GONE, Color.TRANSPARENT);
                 }
                 break;
         }
         buttonFocusSetting(hasFocus, view);
+    }
+
+    public void setTabLine(int isShow, int color) {
+        mIvTabLine.setVisibility(isShow);
+        mIvTabLine.setBackgroundColor(color);
     }
 
     public void buttonFocusSetting(boolean hasFocus, View view) {
@@ -266,11 +271,6 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 if (mButtonUpdate.isFocused() || mButtonDownload.isFocused() || mBtIntroduction.isFocused() || mBtRecommend.isFocused()) {
                     return true;
                 }
-                //                else if (mRecommendGrid.isShown() && isRecommendGridFirstRow) {
-                //                    requestFocus(mButtonDownload);
-                //                } else if (mIntroducGrid.isShown() && !mLayoutIntroduceText.isFocused()) {
-                //                    requestFocus(mButtonDownload);
-                //                }
             case KeyEvent.KEYCODE_DPAD_DOWN:
                 if (mBtRecommend.isFocused() && mAppinfo.getRecommend().size() == 0 || mAppinfo.getRecommend() == null) {
                     return true;
@@ -542,10 +542,12 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
                 if (hasFocus) {
-                    //                    mIvTabLine.setVisibility(View.VISIBLE);
+                    mFocusMoveUtil.setFocusRes(AppDetailActivity.this, R.mipmap.image_focus);
+                    setTabLine(View.VISIBLE, getResources().getColor(R.color.tabline_show_color));
                     mFocusedListChild = view;
                     mIntroducGrid.postDelayed(mListFocusMoveRunnable, 50);
                 } else {
+                    mFocusMoveUtil.setFocusRes(AppDetailActivity.this, R.mipmap.btn_focus);
                     mScaleUtil.scaleToNormal();
                 }
             }
@@ -624,7 +626,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
                 Log.d(TAG, "mRecommedGridAdapter onItemFocusChanged: " + view + "   position : " + position);
                 if (hasFocus) {
-                    //                    mIvTabLine.setVisibility(View.VISIBLE);
+                    setTabLine(View.VISIBLE, getResources().getColor(R.color.tabline_show_color));
                     mFocusedListChild = view;
                     mRecommendGrid.postDelayed(mListFocusMoveRunnable, 50);
                     view.setBackgroundResource(R.drawable.shape_bg_uninstall_manager_item_focus);
@@ -651,12 +653,6 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                             return true;
                         } else if (position % RECOMMEND_LINE_COUNT == 3) {
                             return true;
-                        }
-                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP && event.getAction() == KeyEvent.ACTION_DOWN) {
-                        if (position >= 0 && position <= 3) {
-                            isRecommendGridFirstRow = true;
-                        } else {
-                            isRecommendGridFirstRow = false;
                         }
                     }
                 }
@@ -720,7 +716,6 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         mIvTabLine.clearAnimation();
         mHandler.removeMessages(MESSAGE_TYPE_UPDATE);
         mHandler.removeMessages(MESSAGE_TYPE_DOWNLAOD);
-        isRecommendGridFirstRow = false;
     }
 
     private class ListFocusMoveRunnable implements Runnable {
