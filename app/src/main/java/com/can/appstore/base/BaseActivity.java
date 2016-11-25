@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 
+import com.can.appstore.R;
+
 import cn.can.tvlib.utils.PromptUtils;
 
 public abstract class BaseActivity extends FragmentActivity {
@@ -16,10 +18,12 @@ public abstract class BaseActivity extends FragmentActivity {
     private Dialog mLoadingDialog;
     private Dialog mOffsetLoadingDialog;
     private BroadcastReceiver mHomeKeyReceiver;
+    private int loadingSize ;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        loadingSize = getResources().getDimensionPixelSize(R.dimen.px136);
     }
 
     @Override
@@ -51,7 +55,7 @@ public abstract class BaseActivity extends FragmentActivity {
 
     public void showLoadingDialog() {
         if (mLoadingDialog == null) {
-            mLoadingDialog = PromptUtils.showLoadingDialog(this);
+            mLoadingDialog = PromptUtils.showLoadingDialog(this , loadingSize);
         } else if (mLoadingDialog.isShowing()) {
             return;
         } else {
@@ -68,7 +72,7 @@ public abstract class BaseActivity extends FragmentActivity {
 
     public void showOffsetLoadingDialog(int offsetX) {
         if (mOffsetLoadingDialog == null) {
-            mOffsetLoadingDialog = PromptUtils.showLoadingDialog(this, -2, offsetX);
+            mOffsetLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, offsetX);
         } else if (mOffsetLoadingDialog.isShowing()) {
             return;
         } else {
