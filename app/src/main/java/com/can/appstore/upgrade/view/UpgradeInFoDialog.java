@@ -57,8 +57,8 @@ public class UpgradeInFoDialog extends Dialog {
         mSvUpgradeInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOnUpgradeClickListener.onClick();
                 dismiss();
+                mOnUpgradeClickListener.onClick();
             }
         });
     }
