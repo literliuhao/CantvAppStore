@@ -66,7 +66,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     public static final int APP_LIST_SPAN_COUNT = 3;     //应用列表每行app个数
     public static float APP_LIST_FOCUS_SCALE = 1.0f;   //应用列表焦点放大倍数；
     public static int CHANGE_FOCUSED_VIEW_BG_DELAY = 150;//右侧应用列表焦点移动时，修改背景为透明延迟的时间
-    public static int FOCUS_MOVE_OUTSIDE_APP_LIST = -1; //焦点移动出applist
     // 全局配置参数
     public static final int MIN_LOADING_SHOW_TIME = 1000; //loading消失延迟时间
     public static final int MIN_APPLIST_REFRES_TIME = 500; //loading消失延迟时间
@@ -131,6 +130,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     private boolean pageTypeIllegal() {
         int pageType = getIntent().getIntExtra(ENTRY_KEY_SRC_TYPE, PAGE_TYPE_ILLEGAL);
         if (pageType == PAGE_TYPE_ILLEGAL) {
+            showToast(getContext().getResources().getString(R.string.illegal_page_type));
             return true;
         }
         mPageType = pageType;
@@ -423,9 +423,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                     if (mSelectedMenuChild == view) {
                         return;
                     }
-
-                    showOffsetLoadingDialog(mLoadOffset);
-
                     //隐藏显示的应用列表范围的UI(应用列表，行数，加载失败UI)
                     if (mLoadFailView.getVisibility() == View.VISIBLE) {
                         mLoadFailView.setVisibility(View.INVISIBLE);
@@ -436,8 +433,8 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                     if (mLineNumTv.getVisibility() == View.VISIBLE) {
                         mLineNumTv.setVisibility(View.INVISIBLE);
                     }
-
                     mPresenter.onMenuItemSelect(position);
+                    showLoadingDialog(mLoadOffset);
                     mSelectedMenuChild = view;
                 }
             }
@@ -555,7 +552,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     }
 
     @Override
-    public void refreshAppList(List<AppInfo> appListData, int insertPosition, long delayTime) {
+    public void refreshAppList(List<AppInfo> appListData, int insertPosition) {
         mSelectedAppListChild = null;
         if (mAppListAdapter == null) {
             mAppListAdapter = new com.can.appstore.applist.adpter.AppListInfoAdapter(appListData);
@@ -579,7 +576,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 public boolean onFocusMoveOutside(int currFocus, int direction) {
                     if (direction == View.FOCUS_LEFT) {
                         //焦点移出应用列表，改变行数文本
-                        mPresenter.onAppListItemSelectChanged(FOCUS_MOVE_OUTSIDE_APP_LIST);
                         if (mSearchBtn == mSelectedMenuChild) {
                             refreshFocusActiveRegion(NO_LIMIT_REGION);
                             mSearchBtn.setFocusable(true);
@@ -624,17 +620,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
             refreshMenuPaddingWithFocusRegion();
             mSelectedMenuChild.requestFocus();
             mSelectedMenuChild.setBackgroundColor(Color.TRANSPARENT);
-        }
-
-        if (mAppList.getVisibility() != View.VISIBLE && delayTime != -1 && appListData.size() != 0) {
-            mAppList.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mAppList.setVisibility(View.VISIBLE);
-                    mLineNumTv.setVisibility(View.VISIBLE);
-                    mLoadFailView.setVisibility(View.GONE);
-                }
-            }, delayTime);
         }
     }
 
@@ -696,6 +681,16 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
         }
     }
 
+    /**
+     * 显示加载失败的UI
+     */
+    @Override
+    public void hideFailUI() {
+        if (mLoadFailView.getVisibility() == View.VISIBLE) {
+            mLoadFailView.setVisibility(View.INVISIBLE);
+        }
+    }
+
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         switch (v.getId()) {
@@ -726,7 +721,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 SearchActivity.startAc(this);
                 break;
             case R.id.tv_load_retry:
-                showOffsetLoadingDialog(mLoadOffset);
+                showLoadingDialog(mLoadOffset);
                 mPresenter.loadAppListData();
                 if (mSelectedMenuChild != null) {
                     mSelectedMenuChild.requestFocus();

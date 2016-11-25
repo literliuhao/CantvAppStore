@@ -66,7 +66,7 @@ public class CustomDialog extends Dialog {
             mTvAppUpdatelog = (TextView) view.findViewById(R.id.tv_app_updatelog);
             mTvAppAbout = (TextView) view.findViewById(R.id.tv_app_about);
             mScrollView.setVerticalScrollBarEnabled(false);
-            //            mLinearLyoutOneBg.setBackground(mDrawable);
+            //                        mLinearLyoutOneBg.setBackground(mDrawable);
             mLinearLyoutOneBg.setBackgroundResource(R.color.introduce_one_bg);
             mTvAppUpdatelog.setText(mContext.getResources().getString(R.string.update_introduce) + mUpdatelogText);
             mTvAppAbout.setText(mAboutText);

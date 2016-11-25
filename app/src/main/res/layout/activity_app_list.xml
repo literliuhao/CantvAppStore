@@ -156,7 +156,7 @@
             android:id="@+id/tv_load_retry"
             style="@style/NormalText"
             android:layout_width="@dimen/px300"
-            android:layout_height="@dimen/px100"
+            android:layout_height="@dimen/px80"
             android:layout_marginTop="@dimen/px40"
             android:background="@drawable/shap_app_list"
             android:focusable="true"

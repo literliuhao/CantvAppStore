@@ -8,16 +8,15 @@
                 android:background="@drawable/selector_shap_applist_bg"
     >
 
-    <cn.can.tvlib.ui.view.RoundCornerImageView
+    <cn.can.tvlib.ui.view.GlideRoundCornerImageView
         android:id="@+id/iv_app_list_item"
         android:layout_width="@dimen/px136"
         android:layout_height="@dimen/px136"
         android:layout_marginTop="@dimen/px24"
         android:layout_marginLeft="@dimen/px24"
         android:layout_marginBottom="@dimen/px24"
-        android:background="@drawable/shap_app_list_icon_bg"
-        android:src="@mipmap/cibn_icon"
-        android:scaleType="centerInside"
+        roundCornerImage:background="@drawable/shap_app_list_icon_bg"
+        roundCornerImage:src="@mipmap/cibn_icon"
         roundCornerImage:cornerSize="@dimen/px24"
         />
     <TextView

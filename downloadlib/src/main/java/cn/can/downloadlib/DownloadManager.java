@@ -18,6 +18,8 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -63,6 +65,7 @@ public class DownloadManager implements AppInstallListener {
     private OkHttpClient mOkHttpClient;
     //    private AppInstallListener mAppInstallListener;
     private List<AppInstallListener> mAppInstallListeners;
+    private Map<String, DownloadTask> mSingleTaskMap;
 
     private TaskManager mTaskManager = new TaskManager();
 
@@ -590,6 +593,9 @@ public class DownloadManager implements AppInstallListener {
         if (!NetworkUtils.isNetworkConnected(mContext.getApplicationContext())) {
             return;
         }
+        if (mSingleTaskMap == null) {
+            mSingleTaskMap = new LinkedHashMap<>();
+        }
         task.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_PREPARE);
         task.setDownloadDao(mDownloadDao);
         task.setHttpClient(mOkHttpClient);
@@ -601,7 +607,15 @@ public class DownloadManager implements AppInstallListener {
                     .getFileName(), task.getDownloadStatus(), task.getIcon());
             mDownloadDao.insertOrReplace(dbEntity);
         }
+        if (mSingleTaskMap.containsKey(task.getId())) {
+            mSingleTaskMap.remove(task.getId());
+        }
+        mSingleTaskMap.put(task.getId(), task);
         new Thread(task).start();
+    }
+
+    public DownloadTask getSingleTask(String taskId) {
+        return mSingleTaskMap.get(taskId);
     }
 
     public void setLimitSpace(int size) {

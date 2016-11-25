@@ -130,8 +130,7 @@
         </activity>
 
         <activity
-            android:name=".appdetail.AppDetailActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar">
+            android:name=".appdetail.AppDetailActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION_APP_DETAIL"/>
 
@@ -143,7 +142,7 @@
             android:name=".appdetail.ImageScaleActivity"
             android:theme="@style/Image_Scale_Transparent"></activity>
 
-        <service android:name=".upgrade.UpgradeService">
+        <service android:name=".upgrade.service.UpgradeService">
             <intent-filter>
                 <action android:name="com.can.appstore.upgrade.UpgradeService"/>
             </intent-filter>
@@ -158,7 +157,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".upgrade.bugly.BuglyUpgradeService">
+        <service android:name=".upgrade.service.BuglyUpgradeService">
             <intent-filter>
                 <action android:name="com.can.appstore.upgrade..bugly.BuglyUpgradeService"/>
 

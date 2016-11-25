@@ -84,7 +84,6 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
         mRecyclerView.setKeyCodeEffectInterval(CanRecyclerView.KEYCODE_EFFECT_INTERVAL_NORMAL);
         mRecyclerView.addItemDecoration(itemDecoration);
         mRecyclerView.setLayoutManager(mLayoutManager);
-
     }
 
     private void initRunnable() {
@@ -139,7 +138,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
                 }
                 scrollDy = dy;
                 mHandler.removeCallbacks(mFocusMoveRunnable);
-                mHandler.postDelayed(mFocusMoveRunnable, 50);
+                mHandler.post(mFocusMoveRunnable);
             }
         });
         //重试
@@ -185,13 +184,20 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
         netErrorStr = getString(R.string.network_error);
 
         mFocusMoveUtils = new FocusMoveUtil(this, getWindow().getDecorView().findViewById(android.R.id.content), R.mipmap.image_focus);
+        mRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                mFocusMoveUtils.setFocusActiveRegion(mRecyclerView.getLeft(), mRecyclerView.getTop() + mRecyclerView.getPaddingTop(), mRecyclerView.getRight(), mRecyclerView.getBottom() - mRecyclerView.getPaddingBottom()-24);
+            }
+        });
+
         SpecialContract.SpecialPresenter presenter = new SpecialPresenterImpl(this);
         presenter.startLoad();
     }
 
     @Override
     public void refreshData(List<SpecialTopic> data) {
-        mAdapter = new SpecialAdapter(data, this);
+        mAdapter = new SpecialAdapter(data);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
             @Override
@@ -203,7 +209,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
                         mFocusMoveUtils.setFocusRes(getContext(), mFocusType);
                     }
                     mHandler.removeCallbacks(mFocusMoveRunnable);
-                    mHandler.postDelayed(mFocusMoveRunnable, 30);
+                    mHandler.post(mFocusMoveRunnable);
                     view.setSelected(true);
                     if (mPresenter != null) {
                         mPresenter.onItemFocused(position);
