@@ -55,7 +55,7 @@ public class RecommedGridAdapter extends CanRecyclerViewAdapter {
         String text = String.format(mRecommendAppsInfo, appInfo.getSizeStr(), appInfo.getDownloadCount());
         recommendGridViewHolder.itemName.setText(appInfo.getName());
         recommendGridViewHolder.itemSize.setText(text);
-        recommendGridViewHolder.itemIcon.load(appInfo.getIcon(), R.drawable.shap_app_list_icon_bg, R.mipmap.cibn_icon, R.mipmap.icon_loading_fail, true);
+        recommendGridViewHolder.itemIcon.load(appInfo.getIcon(), R.drawable.shap_detail_recommend_icon_bg, R.mipmap.cibn_icon, R.mipmap.icon_loading_fail, true);
     }
 
     class RecommendGridViewHolder extends CanRecyclerView.ViewHolder {
