@@ -435,7 +435,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                         mLineNumTv.setVisibility(View.INVISIBLE);
                     }
                     mPresenter.onMenuItemSelect(position);
-                    showOffsetLoadingDialog(mLoadOffset);
+                    showLoadingDialog(mLoadOffset);
                     mSelectedMenuChild = view;
                 }
             }
@@ -723,7 +723,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 SearchActivity.startAc(this);
                 break;
             case R.id.tv_load_retry:
-                showOffsetLoadingDialog(mLoadOffset);
+                showLoadingDialog(mLoadOffset);
                 mPresenter.loadAppListData();
                 if (mSelectedMenuChild != null) {
                     mSelectedMenuChild.requestFocus();
