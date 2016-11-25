@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/tv_update_number"
+        android:layout_width="@dimen/px275"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:background="@drawable/index_update_shape"
+        android:paddingTop="@dimen/px20"
+        android:paddingBottom="@dimen/px20"
+        android:paddingLeft="@dimen/px10"
+        android:paddingRight="@dimen/px10"
+        android:text="@string/index_app_update"
+        android:textColor="@color/color_80_ffffff"
+        android:visibility="gone"
+        android:textSize="@dimen/px32"/>
+
+</RelativeLayout>

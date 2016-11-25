@@ -1,6 +1,5 @@
 package com.can.appstore.myapps.ui;
 
-
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -22,6 +21,7 @@ import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.ui.BaseFragment;
+import com.can.appstore.index.ui.FragmentEnum;
 import com.can.appstore.myapps.adapter.MyAppsRvAdapter;
 import com.can.appstore.myapps.addappsview.AddAppsActivity;
 import com.can.appstore.myapps.allappsview.AllAppsActivity;
@@ -87,7 +87,6 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         super.onResume();
     }
 
-
     @Override
     public void loadAppInfoSuccess(List<AppInfo> infoList) {
         mShowList = infoList;
@@ -108,14 +107,10 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         mMyAppsRvAdapter.setCustomData(mDrawbleList);
     }
 
-
-
-
     private void baseSetting() {
         mAppsRecyclerView.setAdapter(mMyAppsRvAdapter);
         addItemListener();
     }
-
 
     private void addItemListener() {
         /**
@@ -124,7 +119,7 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         mFocusChangeListener = new OnFocusChangeListener() {
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
-                mFocusListener.addFocusListener(view, hasFocus);
+                mFocusListener.addFocusListener(view, hasFocus, FragmentEnum.MYAPP);
             }
         };
         //添加焦点移动的监听,要在adapter里设置
@@ -292,9 +287,18 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         super.onPause();
     }
 
-
     public View getLastView() {
         return null;
+    }
+
+    @Override
+    public void registerFocus() {
+
+    }
+
+    @Override
+    public void removeFocus() {
+
     }
 
 

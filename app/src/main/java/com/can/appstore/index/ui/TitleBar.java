@@ -54,6 +54,7 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
     private List<LiteText> textViewList;
     private int mCurrentIndex = 0;
     private IAddFocusListener mFocusListener;
+    private View mFirstView;
     private View mCurrentView;
 
     public TitleBar(Context context) {
@@ -151,9 +152,9 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
         }
     }
 
-//    public View getFirstView(){
-//        return mFirstView = this.getChildAt(2);
-//    }
+    public View getFirstView() {
+        return mFirstView = this.getChildAt(0);
+    }
 
     @Override
     public void onFocusChange(View view, boolean b) {
@@ -188,10 +189,10 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
         this.mViewPager.addOnPageChangeListener(new OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                Log.i("onPageSelected", position + "");
+
                 mCurrentIndex = position;
                 resetTextViewColor();
-                if(!(mCurrentView instanceof LiteText)){
+                if (!(mCurrentView instanceof LiteText)) {
                     highLightTextView(position);
                 }
                 // 回调
@@ -237,11 +238,11 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
                 if (!(oldFocus instanceof LiteText) && newFocus instanceof LiteText) {
                     newFocus = textViewList.get(mViewPager.getCurrentItem());
                     newFocus.requestFocus();
-                    mFocusListener.addFocusListener(newFocus, true);
+                    mFocusListener.addFocusListener(newFocus, true, FragmentEnum.TITLE);
                     resetTextViewColor();
                 } else if (oldFocus instanceof LiteText && newFocus instanceof LiteText) {
                     if (null == oldFocus || null == newFocus) return;
-                    mFocusListener.addFocusListener(newFocus, true);
+                    mFocusListener.addFocusListener(newFocus, true, FragmentEnum.TITLE);
                     resetTextViewColor();
                 } else if (oldFocus instanceof LiteText && !(newFocus instanceof LiteText)) {
                     if (null == oldFocus || null == newFocus) return;
@@ -302,30 +303,31 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
      * @return LiteText
      */
     private LiteText generateTextView(String text) {
-        LiteText textLayout = new LiteText(getContext());
-        textLayout.setPadding((int) getResources().getDimension(R.dimen.px20), (int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px20), (int) getResources().getDimension(R.dimen.px0));
+        LiteText liteLayout = new LiteText(getContext());
+        liteLayout.setPadding((int) getResources().getDimension(R.dimen.px20), (int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px20), (int) getResources().getDimension(R.dimen.px0));
         LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        textParams.setMargins((int) getResources().getDimension(R.dimen.px30), (int) getResources().getDimension(R.dimen.px10), (int) getResources().getDimension(R.dimen.px30), (int) getResources().getDimension(R.dimen.px10));
-        textLayout.setClipToPadding(false);
-        textLayout.setClipChildren(false);
-        textLayout.setLayoutParams(textParams);
-        textLayout.setFocusable(true);
-        textLayout.setOnFocusChangeListener(this);
+        textParams.setMargins((int) getResources().getDimension(R.dimen.px30), (int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px30), (int) getResources().getDimension(R.dimen.px0));
+        liteLayout.setClipToPadding(false);
+        liteLayout.setClipChildren(false);
+        liteLayout.setLayoutParams(textParams);
+        liteLayout.setFocusable(true);
+        liteLayout.setOnFocusChangeListener(this);
 
         TextView textView = new TextView(getContext());
-        textView.setPadding((int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px5), (int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px5));
+        textView.setPadding((int) getResources().getDimension(R.dimen.px8), (int) getResources().getDimension(R.dimen.px5), (int) getResources().getDimension(R.dimen.px8), (int) getResources().getDimension(R.dimen.px5));
 
         RelativeLayout.LayoutParams txtParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         txtParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        txtParams.setMargins((int)getResources().getDimension(R.dimen.px0),(int)getResources().getDimension(R.dimen.px8),(int)getResources().getDimension(R.dimen.px0),(int)getResources().getDimension(R.dimen.px10));
         textView.setLayoutParams(txtParams);
 
         int textSize = (int) getResources().getDimension(R.dimen.px38);
         textView.setTextColor(COLOR_TEXT_NORMAL);
         textView.setText(text);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-        textLayout.addView(textView);
-        textViewList.add(textLayout);
-        return textLayout;
+        liteLayout.addView(textView);
+        textViewList.add(liteLayout);
+        return liteLayout;
     }
 
     /**

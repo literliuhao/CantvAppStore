@@ -19,6 +19,7 @@ import com.can.appstore.applist.AppListActivity;
 import com.can.appstore.entity.Ranking;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.ui.BaseFragment;
+import com.can.appstore.index.ui.FragmentEnum;
 import com.can.appstore.search.ToastUtil;
 
 import java.util.ArrayList;
@@ -201,7 +202,7 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
         @Override
         public void onFocusChange(View view, boolean hasFocus) {
             view.setSelected(hasFocus);
-            mFocusListener.addFocusListener(view, hasFocus);
+            mFocusListener.addFocusListener(view, hasFocus, FragmentEnum.RANK);
         }
     }
 
@@ -210,6 +211,16 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
     @Override
     public View getLastView() {
         return mLastView;
+    }
+
+    @Override
+    public void registerFocus() {
+
+    }
+
+    @Override
+    public void removeFocus() {
+
     }
 
 

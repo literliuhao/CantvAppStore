@@ -45,16 +45,16 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name=".PortalActivity"
-            android:hardwareAccelerated="false"
-            android:theme="@style/AppTheme.Translucent.FadeIn">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+        <!--<activity-->
+            <!--android:name=".PortalActivity"-->
+            <!--android:hardwareAccelerated="false"-->
+            <!--android:theme="@style/AppTheme.Translucent.FadeIn">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN"/>-->
 
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
+                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
         <activity android:name=".MainActivity"/>
         <activity
             android:name=".index.IndexActivity"
@@ -63,6 +63,11 @@
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION_INDEX"/>
                 <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity android:name=".myapps.addappsview.AddAppsActivity">

@@ -42,10 +42,11 @@ public class ManagerFragment extends BaseFragment {
         gridAdapter.setColors(COLORS);
         gridAdapter.setFocusListener(new IAddFocusListener() {
             @Override
-            public void addFocusListener(View v, boolean hasFocus) {
-                mFocusListener.addFocusListener(v, hasFocus);
+            public void addFocusListener(View v, boolean hasFocus,FragmentEnum sourceEnum) {
+                mFocusListener.addFocusListener(v, hasFocus,sourceEnum);
             }
         });
+
 
         gridAdapter.setClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +99,24 @@ public class ManagerFragment extends BaseFragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        Log.i("ManagerFragment", "onStart");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i("ManagerFragment", "onStop");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i("ManagerFragment", "onResume");
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
     }
@@ -107,6 +126,15 @@ public class ManagerFragment extends BaseFragment {
         return gridView.getChildAt(3);
     }
 
+    @Override
+    public void registerFocus() {
+
+    }
+
+    @Override
+    public void removeFocus() {
+
+    }
 
 //    @Override
 //    public void onItemClick(AdapterView<?> adapterView, View view, int postion, long l) {

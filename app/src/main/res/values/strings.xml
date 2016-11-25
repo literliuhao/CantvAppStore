@@ -20,6 +20,7 @@
     <string name="index_top">排行</string>
     <string name="index_manager">管理</string>
     <string name="index_myapp">我的应用</string>
+    <string name="index_app_update">个应用可更新</string>
     <!--首页管理-->
     <string name="index_manager_text1">一键加速</string>
     <string name="index_manager_text2">更新管理</string>

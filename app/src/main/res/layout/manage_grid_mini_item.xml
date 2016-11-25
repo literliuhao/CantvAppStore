@@ -8,23 +8,20 @@
         android:id="@+id/iv_manage_color"
         android:layout_width="@dimen/px270"
         android:layout_height="@dimen/px180"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/index_item5_shape"/>
+        android:layout_centerHorizontal="true"/>
 
     <ImageView
         android:id="@+id/iv_manage_icon"
         style="@style/index_manager_icon_mini_top"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/index_manager_icon5"/>
+        android:layout_centerHorizontal="true"/>
 
     <TextView
         android:id="@+id/tv_manage_name"
         style="@style/index_manager_mini_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="@string/index_manager_text5"/>
+        android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>
