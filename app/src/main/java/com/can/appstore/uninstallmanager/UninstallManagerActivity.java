@@ -47,7 +47,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     private ListFocusMoveRunnable mListFocusMoveRunnable;
     private UninstallManagerPresenter mPresenter;
     private ArrayList<String> mSelectPackageName;
-    private Button mBtBatchUninstall;
+    private TextView mBtBatchUninstall;
     private TextView mTvItemCurRows;
     private TextProgressBar mProgressStorage;
     private TextView mSelectCount;
@@ -85,7 +85,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
 
     private void initView() {
         mCanRecyclerView = (CanRecyclerView) findViewById(R.id.crlv_grid);
-        mBtBatchUninstall = (Button) findViewById(R.id.bt_batch_uninstall);
+        mBtBatchUninstall = (TextView) findViewById(R.id.bt_batch_uninstall);
         mTvItemCurRows = (TextView) findViewById(R.id.tv_cur_rows);
         mProgressStorage = (TextProgressBar) findViewById(R.id.progress_stroage);
         mSelectCount = (TextView) findViewById(R.id.tv_select_count);
@@ -197,6 +197,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             mNotUninstallApp.setVisibility(View.VISIBLE);
             mCanRecyclerView.setVisibility(View.INVISIBLE);
             mTvItemCurRows.setVisibility(View.INVISIBLE);
+            hideSelectAppCount();
             mBtBatchUninstall.setNextFocusRightId(mBtBatchUninstall.getId());
             return;
         } else {

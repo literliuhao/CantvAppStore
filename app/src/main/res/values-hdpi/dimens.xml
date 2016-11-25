@@ -4,10 +4,17 @@
     <dimen name="dimen_f36px">-24dp</dimen>
     <dimen name="dimen_f23px">-15.3dp</dimen>
     <dimen name="dimen_f65px">-43dp</dimen>
+    <dimen name="dimen_f27px">-18dp</dimen>
+    <dimen name="dimen_f22px">-14.6dp</dimen>
+    <dimen name="dimen_f17px">-11.3dp</dimen>
+    <dimen name="dimen_f15px">-10dp</dimen>
+    <dimen name="dimen_f10px">-6.7dp</dimen>
+    <dimen name="dimen_f20px">-13dp</dimen>
     <dimen name="dimen_f1px">-0.6dp</dimen>
     <dimen name="dimen_f2px">-1dp</dimen>
     <dimen name="dimen_f3px">-2dp</dimen>
     <dimen name="dimen_f7px">-4.6dp</dimen>
+    <dimen name="dimen_f12px">-8dp</dimen>
     <dimen name="dimen_1px">0.6dp</dimen>
     <dimen name="dimen_2px">1dp</dimen>
     <dimen name="dimen_3px">2dp</dimen>
@@ -67,6 +74,7 @@
     <dimen name="dimen_86px">57.3dp</dimen>
     <dimen name="dimen_88px">58.6dp</dimen>
     <dimen name="dimen_90px">60dp</dimen>
+    <dimen name="dimen_95px">63.3dp</dimen>
     <dimen name="dimen_100px">67dp</dimen>
     <dimen name="dimen_105px">70dp</dimen>
     <dimen name="dimen_108px">72dp</dimen>

@@ -82,7 +82,6 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
     private View drawView(final Context context, Navigation mNavigation) {
         FrameLayout mainLayout = new FrameLayout(context);
         ViewGroup.LayoutParams mainParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//        mainLayout.setFocusable(false);
         mainLayout.setLayoutParams(mainParams);
         mainLayout.setPadding((int) getResources().getDimension(R.dimen.px160), (int) getResources().getDimension(R.dimen.px50), (int) getResources().getDimension(R.dimen.px110), (int) getResources().getDimension(R.dimen.px50));
         mainLayout.setClipToPadding(false);
@@ -119,7 +118,7 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
                 }
             });
 
-            ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, getResources().getDimension(R.dimen.px8))).placeholder(R.mipmap.icon_load_default).errorHolder(R.mipmap.icon_loading_fail).successCallback(new SuccessCallback() {
+            ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, getResources().getDimension(R.dimen.px8))).size(childBean.getWidth(),childBean.getHeight()).placeholder(R.mipmap.icon_load_default).errorHolder(R.mipmap.icon_loading_fail).successCallback(new SuccessCallback() {
                 @Override
                 public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                     myImageView.setImageDrawable(resource);

@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#2d313a">
+    android:background="@color/color_2D313A">
 
     <Button
         android:id="@+id/bt_install_deleteall"
@@ -111,7 +111,9 @@
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 android:paddingLeft="@dimen/px23"
-                android:paddingTop="@dimen/px23" />
+                android:paddingTop="@dimen/px23"
+                android:paddingBottom="@dimen/px1"
+                android:paddingRight="@dimen/px1"/>
         </FrameLayout>
     </LinearLayout>
 

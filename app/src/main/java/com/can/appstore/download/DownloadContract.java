@@ -13,22 +13,31 @@ import cn.can.downloadlib.DownloadTask;
 
 public interface DownloadContract {
 
-    interface DownloadPresenter extends BasePresenter{
+    interface DownloadPresenter extends BasePresenter {
 
         void loadData();
+
         void calculateRowNum(int focusedPos);
+
         void deleteAllTasks();
+
         void caculateStorage();
+
         boolean pauseAllTasks();
+
         boolean resumeAllTasks();
     }
 
-    interface DownloadView extends BaseView<DownloadPresenter>{
+    interface DownloadView extends BaseView<DownloadPresenter> {
 
         void onDataLoaded(List<DownloadTask> tasks);
+
         void refreshRowNumber(CharSequence formatRow);
+
         void showNoDataView();
+
         void hideNoDataView();
+
         void showStorageView(int progress, String storage);
 
     }

@@ -51,6 +51,10 @@ public interface UpdateContract {
         void showInstallPkgList(List<AppInfoBean> mDatas);
 
         /**
+         * 网络连接异常
+         */
+        void showInternetError();
+        /**
          * 刷新更新状态按钮
          */
 //        void refreshUpdateButton(String status);

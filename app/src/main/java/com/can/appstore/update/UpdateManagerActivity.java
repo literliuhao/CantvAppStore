@@ -12,9 +12,11 @@ import android.os.Message;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -32,6 +34,8 @@ import com.can.appstore.widgets.CanDialog;
 
 import java.util.List;
 
+import cn.can.downloadlib.AppInstallListener;
+import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
@@ -41,6 +45,8 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PreferencesUtils;
+import cn.can.tvlib.utils.PromptUtils;
+import cn.can.tvlib.utils.ToastUtils;
 
 /**
  * 更新管理
@@ -49,6 +55,7 @@ import cn.can.tvlib.utils.PreferencesUtils;
 
 public class UpdateManagerActivity extends Activity implements UpdateContract.View {
 
+    private static final String TAG = "updateManagerActivity";
     private CanRecyclerView mRecyclerView;
     private UpdateManagerAdapter mRecyclerAdapter;
     private Button mDetectionButton;
@@ -60,8 +67,8 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
     private TextView mCurrentnum;
     private TextProgressBar mSizeProgressBar;
     private Dialog mLoadingDialog;
-    FocusMoveUtil mFocusMoveUtil;
-    FocusScaleUtil mFocusScaleUtil;
+    private FocusMoveUtil mFocusMoveUtil;
+    private FocusScaleUtil mFocusScaleUtil;
     private View mFocusedListChild;
     private MyFocusRunnable myFocusRunnable;
     private CanDialog canDialog;
@@ -69,14 +76,20 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
     private List<AppInfoBean> mUpdateList;
     private cn.can.downloadlib.DownloadManager mDownloadManager;
     private String mCurrentId;
-    private BroadcastReceiver mUpdatelApkReceiver;
-    private IntentFilter intentFilter;
+    private int mWinH;
+    private int mWinW;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_updatemanager);
         mPresenter = new UpdatePresenter(this, UpdateManagerActivity.this);
+        //获取到屏幕的宽高
+        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(outMetrics);
+        mWinH = outMetrics.heightPixels;
+        mWinW = outMetrics.widthPixels;
         mAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
         initView();
         initData();
@@ -88,36 +101,6 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
     @Override
     protected void onStart() {
         super.onStart();
-        //registerInstalledReceiver();
-    }
-
-
-    /**
-     * 安装完成广播，刷新数据,失败广播获取包名，install为true再刷新 再加集合存储安装成功
-     */
-    private void registerInstalledReceiver() {
-        if (mUpdatelApkReceiver == null) {
-            mUpdatelApkReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    if (intent.getAction().equals("android.intent.action.PACKAGE_ADDED") || intent.getAction().equals("android.intent.action.PACKAGE_REPLACED")) {
-                        String packageName = intent.getDataString().substring(8);
-                        //刷新图标（可能多重版本）通过广播获取安装完成刷新ui  +&& bean.getVersionCode().equals(String.valueOf(versonCode))
-                        int versonCode = UpdateUtils.getVersonCode(MyApp.mContext, packageName);
-                        mPresenter.isInstalled(packageName,versonCode);
-                        Toast.makeText(MyApp.mContext, packageName + "更新成功啦!!!", Toast.LENGTH_LONG).show();
-                    } else if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
-                        Toast.makeText(MyApp.mContext, "更新失败", Toast.LENGTH_LONG).show();
-                    }
-                }
-            };
-            intentFilter = new IntentFilter();
-            intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
-            intentFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
-            intentFilter.addAction(Intent.ACTION_VIEW);
-            intentFilter.addDataScheme("package");
-        }
-        registerReceiver(mUpdatelApkReceiver, intentFilter);
     }
 
     @Override
@@ -190,11 +173,26 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == CanRecyclerView.SCROLL_STATE_SETTLING) {
-                    mDetectionButton.setFocusable(false);
-                    mAutoButton.setFocusable(false);
+                    //限制移动区域
+                    mRecyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            int[] posi = new int[2];
+                            mRecyclerView.getLocationInWindow(posi);
+                            mFocusMoveUtil.setFocusActiveRegion(posi[0], posi[1] + mRecyclerView.getPaddingTop(),
+                                    posi[0] + mRecyclerView.getWidth(),
+                                    posi[1] + mRecyclerView.getHeight() - mRecyclerView.getPaddingBottom() - getResources().getDimensionPixelSize(R.dimen.px40));
+                        }
+                    });
+                    setLeftLayoutFocus(false);
                 } else if (newState == CanRecyclerView.SCROLL_STATE_IDLE) {
-                    mDetectionButton.setFocusable(true);
-                    mAutoButton.setFocusable(true);
+                    mRecyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mFocusMoveUtil.setFocusActiveRegion(0, 0, mWinW, mWinH);
+                        }
+                    });
+                    setLeftLayoutFocus(true);
                 }
             }
 
@@ -206,6 +204,16 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
         });
     }
 
+    /**
+     * 设置左侧焦点
+     *
+     * @param focusable
+     */
+    private void setLeftLayoutFocus(boolean focusable) {
+        mDetectionButton.setFocusable(focusable);
+        mAutoButton.setFocusable(focusable);
+    }
+
     private void initClick() {
 
         mDetectionButton.setOnClickListener(new View.OnClickListener() {
@@ -214,13 +222,16 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 mAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
                 if (mAutoUpdate) {
                     mPresenter.clearList();
-                    mPresenter.setNum(0);
+                    mCurrentnum.setVisibility(View.INVISIBLE);
+                    mTotalnum.setVisibility(View.INVISIBLE);
                     mReminder.setVisibility(View.VISIBLE);
                     mReminder.setText(R.string.update_start_autoupdate);
                     Toast.makeText(MyApp.mContext, R.string.update_start_autoupdate, Toast.LENGTH_LONG).show();
                     return;
                 } else {
                     mPresenter.getInstallPkgList(mAutoUpdate);
+                    mCurrentnum.setVisibility(View.VISIBLE);
+                    mTotalnum.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -231,13 +242,13 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 if (mAutoUpdate) {
                     PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", false);
                     mAutoUpdate = false;
-                    initDialog("已开启");
+                    initDialog(getResources().getString(R.string.update_setting_start));
                     mReminder.setVisibility(View.INVISIBLE);
                     Toast.makeText(UpdateManagerActivity.this, R.string.update_end_autoupdate, Toast.LENGTH_SHORT).show();
                 } else {
                     PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", true);
                     mAutoUpdate = true;
-                    initDialog("已关闭");
+                    initDialog(getResources().getString(R.string.update_setting_stop));
                     mPresenter.getListSize();
                     Toast.makeText(UpdateManagerActivity.this, R.string.update_start_autoupdate, Toast.LENGTH_SHORT).show();
                 }
@@ -258,181 +269,90 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                     mDownloadManager = cn.can.downloadlib.DownloadManager.getInstance(UpdateManagerActivity.this);
                 }
                 DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(downloadUrl));
-                //mDownloadManager.install(downloadTask);
-                if (downloadTask == null) {
-                    /*int status = downloadTask.getDownloadStatus();
-
-                    if (status == DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING
-                            || status == DownloadStatus.DOWNLOAD_STATUS_PREPARE
-                            || status == DownloadStatus.DOWNLOAD_STATUS_COMPLETED) {
-                        //mDownloadManager.addDownloadListener(downloadTask, UpdatePresenter.this);
-                        return;
-                    } else if (status == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
+                if (downloadTask != null) {
+                    int taskstatus = downloadTask.getDownloadStatus();
+                    final String saveDirPath = downloadTask.getSaveDirPath();
+                    if (taskstatus == AppInstallListener.APP_INSTALL_FAIL) {
+                        installUpdateApk(progress, status, updatedIcon, saveDirPath);
+                    }/* else if (taskstatus == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
                         mDownloadManager.resume(downloadTask.getId());
-                    }
-                } else {*/
+                    }*/
+                } else {
                     downloadTask = new DownloadTask();
                     String md5 = MD5.MD5(downloadUrl);
-                    downloadTask.setFileName(md5+".apk");
+                    downloadTask.setFileName(md5 + ".apk");
                     downloadTask.setId(md5);
                     downloadTask.setSaveDirPath(MyApp.mContext.getExternalCacheDir().getPath() + "/");
                     downloadTask.setUrl(downloadUrl);
-                    //mCurrentId = downloadTask.getId();
                     Toast.makeText(MyApp.mContext, downloadUrl, Toast.LENGTH_SHORT).show();
                     mDownloadManager.addDownloadTask(downloadTask, new DownloadTaskListener() {
                         @Override
                         public void onPrepare(DownloadTask downloadTask) {
-                            Log.d("shen", "onPrepare: ");
-                            progress.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    status.setVisibility(View.VISIBLE);
-                                    status.setText("等待中");
-                                    progress.setVisibility(View.INVISIBLE);
-                                }
-                            });
+                            Log.d(TAG, "onPrepare: ");
+                            refreshStatus(downloadTask, status, progress, updatedIcon);
                         }
 
                         @Override
                         public void onStart(DownloadTask downloadTask) {
-                            Log.d("shen", "onStart: ");
-                            progress.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    status.setVisibility(View.VISIBLE);
-                                    status.setText("等待中");
-                                    //refreshDownliadStatus(downloadTask.getDownloadStatus(), status);
-                                    progress.setVisibility(View.INVISIBLE);
-                                    //progress.setProgress((int) downloadTask.getPercent());
-                                }
-                            });
+                            Log.d(TAG, "onStart: ");
+                            refreshStatus(downloadTask, status, progress, updatedIcon);
                         }
 
                         @Override
                         public void onDownloading(final DownloadTask downloadTask) {
-                            Log.d("shen", "onDownloading: ");
-                            progress.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    status.setVisibility(View.VISIBLE);
-                                    status.setText("下载中");
-                                    //refreshDownliadStatus(downloadTask.getDownloadStatus(), status);
-                                    progress.setVisibility(View.VISIBLE);
-                                    progress.setProgress((int) downloadTask.getPercent());
-                                }
-                            });
+                            Log.d(TAG, "onDownloading: ");
+                            refreshStatus(downloadTask, status, progress, updatedIcon);
                         }
 
                         @Override
                         public void onPause(DownloadTask downloadTask) {
-                            Log.d("shen", "onPause: ");
-                            progress.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    status.setVisibility(View.VISIBLE);
-                                    status.setText("等待中");
-                                    //refreshDownliadStatus(downloadTask.getDownloadStatus(), status);
-                                    progress.setVisibility(View.INVISIBLE);
-                                    //progress.setProgress((int) downloadTask.getPercent());
-                                }
-                            });
+                            Log.d(TAG, "onPause: ");
+                            refreshStatus(downloadTask, status, progress, updatedIcon);
                         }
 
                         @Override
                         public void onCancel(DownloadTask downloadTask) {
-                            Log.d("shen", "onCancel: ");
+                            Log.d(TAG, "onCancel: ");
                         }
 
                         @Override
                         public void onCompleted(final DownloadTask downloadTask) {
-                            Log.d("shen", "onCompleted: ");
+                            Log.d(TAG, "onCompleted: ");
                             progress.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    status.setVisibility(View.VISIBLE);
-                                    status.setText("安装中");
-                                    progress.setVisibility(View.INVISIBLE);
-                                    int result = InstallPkgUtils.installApp(downloadTask.getSaveDirPath());
-                                    if(result == 0){
-                                        status.setVisibility(View.INVISIBLE);
-                                        //status.setText("安装成功");
-                                        updatedIcon.setVisibility(View.VISIBLE);
-                                    }else{
-                                        status.setText("安装失败");
-                                        updatedIcon.setVisibility(View.VISIBLE);
-                                    }
+                                    installUpdateApk(progress, status, updatedIcon, downloadTask.getSaveDirPath());
                                 }
                             });
                         }
 
                         @Override
                         public void onError(DownloadTask downloadTask, int errorCode) {
-                            Log.d("shen", "onError: ");
+                            Log.d(TAG, "onError: ");
+                            refreshStatus(downloadTask, status, progress, updatedIcon);
                             switch (errorCode) {
                                 case DOWNLOAD_ERROR_FILE_NOT_FOUND:
-                                    Log.i("shen", "未找到下载文件: ");
+                                    ToastUtils.showMessage(UpdateManagerActivity.this, "未找到下载文件");
+                                    Log.i(TAG, "未找到下载文件: ");
                                     break;
                                 case DOWNLOAD_ERROR_IO_ERROR:
-                                    Log.i("shen", "IO异常: ");
+                                    ToastUtils.showMessage(UpdateManagerActivity.this, "IO异常");
+                                    Log.i(TAG, "IO异常: ");
                                     break;
                                 case DOWNLOAD_ERROR_NETWORK_ERROR:
-                                    Log.i("shen", "网络异常，请重试！");
+                                    ToastUtils.showMessage(UpdateManagerActivity.this, "网络异常，请重试！");
+                                    Log.i(TAG, "网络异常，请重试！");
                                     break;
                                 case DOWNLOAD_ERROR_UNKONW_ERROR:
-                                    Log.i("shen", "未知错误: ");
+                                    ToastUtils.showMessage(UpdateManagerActivity.this, "未知错误");
+                                    Log.i(TAG, "未知错误: ");
                                     break;
                                 default:
                                     break;
                             }
+                            mDownloadManager.cancel(downloadTask);
                         }
                     });
-
-                    /*mDownloadManager.setAppInstallListener(new AppInstallListener() {
-                        @Override
-                        public void onInstalling(DownloadTask downloadTask) {
-                            String crurrentId = downloadTask.getId();
-                            if (mCurrentId.equals(crurrentId)) {
-                                progress.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        status.setVisibility(View.VISIBLE);
-                                        status.setText("安装中");
-                                        progress.setVisibility(View.INVISIBLE);
-                                        updatedIcon.setVisibility(View.INVISIBLE);
-                                    }
-                                });
-                            }
-                        }
-
-                        @Override
-                        public void onInstallSucess(String id) {
-                            if (mCurrentId.equals(id)) {
-                                progress.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        status.setVisibility(View.INVISIBLE);
-                                        progress.setVisibility(View.INVISIBLE);
-                                        updatedIcon.setVisibility(View.VISIBLE);
-                                    }
-                                });
-                            }
-                        }
-
-                        @Override
-                        public void onInstallFail(String id) {
-                            if (mCurrentId.equals(id)) {
-                                progress.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        status.setVisibility(View.VISIBLE);
-                                        status.setText("安装失败");
-                                        progress.setVisibility(View.INVISIBLE);
-                                        updatedIcon.setVisibility(View.VISIBLE);
-                                    }
-                                });
-                            }
-                        }
-                    });*/
                 }
 
             }
@@ -440,10 +360,102 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
 
     }
 
+    /**
+     * 安装状态刷新
+     *
+     * @param progress
+     * @param status
+     * @param updatedIcon
+     * @param saveDirPath
+     */
+    private void installUpdateApk(ProgressBar progress, final TextView status, final ImageView updatedIcon, final String saveDirPath) {
+        status.setVisibility(View.VISIBLE);
+        status.setText(getResources().getString(R.string.update_download_installing));
+        progress.setVisibility(View.INVISIBLE);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                int result = InstallPkgUtils.installApp(saveDirPath);
+                if (result == 0) {
+                    status.setVisibility(View.INVISIBLE);
+                    //status.setText("安装成功");
+                    updatedIcon.setVisibility(View.VISIBLE);
+                    Log.i(TAG, "run: " + 0);
+                } else {
+                    status.setVisibility(View.VISIBLE);
+                    status.setText(getResources().getString(R.string.update_download_installfalse));
+                    updatedIcon.setVisibility(View.INVISIBLE);
+                    Log.i(TAG, "run: " + 1);
+                }
+            }
+        }, 1000);
+    }
+
+    /**
+     * 下载监听刷新
+     *
+     * @param downloadTask
+     * @param status
+     * @param progress
+     * @param updateicon
+     */
+    private void refreshStatus(final DownloadTask downloadTask, final TextView status, final ProgressBar progress, final ImageView updateicon) {
+        progress.post(new Runnable() {
+            @Override
+            public void run() {
+                refreshDownliadStatus(downloadTask.getDownloadStatus(), status);
+                if (downloadTask.getCompletedSize() > 0 && downloadTask.getCompletedSize() < downloadTask.getTotalSize() && downloadTask.getDownloadStatus() != DownloadStatus.DOWNLOAD_STATUS_ERROR) {
+                    progress.setVisibility(View.VISIBLE);
+                } else {
+                    progress.setVisibility(View.INVISIBLE);
+                }
+                progress.setProgress((int) downloadTask.getPercent());
+                updateicon.setVisibility(View.INVISIBLE);
+            }
+        });
+
+    }
+
+
+    public void refreshDownliadStatus(int downloadStatus, TextView status) {
+        switch (downloadStatus) {
+            case DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING:
+                status.setVisibility(View.VISIBLE);
+                status.setText(getResources().getString(R.string.update_downloading));
+                break;
+            case DownloadStatus.DOWNLOAD_STATUS_INIT:
+            case DownloadStatus.DOWNLOAD_STATUS_PREPARE:
+            case DownloadStatus.DOWNLOAD_STATUS_START:
+            case DownloadStatus.DOWNLOAD_STATUS_PAUSE:
+                status.setVisibility(View.VISIBLE);
+                status.setText(getResources().getString(R.string.update_download_waitting));
+                break;
+            case DownloadStatus.DOWNLOAD_STATUS_COMPLETED:
+            case AppInstallListener.APP_INSTALLING:
+                status.setVisibility(View.VISIBLE);
+                status.setText(getResources().getString(R.string.update_download_installing));
+                break;
+            case AppInstallListener.APP_INSTALL_FAIL:
+                status.setVisibility(View.VISIBLE);
+                status.setText(getResources().getString(R.string.update_download_installfalse));
+                break;
+            case AppInstallListener.APP_INSTALL_SUCESS:
+                status.setVisibility(View.INVISIBLE);
+                break;
+            case DownloadStatus.DOWNLOAD_STATUS_ERROR:
+                status.setVisibility(View.VISIBLE);
+                status.setText(getResources().getString(R.string.update_download_false));
+                break;
+            default:
+                status.setVisibility(View.INVISIBLE);
+                break;
+        }
+    }
+
     private void initDialog(String str) {
         canDialog = new CanDialog(UpdateManagerActivity.this);
-        canDialog.setTitle("更新设置").setTitleMessage("自动更新").setContentMessage("应用需要更新时，自动开始下载安装")
-                .setStateMessage(str).setNegativeButton("关闭").setPositiveButton("开启");
+        canDialog.setTitle(getResources().getString(R.string.update_setting_title)).setTitleMessage(getResources().getString(R.string.update_setting_contenttop)).setContentMessage(getResources().getString(R.string.update_setting_content))
+                .setStateMessage(str).setNegativeButton(getResources().getString(R.string.update_setting_btstart)).setPositiveButton(getResources().getString(R.string.update_setting_btstop));
         canDialog.setOnCanBtnClickListener(new CanDialog.OnClickListener() {
             @Override
             public void onClickPositive() {
@@ -495,19 +507,20 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
 
     }
 
-    @Override
     public void showLoadingDialog() {
         if (mLoadingDialog == null) {
-            mLoadingDialog = LoadingDialog.createLoadingDialog(this, getString((R.string.update_search_updateinfo)));
+            mLoadingDialog = PromptUtils.showLoadingDialog(this);
+        } else if (mLoadingDialog.isShowing()) {
+            return;
+        } else {
+            mLoadingDialog.setCancelable(false);
             mLoadingDialog.show();
         }
     }
 
-    @Override
     public void hideLoadingDialog() {
-        if (mLoadingDialog != null) {
+        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
             mLoadingDialog.dismiss();
-            mLoadingDialog = null;
         }
     }
 
@@ -555,9 +568,16 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
         if (mRecyclerAdapter == null) {
             mRecyclerAdapter = new UpdateManagerAdapter(mDatas);
         }
-//        }
         mRecyclerView.setAdapter(mRecyclerAdapter);
         mRecyclerAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void showInternetError() {
+        mReminder.setVisibility(View.VISIBLE);
+        mReminder.setText(R.string.no_network);
+        mCurrentnum.setVisibility(View.INVISIBLE);
+        mTotalnum.setVisibility(View.INVISIBLE);
     }
 
     private class MyFocusRunnable implements Runnable {
@@ -587,9 +607,10 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
 
     /**
      * 启动更新管理
+     *
      * @param context
      */
-    public static void actionStart(Context context){
+    public static void actionStart(Context context) {
         Intent intent = new Intent(context, UpdateManagerActivity.class);
         context.startActivity(intent);
     }

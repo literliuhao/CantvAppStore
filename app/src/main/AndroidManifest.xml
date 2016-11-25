@@ -72,8 +72,8 @@
         </activity>
         <activity android:name=".myapps.allappsview.AllAppsActivity">
             <intent-filter>
-                <action android:name="com.can.appstore.ACTION_ALLAPPS"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.can.appstore.ACTION_ALLAPPS" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity android:name=".update.UpdateManagerActivity">
@@ -90,8 +90,8 @@
         </activity>
         <activity android:name=".myapps.ui.SystemAppsActivity">
             <intent-filter>
-                <action android:name="com.can.appstore.ACTION_SYSTEMAPPS"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.can.appstore.ACTION_SYSTEMAPPS" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
@@ -143,7 +143,7 @@
             android:name=".appdetail.ImageScaleActivity"
             android:theme="@style/Image_Scale_Transparent"></activity>
 
-        <service android:name=".upgrade.UpgradeService">
+        <service android:name=".upgrade.service.UpgradeService">
             <intent-filter>
                 <action android:name="com.can.appstore.upgrade.UpgradeService"/>
             </intent-filter>
@@ -158,7 +158,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".upgrade.bugly.BuglyUpgradeService">
+        <service android:name=".upgrade.service.BuglyUpgradeService">
             <intent-filter>
                 <action android:name="com.can.appstore.upgrade..bugly.BuglyUpgradeService"/>
 
