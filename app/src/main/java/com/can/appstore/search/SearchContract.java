@@ -23,6 +23,8 @@ public interface SearchContract {
         void getHotKeyList(List list); //大家都在搜
 
         void noNetWork();
+
+        void hideLoading();
     }
 
     interface Presenter {

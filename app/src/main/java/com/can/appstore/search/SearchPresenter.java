@@ -57,7 +57,7 @@ public class SearchPresenter implements SearchContract.Presenter {
                     mAppInfoList.clear();
                 }
                 if (!(data.size() > 0) && pageIndex != 1) {
-                    ToastUtil.toastShortTimeLimit("没有更多数据!",6000);
+                    ToastUtil.toastShortTimeLimit("没有更多数据!", 6000);
                 } else {
                     mAppInfoList.addAll(data);
                     mView.getAppList(mAppInfoList);
@@ -78,6 +78,7 @@ public class SearchPresenter implements SearchContract.Presenter {
     public void getDefaultList() {
 
         if (!NetworkUtils.isNetworkConnected(MyApp.getContext())) {
+            mView.hideLoading();
             mView.noNetWork();
             return;
         }
@@ -90,11 +91,13 @@ public class SearchPresenter implements SearchContract.Presenter {
                 List<AppInfo> appInfoList = body.getData();
                 mView.getHotRecomAppList(appInfoList);
                 ToastUtil.toastShort("加载数据成功!" + body.getMessage());
+                mView.hideLoading();
             }
 
             @Override
             public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
                 ToastUtil.toastShort("加载数据失败,请稍后再试!");
+                mView.hideLoading();
             }
         });
 
@@ -105,11 +108,13 @@ public class SearchPresenter implements SearchContract.Presenter {
                 ListResult<PopularWord> body = response.body();
                 List<PopularWord> popularWordList = body.getData();
                 mView.getHotKeyList(popularWordList);
+                mView.hideLoading();
             }
 
             @Override
             public void onFailure(CanCall<ListResult<PopularWord>> call, CanErrorWrapper errorWrapper) {
                 ToastUtil.toastShort("加载数据失败,请稍后再试!");
+                mView.hideLoading();
             }
         });
 
