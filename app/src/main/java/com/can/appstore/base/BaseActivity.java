@@ -19,6 +19,10 @@ public abstract class BaseActivity extends FragmentActivity {
     private Dialog mOffsetLoadingDialog;
     private BroadcastReceiver mHomeKeyReceiver;
     private int loadingSize ;
+    private String loadingMsgText = "加载中,请稍后……";   //默认文案
+    private int    mMsgTextSize = 35;
+    private int    mMsgTextColor = 0xccffffff;
+    private int spaceInPixels = 40;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,7 +59,18 @@ public abstract class BaseActivity extends FragmentActivity {
 
     public void showLoadingDialog() {
         if (mLoadingDialog == null) {
-            mLoadingDialog = PromptUtils.showLoadingDialog(this , loadingSize);
+            mLoadingDialog = PromptUtils.showLoadingDialog(this , loadingSize , loadingMsgText , mMsgTextSize , mMsgTextColor , spaceInPixels);
+        } else if (mLoadingDialog.isShowing()) {
+            return;
+        } else {
+            mLoadingDialog.setCancelable(false);
+            mLoadingDialog.show();
+        }
+    }
+
+    public void showLoadingDialog(String msg) {
+        if (mLoadingDialog == null) {
+            mLoadingDialog = PromptUtils.showLoadingDialog(this , loadingSize , msg , mMsgTextSize , mMsgTextColor , spaceInPixels);
         } else if (mLoadingDialog.isShowing()) {
             return;
         } else {
@@ -72,7 +87,17 @@ public abstract class BaseActivity extends FragmentActivity {
 
     public void showOffsetLoadingDialog(int offsetX) {
         if (mOffsetLoadingDialog == null) {
-            mOffsetLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, offsetX);
+            mOffsetLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, offsetX , loadingMsgText , mMsgTextSize , mMsgTextColor , spaceInPixels);
+        } else if (mOffsetLoadingDialog.isShowing()) {
+            return;
+        } else {
+            mOffsetLoadingDialog.show();
+        }
+    }
+
+    public void showOffsetLoadingDialog(int offsetX , String msg) {
+        if (mOffsetLoadingDialog == null) {
+            mOffsetLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, offsetX , msg , mMsgTextSize , mMsgTextColor , spaceInPixels);
         } else if (mOffsetLoadingDialog.isShowing()) {
             return;
         } else {
