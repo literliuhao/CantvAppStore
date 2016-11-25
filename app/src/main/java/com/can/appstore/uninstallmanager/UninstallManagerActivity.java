@@ -9,7 +9,6 @@ import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -38,7 +37,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     public static final String TAG = "UninstallManagerActivi";
     public static final int MIN_DOWN_INTERVAL = 80;//响应点击事件的最小间隔事件
     public static final int APP_INSTALL_REFRESH_DELAYE = 200;//应用安装刷新此时选择的位置
-    public static final int UNINSTALL_LAST_POSITION_DELAYE = 490;//卸载最后一个位置延时请求焦点
+    public static final int UNINSTALL_LAST_POSITION_DELAYE = 600;//卸载最后一个位置延时请求焦点
     private CanRecyclerView mCanRecyclerView;
     private FocusMoveUtil mFocusMoveUtil;
     private FocusScaleUtil mScaleUtil;
@@ -64,17 +63,30 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         super.onCreate(savedInstanceState);
         Log.d(TAG, "===onCreate===");
         setContentView(R.layout.activity_uninstall_manager);
-        setFocus();
         mPresenter = new UninstallManagerPresenter(this, UninstallManagerActivity.this);
         initView();
+        initFocus();
         mPresenter.startLoad(getSupportLoaderManager());
     }
 
-    public void setFocus() {
+    public void initFocus() {
         mFocusMoveUtil = new FocusMoveUtil(UninstallManagerActivity.this, getWindow().getDecorView(), R.mipmap.btn_focus);
         mScaleUtil = new FocusScaleUtil();
         mScaleUtil.setFocusScale(1.0f);
+        measureFocusActiveRegion();
         mListFocusMoveRunnable = new ListFocusMoveRunnable();
+    }
+
+    private void measureFocusActiveRegion() {
+        mCanRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                int[] location = new int[2];
+                mCanRecyclerView.getLocationInWindow(location);
+                mFocusMoveUtil.setFocusActiveRegion(0, location[1] + mCanRecyclerView.getPaddingTop(), getWindowManager().
+                        getDefaultDisplay().getWidth(), location[1] + mCanRecyclerView.getMeasuredHeight());
+            }
+        });
     }
 
     @Override
@@ -243,7 +255,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         if (position >= 0) {
             isLastRemove = true;
         }
-        mFocusMoveUtil.hideFocusForShowDelay(500);
+        mFocusMoveUtil.hideFocusForShowDelay(610);
         mCanRecyclerView.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -305,7 +317,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
                     if (position == mUninstallManagerAdapter.getItemCount() - 1) {
                         isLastRemove = false;
                     }
-                    mCanRecyclerView.postDelayed(mListFocusMoveRunnable, 50);
+                    mListFocusMoveRunnable.run();
                     view.setBackgroundResource(R.drawable.shape_bg_uninstall_manager_item_focus);
                 } else {
                     mScaleUtil.scaleToNormal();
@@ -381,7 +393,6 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         public void run() {
             if (mFocusedListChild != null) {
                 mScaleUtil.scaleToLarge(mFocusedListChild);
-                mScaleUtil.setFocusScale(1.0f);
                 if (focusSearchFailed) {
                     mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f);
                 } else {
