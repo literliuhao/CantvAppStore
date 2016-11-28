@@ -58,7 +58,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     }
 
     public void initDownloadManager() {
-        mDownloadManager = DownloadManager.getInstance(mContext);
+        mDownloadManager = DownloadManager.getInstance(mContext.getApplicationContext());
     }
 
     @Override

@@ -1,15 +1,9 @@
 package com.can.appstore.appdetail;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -24,7 +18,6 @@ import com.can.appstore.http.HttpManager;
 import com.can.appstore.widgets.CanDialog;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 
 import cn.can.downloadlib.AppInstallListener;
@@ -225,7 +218,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     }
 
     public void initDownloadManager() {
-        mDownloadManager = DownloadManager.getInstance(mContext);
+        mDownloadManager = DownloadManager.getInstance(mContext.getApplicationContext());
         downloadPath = mDownloadManager.getDownloadPath();
     }
 
@@ -496,6 +489,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public void dismissIntroduceDialog() {
         if (mCustomDialog != null) {
             mCustomDialog.dismiss();
+            mCustomDialog = null;
         }
     }
 
@@ -515,6 +509,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         if (downloadTask != null) {
             mDownloadManager.removeDownloadListener(downloadTask, this);
             mDownloadManager.removeAppInstallListener(this);
+            mDownloadManager.release();
         }
         if (mAppDetailCall != null) {
             mAppDetailCall.cancel();
@@ -560,6 +555,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     public void dismissInsufficientStorageSpaceDialog() {
         if (mCanDialog != null) {
+            mCanDialog.dismiss();
             mCanDialog.dismiss();
         }
     }
