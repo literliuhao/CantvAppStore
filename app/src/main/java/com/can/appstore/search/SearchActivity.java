@@ -555,6 +555,9 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
      */
     private void setDefaultNextFocus() {
         Log.w("setDefaultNextFocus", "");
+        if (setRightNextFocus) {
+            return;
+        }
         if (null != mAppListAdapter && null != mHotRecommendAdapter) {
             //热词(大家都在搜)
             List<View> hotKeyViewList = mAppListAdapter.mHotKeyViewList;
@@ -570,7 +573,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
             if (hotKeySize == 0 || hotRecomSize == 0) {
                 return;
             }
-
+            setRightNextFocus = true;
             if (hotKeySize > hotRecomSize) {
                 for (int i = 0; i < hotKeySize; i++) {
                     if (i < hotRecomSize) {
@@ -590,7 +593,6 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                     }
                 }
             }
-            setRightNextFocus = true;
             Log.w("设置焦点完成", "");
         }
     }
