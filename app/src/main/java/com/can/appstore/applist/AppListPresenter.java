@@ -72,6 +72,7 @@ public class AppListPresenter implements AppListContract.Presenter {
         mView = view;
         mContext = view.getContext();
         mPageType = pageType;
+        // TODO: 2016/11/10 测试使用type  后期删除
         mTypeId = typeId;
         mTopicId = topicId;
         mView.setPresenter(this);
@@ -150,6 +151,11 @@ public class AppListPresenter implements AppListContract.Presenter {
                 List<Topic> topics = data.getTopics();
                 List<AppInfo> appInfos = data.getData();
                 mTopics.addAll(topics);
+                for (int i = 0; i < 6; i++) {
+                    Topic topic = new Topic();
+                    topic.setName(i + "");
+                    mTopics.add(topic);
+                }
                 mAppInfos.addAll(appInfos);
                 if (mPageType == AppListActivity.PAGE_TYPE_APP_LIST) {
                     mView.showSearchView();
