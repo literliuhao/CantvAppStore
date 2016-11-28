@@ -231,7 +231,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                     Log.i(TAG, "getUpdateApkNum: " + data.size());
                 }
                 Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
-                ToastUtil.toastShort("getUpdateApkNum: " + mUpdateNumDatas.size());
+                //ToastUtil.toastShort("getUpdateApkNum: " + mUpdateNumDatas.size());
                 //判断是否开启自动更新
                 Log.i(TAG, "autoUpdate: " + 111111);
                 boolean isAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
