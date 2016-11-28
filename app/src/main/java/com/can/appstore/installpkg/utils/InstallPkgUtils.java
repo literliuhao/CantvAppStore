@@ -9,13 +9,10 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.update.model.AppInfoBean;
-import com.can.appstore.update.utils.UpdateUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -23,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 
 import cn.can.downloadlib.utils.SdcardUtils;
 import cn.can.downloadlib.utils.ShellUtils;
@@ -58,49 +54,47 @@ public class InstallPkgUtils {
             File file = files[i];
             if (file.isFile()) {
                 String fileName = file.getName();
-                if (fileName.endsWith(".apk")) {  //判断扩展名
-                    try {
-                        AppInfoBean bean = new AppInfoBean();
-                        String apk_path = null;
-                        apk_path = file.getAbsolutePath();
-                        PackageManager pm = MyApp.mContext.getPackageManager();
-                        PackageInfo packageInfo = pm.getPackageArchiveInfo(apk_path, GET_ACTIVITIES);
-                        ApplicationInfo appInfo = packageInfo.applicationInfo;
-                        /**获取apk的图标 */
-                        appInfo.sourceDir = apk_path;
-                        appInfo.publicSourceDir = apk_path;
-                        Drawable apk_icon = appInfo.loadIcon(pm);
-                        bean.setIcon(apk_icon);
-                        /** 得到包名 */
-                        String packageName = packageInfo.packageName;
-                        bean.setPackageName(packageName);
-                        /** apk的绝对路劲 */
-                        bean.setFliePath(file.getAbsolutePath());
-                        bean.setAppSize(new File(file.getAbsolutePath()).length() / 1024 / 1024 + "M");
-                        /**获取文件名*/
-                        //bean.setAppName(getFileNameNoEx(new File(file.getAbsolutePath()).getName()));
-                        /**由包名获取应用名*/
-                        String label = appInfo.loadLabel(pm).toString();
-                        bean.setAppName(label);
+                try {
+                    AppInfoBean bean = new AppInfoBean();
+                    String apk_path = null;
+                    apk_path = file.getAbsolutePath();
+                    PackageManager pm = MyApp.mContext.getPackageManager();
+                    PackageInfo packageInfo = pm.getPackageArchiveInfo(apk_path, GET_ACTIVITIES);
+                    ApplicationInfo appInfo = packageInfo.applicationInfo;
+                    /**获取apk的图标 */
+                    appInfo.sourceDir = apk_path;
+                    appInfo.publicSourceDir = apk_path;
+                    Drawable apk_icon = appInfo.loadIcon(pm);
+                    bean.setIcon(apk_icon);
+                    /** 得到包名 */
+                    String packageName = packageInfo.packageName;
+                    bean.setPackageName(packageName);
+                    /** apk的绝对路劲 */
+                    bean.setFliePath(file.getAbsolutePath());
+                    bean.setAppSize(new File(file.getAbsolutePath()).length() / 1024 / 1024 + "M");
+                    /**获取文件名*/
+                    //bean.setAppName(getFileNameNoEx(new File(file.getAbsolutePath()).getName()));
+                    /**由包名获取应用名*/
+                    String label = appInfo.loadLabel(pm).toString();
+                    bean.setAppName(label);
                         /*String appName = UpdateUtils.getAppName(MyApp.mContext, packageName);
                         bean.setAppName(appName);*/
-                        /** apk的版本名称 */
-                        String versionName = packageInfo.versionName;
-                        bean.setVersionName(versionName);
-                        /** apk的版本号码 */
-                        int versionCode = packageInfo.versionCode;
-                        bean.setVersionCode(String.valueOf(versionCode));
-                        /**安装处理类型*/
-                        int type = doType(pm, packageName, versionCode);
-                        if (INSTALLED == type) {
-                            bean.setInstall(true);
-                        } else if (UNINSTALLED == type) {
-                            bean.setInstall(false);
-                        }
-                        myFiles.add(bean);
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
+                    /** apk的版本名称 */
+                    String versionName = packageInfo.versionName;
+                    bean.setVersionName(versionName);
+                    /** apk的版本号码 */
+                    int versionCode = packageInfo.versionCode;
+                    bean.setVersionCode(String.valueOf(versionCode));
+                    /**安装处理类型*/
+                    int type = doType(pm, packageName, versionCode);
+                    if (INSTALLED == type) {
+                        bean.setInstall(true);
+                    } else if (UNINSTALLED == type) {
+                        bean.setInstall(false);
                     }
+                    myFiles.add(bean);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             } else if (file.isDirectory() && file.getPath().indexOf("/.") == -1) {  //忽略点文件（隐藏文件/文件夹）
                 FindAllAPKFile(file.getPath());

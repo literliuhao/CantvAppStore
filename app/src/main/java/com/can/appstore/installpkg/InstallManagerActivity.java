@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,23 +16,16 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.TextProgressBar;
-import com.can.appstore.installpkg.utils.InstallPkgUtils;
-import com.can.appstore.installpkg.view.LoadingDialog;
 import com.can.appstore.update.model.AppInfoBean;
-import com.can.appstore.update.UpdateManagerActivity;
 import com.can.appstore.update.utils.UpdateUtils;
 import com.can.appstore.widgets.CanDialog;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +34,6 @@ import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
-import cn.can.tvlib.utils.PreferencesUtils;
 import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.ToastUtils;
 
@@ -57,8 +48,8 @@ public class InstallManagerActivity extends Activity implements InstallContract.
     private CanRecyclerView mRecyclerView;
     private InstallManagerAdapter mRecyclerAdapter;
     private TextView mReminder;
-    private Button mDeleteButton;
-    private Button mDeleteAllButton;
+    private TextView mDeleteButton;
+    private TextView mDeleteAllButton;
     //private Button mUpdateButton;
     private int mCurrentPositon;
     private RelativeLayout deleteLayout;
@@ -309,8 +300,8 @@ public class InstallManagerActivity extends Activity implements InstallContract.
         mCurrentnum = (TextView) findViewById(R.id.tv_install_currentnum);
         mRecyclerView = (CanRecyclerView) findViewById(R.id.rv_install_recyclerview);
         mReminder = (TextView) findViewById(R.id.tv_install_reminder);
-        mDeleteAllButton = (Button) findViewById(R.id.bt_install_deleteall);
-        mDeleteButton = (Button) findViewById(R.id.bt_install_delete);
+        mDeleteAllButton = (TextView) findViewById(R.id.bt_install_deleteall);
+        mDeleteButton = (TextView) findViewById(R.id.bt_install_delete);
         //mUpdateButton = (Button) findViewById(R.id.bt_install_update);
         mProgressBar = (TextProgressBar) findViewById(R.id.pb_install_progressbar);
         mFocusMoveUtil = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);

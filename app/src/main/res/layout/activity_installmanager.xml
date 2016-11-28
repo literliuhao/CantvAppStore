@@ -1,25 +1,26 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-    <Button
+    <TextView
         android:id="@+id/bt_install_deleteall"
         android:layout_width="@dimen/px200"
         android:layout_height="@dimen/px72"
         android:layout_marginLeft="@dimen/px160"
         android:layout_marginTop="@dimen/px150"
         android:background="@drawable/selector_updateitem"
+        android:clickable="true"
         android:focusable="true"
         android:gravity="center"
+        android:nextFocusLeft="@id/bt_install_deleteall"
+        android:nextFocusUp="@id/bt_install_deleteall"
         android:text="@string/install_bt_deleteall"
         android:textColor="#ccffffff"
         android:textSize="35px"
-        android:nextFocusUp="@id/bt_install_deleteall"
-        android:nextFocusLeft="@id/bt_install_deleteall"
-        android:visibility="visible" />
+        android:visibility="visible"/>
 
-    <Button
+    <TextView
         android:id="@+id/bt_install_delete"
         android:layout_width="@dimen/px200"
         android:layout_height="@dimen/px72"
@@ -27,14 +28,15 @@
         android:layout_marginLeft="@dimen/px160"
         android:layout_marginTop="@dimen/px24"
         android:background="@drawable/selector_updateitem"
+        android:clickable="true"
         android:focusable="true"
+        android:nextFocusDown="@id/bt_install_delete"
+        android:nextFocusLeft="@id/bt_install_delete"
+        android:nextFocusUp="@id/bt_install_deleteall"
         android:text="@string/install_bt_deleteinstall"
         android:textColor="#ccffffff"
         android:textSize="35px"
-        android:nextFocusUp="@id/bt_install_deleteall"
-        android:nextFocusDown="@id/bt_install_delete"
-        android:nextFocusLeft="@id/bt_install_delete"
-        android:visibility="visible" />
+        android:visibility="visible"/>
 
     <!--<Button
         android:id="@+id/bt_install_update"
@@ -74,7 +76,7 @@
                 android:drawableStart="@mipmap/title_line"
                 android:text="@string/install_title"
                 android:textColor="#ccffffff"
-                android:textSize="@dimen/px38" />
+                android:textSize="@dimen/px38"/>
 
             <com.can.appstore.appdetail.custom.TextProgressBar
                 android:id="@+id/pb_install_progressbar"
@@ -84,7 +86,7 @@
                 android:layout_marginStart="@dimen/px40"
                 android:layout_marginTop="@dimen/px5"
                 android:max="100"
-                android:progressDrawable="@drawable/layer_list_progress_drawable" />
+                android:progressDrawable="@drawable/layer_list_progress_drawable"/>
 
         </LinearLayout>
 
@@ -102,7 +104,7 @@
                 android:textColor="@color/uninstall_app_name_color"
                 android:textSize="@dimen/px36"
                 android:textStyle="bold"
-                android:visibility="gone" />
+                android:visibility="gone"/>
 
             <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
                 android:id="@+id/rv_install_recyclerview"
@@ -113,10 +115,10 @@
                 android:layout_marginTop="-7px"
                 android:clipChildren="false"
                 android:clipToPadding="false"
-                android:paddingLeft="@dimen/px23"
-                android:paddingTop="@dimen/px23"
                 android:paddingBottom="@dimen/px1"
-                android:paddingRight="@dimen/px1"/>
+                android:paddingLeft="@dimen/px23"
+                android:paddingRight="@dimen/px1"
+                android:paddingTop="@dimen/px23"/>
         </FrameLayout>
     </LinearLayout>
 
@@ -128,7 +130,7 @@
         android:layout_marginRight="@dimen/px168"
         android:layout_marginTop="@dimen/px80"
         android:textColor="#80ffffff"
-        android:textSize="32px" />
+        android:textSize="32px"/>
 
     <TextView
         android:id="@+id/tv_install_currentnum"
@@ -138,6 +140,6 @@
         android:layout_marginTop="@dimen/px80"
         android:layout_toLeftOf="@id/tv_install_totalnum"
         android:textColor="#ccffffff"
-        android:textSize="32px" />
+        android:textSize="32px"/>
 
 </RelativeLayout>

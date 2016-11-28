@@ -274,11 +274,11 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
      * @param list
      */
     @Override
-    public void getAppList(List list) {
+    public void getAppList(List list, boolean... isFirstSearch) {
         mleft_top.setText(R.string.search_left_top_prompt2);
         if (null != list && list.size() > 0) {
             showGoneView(TAG_S_TOP_APPLIST_G_BOTTOM);
-            mAppListAdapter.setDataList(list);
+            mAppListAdapter.setDataList(list, isFirstSearch[0]);
         } else {
             showGoneView(TAG_S_NULLAPP_G_TOP_APPLIST);
         }
@@ -291,7 +291,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
      */
     @Override
     public void getInitials(String con) {
-        mSearch_con_view.setText(con);
+        mSearch_con_view.setText(con.toUpperCase());
     }
 
     /**
