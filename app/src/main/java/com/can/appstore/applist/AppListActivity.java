@@ -178,8 +178,10 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                     } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
                         menuFocusMoveToRight();
                         return true;
+                    }else if(keyCode == KeyEvent.KEYCODE_DPAD_UP){
+                        return true;
                     }
-                    return true;
+                    return false;
                 }
             });
         }
