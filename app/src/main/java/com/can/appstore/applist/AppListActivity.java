@@ -52,8 +52,8 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     public static final String ENTRY_KEY_TOPIC_ID = "topicId"; // 默认获取焦点的二级分类id
     public static final String ENTRY_KEY_APP_ID = "appId"; //  应用详情id
     // handler msg.what
-    private final int MSG_HIDE_MENU_TOP_SHADOW = 0x101;
-    private final int MSG_HIDE_MENU_BOTTOM_SHADOW = 0x102;
+    public static final int MSG_HIDE_MENU_TOP_SHADOW = 0x101;
+    public static final int MSG_HIDE_MENU_BOTTOM_SHADOW = 0x102;
     private final int HIDE_MENU_ITEM_BG = 0x103;
     // 页面类型
     private static final int PAGE_TYPE_ILLEGAL = 0x100;//非法页面类型
@@ -178,7 +178,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                         menuFocusMoveToRight();
                         return true;
                     }
-                    return false;
+                    return true;
                 }
             });
         }
@@ -752,14 +752,16 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT && isAppInfoLoadingDialogShowing()) {
-            //应用列表刷新的时候拦截向右移动操作
-            return true;
-        }
-        if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT && mAppList != null && mAppList.getVisibility() != View
-                .VISIBLE && mLoadFailView.getVisibility() != View.VISIBLE) {
-            //应用列表右侧无数据,并且不是网络错误的时候拦截向右移动操作
-            return true;
+        if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT) {
+            if (isAppInfoLoadingDialogShowing()) {
+                //应用列表刷新的时候拦截向右移动操作
+                return true;
+            }
+            if (mAppList != null && mAppList.getVisibility() != View
+                    .VISIBLE && mLoadFailView.getVisibility() != View.VISIBLE) {
+                //应用列表右侧无数据,并且不是网络错误的时候拦截向右移动操作
+                return true;
+            }
         }
 
         return super.dispatchKeyEvent(event);

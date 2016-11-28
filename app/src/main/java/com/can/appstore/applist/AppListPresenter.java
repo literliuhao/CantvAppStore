@@ -40,9 +40,10 @@ public class AppListPresenter implements AppListContract.Presenter {
     //handler msg.what  request
     public static final int REQUEST_DATA = 1;
     public static final int REFRESH_APP_LIST = 2;
-    public static final int HIDE_LOADING = 3;
-    public static final int SHOW_APP_LIST_UI = 4;
-    public static final int SHOW_LOAD_FAIL_UI = 5;
+    public static final int REFRESH_TYPE_NAME = 3;
+    public static final int HIDE_LOADING = 4;
+    public static final int SHOW_APP_LIST_UI = 5;
+    public static final int SHOW_LOAD_FAIL_UI = 6;
     //联网请求相关
     private CanCall<Result<AppInfoContainer>> mAppListInfoCall;
     private CanCall<Result<AppInfoContainer>> mAppsRanking;
@@ -50,6 +51,7 @@ public class AppListPresenter implements AppListContract.Presenter {
     private int mPageType;//当前页类型
     private String mTypeId;//页面类型id
     private long mRecentLoadingTime;//最近一次loading框显示的时间
+    private int mLoadOffset;
     //menu数据
     private String mTopicId;//左侧menu列表id
     private int mMenuDataPosition;//左侧menu请求数据的位置
@@ -72,12 +74,12 @@ public class AppListPresenter implements AppListContract.Presenter {
         mView = view;
         mContext = view.getContext();
         mPageType = pageType;
-        // TODO: 2016/11/10 测试使用type  后期删除
         mTypeId = typeId;
         mTopicId = topicId;
         mView.setPresenter(this);
         mTopics = new ArrayList<>();
         mAppInfos = new ArrayList<>();
+        mLoadOffset = mContext.getResources().getDimensionPixelSize(R.dimen.px132);
         initHandler();
     }
 
@@ -109,6 +111,9 @@ public class AppListPresenter implements AppListContract.Presenter {
                         refreshLineInformation();
                         mView.showAppList();
                         mView.hideFailUI();
+                        break;
+                    case REFRESH_TYPE_NAME:
+                        mView.refreshTypeName((String) msg.obj);
                         break;
                     case SHOW_LOAD_FAIL_UI:
                         mView.hideAppList();
@@ -142,7 +147,6 @@ public class AppListPresenter implements AppListContract.Presenter {
             public void onResponse(CanCall<Result<AppInfoContainer>> call, Response<Result<AppInfoContainer>>
                     response) throws Exception {
                 mPage++;
-                mMenuDataPosition = 0;//第一次加载完数据，找到需要获取焦点的位置
                 Result<AppInfoContainer> body = response.body();
                 Log.d(TAG, "onResponse: " + body.toString());
                 AppInfoContainer data = body.getData();
@@ -151,6 +155,7 @@ public class AppListPresenter implements AppListContract.Presenter {
                 List<Topic> topics = data.getTopics();
                 List<AppInfo> appInfos = data.getData();
                 mTopics.addAll(topics);
+                mMenuDataPosition = findMenuFocusPosition();//第一次加载完数据，找到需要获取焦点的位置
                 for (int i = 0; i < 6; i++) {
                     Topic topic = new Topic();
                     topic.setName(i + "");
@@ -187,7 +192,7 @@ public class AppListPresenter implements AppListContract.Presenter {
 
         //根据不同页面请求数据
         if (mPageType == AppListActivity.PAGE_TYPE_APP_LIST) {
-            mAppListInfoCall = HttpManager.getApiService().getAppinfos("", mTypeId, mPage, PAGE_SIZE);
+            mAppListInfoCall = HttpManager.getApiService().getAppinfos(mTopicId, mTypeId, mPage, PAGE_SIZE);
             mAppListInfoCall.enqueue(canCallback);
         } else {
             mAppsRanking = HttpManager.getApiService().getAppsRanking(mTopicId);
@@ -225,11 +230,12 @@ public class AppListPresenter implements AppListContract.Presenter {
                 Result<AppInfoContainer> body = response.body();
                 Log.d(TAG, "onResponse: " + body.toString());
                 AppInfoContainer data = body.getData();
+                mTotalSize = data.getTotal();
                 List<AppInfo> appInfos = data.getData();
                 mAppInfos.addAll(appInfos);
 
                 //数据为空的情况下不刷新列表,隐藏loding框
-                if(mAppInfos.size() == 0){
+                if (mAppInfos.size() == 0) {
                     mView.hideLoadingDialog();
                     return;
                 }
@@ -241,6 +247,8 @@ public class AppListPresenter implements AppListContract.Presenter {
                 mHandler.sendEmptyMessage(REFRESH_APP_LIST);
                 mHandler.sendEmptyMessageDelayed(HIDE_LOADING, delayTime);
                 mHandler.sendEmptyMessageDelayed(SHOW_APP_LIST_UI, delayTime);
+                mHandler.sendMessageDelayed(Message.obtain(mHandler, REFRESH_TYPE_NAME, data.getTypeName()),
+                        delayTime);
             }
 
             @Override
@@ -249,6 +257,12 @@ public class AppListPresenter implements AppListContract.Presenter {
                 isLoadFail = true;
                 mHandler.sendEmptyMessageDelayed(HIDE_LOADING, delayTime);
                 mHandler.sendEmptyMessageDelayed(SHOW_LOAD_FAIL_UI, delayTime);
+                if (mPageType == AppListActivity.PAGE_TYPE_RANKING) {
+                    mHandler.sendMessageDelayed(Message.obtain(mHandler, REFRESH_TYPE_NAME, mTopics.get
+                                    (mMenuDataPosition).getName() + mContext.getResources().getString(R.string
+                                    .ranking)),
+                            delayTime);
+                }
                 Log.d(TAG, "onFailure:" + errorWrapper.getReason() + "-----" + errorWrapper.getThrowable());
             }
         };
@@ -276,6 +290,7 @@ public class AppListPresenter implements AppListContract.Presenter {
             return;
         }
         mView.showToast(mContext.getResources().getString(R.string.load_more_content));
+        // mView.showLoadingDialog(mContext.getResources().getString(R.string.load_more_content),mLoadOffset,true);
         cancelCall();
         mAppListInfoCall = HttpManager.getApiService().getAppinfos(mTopics.get(mMenuDataPosition).getId(), mTypeId,
                 mPage, PAGE_SIZE);
@@ -288,8 +303,10 @@ public class AppListPresenter implements AppListContract.Presenter {
                 AppInfoContainer data = body.getData();
                 List<AppInfo> appInfos = data.getData();
 
+                //mHandler.sendEmptyMessageDelayed(HIDE_LOADING,200);
+
                 //数据总数错误，重新计算
-                if(appInfos.size() == 0){
+                if (appInfos.size() == 0) {
                     mTotalSize = mAppInfos.size();
                     mTotalLine = calculateRowNumber(mTotalSize);
                     refreshLineInformation();
@@ -304,6 +321,7 @@ public class AppListPresenter implements AppListContract.Presenter {
 
             @Override
             public void onFailure(CanCall<Result<AppInfoContainer>> call, CanErrorWrapper errorWrapper) {
+                mHandler.sendEmptyMessageDelayed(HIDE_LOADING, 200);
                 Log.d(TAG, "onFailure:loadMoreData");
             }
         });
@@ -326,6 +344,23 @@ public class AppListPresenter implements AppListContract.Presenter {
         return lines;
     }
 
+    /**
+     * 根据topic找到焦点需要定在的位置
+     *
+     * @return 焦点位置
+     */
+    private int findMenuFocusPosition() {
+        //排行榜页面根据topic找到位置，其他页面定位在第一个位置
+        if (mPageType == AppListActivity.PAGE_TYPE_RANKING) {
+            for (int i = 0; i < mTopics.size(); i++) {
+                if (mTopicId.equals(mTopics.get(i).getId())) {
+                    return i;
+                }
+            }
+        }
+        return 0;
+    }
+
     @Override
     public void onAppListItemSelectChanged(int position) {
         mCurrentLine = calculateRowNumber(position + 1);
@@ -342,12 +377,15 @@ public class AppListPresenter implements AppListContract.Presenter {
 
     @Override
     public void onMenuItemSelect(int position) {
+        //移除网络请求和消息
         cancelCall();
         mHandler.removeMessages(REFRESH_APP_LIST);
+        mHandler.removeMessages(REFRESH_TYPE_NAME);
         mHandler.removeMessages(HIDE_LOADING);
         mHandler.removeMessages(SHOW_APP_LIST_UI);
         mHandler.removeMessages(SHOW_LOAD_FAIL_UI);
         mRecentLoadingTime = System.currentTimeMillis();
+        //发送延时请求数据消息
         if (mHandler != null) {
             mHandler.removeMessages(REQUEST_DATA);
             Message msg = Message.obtain();

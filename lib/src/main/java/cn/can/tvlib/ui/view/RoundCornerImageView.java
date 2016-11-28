@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
@@ -47,6 +48,8 @@ public class RoundCornerImageView extends ImageView {
     private RectF mSrcRect;
     private Paint mMaskPaint;
     private RectF mMaskRect;
+    private Path mMaskClipPath;
+    private RectF mMaskClipRect;
     private RectF mDrawRect;
     private boolean maskParamsLegal;
     private boolean showMask;
@@ -186,9 +189,9 @@ public class RoundCornerImageView extends ImageView {
                 srcBmp = ((GlideBitmapDrawable) drawable).getBitmap();
             }
         }
-        if(srcBmp == null && bg == null){
-            return null;
-        }
+//        if(srcBmp == null && bg == null){
+//            return null;
+//        }
 
         Bitmap finalBmp = null;
         try {
@@ -249,7 +252,7 @@ public class RoundCornerImageView extends ImageView {
             initMaskRect(viewWidth, viewHeight);
         }
         canvas.save();
-        canvas.drawRect(mMaskRect.left, mMaskRect.top, mMaskRect.right, mMaskRect.bottom, mMaskPaint);
+        canvas.drawRect(mMaskRect, mMaskPaint);
         canvas.restore();
     }
 

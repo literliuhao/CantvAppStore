@@ -31,7 +31,6 @@ import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.entity.AppInfo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.tvlib.imageloader.GlideLoadTask;
@@ -81,7 +80,6 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     private TextView mTvAddFuntion;
     private TextView mTvDeveloper;
     private RelativeLayout mRelativeLayuotOperatingEquipment;
-    private List<String> mControlType = new ArrayList<>();
     private RecommedGridAdapter mRecommedGridAdapter;
     private IntroducGridAdapter mIntroducGridAdapter;
     private ViewFlipper mViewFlipper;
@@ -398,12 +396,11 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     }
 
     public void setOperaPic(List<String> type) {
-        if (mRelativeLayuotOperatingEquipment.getChildCount() != 1) {
-            mRelativeLayuotOperatingEquipment.removeViewsInLayout(1, mControlType.size());
+        for (int i = mRelativeLayuotOperatingEquipment.getChildCount() - 1; i > 0; i--) {
+            mRelativeLayuotOperatingEquipment.removeViewAt(i);
         }
         int width = getResources().getDimensionPixelSize(R.dimen.dimen_60px);
         int leftMargin = getResources().getDimensionPixelSize(R.dimen.dimen_12px);
-        mControlType = type;
         for (int i = 0; i < type.size(); i++) {
             View childAt = mRelativeLayuotOperatingEquipment.getChildAt(i);
             RelativeLayout.LayoutParams controllerTypePic = new RelativeLayout.LayoutParams(width, width);
@@ -536,6 +533,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             addIntroduceGridListener();
             addIntroduceSetting();
         } else {
+            mIntroducGridAdapter.setData(mAppinfo.getThumbs());
             mIntroducGridAdapter.notifyDataSetChanged();
         }
     }
@@ -629,6 +627,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             addRecommendGridListener();
             addRecommendSetting();
         } else {
+            mRecommedGridAdapter.setData(mAppinfo.getRecommend());
             mRecommedGridAdapter.notifyDataSetChanged();
         }
     }
@@ -676,8 +675,10 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             @Override
             public void onClick(View view, int position, Object data) {
                 String appId = mAppinfo.getRecommend().get(position).getId();
-                mAppDetailPresenter.mAppId = appId;
-                mAppDetailPresenter.startLoad();
+                if (appId != mAppinfo.getId()) {
+                    mAppDetailPresenter.mAppId = appId;
+                    mAppDetailPresenter.startLoad();
+                }
             }
         });
         mRecommendGrid.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -728,10 +729,6 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             mHandler.removeMessages(MESSAGE_TYPE_UPDATE);
             mHandler.removeMessages(MESSAGE_TYPE_DOWNLAOD);
             mHandler = null;
-        }
-        if (mControlType != null) {
-            mControlType.clear();
-            mControlType = null;
         }
         mFocusMoveUtil.release();
         mAppDetailPresenter.release();

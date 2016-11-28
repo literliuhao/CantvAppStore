@@ -94,7 +94,6 @@
     <string name="download_no_resume_task">当前没有可恢复的任务!</string>
 
 
-
     <!--卸载管理-->
     <string name="bt_batch_uninstall">批量卸载</string>
     <string name="tv_uninstall_manager">卸载管理</string>
@@ -164,13 +163,14 @@
     <string name="btn_clear_msg">清空</string>
     <string name="txt_empty_msg">暂无消息</string>
 
-    <!--应用列表文本-->
+    <!--应用、排行列表文本-->
     <string name="illegal_page_type">非法页面类型！</string>
     <string name="no_network">没有网络，请检查您的网络连接！</string>
     <string name="no_more_content">没有更多了!</string>
-    <string name="load_more_content">加载更多！</string>
+    <string name="load_more_content">加载更多!</string>
     <string name="line">行</string>
     <string name="backslashes">/</string>
+    <string name="ranking">排行</string>
 
     <!--我的应用-->
     <string name="menu_management_of_sorting">按菜单可管理应用排序</string>

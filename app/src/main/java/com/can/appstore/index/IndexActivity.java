@@ -28,6 +28,7 @@ import com.can.appstore.http.HttpManager;
 import com.can.appstore.index.adapter.IndexPagerAdapter;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.interfaces.IOnPagerListener;
+import com.can.appstore.index.model.DataUtils;
 import com.can.appstore.index.model.ShareData;
 import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.index.ui.FixedScroller;
@@ -41,6 +42,8 @@ import com.can.appstore.message.manager.MessageManager;
 import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.update.UpdatePresenter;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -80,7 +83,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private final int FIND_FOCUS = 0X000001;
     private int currentPage;
     private CanCall<ListResult<Navigation>> mNavigationCall;
-    private int oldIndex;
+    private int updateNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,18 +113,26 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mNavigationCall.enqueue(new CanCallback<ListResult<Navigation>>() {
             @Override
             public void onResponse(CanCall<ListResult<Navigation>> call, Response<ListResult<Navigation>> response) throws Exception {
-                ListResult<Navigation> info = response.body();
-                if (null != info.getData()) {
-                    initData(info);
-                    bindData(info);
-                }
+                ListResult<Navigation> listResult = response.body();
+                parseData(listResult);
             }
 
             @Override
             public void onFailure(CanCall<ListResult<Navigation>> call, CanErrorWrapper errorWrapper) {
                 Log.i("DataUtils", errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
+                Gson gson = new Gson();
+                ListResult<Navigation> listResult = gson.fromJson(DataUtils.indexData, new TypeToken<ListResult<Navigation>>() {
+                }.getType());
+                parseData(listResult);
             }
         });
+    }
+
+    private void parseData(ListResult<Navigation> listResult) {
+        if (null != listResult.getData()) {
+            initData(listResult);
+            bindData(listResult);
+        }
     }
 
     /**
@@ -246,10 +257,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 scrollStatus = state;
                 switch (currentPage) {
                     case 0:
-                        textUpdate.setVisibility(View.VISIBLE);
+                        refreshUpdate(updateNum);
                         break;
                     default:
                         textUpdate.setVisibility(View.GONE);
+                        break;
                 }
                 if (state == SCROLLING) {
                     if (!(IndexActivity.this.getCurrentFocus() instanceof LiteText)) {
@@ -311,10 +323,12 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void initUpdateListener() {
+        UpdatePresenter.autoUpdate(IndexActivity.this);
         UpdatePresenter.setOnUpdateAppNumListener(new UpdatePresenter.OnUpdateAppNumListener() {
             @Override
             public void updateAppNum(int number) {
-                refreshUpdate(number);
+                updateNum = number;
+                refreshUpdate(updateNum);
             }
         });
     }
@@ -382,8 +396,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             switch (sourceEnum) {
                 case INDEX:
                     v.bringToFront();
-                    mFocusUtils.startMoveFocus(v, SCALE);
-                    mFocusScaleUtils.scaleToLarge(v);
+                    mFocusUtils.setFocusRes(IndexActivity.this, R.drawable.btn_circle_focus);
+                    mFocusUtils.startMoveFocus(v);
+//                    mFocusScaleUtils.scaleToLarge(v);
                     break;
                 case TITLE:
                     if (v instanceof LiteText) {
@@ -392,16 +407,19 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                         v.bringToFront();
                         mFocusScaleUtils.scaleToLarge(v);
                     }
+                    mFocusUtils.setFocusRes(IndexActivity.this, R.drawable.btn_focus);
                     mFocusUtils.startMoveFocus(v, SCALE);
                     break;
                 case RANK:
                     v.bringToFront();
+                    mFocusUtils.setFocusRes(IndexActivity.this, R.drawable.btn_focus);
                     mFocusUtils.startMoveFocus(v);
                     break;
                 case NORMAL:
                 case MYAPP:
                 case MANAGE:
                     v.bringToFront();
+                    mFocusUtils.setFocusRes(IndexActivity.this, R.drawable.btn_focus);
                     mFocusUtils.startMoveFocus(v, SCALE);
                     mFocusScaleUtils.scaleToLarge(v);
                     break;
