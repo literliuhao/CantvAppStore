@@ -243,8 +243,6 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                     return;
                 } else {
                     mPresenter.getInstallPkgList(mAutoUpdate);
-                    mCurrentnum.setVisibility(View.VISIBLE);
-                    mTotalnum.setVisibility(View.VISIBLE);
                     if (!NetworkUtils.isNetworkConnected(UpdateManagerActivity.this)) {
                         mCurrentnum.setVisibility(View.INVISIBLE);
                         mTotalnum.setVisibility(View.INVISIBLE);
@@ -557,6 +555,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
 
     @Override
     public void showNoData() {
+        mReminder.setText(getResources().getString(R.string.update_updateall));
         mReminder.setVisibility(View.VISIBLE);
         mCurrentnum.setVisibility(View.INVISIBLE);
         mTotalnum.setVisibility(View.INVISIBLE);
