@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">CANAppStore</string>
+    <!-- custom -->
+    <string name="loading">加载中,请稍后...</string>
+
     <!--搜索-->
     <string name="search_content_hint">请输入首字母</string>
     <string name="search_content_del">删除</string>
@@ -97,7 +100,6 @@
     <string name="uninsatll_manager_free_storage">可用空间&#160;:&#160;</string>
     <string name="downloaded">下载</string>
     <string name="select_app_count">已选择应用数</string>
-    <string name="loading">加载中,请稍后</string>
     <string name="not_uinstall_data">暂无应用&#160;!</string>
     <string name="uninstall_success">卸载成功</string>
     <string name="uninstall_fail">卸载失败</string>
@@ -128,7 +130,7 @@
     <string name="detail_app_click_continue">点击继续下载</string>
     <string name="download_faild_memory_lack">内存不足%s下载失败</string>
     <string name="install_faild_memory_lack">安装内存不足%s安装失败</string>
-    <string name="pares_install_apk_fail">解析安装包失败</string>
+    <string name="install_apk_fail">安装失败</string>
     <string name="network_connection_error">网络连接异常</string>
     <string name="unkonw_error">发生未知错误</string>
     <string name="network_connection_disconnect">网络连接已断开</string>

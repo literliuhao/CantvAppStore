@@ -22,6 +22,7 @@ public class RotateView extends ImageView {
 
     private ValueAnimator mRotateAnim;
     private RotateDrawable mDrawable;
+    private ValueAnimator.AnimatorUpdateListener animatorUpdateListener;
 
     public RotateView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -46,16 +47,19 @@ public class RotateView extends ImageView {
         loadingRotateAnim.setDuration(1000);
         loadingRotateAnim.setInterpolator(new LinearInterpolator());
         loadingRotateAnim.setRepeatCount(ValueAnimator.INFINITE);
-        loadingRotateAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+        animatorUpdateListener = new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                mDrawable.setLevel((int) (10000 * (float)valueAnimator.getAnimatedValue()));
+                mDrawable.setLevel((int) (10000 * (float) valueAnimator.getAnimatedValue()));
             }
-        });
+        };
+        loadingRotateAnim.addUpdateListener(animatorUpdateListener);
         mRotateAnim = loadingRotateAnim;
     }
 
     public void startRotate() {
+        mRotateAnim.addUpdateListener(animatorUpdateListener);
         mRotateAnim.start();
     }
 

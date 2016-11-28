@@ -91,7 +91,7 @@ public class PortalActivity extends Activity {
                     Intent intent = new Intent(PortalActivity.this, AppListActivity.class);
                     intent.putExtra(AppListActivity.ENTRY_KEY_SRC_TYPE, AppListActivity.PAGE_TYPE_APP_LIST);
                     intent.putExtra(AppListActivity.ENTRY_KEY_TOPIC_ID, "");
-                    intent.putExtra(AppListActivity.ENTRY_KEY_TYPE_ID, "");
+                    intent.putExtra(AppListActivity.ENTRY_KEY_TYPE_ID, "5");
                     PortalActivity.this.startActivity(intent);
                 } else if (position == 1) {
                     Intent intent = new Intent(PortalActivity.this, DownloadLeadAcitivity.class);
@@ -120,7 +120,7 @@ public class PortalActivity extends Activity {
                 }else if (position == 8) {
                     Intent intent = new Intent(PortalActivity.this, AppListActivity.class);
                     intent.putExtra(AppListActivity.ENTRY_KEY_SRC_TYPE, AppListActivity.PAGE_TYPE_RANKING);
-                    intent.putExtra(AppListActivity.ENTRY_KEY_TOPIC_ID, "");
+                    intent.putExtra(AppListActivity.ENTRY_KEY_TOPIC_ID, "15");
                     intent.putExtra(AppListActivity.ENTRY_KEY_TYPE_ID, "");
                     PortalActivity.this.startActivity(intent);
                 }
