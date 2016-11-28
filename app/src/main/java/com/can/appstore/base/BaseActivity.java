@@ -16,12 +16,17 @@ import cn.can.tvlib.utils.PromptUtils;
 public abstract class BaseActivity extends FragmentActivity {
 
     private Dialog mLoadingDialog;
-    private Dialog mAppInfoLoadingDialog;
+    private Dialog mOffsetLoadingDialog;
     private BroadcastReceiver mHomeKeyReceiver;
+    private int loadingSize;
+    private int mMsgTextSize = 35;
+    private int mMsgTextColor = 0xccffffff;
+    private int spaceInPixels = 40;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        loadingSize = getResources().getDimensionPixelSize(R.dimen.px136);
     }
 
     @Override
@@ -39,7 +44,6 @@ public abstract class BaseActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         hideLoadingDialog();
-        hideAppInfoLoadingDialog();
         super.onDestroy();
     }
 
@@ -53,7 +57,8 @@ public abstract class BaseActivity extends FragmentActivity {
 
     public void showLoadingDialog() {
         if (mLoadingDialog == null) {
-            mLoadingDialog = PromptUtils.showLoadingDialog(this);
+            mLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, getString(R.string.loading),
+                    mMsgTextSize, mMsgTextColor, spaceInPixels);
         } else if (mLoadingDialog.isShowing()) {
             return;
         } else {
@@ -62,26 +67,43 @@ public abstract class BaseActivity extends FragmentActivity {
         }
     }
 
+    public void showLoadingDialog(String msg) {
+        if (mLoadingDialog == null) {
+            mLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, msg, mMsgTextSize, mMsgTextColor, spaceInPixels);
+        } else if (mLoadingDialog.isShowing()) {
+            return;
+        } else {
+            mLoadingDialog.setCancelable(false);
+            mLoadingDialog.show();
+        }
+    }
+
+    public void showLoadingDialog(int offsetX) {
+        if (mOffsetLoadingDialog == null) {
+            mOffsetLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, offsetX, getString(R.string.loading),
+                    mMsgTextSize, mMsgTextColor, spaceInPixels);
+        } else if (mOffsetLoadingDialog.isShowing()) {
+            return;
+        } else {
+            mOffsetLoadingDialog.show();
+        }
+    }
+
+    public void showLoadingDialog(String msg, int offsetX) {
+        if (mOffsetLoadingDialog == null) {
+            mOffsetLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, offsetX, msg, mMsgTextSize, mMsgTextColor, spaceInPixels);
+        } else if (mOffsetLoadingDialog.isShowing()) {
+            return;
+        } else {
+            mOffsetLoadingDialog.show();
+        }
+    }
+
     public void hideLoadingDialog() {
         if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
             mLoadingDialog.dismiss();
-        }
-    }
-
-    public void showAppInfoLoadingDialog() {
-        if (mAppInfoLoadingDialog == null) {
-            mAppInfoLoadingDialog = PromptUtils.showLoadingDialog(this, -2, getResources().getDimensionPixelSize(R.dimen
-                    .px132));
-        } else if (mAppInfoLoadingDialog.isShowing()) {
-            return;
-        } else {
-            mAppInfoLoadingDialog.show();
-        }
-    }
-
-    public void hideAppInfoLoadingDialog() {
-        if (mAppInfoLoadingDialog != null && mAppInfoLoadingDialog.isShowing()) {
-            mAppInfoLoadingDialog.dismiss();
+        } else if (mOffsetLoadingDialog != null && mOffsetLoadingDialog.isShowing()) {
+            mOffsetLoadingDialog.dismiss();
         }
     }
 
@@ -90,7 +112,7 @@ public abstract class BaseActivity extends FragmentActivity {
     }
 
     public boolean isAppInfoLoadingDialogShowing() {
-        return mAppInfoLoadingDialog != null && mAppInfoLoadingDialog.isShowing();
+        return mOffsetLoadingDialog != null && mOffsetLoadingDialog.isShowing();
     }
 
     public Context getContext() {
@@ -109,14 +131,14 @@ public abstract class BaseActivity extends FragmentActivity {
     /**
      * Home键监听
      */
-    protected void onHomeKeyDown(){
+    protected void onHomeKeyDown() {
     }
 
     class HomeKeyReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if(Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)){
+            if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)) {
                 onHomeKeyDown();
             }
         }

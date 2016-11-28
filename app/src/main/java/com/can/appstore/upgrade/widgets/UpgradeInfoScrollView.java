@@ -1,4 +1,4 @@
-package com.can.appstore.upgrade;
+package com.can.appstore.upgrade.widgets;
 
 import android.content.Context;
 import android.util.AttributeSet;

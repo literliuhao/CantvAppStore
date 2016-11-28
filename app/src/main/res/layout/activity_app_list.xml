@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/color_2D313A"
                 android:orientation="horizontal"
     >
 
@@ -156,7 +155,7 @@
             android:id="@+id/tv_load_retry"
             style="@style/NormalText"
             android:layout_width="@dimen/px300"
-            android:layout_height="@dimen/px100"
+            android:layout_height="@dimen/px80"
             android:layout_marginTop="@dimen/px40"
             android:background="@drawable/shap_app_list"
             android:focusable="true"

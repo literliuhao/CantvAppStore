@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -24,12 +23,11 @@ import android.widget.TextView;
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.AppDetailActivity;
-import com.can.appstore.applist.adpter.*;
+import com.can.appstore.applist.adpter.AppListMenuAdapter;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.Topic;
 import com.can.appstore.search.SearchActivity;
-import com.can.appstore.upgrade.UpgradeService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +37,6 @@ import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
-import cn.can.tvlib.utils.ToastUtils;
 
 /**
  * Created by syl on 2016/10/18.
@@ -57,13 +54,11 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     // handler msg.what
     private final int MSG_HIDE_MENU_TOP_SHADOW = 0x101;
     private final int MSG_HIDE_MENU_BOTTOM_SHADOW = 0x102;
+    private final int HIDE_MENU_ITEM_BG = 0x103;
     // 页面类型
     private static final int PAGE_TYPE_ILLEGAL = 0x100;//非法页面类型
     public static final int PAGE_TYPE_APP_LIST = 0x101;//页面类型 （应用列表）
     public static final int PAGE_TYPE_RANKING = 0x102;//页面类型  （排行榜）
-    //显示隐藏的UI的类型
-    public static final int SHOW_APP_LIST = 1;//显示隐藏的应用列表
-    public static final int SHOW_FAIL_VIEW = 2;//显示隐藏的加载失败UI
     // menu相关
     public static final int MENU_DIVIDER_SIZE = 20; //menu列表行距
     public static float MENU_FOCUS_SCALE = 1.0f;  //菜单焦点放大倍数
@@ -74,6 +69,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     public static int CHANGE_FOCUSED_VIEW_BG_DELAY = 150;//右侧应用列表焦点移动时，修改背景为透明延迟的时间
     // 全局配置参数
     public static final int MIN_LOADING_SHOW_TIME = 1000; //loading消失延迟时间
+    public static final int MIN_APPLIST_REFRES_TIME = 500; //loading消失延迟时间
     // 限制焦点框移动范围
     public static int NO_LIMIT_REGION = 1; //限制焦点移动范围的类型   （不限制）
 
@@ -113,6 +109,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     private int mPageType;
     private String mTypeId;
     private String mTopicId;
+    private int mLoadOffset;//应用列表显示的偏移量
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,6 +131,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     private boolean pageTypeIllegal() {
         int pageType = getIntent().getIntExtra(ENTRY_KEY_SRC_TYPE, PAGE_TYPE_ILLEGAL);
         if (pageType == PAGE_TYPE_ILLEGAL) {
+            showToast(getContext().getResources().getString(R.string.illegal_page_type));
             return true;
         }
         mPageType = pageType;
@@ -143,6 +141,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     private void parseIntentData() {
         mTypeId = getIntent().getStringExtra(ENTRY_KEY_TYPE_ID);
         mTopicId = getIntent().getStringExtra(ENTRY_KEY_TOPIC_ID);
+        mLoadOffset = getResources().getDimensionPixelSize(R.dimen.px132);
     }
 
     private void setupContentView() {
@@ -211,6 +210,10 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                Log.d(TAG, "onScrolled: " + recyclerView.getScrollState());
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    refreshMenuPaddingWithFocusRegion();
+                }
             }
 
             @Override
@@ -219,16 +222,11 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                     return;
                 }
 
-                if (mSelectedMenuChild != null) {
-                    mFocusMoveUtil.startMoveFocus(mSelectedMenuChild, MENU_FOCUS_SCALE);
-                }
-
                 if (dy > 0) {
                     int firstVisibleChild = mMenuLM.findFirstCompletelyVisibleItemPosition();
                     if (firstVisibleChild != 0) {
                         showMenuTopArrow();
                         mCurrMenuPaddingTop = mMenuPaddingTopTmp;
-                        refreshMenuPaddingWithFocusRegion();
                     }
 
                 } else {
@@ -237,7 +235,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                     if (l != lastChildPosi && !menuBottomArrowShowing) {
                         showMenuBottomArrow();
                         mCurrMenuPaddingBottom = mMenuPaddingBottomTmp;
-                        refreshMenuPaddingWithFocusRegion();
                     }
                 }
             }
@@ -350,6 +347,14 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                             });
                         }
                         break;
+                    case HIDE_MENU_ITEM_BG:
+                        View view = (View) msg.obj;
+                        if (view != null) {
+                            view.setBackgroundColor(Color.TRANSPARENT);
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
         };
@@ -373,9 +378,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
             public void run() {
                 int[] location = new int[2];
                 mMenu.getLocationInWindow(location);
-                Log.d(TAG, "measureMenuFocusActiveRegion: " + location[0] + "--" + location[1] + "-----" + mMenu
-                        .getPaddingTop
-                                ());
                 mMenuFocusRegion.set(location[0], location[1] + mMenu.getPaddingTop(), location[0] + mMenu
                         .getMeasuredWidth(), location[1] + mMenu.getMeasuredHeight() - mMenu.getPaddingBottom() -
                         MENU_DIVIDER_SIZE);
@@ -410,7 +412,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
         mMenuAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
-                Log.d(TAG, "onItemFocusChanged: " + position);
                 if (hasFocus) {
                     if (position == 1) {
                         mHandler.sendMessage(mHandler.obtainMessage(MSG_HIDE_MENU_TOP_SHADOW));
@@ -431,9 +432,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                     if (mSelectedMenuChild == view) {
                         return;
                     }
-
-                    showAppInfoLoadingDialog();
-
                     //隐藏显示的应用列表范围的UI(应用列表，行数，加载失败UI)
                     if (mLoadFailView.getVisibility() == View.VISIBLE) {
                         mLoadFailView.setVisibility(View.INVISIBLE);
@@ -444,8 +442,8 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                     if (mLineNumTv.getVisibility() == View.VISIBLE) {
                         mLineNumTv.setVisibility(View.INVISIBLE);
                     }
-
                     mPresenter.onMenuItemSelect(position);
+                    showLoadingDialog(mLoadOffset);
                     mSelectedMenuChild = view;
                 }
             }
@@ -455,20 +453,19 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 if (direction == View.FOCUS_RIGHT) {
                     menuFocusMoveToRight();
                     if (mSelectedMenuChild != null) {
+                        mHandler.removeMessages(HIDE_MENU_ITEM_BG);
                         mSelectedMenuChild.setBackgroundResource(R.drawable.shap_app_list_menu);
                     }
-                    Log.d(TAG, "onFocusMoveOutside: View.FOCUS_RIGHT");
 
                 } else if (direction == View.FOCUS_UP && mPageType == PAGE_TYPE_APP_LIST) {
                     if (mSelectedMenuChild != null) {
+                        mHandler.removeMessages(HIDE_MENU_ITEM_BG);
                         mSelectedMenuChild.setBackgroundResource(R.drawable.shap_app_list_menu);
                     }
                     refreshFocusActiveRegion(NO_LIMIT_REGION);
                     mSearchBtn.setFocusable(true);
                     mSearchBtn.requestFocus();
-                    Log.d(TAG, "onFocusMoveOutside: FOCUS_UP");
                 }
-                Log.d(TAG, "onFocusMoveOutside: ");
                 return true;
             }
         });
@@ -497,7 +494,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
             @Override
             public void run() {
                 // showFocusView
-                if(isDestroyed()){
+                if (isDestroyed()) {
                     Log.d(TAG, "refreshAppList: isDestroyed1");
                     return;
                 }
@@ -522,7 +519,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
             }
         };
 
-        mHandler.postDelayed(mSelectRunable,100);
+        mMenu.post(mSelectRunable);
     }
 
     private void hideMenuTopArrow() {
@@ -543,7 +540,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
 
     private boolean menuFocusMoveToRight() {
         if (mAppList.getVisibility() == View.VISIBLE && mAppListAdapter.getItemCount() > 0) {
-            Log.d(TAG, "menuFocusMoveToRight: ");
             mFocusMoveUtil.setFocusActiveRegion(listRect.left, listRect.top, listRect.right, listRect.bottom);
             if (mSelectedAppListChild == null) {
                 mAppList.getChildAt(0).requestFocus();
@@ -561,24 +557,19 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     }
 
     private void refreshMenuPaddingWithFocusRegion() {
-        Log.d(TAG, "refreshMenuPaddingWithFocusRegion: " + mMenuFocusRegion.left + "--" + (mMenuFocusRegion.top +
-                mCurrMenuPaddingTop) + "--" + mMenuFocusRegion.right + "---" + (mMenuFocusRegion.bottom -
-                mCurrMenuPaddingBottom));
         mMenu.setPadding(0, mCurrMenuPaddingTop, 0, mCurrMenuPaddingBottom);
         mFocusMoveUtil.setFocusActiveRegion(mMenuFocusRegion.left, mMenuFocusRegion.top + mCurrMenuPaddingTop,
                 mMenuFocusRegion.right, mMenuFocusRegion.bottom - mCurrMenuPaddingBottom);
     }
 
     @Override
-    public void refreshAppList(List<AppInfo> appListData, int insertPosition, long delayTime) {
-        mSelectedAppListChild = null;
+    public void refreshAppList(List<AppInfo> appListData, int insertPosition) {
         if (mAppListAdapter == null) {
             mAppListAdapter = new com.can.appstore.applist.adpter.AppListInfoAdapter(appListData);
             mAppList.setAdapter(mAppListAdapter);
             mAppListAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
                 @Override
                 public void onItemFocusChanged(View view, int position, boolean hasFocus) {
-                    final View selectView = view;
                     if (hasFocus) {
                         mSelectedAppListChild = view;
                         mPresenter.onAppListItemSelectChanged(position);
@@ -586,7 +577,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                         mHandler.postDelayed(mChangeAppBgRunnable, CHANGE_FOCUSED_VIEW_BG_DELAY);
                     } else {
                         mHandler.removeCallbacks(mChangeAppBgRunnable);
-                        selectView.setBackgroundResource(R.drawable.shap_app_list);
+                        view.setBackgroundResource(R.drawable.shap_app_list);
                     }
                 }
 
@@ -602,13 +593,11 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                         }
                         if (mSelectedMenuChild != null) {
                             refreshMenuPaddingWithFocusRegion();
-                            mSelectedMenuChild.requestFocus();
-                            mMenu.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mSelectedMenuChild.setBackgroundColor(Color.TRANSPARENT);
-                                }
-                            }, CHANGE_FOCUSED_VIEW_BG_DELAY);
+                            //解决偶现menu焦点背景不消失问题
+                            final View view = mSelectedMenuChild;
+                            view.requestFocus();
+                            mHandler.sendMessageDelayed(Message.obtain(mHandler, HIDE_MENU_ITEM_BG, view),
+                                    CHANGE_FOCUSED_VIEW_BG_DELAY);
                             return true;
                         }
                     }
@@ -622,24 +611,14 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 @Override
                 public void onClick(View view, int position, Object data) {
                     HashMap map = mPresenter.getIds(position);
-                    AppDetailActivity.actionStart(AppListActivity.this,(String)map.get(ENTRY_KEY_APP_ID),(String)map.get(ENTRY_KEY_TOPIC_ID));
+                    AppDetailActivity.actionStart(AppListActivity.this, (String) map.get(ENTRY_KEY_APP_ID), (String)
+                            map.get(ENTRY_KEY_TOPIC_ID));
                 }
             });
 
         } else if (insertPosition == AppListPresenter.REFRESH_APP) {
-            //处理没有数据的情况
-            if (appListData.size() == 0) {
-                mAppList.setVisibility(View.INVISIBLE);
-                mLineNumTv.setVisibility(View.INVISIBLE);
-                return;
-            }
+            mSelectedAppListChild = null;//刷新整个列表的时候应用列表记录的item删除
             mAppListAdapter.notifyDataSetChanged();
-            mMenu.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mAppList.scrollToPosition(0);
-                }
-            }, 20);
         } else {
             mAppListAdapter.notifyItemInserted(insertPosition);
         }
@@ -648,17 +627,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
             refreshMenuPaddingWithFocusRegion();
             mSelectedMenuChild.requestFocus();
             mSelectedMenuChild.setBackgroundColor(Color.TRANSPARENT);
-        }
-
-        if (mAppList.getVisibility() != View.VISIBLE) {
-            mMenu.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mAppList.setVisibility(View.VISIBLE);
-                    mLineNumTv.setVisibility(View.VISIBLE);
-                    mLoadFailView.setVisibility(View.GONE);
-                }
-            }, delayTime);
         }
     }
 
@@ -688,8 +656,8 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
      * 显示应用列表
      */
     @Override
-    public void showAppList(){
-        if(mAppList.getVisibility() != View.VISIBLE){
+    public void showAppList() {
+        if (mAppList.getVisibility() != View.VISIBLE) {
             mAppList.setVisibility(View.VISIBLE);
         }
         if (mLineNumTv.getVisibility() != View.VISIBLE) {
@@ -701,8 +669,8 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
      * 显示加载失败的UI
      */
     @Override
-    public void showFailUI(){
-        if(mLoadFailView.getVisibility() != View.VISIBLE ){
+    public void showFailUI() {
+        if (mLoadFailView.getVisibility() != View.VISIBLE) {
             mLoadFailView.setVisibility(View.VISIBLE);
         }
     }
@@ -711,12 +679,22 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
      * 隐藏应用列表
      */
     @Override
-    public void hideAppList(){
-        if(mAppList.getVisibility() == View.VISIBLE){
+    public void hideAppList() {
+        if (mAppList.getVisibility() == View.VISIBLE) {
             mAppList.setVisibility(View.INVISIBLE);
         }
         if (mLineNumTv.getVisibility() == View.VISIBLE) {
             mLineNumTv.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    /**
+     * 显示加载失败的UI
+     */
+    @Override
+    public void hideFailUI() {
+        if (mLoadFailView.getVisibility() == View.VISIBLE) {
+            mLoadFailView.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -750,7 +728,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 SearchActivity.startAc(this);
                 break;
             case R.id.tv_load_retry:
-                showAppInfoLoadingDialog();
+                showLoadingDialog(mLoadOffset);
                 mPresenter.loadAppListData();
                 if (mSelectedMenuChild != null) {
                     mSelectedMenuChild.requestFocus();
@@ -793,14 +771,12 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
             mFocusMoveUtil.release();
         }
 
-        if(mPresenter != null){
-            Log.d(TAG, "onDestroy: mPresenter.release()");
+        if (mPresenter != null) {
             mPresenter.release();
         }
 
-        if(mMenu != null){
+        if (mMenu != null) {
             mMenu.removeCallbacks(mSelectRunable);
-            Log.d(TAG, "onDestroy:removeCallbacks ");
         }
         super.onDestroy();
     }

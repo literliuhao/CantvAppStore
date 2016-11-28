@@ -4,7 +4,6 @@
               android:id="@+id/ll_app_detail"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="@color/two_page_bg"
               android:orientation="vertical"
               android:visibility="invisible">
 
@@ -16,11 +15,10 @@
         android:layout_marginTop="@dimen/dimen_100px"
         >
 
-        <cn.can.tvlib.ui.view.RoundCornerImageView
+        <cn.can.tvlib.ui.view.GlideRoundCornerImageView
             android:id="@+id/iv_icon"
             android:layout_width="@dimen/dimen_200px"
             android:layout_height="@dimen/dimen_200px"
-            android:background="@drawable/bg_detail_icon_item"
             android:scaleType="centerInside"
             custom:cornerSize="@dimen/dimen_36px"/>
 
@@ -97,7 +95,7 @@
 
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/dimen_f1px"
@@ -106,7 +104,6 @@
         android:layout_marginTop="@dimen/dimen_5px"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:orientation="horizontal"
         android:paddingBottom="@dimen/dimen_5px"
         android:paddingStart="@dimen/dimen_25px"
         android:paddingTop="@dimen/dimen_25px">
@@ -131,6 +128,7 @@
             android:layout_width="@dimen/dimen_250px"
             android:layout_height="@dimen/dimen_80px"
             android:layout_marginStart="@dimen/dimen_40px"
+            android:layout_toRightOf="@+id/bt_download"
             android:focusable="true"
             android:max="100"
             android:nextFocusForward="@id/bt_update"
@@ -146,9 +144,9 @@
             android:layout_width="@dimen/dimen_160px"
             android:layout_height="@dimen/dimen_64px"
             android:layout_marginStart="@dimen/dimen_700px"
-            android:layout_marginTop="@dimen/dimen_6px"
+            android:layout_marginTop="@dimen/dimen_35px"
+            android:layout_toRightOf="@+id/bt_update"
             android:background="@android:color/transparent"
-            android:gravity="center"
             android:nextFocusForward="@id/bt_Introduction"
             android:nextFocusUp="@+id/bt_Introduction"
             android:text="@string/detail_app_Introduction"
@@ -161,23 +159,23 @@
             android:layout_width="@dimen/dimen_160px"
             android:layout_height="@dimen/dimen_64px"
             android:layout_marginStart="@dimen/dimen_40px"
-            android:layout_marginTop="@dimen/dimen_6px"
+            android:layout_marginTop="@dimen/dimen_35px"
+            android:layout_toRightOf="@+id/bt_Introduction"
             android:background="@android:color/transparent"
-            android:gravity="center"
             android:nextFocusRight="@id/bt_recommend"
             android:nextFocusUp="@id/bt_recommend"
             android:text="@string/detail_app_recommend"
             android:textColor="@color/app_name_color"
             android:textSize="@dimen/fontsize_34px"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimen_4px"
         android:layout_marginEnd="@dimen/dimen_160px"
         android:layout_marginStart="@dimen/dimen_160px"
-        android:layout_marginTop="@dimen/dimen_24px"
+        android:layout_marginTop="@dimen/dimen_7px"
         >
 
         <View
@@ -186,16 +184,13 @@
             android:layout_marginTop="@dimen/dimen_3px"
             android:background="@color/stroage_line_bg"/>
 
-        <ImageView
+        <View
             android:id="@+id/iv_tab_line"
             android:layout_width="@dimen/dimen_160px"
             android:layout_height="@dimen/dimen_4px"
             android:layout_marginStart="@dimen/dimen_1240px"
-            android:src="@drawable/tab_line"
-            android:visibility="visible"/>
-
+            android:background="@color/tabline_show_color"/>
     </FrameLayout>
-
 
     <ViewFlipper
         android:id="@+id/flipper"
@@ -225,20 +220,22 @@
             <LinearLayout
                 android:id="@+id/ll_introduce_text"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dimen_190px"
+                android:layout_height="@dimen/dimen_230px"
                 android:layout_below="@+id/crlv_introduce_grid"
-                android:layout_marginBottom="@dimen/dimen_100px"
+                android:layout_marginBottom="@dimen/dimen_90px"
                 android:layout_marginEnd="@dimen/dimen_140px"
                 android:layout_marginStart="@dimen/dimen_140px"
-                android:layout_marginTop="@dimen/dimen_f7px"
+                android:layout_marginTop="@dimen/dimen_f22px"
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 android:descendantFocusability="blocksDescendants"
                 android:focusable="true"
                 android:nextFocusLeft="@id/ll_introduce_text"
                 android:orientation="vertical"
+                android:paddingBottom="@dimen/dimen_f15px"
                 android:paddingEnd="@dimen/dimen_20px"
-                android:paddingStart="@dimen/dimen_20px">
+                android:paddingStart="@dimen/dimen_20px"
+                android:paddingTop="@dimen/dimen_15px">
 
                 <TextView
                     android:id="@+id/tv_app_introduc"
@@ -267,9 +264,9 @@
                     android:id="@+id/tv_add_function"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen_7px"
                     android:ellipsize="end"
                     android:includeFontPadding="false"
-                    android:layout_marginTop="@dimen/dimen_7px"
                     android:maxLines="1"
                     android:textColor="@color/app_name_color"
                     android:textSize="@dimen/fontsize_34px"/>

@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_2D313A"
     >
     <TextView
         android:id="@+id/download_title_tv"
@@ -17,7 +16,7 @@
         android:drawablePadding="@dimen/px20"
         android:gravity="center_vertical"
         android:includeFontPadding="false"
-        android:text="下载"/>
+        android:text="下载管理"/>
     <com.can.appstore.appdetail.custom.TextProgressBar
         android:id="@+id/download_storage_progress"
         android:layout_width="@dimen/px340"

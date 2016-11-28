@@ -1,9 +1,14 @@
 package com.can.appstore.appdetail;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -19,6 +24,7 @@ import com.can.appstore.http.HttpManager;
 import com.can.appstore.widgets.CanDialog;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
 import cn.can.downloadlib.AppInstallListener;
@@ -33,6 +39,7 @@ import cn.can.tvlib.utils.MD5Util;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtils;
+import cn.can.tvlib.utils.ToastUtils;
 import retrofit2.Response;
 
 /**
@@ -52,7 +59,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public final static float DOWNLOAD_FINISH_PROGRESS = 100f;//完成时进度
     public final static String ARGUMENT_APPID = "appID";
     public final static String ARGUMENT_TOPICID = "topicid";
-    private final static String INSTALL_PATH = Environment.getExternalStorageDirectory().getPath() + "/can_downloadApk/";
     public int downlaodErrorCode = 0;//下载错误
     private Context mContext;
     private AppDetailContract.View mView;
@@ -65,6 +71,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     private String mTopicId = "";
     private CanCall<Result<AppInfo>> mAppDetailCall;
     private AppInfo mAppInfo;
+    private String downloadPath = "";
     private String mPackageName = "";
     private CustomDialog mCustomDialog;
     private int mLimitInstallSace = 50 * 1024 * 1024;
@@ -122,7 +129,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             @Override
             public void onFailure(CanCall<Result<AppInfo>> call, CanErrorWrapper errorWrapper) {
                 Log.d(TAG, "onFailure: " + errorWrapper.getReason());
-                mView.showToast(mContext.getResources().getString(R.string.load_data_faild));
+                ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.load_data_faild));
                 mView.hideLoadingDialog();
                 mView.loadDataFail();
             }
@@ -135,7 +142,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_RUN, DOWNLOAD_INIT_PROGRESS);
             return;
         }
-        mInstallApkPath = INSTALL_PATH + mTaskId;
+        mInstallApkPath = downloadPath + mTaskId;
         if (new File(mInstallApkPath).exists()) {
             mInstallApkFileMD5 = MD5Util.getFileMD5(mInstallApkPath);
         }
@@ -171,7 +178,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     private void initUpdateButtonStatus() {
         DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(Url));
-        mInstallApkPath = INSTALL_PATH + mTaskId;
+        mInstallApkPath = downloadPath + mTaskId;
         if (new File(mInstallApkPath).exists()) {
             mInstallApkFileMD5 = MD5Util.getFileMD5(mInstallApkPath);
         }
@@ -214,12 +221,12 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
      */
 
     public float calculatorPercent(long completedSize, long totalSize) {
-        float per = totalSize == 0 ? 0 : (float) (completedSize * 100f / totalSize);
-        return per;
+        return totalSize == 0 ? 0 : (float) (completedSize * 100f / totalSize);
     }
 
     public void initDownloadManager() {
         mDownloadManager = DownloadManager.getInstance(mContext);
+        downloadPath = mDownloadManager.getDownloadPath();
     }
 
     @Override
@@ -247,7 +254,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_COMPLETED || downloadStatus == AppInstallListener.APP_INSTALLING) {//完成 , 并且正在安装时不能点击
             return;
         } else if (!NetworkUtils.isNetworkConnected(mContext)) { // 网络连接断开时不能点击
-            mView.showToast(mContext.getResources().getString(R.string.network_connection_disconnect));
+            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.network_connection_disconnect));
             return;
         } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {   // 下载错误 , 设置取消,重新添加任务
             downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
@@ -259,7 +266,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 silentInstall(mAppInfo.getName());
                 return;
             } else {
-                mView.showToast(mContext.getResources().getString(R.string.pares_install_apk_fail));
+                ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.pares_install_apk_fail));
                 //                mDownloadManager.removeTask(mTaskId);  // 应该需要从任务中移除
                 downloadStatus = DownloadStatus.DOWNLOAD_STATUS_INIT;
             }
@@ -270,7 +277,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             String fileName = mTaskId;
             Task.setFileName(fileName);
             Task.setId(fileName);
-            Task.setSaveDirPath(INSTALL_PATH);
             Task.setUrl(Url);
             Task.setIcon(mAppInfo.getIcon());
             mDownloadManager.addDownloadTask(Task, AppDetailPresenter.this);
@@ -408,16 +414,16 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         downlaodErrorCode = errorCode;
         float per = calculatorPercent(downloadTask.getCompletedSize(), downloadTask.getTotalSize());
         if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_FILE_NOT_FOUND) {
-            mView.showToast(mContext.getResources().getString(R.string.downlaod_error));
+            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.downlaod_error));
             refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
         } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_IO_ERROR) {
-            mView.showToast(mContext.getResources().getString(R.string.downlaod_error));
+            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.downlaod_error));
             refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
         } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR) {
-            mView.showToast(mContext.getResources().getString(R.string.network_connection_error));
+            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.network_connection_error));
             refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_PAUSE, per);
         } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_UNKONW_ERROR) {
-            mView.showToast(mContext.getResources().getString(R.string.unkonw_error));
+            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.unkonw_error));
             refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, per);
         }
     }
@@ -445,34 +451,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 }
             }
         }
-    }
-
-    /**
-     * 根据操作类型选择图片
-     *
-     * @param conType
-     * @return
-     */
-    public int getOperationPic(String conType) {
-        int type = Integer.parseInt(conType);
-        int drawableID = 0;
-        switch (type) {
-            case 1:
-                drawableID = R.drawable.hand_shank; // 手柄
-                break;
-            case 2:
-                drawableID = R.drawable.remote_control;// 遥控器
-                break;
-            case 3:
-                drawableID = R.drawable.phone;// 手机
-                break;
-            case 4:
-                drawableID = R.drawable.microphone;// 麦克风
-                break;
-            default:
-                break;
-        }
-        return drawableID;
     }
 
     /**

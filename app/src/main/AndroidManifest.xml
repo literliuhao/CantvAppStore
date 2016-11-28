@@ -26,7 +26,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/common_page_style">
         <activity android:name=".search.SearchActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION.ACTIVITY_SEARCH"/>
@@ -45,16 +45,16 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <!--<activity-->
-            <!--android:name=".PortalActivity"-->
-            <!--android:hardwareAccelerated="false"-->
-            <!--android:theme="@style/AppTheme.Translucent.FadeIn">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN"/>-->
+        <activity
+            android:name=".PortalActivity"
+            android:hardwareAccelerated="false"
+            android:theme="@style/AppTheme.Translucent.FadeIn">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
 
-                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
-            <!--</intent-filter>-->
-        <!--</activity>-->
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
         <activity android:name=".MainActivity"/>
         <activity
             android:name=".index.IndexActivity"
@@ -63,11 +63,6 @@
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION_INDEX"/>
                 <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity android:name=".myapps.addappsview.AddAppsActivity">
@@ -100,16 +95,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".download.DownloadActivity"
-            android:theme="@style/AppTheme.Translucent.FadeIn">
+            android:name=".download.DownloadActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION_DOWNLOAD"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity
-            android:name=".specialtopic.SpecialActivity"
-            android:theme="@style/AppTheme.Translucent.FadeIn">
+            android:name=".specialtopic.SpecialActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION_SPECIAL_TOPIC"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -125,8 +118,7 @@
         <activity android:name=".download.DownloadLeadAcitivity"></activity>
 
         <activity
-            android:name=".uninstallmanager.UninstallManagerActivity"
-            android:theme="@style/AppTheme.Translucent.FadeIn">
+            android:name=".uninstallmanager.UninstallManagerActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION_UNINSTALL_MANAGER"/>
 
@@ -135,8 +127,7 @@
         </activity>
 
         <activity
-            android:name=".appdetail.AppDetailActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar">
+            android:name=".appdetail.AppDetailActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION_APP_DETAIL"/>
 
@@ -148,7 +139,7 @@
             android:name=".appdetail.ImageScaleActivity"
             android:theme="@style/Image_Scale_Transparent"></activity>
 
-        <service android:name=".upgrade.UpgradeService">
+        <service android:name=".upgrade.service.UpgradeService">
             <intent-filter>
                 <action android:name="com.can.appstore.upgrade.UpgradeService"/>
             </intent-filter>
@@ -163,7 +154,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".upgrade.bugly.BuglyUpgradeService">
+        <service android:name=".upgrade.service.BuglyUpgradeService">
             <intent-filter>
                 <action android:name="com.can.appstore.upgrade..bugly.BuglyUpgradeService"/>
 

@@ -40,6 +40,7 @@ import com.can.appstore.message.MessageActivity;
 import com.can.appstore.message.manager.MessageManager;
 import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
+import com.can.appstore.update.UpdatePresenter;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -65,6 +66,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private TextView textUpdate;
     private FocusMoveUtil mFocusUtils;
     private FocusScaleUtil mFocusScaleUtils;
+    private UpdatePresenter updatePresenter;
     private ShareData shareData;
     private final int TOP_INDEX = 1;
     private final int DURATIONLARGE = 300;
@@ -81,7 +83,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private int currentPage;
     private CanCall<ListResult<Navigation>> mNavigationCall;
     private int oldIndex;
-    private int count = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +96,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     @Override
     protected void onResume() {
         super.onResume();
-        refreshUpdate();
         refreshMsg();
     }
 
@@ -155,8 +155,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mViewPager = (ViewPager) findViewById(R.id.id_custom_pager);
 
         textUpdate = (TextView) findViewById(R.id.tv_update_number);
-        initUpdateListener();
-        initMsgListener();
+
     }
 
     /**
@@ -304,24 +303,37 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         }
         mTitleBar.setViewPager(mViewPager, PAGERCURRENTITEM);
         mHandler.sendEmptyMessageDelayed(FIND_FOCUS, 200);
+        loadMore();
+    }
 
+    private void loadMore(){
         //开始获取第三方屏蔽列表
         shareData.getInstance().execute();
-
+        initUpdateListener();
+        initMsgListener();
     }
+
     private void initUpdateListener() {
+        updatePresenter = new UpdatePresenter(IndexActivity.this);
+        updatePresenter.setOnUpdateAppNumListener(new UpdatePresenter.OnUpdateAppNumListener() {
+            @Override
+            public void updateAppNum(int number) {
+
+            }
+        });
+
         MessageManager.setCallMsgDataUpdate(new MessageManager.CallMsgDataUpdate() {
             @Override
             public void onUpdate() {
-                imageRed.setVisibility(View.VISIBLE);
+                refreshUpdate();
             }
         });
     }
 
-    private void refreshUpdate() {
-        if (count > 0) {
+    private void refreshUpdate(int number) {
+        if (number > 0) {
             //伪代码 可更新不等于0时显示
-            textUpdate.setText(count + getResources().getString(R.string.index_app_update));
+            textUpdate.setText(number + getResources().getString(R.string.index_app_update));
             textUpdate.setVisibility(View.VISIBLE);
         } else {
             textUpdate.setVisibility(View.GONE);

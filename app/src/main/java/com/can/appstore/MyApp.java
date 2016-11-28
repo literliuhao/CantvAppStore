@@ -9,12 +9,13 @@ import android.util.Log;
 import android.view.WindowManager;
 
 import com.can.appstore.myapps.utils.MyAppsListDataUtil;
-import com.can.appstore.upgrade.UpgradeService;
-import com.can.appstore.upgrade.bugly.BuglyUpgradeService;
+import com.can.appstore.upgrade.service.BuglyUpgradeService;
+import com.can.appstore.upgrade.service.UpgradeService;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
 import com.tencent.bugly.beta.upgrade.UpgradeListener;
+import com.tencent.bugly.proguard.aa;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +104,7 @@ public class MyApp extends Application {
                 String packageName = intent.getData().getSchemeSpecificPart();
             }
             myAppList = new MyAppsListDataUtil(mContext).getAllAppList(myAppList);
+
         }
     }
 
@@ -133,7 +135,8 @@ public class MyApp extends Application {
                 }
             }
         };
-        Bugly.init(getApplicationContext(), "900059606", true);
+        //Bugly.init(getApplicationContext(), "900059606", true);//测试使用
+        Bugly.init(getApplicationContext(), "e3c3b1806e", false);
         Beta.checkUpgrade();
     }
 
