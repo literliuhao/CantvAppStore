@@ -116,7 +116,8 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             @Override
             public void onClick(View view) {
                 if (mUninstallManagerAdapter != null) {
-                    if (mUninstallManagerAdapter.getCurrentSelectMode() == CanRecyclerViewAdapter.MODE_SELECT && mUninstallManagerAdapter.getItemCount() > 0) {
+                    if (mUninstallManagerAdapter.getCurrentSelectMode() == CanRecyclerViewAdapter.MODE_SELECT
+                            && mUninstallManagerAdapter.getItemCount() > 0) {
                         if (isSelect && mSelectPackageName != null && mSelectPackageName.size() > 0) {
                             mPresenter.batchUninstallApp(mSelectPackageName);
                         } else {
@@ -127,7 +128,8 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
                             hideSelectAppCount();
                             isSelect = !isSelect;
                         }
-                    } else if (mUninstallManagerAdapter.getCurrentSelectMode() == CanRecyclerViewAdapter.MODE_NORMAL && mUninstallManagerAdapter.getItemCount() > 0) {
+                    } else if (mUninstallManagerAdapter.getCurrentSelectMode() == CanRecyclerViewAdapter.MODE_NORMAL
+                            && mUninstallManagerAdapter.getItemCount() > 0) {
                         mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_SELECT);
                         showSelectAppCount();
                         isSelect = !isSelect;

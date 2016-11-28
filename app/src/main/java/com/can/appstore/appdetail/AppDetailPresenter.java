@@ -1,15 +1,9 @@
 package com.can.appstore.appdetail;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -24,7 +18,6 @@ import com.can.appstore.http.HttpManager;
 import com.can.appstore.widgets.CanDialog;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 
 import cn.can.downloadlib.AppInstallListener;
@@ -151,13 +144,14 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             long completedSize = downloadTask.getCompletedSize();
             long totalSize = downloadTask.getTotalSize();
             float per = calculatorPercent(completedSize, totalSize);
-            Log.d(TAG, "DownloadStatus : " + downloadStatus + "  completedSize : " + completedSize + "  totalSize" + totalSize + "   per : " + per +
-                    "  mInstallApkFileMD5 : " + mInstallApkFileMD5 + "   mAppInfo : " + mAppInfo.getMd5());
+            Log.d(TAG, "DownloaButtondStatus : " + downloadStatus + "  completedSize : " + completedSize + "  totalSize"
+                    + totalSize + "   per : " + per + "  mInstallApkFileMD5 : " + mInstallApkFileMD5
+                    + "   mAppInfo : " + mAppInfo.getMd5());
             if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_INIT || downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PREPARE) {
                 mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_WAIT, DOWNLOAD_INIT_PROGRESS);
             } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
                 mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_PAUSE, per);
-            } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_COMPLETED) {
+            } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_COMPLETED || downloadStatus == AppInstallListener.APP_INSTALLING) {
                 mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
             } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING) {
                 mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_DOWNLAODING, per);
@@ -165,10 +159,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, DOWNLOAD_INIT_PROGRESS);
             } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {
                 mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
-            } else if (downloadStatus == AppInstallListener.APP_INSTALLING) {
-                mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
             } else if (downloadStatus == AppInstallListener.APP_INSTALL_FAIL) {  //安装失败  重试
-                mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, DOWNLOAD_INIT_PROGRESS);
+                mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, DOWNLOAD_FINISH_PROGRESS);
             }
             addDownlaodListener();
         } else {
@@ -187,13 +179,14 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             long completedSize = downloadTask.getCompletedSize();
             long totalSize = downloadTask.getTotalSize();
             float per = calculatorPercent(completedSize, totalSize);
-            Log.d(TAG, "UpdateStatus : " + downloadStatus + "  completedSize : " + completedSize + "  totalSize" + totalSize + "   per : " + per +
-                    "  mInstallApkFileMD5 : " + mInstallApkFileMD5 + "   mAppInfo : " + mAppInfo.getMd5());
+            Log.d(TAG, "UpdateButtonStatus : " + downloadStatus + "  completedSize : " + completedSize + "  totalSize"
+                    + totalSize + "   per : " + per + "  mInstallApkFileMD5 : " + mInstallApkFileMD5
+                    + "   mAppInfo : " + mAppInfo.getMd5());
             if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_INIT || downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PREPARE) {
                 mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_WAIT, DOWNLOAD_INIT_PROGRESS);
             } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
                 mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_PAUSE, per);
-            } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_COMPLETED) {
+            } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_COMPLETED || downloadStatus == AppInstallListener.APP_INSTALLING) {
                 mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
             } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING) {
                 mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_DOWNLAODING, per);
@@ -201,10 +194,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, per);
             } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {
                 mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
-            } else if (downloadStatus == AppInstallListener.APP_INSTALLING) {
-                mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
             } else if (downloadStatus == AppInstallListener.APP_INSTALL_FAIL) {//安装失败  重试
-                mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, DOWNLOAD_INIT_PROGRESS);
+                mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, DOWNLOAD_FINISH_PROGRESS);
                 addDownlaodListener();
             } else {
                 mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_UPDATE, DOWNLOAD_INIT_PROGRESS);
@@ -225,7 +216,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     }
 
     public void initDownloadManager() {
-        mDownloadManager = DownloadManager.getInstance(mContext);
+        mDownloadManager = DownloadManager.getInstance(mContext.getApplicationContext());
         downloadPath = mDownloadManager.getDownloadPath();
     }
 
@@ -242,8 +233,9 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             downloadStatus = downloadTask.getDownloadStatus();
             per = calculatorPercent(completedSize, totalSize);
         }
-        Log.d(TAG, "clickStartDownload completedSize: " + completedSize + "totalSize : " + totalSize + "  downloadStatus : " + downloadStatus + "  isInstalling : " + isInstalling
-                + "clickStartDownload: mInstallApkFileMD5 : " + mInstallApkFileMD5 + "   mAppInfo : " + mAppInfo.getMd5());
+        Log.d(TAG, "clickStartDownload completedSize: " + completedSize + "totalSize : " + totalSize + "  downloadStatus : "
+                + downloadStatus + "  isInstalling : " + isInstalling + "clickStartDownload: mInstallApkFileMD5 : "
+                + mInstallApkFileMD5 + "   mAppInfo : " + mAppInfo.getMd5());
         if (Utils.isFastDoubleClick()) {//防止连续点击
             return;
         } else if (ApkUtils.isAvailable(mContext, mPackageName) && !isClickUpdateButton) {//应用已经安装
@@ -251,7 +243,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             return;
         } else if (isInstalling) { //任务不存在，但安装包还存在，任务正在安装
             return;
-        } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_COMPLETED || downloadStatus == AppInstallListener.APP_INSTALLING) {//完成 , 并且正在安装时不能点击
+        } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_COMPLETED ||
+                downloadStatus == AppInstallListener.APP_INSTALLING) {//完成 , 并且正在安装时不能点击
             return;
         } else if (!NetworkUtils.isNetworkConnected(mContext)) { // 网络连接断开时不能点击
             ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.network_connection_disconnect));
@@ -266,9 +259,10 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 silentInstall(mAppInfo.getName());
                 return;
             } else {
-                ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.pares_install_apk_fail));
+                ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.install_apk_fail));
                 //                mDownloadManager.removeTask(mTaskId);  // 应该需要从任务中移除
                 downloadStatus = DownloadStatus.DOWNLOAD_STATUS_INIT;
+                return;
             }
         }
 
@@ -374,7 +368,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     @Override
     public void onCompleted(DownloadTask downloadTask) {
         String saveDirPath = downloadTask.getSaveDirPath() + downloadTask.getFileName();
-        Log.d(TAG, "onCompleted CompletedSize: " + downloadTask.getCompletedSize() + " TotalSize" + downloadTask.getTotalSize() + " getSaveDirPath : " + saveDirPath);
+        Log.d(TAG, "onCompleted CompletedSize: " + downloadTask.getCompletedSize() + " TotalSize" +
+                downloadTask.getTotalSize() + " getSaveDirPath : " + saveDirPath);
         mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
         if (isShowUpdateButton) {
             mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
@@ -496,6 +491,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public void dismissIntroduceDialog() {
         if (mCustomDialog != null) {
             mCustomDialog.dismiss();
+            mCustomDialog = null;
         }
     }
 
@@ -515,6 +511,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         if (downloadTask != null) {
             mDownloadManager.removeDownloadListener(downloadTask, this);
             mDownloadManager.removeAppInstallListener(this);
+            mDownloadManager.release();
         }
         if (mAppDetailCall != null) {
             mAppDetailCall.cancel();
@@ -560,6 +557,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     public void dismissInsufficientStorageSpaceDialog() {
         if (mCanDialog != null) {
+            mCanDialog.dismiss();
             mCanDialog.dismiss();
         }
     }
