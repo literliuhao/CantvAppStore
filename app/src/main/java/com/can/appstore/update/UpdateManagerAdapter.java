@@ -180,7 +180,14 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                 @Override
                 public void onError(DownloadTask downloadTask, int errorCode) {
                     Log.i(TAG, "onError");
-                    refreshStatus(downloadTask, updateHolder.downloading, updateHolder.progressbar, updateHolder.updatedIcon);
+                    updateHolder.downloading.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateHolder.downloading.setVisibility(View.VISIBLE);
+                            updateHolder.downloading.setText(MyApp.mContext.getResources().getString(R.string.update_download_false));
+                            updateHolder.progressbar.setVisibility(View.INVISIBLE);
+                        }
+                    });
                     switch (errorCode) {
                         case DOWNLOAD_ERROR_FILE_NOT_FOUND:
                             ToastUtils.showMessage(MyApp.mContext, "未找到下载文件");
