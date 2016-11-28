@@ -277,7 +277,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     }
 
     //未更新app数量监听
-    interface OnUpdateAppNumListener {
+    public interface OnUpdateAppNumListener {
 
         void updateAppNum(int number);
     }

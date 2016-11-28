@@ -318,14 +318,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         updatePresenter.setOnUpdateAppNumListener(new UpdatePresenter.OnUpdateAppNumListener() {
             @Override
             public void updateAppNum(int number) {
-
-            }
-        });
-
-        MessageManager.setCallMsgDataUpdate(new MessageManager.CallMsgDataUpdate() {
-            @Override
-            public void onUpdate() {
-                refreshUpdate();
+                refreshUpdate(number);
             }
         });
     }
