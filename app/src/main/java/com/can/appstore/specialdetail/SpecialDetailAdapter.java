@@ -17,6 +17,7 @@ import java.util.List;
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 import cn.can.tvlib.ui.focus.CanRecyclerViewFocusHelper;
+import cn.can.tvlib.ui.view.GlideRoundCornerImageView;
 import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
@@ -47,8 +48,7 @@ public class SpecialDetailAdapter extends CanRecyclerViewAdapter<AppInfo> {
     @Override
     protected void bindContentData(AppInfo appInfo, RecyclerView.ViewHolder holder, int position) {
         MyViewHolder viewHolder = (MyViewHolder) holder;
-        ImageLoader.getInstance().buildTask(viewHolder.mAppImgView, appInfo.getIcon()).errorHolder(R.mipmap.icon_load_default)
-                .build().start(mContext);
+        viewHolder.mAppImgView.load(appInfo.getIcon(),0,R.mipmap.cibn_icon);
         viewHolder.mAppNameView.setText(appInfo.getName());
         viewHolder.mAppSize.setText(appInfo.getSizeStr());
         viewHolder.mAppDownloadNum.setText(appInfo.getDownloadCount());
@@ -59,14 +59,14 @@ public class SpecialDetailAdapter extends CanRecyclerViewAdapter<AppInfo> {
      */
     private class MyViewHolder extends RecyclerView.ViewHolder {
 
-        RoundCornerImageView mAppImgView;
+        GlideRoundCornerImageView mAppImgView;
         TextView mAppNameView;
         TextView mAppSize;
         TextView mAppDownloadNum;
 
         MyViewHolder(View itemView) {
             super(itemView);
-            mAppImgView = (RoundCornerImageView) itemView.findViewById(R.id.special_detail_item_appicon);
+            mAppImgView = (GlideRoundCornerImageView) itemView.findViewById(R.id.special_detail_item_appicon);
             mAppNameView = (TextView) itemView.findViewById(R.id.special_detail_item_appname);
             mAppSize = (TextView) itemView.findViewById(R.id.special_detail_item_appsize);
             mAppDownloadNum = (TextView) itemView.findViewById(R.id.special_detail_item_appdownloadnum);

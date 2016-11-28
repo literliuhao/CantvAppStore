@@ -90,7 +90,6 @@
     <string name="download_no_resume_task">当前没有可恢复的任务!</string>
 
 
-
     <!--卸载管理-->
     <string name="bt_batch_uninstall">批量卸载</string>
     <string name="tv_uninstall_manager">卸载管理</string>

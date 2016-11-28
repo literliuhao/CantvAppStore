@@ -87,5 +87,6 @@ public class TextProgressBar extends ProgressBar {
         if(this.str!=null){
             mPaint.getTextBounds(str, 0,str.length(), mRect);
         }
+        invalidate();
     }
 }
