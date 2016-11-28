@@ -44,6 +44,7 @@ import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
+import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PreferencesUtils;
 import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.ToastUtils;
@@ -132,7 +133,13 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 if (hasFocus) {
                     mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mDetectionButton, 1.0f);
-                    mPresenter.setNum(0);
+                    boolean isNull = mPresenter.isNull(0);
+                    if(isNull){
+                        mCurrentnum.setVisibility(View.INVISIBLE);
+                        mTotalnum.setVisibility(View.INVISIBLE);
+                    }else{
+                        mPresenter.setNum(0);
+                    }
                 } else {
                     mFocusScaleUtil.scaleToNormal(mDetectionButton);
                 }
@@ -145,7 +152,13 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 if (hasFocus) {
                     mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mAutoButton, 1.0f);
-                    mPresenter.setNum(0);
+                    boolean isNull = mPresenter.isNull(0);
+                    if(isNull){
+                        mCurrentnum.setVisibility(View.INVISIBLE);
+                        mTotalnum.setVisibility(View.INVISIBLE);
+                    }else{
+                        mPresenter.setNum(0);
+                    }
                 } else {
                     mFocusScaleUtil.scaleToNormal(mAutoButton);
                 }
@@ -232,6 +245,11 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                     mPresenter.getInstallPkgList(mAutoUpdate);
                     mCurrentnum.setVisibility(View.VISIBLE);
                     mTotalnum.setVisibility(View.VISIBLE);
+                    if (!NetworkUtils.isNetworkConnected(UpdateManagerActivity.this)) {
+                        mCurrentnum.setVisibility(View.INVISIBLE);
+                        mTotalnum.setVisibility(View.INVISIBLE);
+                        return;
+                    }
                 }
             }
         });
@@ -258,7 +276,11 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
         mRecyclerAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
 
             @Override
-            public void onClick(View view, int position, Object data) {
+            public void onClick(View view, final int position, Object data) {
+                if (!NetworkUtils.isNetworkConnected(UpdateManagerActivity.this)) {
+                    ToastUtils.showMessage(UpdateManagerActivity.this, "网络连接异常，请检查网络。");
+                    return;
+                }
                 mCurrentPositon = position;
                 String downloadUrl = mUpdateList.get(position).getDownloadUrl();
 
@@ -273,6 +295,8 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                     int taskstatus = downloadTask.getDownloadStatus();
                     final String saveDirPath = downloadTask.getSaveDirPath();
                     if (taskstatus == AppInstallListener.APP_INSTALL_FAIL) {
+                        status.setText(getResources().getString(R.string.update_download_installing));
+                        status.setVisibility(View.VISIBLE);
                         installUpdateApk(progress, status, updatedIcon, saveDirPath);
                     }/* else if (taskstatus == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
                         mDownloadManager.resume(downloadTask.getId());
@@ -282,8 +306,9 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                     String md5 = MD5.MD5(downloadUrl);
                     downloadTask.setFileName(md5 + ".apk");
                     downloadTask.setId(md5);
-                    downloadTask.setSaveDirPath(MyApp.mContext.getExternalCacheDir().getPath() + "/");
                     downloadTask.setUrl(downloadUrl);
+                    status.setText(getResources().getString(R.string.update_download_waitting));
+                    status.setVisibility(View.VISIBLE);
                     //Toast.makeText(MyApp.mContext, downloadUrl, Toast.LENGTH_SHORT).show();
                     mDownloadManager.addDownloadTask(downloadTask, new DownloadTaskListener() {
                         @Override
@@ -318,6 +343,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                         @Override
                         public void onCompleted(final DownloadTask downloadTask) {
                             Log.d(TAG, "onCompleted: ");
+                            mPresenter.getUpdateApkNum(position);
                             progress.post(new Runnable() {
                                 @Override
                                 public void run() {

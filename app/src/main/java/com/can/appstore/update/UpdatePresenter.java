@@ -13,6 +13,7 @@ import com.can.appstore.http.CanCall;
 import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
+import com.can.appstore.search.ToastUtil;
 import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.update.utils.UpdateUtils;
 
@@ -43,21 +44,26 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     private static final String TAG = "updatePresenter";
     private UpdateContract.View mView;
     private Context mContext;
-    private List<AppInfoBean> mDatas;//已安装应用
-    private List<AppInfo> date;
+    private List<AppInfoBean> mDatas;//更新应用集合
     private List<AppInfoBean> mAppInfoBeanList;
+    private List<AppInfoBean> mUpdateNumDatas;//未更新应用集合
+
+    public UpdatePresenter(Context mContext) {
+        this.mContext = mContext;
+        mUpdateNumDatas = new ArrayList<AppInfoBean>();
+    }
 
     public UpdatePresenter(UpdateContract.View mView, Context mContext) {
         this.mView = mView;
         this.mContext = mContext;
         mDatas = new ArrayList<AppInfoBean>();
-        date = new ArrayList<AppInfo>();
+        mUpdateNumDatas = new ArrayList<AppInfoBean>();
     }
 
     @Override
     public void getInstallPkgList(boolean isAutoUpdate) {
         mDatas.clear();
-        date.clear();
+        mUpdateNumDatas.clear();
         mView.hideNoData();
         mView.showInstallPkgList(mDatas);
         if (isAutoUpdate) {
@@ -72,8 +78,16 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         }
         mView.showLoadingDialog();
         final List appList = UpdateUtils.getAppList();
+        //mAppInfoBeanList = UpdateUtils.getAppInfoBeanList();
         //date = AppInfoBean.getAppInfoList(appList);
-        mDatas.clear();
+         /*AppInfo appInfo1 = new AppInfo();
+        appInfo1.setPackageName("cn.cibntv.ott");
+        appInfo1.setVersionCode(4);
+        AppInfo appInfo2 = new AppInfo();
+        appInfo2.setPackageName("打怪");
+        appInfo2.setVersionCode(4);
+        appList.add(appInfo1);
+        appList.add(appInfo2);*/
         //进行网络请求获取更新包信息
         CanCall<ListResult<AppInfo>> listResultCanCall = HttpManager.getApiService().checkUpdate(appList);
         listResultCanCall.enqueue(new CanCallback<ListResult<AppInfo>>() {
@@ -81,7 +95,8 @@ public class UpdatePresenter implements UpdateContract.Presenter {
             public void onResponse(CanCall<ListResult<AppInfo>> call, Response<ListResult<AppInfo>> response) throws Exception {
                 List<AppInfo> data = response.body().getData();
                 mAppInfoBeanList = AppInfoBean.getAppInfoBeanList(data);
-                Log.i(TAG, data.size()+"");
+                Log.i(TAG, data.size() + "");
+                Log.i(TAG, data.toString());
                 if (mAppInfoBeanList.size() < 1 || mAppInfoBeanList == null) {
                     mView.hideLoadingDialog();
                     mView.showNoData();
@@ -92,6 +107,10 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                     mView.showInstallPkgList(mDatas);
                     setNum(0);
                 }
+                if (mOnUpdateAppNumListener != null) {
+                    mOnUpdateAppNumListener.updateAppNum(mUpdateNumDatas.size());
+                }
+                //ToastUtil.toastShort("getUpdateApkNum: " + mUpdateNumDatas.size());
             }
 
             @Override
@@ -159,17 +178,25 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     }
 
     /**
+     * 是否无数据
+     *
+     * @param position
+     * @return
+     */
+    public boolean isNull(int position) {
+        if (mDatas.size() == 0 || mDatas == null) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * 检测自动更新添加队列
      *
      * @param context
      */
     public void autoUpdate(Context context) {
-        //判断是否开启自动更新
-        Log.i(TAG, "autoUpdate: "+111111);
-        /*boolean isAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
-        if (isAutoUpdate == false) {
-            return;
-        }*/
+
         //检测网络获取更新包数据
         if (!NetworkUtils.isNetworkConnected(context)) {
             ToastUtils.showMessage(context, "网络连接异常，请检查网络。");
@@ -188,17 +215,29 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         appList.add(appInfo1);
         appList.add(appInfo2);*/
         final DownloadManager mDownloadManager = DownloadManager.getInstance(context);
-        Log.i(TAG, "autoUpdate: "+appList.toString());
+        Log.i(TAG, "autoUpdate: " + appList.toString());
         CanCall<ListResult<AppInfo>> listResultCanCall = HttpManager.getApiService().checkUpdate(appList);
         listResultCanCall.enqueue(new CanCallback<ListResult<AppInfo>>() {
             @Override
             public void onResponse(CanCall<ListResult<AppInfo>> call, Response<ListResult<AppInfo>> response) throws Exception {
                 List<AppInfo> data = response.body().getData();
+
+                if (mOnUpdateAppNumListener != null) {
+                    mOnUpdateAppNumListener.updateAppNum(data.size());
+                    Log.i(TAG, "getUpdateApkNum: " + data.size());
+                }
+                Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
+                ToastUtil.toastShort("getUpdateApkNum: " + mUpdateNumDatas.size());
+                //判断是否开启自动更新
+                Log.i(TAG, "autoUpdate: " + 111111);
+                boolean isAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
+                if (isAutoUpdate == false) {
+                    return;
+                }
                 //添加队列
                 addAutoUpdateTask(mDownloadManager, data);
-                int size = data.size();
                 //mView.refreshAll();
-                Log.i(TAG, "autoUpdate: "+444444);
+                Log.i(TAG, "autoUpdate: " + 444444);
             }
 
             @Override
@@ -206,6 +245,9 @@ public class UpdatePresenter implements UpdateContract.Presenter {
 
             }
         });
+        /*List<AppInfoBean> appInfoBeanList = UpdateUtils.getAppInfoBeanList();
+        List<AppInfo> appInfoList = AppInfoBean.getAppInfoList(appInfoBeanList);
+        addAutoUpdateTask(mDownloadManager, appInfoList);*/
     }
 
     //添加自动更新队列
@@ -213,27 +255,45 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         for (int i = 0; i < data.size(); i++) {
             String downloadUrl = data.get(i).getUrl();
             DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(downloadUrl));
-            Log.i(TAG, "autoUpdate: "+222222);
+            Log.i(TAG, "autoUpdate: " + 222222);
             if (downloadTask == null) {
                 downloadTask = new DownloadTask();
                 String md5 = MD5.MD5(downloadUrl);
                 downloadTask.setFileName(md5 + ".apk");
                 downloadTask.setId(md5);
-                downloadTask.setSaveDirPath(MyApp.mContext.getExternalCacheDir().getPath() + "/");
                 downloadTask.setUrl(downloadUrl);
                 mDownloadManager.addDownloadTask(downloadTask, null);
-                Log.i(TAG, "autoUpdate: "+333333);
+                Log.i(TAG, "autoUpdate: " + 333333);
             }
         }
     }
 
     /**
      * 获取可更新app数量
+     *
      * @return
      */
-    public int getUpdateApkNum(){
-
-        return mDatas.size();
+    public void getUpdateApkNum(int position) {
+        mUpdateNumDatas.remove(position);
+        if (mOnUpdateAppNumListener != null) {
+            mOnUpdateAppNumListener.updateAppNum(mUpdateNumDatas.size());
+            Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
+        }
+        Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
+        //ToastUtil.toastShort("getUpdateApkNum: " + mUpdateNumDatas.size());
     }
+
+    //未更新app数量监听
+    interface OnUpdateAppNumListener {
+
+        void updateAppNum(int number);
+    }
+
+    private OnUpdateAppNumListener mOnUpdateAppNumListener;
+
+    public void setOnUpdateAppNumListener(OnUpdateAppNumListener listener) {
+        this.mOnUpdateAppNumListener = listener;
+    }
+
 
 }

@@ -65,6 +65,7 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
         updateHolder.appName.setText(date.getAppName());
         updateHolder.appSize.setText(date.getAppSize());
         updateHolder.appVersioncode.setText(mDatas.get(position).getVersionName());
+        //updateHolder.appIcon.setImageDrawable(mDatas.get(position).getIcon());
         ImageLoader.getInstance().load(getAttachedView().getContext(), updateHolder.appIcon, mDatas.get(position).getIconUrl(), R.mipmap
                 .cibn_icon, R.mipmap.cibn_icon, new GlideLoadTask
                 .SuccessCallback() {

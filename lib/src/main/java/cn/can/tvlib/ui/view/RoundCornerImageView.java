@@ -14,8 +14,6 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 
 import cn.can.tvlib.R;
@@ -49,6 +47,7 @@ public class RoundCornerImageView extends ImageView {
     private RectF mSrcRect;
     private Paint mMaskPaint;
     private RectF mMaskRect;
+    private RectF mDrawRect;
     private boolean maskParamsLegal;
     private boolean showMask;
     private static boolean changeBgEnable = true;
@@ -86,6 +85,7 @@ public class RoundCornerImageView extends ImageView {
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
         mSrcRect = new RectF();
+        mDrawRect = new RectF();
     }
 
     @Override
@@ -136,6 +136,9 @@ public class RoundCornerImageView extends ImageView {
 
         Bitmap bmp = createDrawBmp(viewWidth, viewHeight, scaleType);
         if(bmp == null){
+            if(showMask){
+                drawMask(viewWidth, viewHeight, canvas);
+            }
             return;
         }
 
@@ -173,77 +176,81 @@ public class RoundCornerImageView extends ImageView {
     }
 
     private Bitmap createDrawBmp(int viewWidth, int viewHeight, ScaleType scaleType) {
-        BitmapPool bitmapPool = Glide.get(getContext()).getBitmapPool();
-        Bitmap finalBmp = bitmapPool.get(viewWidth, viewHeight, Bitmap.Config.ARGB_4444);
-        if(finalBmp == null){
-            finalBmp = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.ARGB_4444);
-        }
-        Canvas canvas = new Canvas(finalBmp);
-
-        //draw bg
         Drawable bg = mBgDrawable;
+        Bitmap srcBmp = null;
+        if(getDrawable() != null){
+            Drawable  drawable = getDrawable().getCurrent();
+            if (drawable instanceof BitmapDrawable) {
+                srcBmp = ((BitmapDrawable) drawable).getBitmap();
+            } else if (drawable instanceof GlideBitmapDrawable) {
+                srcBmp = ((GlideBitmapDrawable) drawable).getBitmap();
+            }
+        }
+        if(srcBmp == null && bg == null){
+            return null;
+        }
+
+        Bitmap finalBmp = null;
+        try {
+            finalBmp = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.ARGB_4444);
+        } catch (OutOfMemoryError e) {
+            System.gc();
+            try {
+                finalBmp = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.ARGB_4444);
+            } catch (OutOfMemoryError e1) {
+            }
+        }
+        if(finalBmp == null){
+            return null;
+        }
+
+        Canvas canvas = new Canvas(finalBmp);
+        //draw bg
         if (bg != null) {
             bg.setBounds(0, 0, viewWidth, viewHeight);
             bg.draw(canvas);
         }
 
         //draw src
-        Bitmap srcBmp = null;
-        int left = 0;
-        int top = 0;
-        if (getDrawable() != null) {
-            Drawable drawable = getDrawable().getCurrent();
-            if (drawable instanceof BitmapDrawable) {
-                srcBmp = ((BitmapDrawable) drawable).getBitmap();
-            } else if (drawable instanceof GlideBitmapDrawable) {
-                srcBmp = ((GlideBitmapDrawable) drawable).getBitmap();
-            }
-
-            if (srcBmp == null) {
-                return finalBmp;
-            }
-
+        RectF drawRect = this.mDrawRect;
+        if (srcBmp != null) {
             int bmpWidth = srcBmp.getWidth();
             int bmpHeight = srcBmp.getHeight();
 
             if (scaleType == ScaleType.FIT_XY && (bmpWidth != viewWidth || bmpHeight != viewHeight)) {
-                try {
-                    srcBmp = Bitmap.createScaledBitmap(srcBmp, viewWidth, viewHeight, true);
-                } catch (OutOfMemoryError e) {
-                    System.gc();
-                    try {
-                        srcBmp = Bitmap.createScaledBitmap(srcBmp, viewWidth, viewHeight, true);
-                    } catch (Exception e1) {
-                    }
-                }
-
+                drawRect.set(0, 0, viewWidth, viewHeight);
             } else if (scaleType == ScaleType.CENTER_INSIDE) {
-                left = (viewWidth - bmpWidth) / 2;
-                top = (viewHeight - bmpHeight) / 2;
+                int left = (viewWidth - bmpWidth) / 2;
+                int top = (viewHeight - bmpHeight) / 2;
+                drawRect.set(left, top, left + bmpWidth, top + bmpHeight);
             }
         }
 
         if (srcBmp != null) {
             canvas.save();
             mPaint.setAlpha(animLoad ? mAlpha : 255);
-            canvas.drawBitmap(srcBmp, left, top, mPaint);
+            canvas.drawBitmap(srcBmp, null, drawRect, mPaint);
             canvas.restore();
         } else {
             mAlpha = 255;
         }
 
         if (showMask) {
-            if(mMaskPaint == null){
-                initMaskPaint();
-            }
-            if(mMaskRect == null) {
-                initMaskRect(viewWidth, viewHeight);
-            }
-            canvas.save();
-            canvas.drawRect(mMaskRect.left, mMaskRect.top, mMaskRect.right, mMaskRect.bottom, mMaskPaint);
-            canvas.restore();
+            drawMask(viewWidth, viewHeight, canvas);
         }
         return finalBmp;
+    }
+
+    private void drawMask(int viewWidth, int viewHeight, Canvas canvas) {
+        if(mMaskPaint == null){
+            initMaskPaint();
+        }
+        if(mMaskRect == null) {
+            initMaskRect(viewWidth, viewHeight);
+        }
+        canvas.save();
+        canvas.drawRect(mMaskRect.left, mMaskRect.top, mMaskRect.right, mMaskRect.bottom, mMaskPaint);
+        canvas.restore();
     }
 
     private void initMaskPaint() {
@@ -354,7 +361,7 @@ public class RoundCornerImageView extends ImageView {
 
     private void recycleSrcBmp(){
         if(mSrcBmp != null){
-            Glide.get(getContext()).getBitmapPool().put(mSrcBmp);
+            mSrcBmp.recycle();
             mSrcBmp = null;
         }
     }

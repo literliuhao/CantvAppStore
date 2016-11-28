@@ -75,7 +75,6 @@ public class AutoUpdate {
                 String md5 = MD5.MD5(downloadUrl);
                 downloadTask.setFileName(md5 + ".apk");
                 downloadTask.setId(md5);
-                downloadTask.setSaveDirPath(MyApp.mContext.getExternalCacheDir().getPath() + "/");
                 downloadTask.setUrl(downloadUrl);
                 mDownloadManager.addDownloadTask(downloadTask,null);
             }

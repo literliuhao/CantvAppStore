@@ -455,7 +455,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
     /**
      * 打开更新管理界面
      *
-     * @param v
+     * @param
      */
     /*public void intoUpdate(View v) {
         startActivity(new Intent(this, UpdateManagerActivity.class));
