@@ -1,6 +1,5 @@
 package com.can.appstore.installpkg;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -22,6 +21,7 @@ import android.widget.TextView;
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.TextProgressBar;
+import com.can.appstore.base.BaseActivity;
 import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.update.utils.UpdateUtils;
 import com.can.appstore.widgets.CanDialog;
@@ -34,7 +34,6 @@ import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
-import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.ToastUtils;
 
 
@@ -43,7 +42,7 @@ import cn.can.tvlib.utils.ToastUtils;
  * Created by shenpx on 2016/10/12 0012.
  */
 
-public class InstallManagerActivity extends Activity implements InstallContract.View {
+public class InstallManagerActivity extends BaseActivity implements InstallContract.View {
 
     private CanRecyclerView mRecyclerView;
     private InstallManagerAdapter mRecyclerAdapter;
@@ -323,21 +322,14 @@ public class InstallManagerActivity extends Activity implements InstallContract.
 
     }
 
-    public void showLoadingDialog() {
-        if (mLoadingDialog == null) {
-            mLoadingDialog = PromptUtils.showLoadingDialog(this);
-        } else if (mLoadingDialog.isShowing()) {
-            return;
-        } else {
-            mLoadingDialog.setCancelable(false);
-            mLoadingDialog.show();
-        }
+    @Override
+    public void showLoading() {
+        showLoadingDialog();
     }
 
-    public void hideLoadingDialog() {
-        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
-            mLoadingDialog.dismiss();
-        }
+    @Override
+    public void hideLoading() {
+        hideLoadingDialog();
     }
 
     @Override
@@ -451,7 +443,6 @@ public class InstallManagerActivity extends Activity implements InstallContract.
     /*public void intoUpdate(View v) {
         startActivity(new Intent(this, UpdateManagerActivity.class));
     }*/
-
     private void initDialog(final View view, final int position) {
         canDialog = new CanDialog(InstallManagerActivity.this);
         AppInfoBean bean = mPresenter.getItem(position);

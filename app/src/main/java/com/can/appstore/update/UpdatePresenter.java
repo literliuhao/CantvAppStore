@@ -11,7 +11,6 @@ import com.can.appstore.http.CanCall;
 import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
-import com.can.appstore.search.ToastUtil;
 import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.update.utils.UpdateUtils;
 
@@ -65,7 +64,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
             ToastUtils.showMessage(mContext, "网络连接异常，请检查网络。");
             return;
         }
-        mView.showLoadingDialog();
+        mView.showLoading();
         final List appList = UpdateUtils.getAppList();
         //mAppInfoBeanList = UpdateUtils.getAppInfoBeanList();
          /*AppInfo appInfo1 = new AppInfo();
@@ -86,10 +85,10 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                 Log.i(TAG, data.size() + "");
                 Log.i(TAG, data.toString());
                 if (mAppInfoBeanList.size() < 1 || mAppInfoBeanList == null) {
-                    mView.hideLoadingDialog();
+                    mView.hideLoading();
                     mView.showNoData();
                 } else {
-                    mView.hideLoadingDialog();
+                    mView.hideLoading();
                     mView.hideNoData();
                     mDatas.addAll(mAppInfoBeanList);
                     mUpdateNumDatas.addAll(mAppInfoBeanList);
@@ -105,7 +104,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
             @Override
             public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
                 Log.i(TAG, "onFailure");
-                mView.hideLoadingDialog();
+                mView.hideLoading();
                 mView.showNoData();
             }
         });
@@ -161,7 +160,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
 
     @Override
     public void release() {
-        mView.hideLoadingDialog();
+        mView.hideLoading();
     }
 
     /**
@@ -321,7 +320,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                 Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
             }
             Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
