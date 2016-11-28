@@ -78,8 +78,9 @@ public class CustomDialog extends Dialog {
             mLinearLyoutContent.measure(0, 0);
             mScrollView.measure(0, 0);
             int contentHeight = mLinearLyoutContent.getMeasuredHeight();
-            Log.d(TAG, "calculateShowScrollBar: mLinearLyoutContent : " + contentHeight + "  mScrollView : " + mScrollView.getMeasuredHeight());
-            int srollViewHeight = mContext.getResources().getDimensionPixelSize(R.dimen.dimen_500px);
+            int srollViewHeight = mContext.getResources().getDimensionPixelSize(R.dimen.dimen_536px);
+            Log.d(TAG, "calculateShowScrollBar: mLinearLyoutContent : " + contentHeight + "  mScrollView : "
+                    + mScrollView.getMeasuredHeight() + "   srollViewHeight : " + srollViewHeight);
             if (contentHeight > srollViewHeight) {
                 mScrollView.setVerticalScrollBarEnabled(true);
             }

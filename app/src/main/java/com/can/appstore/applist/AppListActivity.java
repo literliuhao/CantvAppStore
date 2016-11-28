@@ -178,7 +178,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                         menuFocusMoveToRight();
                         return true;
                     }
-                    return false;
+                    return true;
                 }
             });
         }
@@ -752,14 +752,16 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT && isAppInfoLoadingDialogShowing()) {
-            //应用列表刷新的时候拦截向右移动操作
-            return true;
-        }
-        if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT && mAppList != null && mAppList.getVisibility() != View
-                .VISIBLE && mLoadFailView.getVisibility() != View.VISIBLE) {
-            //应用列表右侧无数据,并且不是网络错误的时候拦截向右移动操作
-            return true;
+        if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT) {
+            if (isAppInfoLoadingDialogShowing()) {
+                //应用列表刷新的时候拦截向右移动操作
+                return true;
+            }
+            if (mAppList != null && mAppList.getVisibility() != View
+                    .VISIBLE && mLoadFailView.getVisibility() != View.VISIBLE) {
+                //应用列表右侧无数据,并且不是网络错误的时候拦截向右移动操作
+                return true;
+            }
         }
 
         return super.dispatchKeyEvent(event);
