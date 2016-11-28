@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">CANAppStore</string>
+    <!-- custom -->
+    <string name="loading">加载中,请稍后...</string>
+
     <!--搜索-->
     <string name="search_content_hint">请输入首字母</string>
     <string name="search_content_del">删除</string>
@@ -97,7 +100,6 @@
     <string name="uninsatll_manager_free_storage">可用空间&#160;:&#160;</string>
     <string name="downloaded">下载</string>
     <string name="select_app_count">已选择应用数</string>
-    <string name="loading">加载中,请稍后</string>
     <string name="not_uinstall_data">暂无应用&#160;!</string>
     <string name="uninstall_success">卸载成功</string>
     <string name="uninstall_fail">卸载失败</string>

@@ -19,7 +19,6 @@ public abstract class BaseActivity extends FragmentActivity {
     private Dialog mOffsetLoadingDialog;
     private BroadcastReceiver mHomeKeyReceiver;
     private int loadingSize;
-    private String loadingMsgText = "加载中,请稍后……";   //默认文案
     private int mMsgTextSize = 35;
     private int mMsgTextColor = 0xccffffff;
     private int spaceInPixels = 40;
@@ -58,7 +57,8 @@ public abstract class BaseActivity extends FragmentActivity {
 
     public void showLoadingDialog() {
         if (mLoadingDialog == null) {
-            mLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, loadingMsgText, mMsgTextSize, mMsgTextColor, spaceInPixels);
+            mLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, getString(R.string.loading),
+                    mMsgTextSize, mMsgTextColor, spaceInPixels);
         } else if (mLoadingDialog.isShowing()) {
             return;
         } else {
@@ -80,7 +80,8 @@ public abstract class BaseActivity extends FragmentActivity {
 
     public void showLoadingDialog(int offsetX) {
         if (mOffsetLoadingDialog == null) {
-            mOffsetLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, offsetX, loadingMsgText, mMsgTextSize, mMsgTextColor, spaceInPixels);
+            mOffsetLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, offsetX, getString(R.string.loading),
+                    mMsgTextSize, mMsgTextColor, spaceInPixels);
         } else if (mOffsetLoadingDialog.isShowing()) {
             return;
         } else {
