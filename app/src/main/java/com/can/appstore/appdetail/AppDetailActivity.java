@@ -301,10 +301,12 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         mIvTabLine.clearAnimation();
         TranslateAnimation translateAnimation = null;
         if (moveDirection == TO_MOVE_RIGHT) {
-            translateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 1.25f, Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f);
+            translateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+                    1.25f, Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f);
             isTabLineMoveToRecommend = true;
         } else if (moveDirection == TO_MOVE_LEFT) {
-            translateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 1.25f, Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f);
+            translateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 1.25f, Animation.RELATIVE_TO_SELF,
+                    0f, Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f);
             isTabLineMoveToRecommend = false;
         }
         translateAnimation.setDuration(100);
@@ -722,11 +724,18 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (mHandler != null) {
+            mHandler.removeMessages(MESSAGE_TYPE_UPDATE);
+            mHandler.removeMessages(MESSAGE_TYPE_DOWNLAOD);
+            mHandler = null;
+        }
+        if (mControlType != null) {
+            mControlType.clear();
+            mControlType = null;
+        }
         mFocusMoveUtil.release();
         mAppDetailPresenter.release();
         mIvTabLine.clearAnimation();
-        mHandler.removeMessages(MESSAGE_TYPE_UPDATE);
-        mHandler.removeMessages(MESSAGE_TYPE_DOWNLAOD);
     }
 
     private class ListFocusMoveRunnable implements Runnable {
