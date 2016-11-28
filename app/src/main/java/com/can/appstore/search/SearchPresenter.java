@@ -62,7 +62,7 @@ public class SearchPresenter implements SearchContract.Presenter {
             @Override
             public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
                 String reason = errorWrapper.getReason();
-//                ToastUtil.toastShort("加载数据失败,请稍后再试!");
+                ToastUtil.toastShort("加载数据失败,请稍后再试!");
                 mView.getAppList(null);
             }
         });

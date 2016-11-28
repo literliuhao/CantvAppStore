@@ -22,7 +22,6 @@ import java.util.List;
 
 import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
-import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 import static com.can.appstore.MyApp.mContext;
 
@@ -31,15 +30,15 @@ import static com.can.appstore.MyApp.mContext;
  * Created by yibh on 2016/10/13 17:36 .
  */
 
-public class SearchAppListAdapter extends CanRecyclerViewAdapter {
+public class SearchAppListAdapter extends RecyclerView.Adapter {
     public List mDataList;
     public List mDefaultList;  //"大家都在搜"的数据
     private OnInitialsListener mOnInitialsListener;
     public List<View> mHotKeyViewList = new ArrayList<>(); //存每个热词的View
     private SearchActivity mActivity;
+    private boolean isDefault = true; //当前是否处于"大家都在搜"状态
 
     public SearchAppListAdapter(List datas, Context context) {
-        super(datas);
         mDataList = datas;
         mDefaultList = datas;
         mActivity = (SearchActivity) context;
@@ -48,24 +47,8 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
     public static final int DEFAULT_APPLIST_TYPE = 11;    //默认大家都在搜的类型
     public static final int SEARCH_APPLIST_TYPE = 12;     //搜索出来的类型
 
-
     @Override
-    protected RecyclerView.ViewHolder generateViewHolder(final ViewGroup parent, final int viewType) {
-        setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onClick(View view, int position, Object data) {
-                switch (viewType) {
-                    case DEFAULT_APPLIST_TYPE:
-                        PopularWord defaultApp = (PopularWord) mDataList.get(position);
-                        setInitials(defaultApp.getPinyin());
-                        break;
-                    case SEARCH_APPLIST_TYPE:
-                        AppInfo searchApp = (AppInfo) mDataList.get(position);
-                        AppDetailActivity.actionStart(mActivity, searchApp.getId());
-                        break;
-                }
-            }
-        });
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater mLayoutInflater = LayoutInflater.from(parent.getContext());
         switch (viewType) {
             case DEFAULT_APPLIST_TYPE:
@@ -82,9 +65,8 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
         };
     }
 
-
     @Override
-    protected void bindContentData(Object mDatas, final RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof DefaultSearchViewHolder) {
             ((DefaultSearchViewHolder) holder).setContent(position);
         } else {
@@ -118,7 +100,27 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
             if (position < mActivity.SEARCH_APP_SPANCOUNT) {
                 ((SearchViewHolder) holder).mView.setNextFocusUpId(((SearchViewHolder) holder).mView.getId());
             }
+            ((SearchViewHolder) holder).mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AppDetailActivity.actionStart(mActivity, app.getId());
+                }
+            });
+
+            ((SearchViewHolder) holder).mView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean b) {
+                    if (null != mYOnFocusChangeListener) {
+                        mYOnFocusChangeListener.onItemFocusChanged(view, position, b);
+                    }
+                }
+            });
         }
+    }
+
+    @Override
+    public int getItemCount() {
+        return isDefault ? mDefaultList.size() : mDataList.size();
     }
 
     /**
@@ -143,10 +145,16 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
          * @param position
          */
         public void setContent(int position) {
-            PopularWord app = (PopularWord) mDataList.get(position);
+            final PopularWord app = (PopularWord) mDataList.get(position);
             mAppName.setText(app.getWord());
             //+1000是为了防止在搜索页出现相同的id
             mView.setId(position + 1000);
+            mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    setInitials(app.getPinyin());
+                }
+            });
         }
     }
 
@@ -175,7 +183,7 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
     }
 
     @Override
-    public int getViewType(int position) {
+    public int getItemViewType(int position) {
         if (mDataList.get(position) instanceof PopularWord) {
             return DEFAULT_APPLIST_TYPE;
         } else {
@@ -189,17 +197,14 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
      * @param dataList
      */
     public void setDataList(List dataList) {
-        mDataList = dataList;
-        setDatas(dataList);
+        isDefault = false;
+        if (mDefaultList.size() > 0) {
+            mDefaultList.clear();
+        }
+        mDataList.addAll(dataList);
         notifyDataSetChanged();
     }
 
-    /**
-     * 设置默认数据
-     */
-    public void setDefaultApplist() {
-        setDataList(mDefaultList);
-    }
 
     /**
      * 设置默认数据
@@ -207,8 +212,17 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
      * @param list
      */
     public void setDefaultApplist(List list) {
-        mDefaultList = list;
-        setDefaultApplist();
+        isDefault = true;
+        if (mDefaultList.size() > 0) {
+            mDefaultList.clear();
+        }
+        mDefaultList.addAll(list);
+        notifyDataSetChanged();
+    }
+
+    public void setDefaultApplist() {
+        isDefault = true;
+        notifyDataSetChanged();
     }
 
     /**
@@ -235,5 +249,15 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
         }
     }
 
+    //焦点变化的监听
+    private YOnFocusChangeListener mYOnFocusChangeListener;
+
+    public interface YOnFocusChangeListener {
+        void onItemFocusChanged(View view, int position, boolean hasFocus);
+    }
+
+    public void setOnFocusChangeListener(YOnFocusChangeListener onFocusChangeListener) {
+        this.mYOnFocusChangeListener = onFocusChangeListener;
+    }
 
 }
