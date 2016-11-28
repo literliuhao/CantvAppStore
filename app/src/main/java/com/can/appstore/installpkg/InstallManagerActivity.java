@@ -8,11 +8,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -39,6 +43,7 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PreferencesUtils;
+import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.ToastUtils;
 
 
@@ -54,8 +59,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
     private TextView mReminder;
     private Button mDeleteButton;
     private Button mDeleteAllButton;
-    private Button mUpdateButton;
-    private boolean isVisibility = false;
+    //private Button mUpdateButton;
     private int mCurrentPositon;
     private RelativeLayout deleteLayout;
     private TextView mRoomSize;
@@ -76,6 +80,9 @@ public class InstallManagerActivity extends Activity implements InstallContract.
     private InstallPresenter mPresenter;
     private CanDialog canDialog;
     private GridLayoutManager mGridLayoutManager;
+    private static final String TAG = "installManagerActivity";
+    private int mWinH;
+    private int mWinW;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +90,12 @@ public class InstallManagerActivity extends Activity implements InstallContract.
         setContentView(R.layout.activity_installmanager);
         mInstallDatas = new ArrayList<AppInfoBean>();
         mPresenter = new InstallPresenter(this, InstallManagerActivity.this);
+        //获取到屏幕的宽高
+        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(outMetrics);
+        mWinH = outMetrics.heightPixels;
+        mWinW = outMetrics.widthPixels;
         initView();
         initData();
         initFocusChange();
@@ -116,10 +129,12 @@ public class InstallManagerActivity extends Activity implements InstallContract.
                     if (intent.getAction().equals("android.intent.action.PACKAGE_ADDED") || intent.getAction().equals("android.intent.action.PACKAGE_REPLACED")) {
                         String packageName = intent.getDataString().substring(8);
                         int versonCode = UpdateUtils.getVersonCode(MyApp.mContext, packageName);
-                        mPresenter.isInstalled(packageName,versonCode);
-                        Toast.makeText(MyApp.mContext, packageName + "安装成功啦!!!", Toast.LENGTH_LONG).show();
+                        mPresenter.isInstalled(packageName, versonCode);
+                        //Toast.makeText(MyApp.mContext, packageName + "安装成功啦!!!", Toast.LENGTH_LONG).show();
+                        Log.i(TAG, "onReceive: " + packageName + "安装成功啦!!!");
                     } else if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
-                        Toast.makeText(MyApp.mContext, "安装失败", Toast.LENGTH_LONG).show();
+                        Log.i(TAG, "onReceive: " + "安装失败");
+                        //Toast.makeText(MyApp.mContext, "安装失败", Toast.LENGTH_LONG).show();
                     }
                 }
             };
@@ -184,7 +199,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             }
         });
 
-        mUpdateButton.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+       /* mUpdateButton.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
@@ -194,14 +209,14 @@ public class InstallManagerActivity extends Activity implements InstallContract.
                     mFocusScaleUtil.scaleToNormal(mUpdateButton);
                 }
             }
-        });
+        });*/
 
         mRecyclerAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
                 if (hasFocus) {
                     mFocusedListChild = view;
-                    mRecyclerView.postDelayed(myFocusRunnable, 50);
+                    mRecyclerView.postDelayed(myFocusRunnable, 80);
                     mPresenter.setNum(position);
                     mCurrentPositon = position;
 
@@ -216,13 +231,26 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == CanRecyclerView.SCROLL_STATE_SETTLING) {
-                    mDeleteButton.setFocusable(false);
-                    mDeleteAllButton.setFocusable(false);
-                    mUpdateButton.setFocusable(false);
+                    //限制移动区域
+                    mRecyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            int[] posi = new int[2];
+                            mRecyclerView.getLocationInWindow(posi);
+                            mFocusMoveUtil.setFocusActiveRegion(posi[0], posi[1] + mRecyclerView.getPaddingTop(),
+                                    posi[0] + mRecyclerView.getWidth(),
+                                    posi[1] + mRecyclerView.getHeight() - mRecyclerView.getPaddingBottom() - getResources().getDimensionPixelSize(R.dimen.px40));
+                        }
+                    });
+                    setLeftLayoutFocus(false);
                 } else if (newState == CanRecyclerView.SCROLL_STATE_IDLE) {
-                    mDeleteButton.setFocusable(true);
-                    mDeleteAllButton.setFocusable(true);
-                    mUpdateButton.setFocusable(true);
+                    mRecyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mFocusMoveUtil.setFocusActiveRegion(0, 0, mWinW, mWinH);
+                        }
+                    });
+                    setLeftLayoutFocus(true);
                 }
             }
 
@@ -233,6 +261,17 @@ public class InstallManagerActivity extends Activity implements InstallContract.
             }
         });
 
+    }
+
+    /**
+     * 设置左侧布局焦点
+     *
+     * @param focusable
+     */
+    private void setLeftLayoutFocus(boolean focusable) {
+        mDeleteButton.setFocusable(focusable);
+        mDeleteAllButton.setFocusable(focusable);
+        //mUpdateButton.setFocusable(focusable);
     }
 
     private void initClick() {
@@ -272,7 +311,7 @@ public class InstallManagerActivity extends Activity implements InstallContract.
         mReminder = (TextView) findViewById(R.id.tv_install_reminder);
         mDeleteAllButton = (Button) findViewById(R.id.bt_install_deleteall);
         mDeleteButton = (Button) findViewById(R.id.bt_install_delete);
-        mUpdateButton = (Button) findViewById(R.id.bt_install_update);
+        //mUpdateButton = (Button) findViewById(R.id.bt_install_update);
         mProgressBar = (TextProgressBar) findViewById(R.id.pb_install_progressbar);
         mFocusMoveUtil = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
         mFocusScaleUtil = new FocusScaleUtil();
@@ -293,19 +332,20 @@ public class InstallManagerActivity extends Activity implements InstallContract.
 
     }
 
-    @Override
     public void showLoadingDialog() {
         if (mLoadingDialog == null) {
-            mLoadingDialog = LoadingDialog.createLoadingDialog(this, getString(R.string.install_search_updateinfo));
+            mLoadingDialog = PromptUtils.showLoadingDialog(this);
+        } else if (mLoadingDialog.isShowing()) {
+            return;
+        } else {
+            mLoadingDialog.setCancelable(false);
             mLoadingDialog.show();
         }
     }
 
-    @Override
     public void hideLoadingDialog() {
-        if (mLoadingDialog != null) {
+        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
             mLoadingDialog.dismiss();
-            mLoadingDialog = null;
         }
     }
 
@@ -415,21 +455,26 @@ public class InstallManagerActivity extends Activity implements InstallContract.
     /**
      * 打开更新管理界面
      *
-     * @param v
+     * @param
      */
-    public void intoUpdate(View v) {
+    /*public void intoUpdate(View v) {
         startActivity(new Intent(this, UpdateManagerActivity.class));
-    }
+    }*/
 
     private void initDialog(final View view, final int position) {
         canDialog = new CanDialog(InstallManagerActivity.this);
         AppInfoBean bean = mPresenter.getItem(position);
+        if (bean != null && bean.getIsInstalling() && !bean.getInstalledFalse()) {
+            ToastUtils.showMessageLong(InstallManagerActivity.this, "安装包正在安装中，请稍后");
+            return;
+        }
         if (bean != null) {
-            canDialog.setTitle(bean.getAppName()).setIcon(bean.getIcon()).setRlCOntent(false).setNegativeButton("删除").setPositiveButton("安装");
+            canDialog.setTitle(bean.getAppName()).setIcon(bean.getIcon()).setRlCOntent(false).setNegativeButton(getResources().getString(R.string.install_dialog_delete)).setPositiveButton(getResources().getString(R.string.install_dialog_install));
             canDialog.setOnCanBtnClickListener(new CanDialog.OnClickListener() {
                 @Override
                 public void onClickPositive() {
                     final TextView mInstalling = (TextView) view.findViewById(R.id.tv_install_installing);
+                    mInstalling.setText(getResources().getString(R.string.install_installing));
                     mInstalling.setVisibility(View.VISIBLE);
                     //mPresenter.installApk(position);
                     canDialog.dismiss();
@@ -437,13 +482,27 @@ public class InstallManagerActivity extends Activity implements InstallContract.
                     if (versonCode == 0) {
                         ToastUtils.showMessageLong(InstallManagerActivity.this, "安装包版本低于已安装版本,请先卸载原应用");
                     } else {
-                        mPresenter.installApp(position);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                mPresenter.installApp(position);
+                            }
+                        }, 1000);
                     }
                 }
 
                 @Override
                 public void onClickNegative() {
                     //删除键
+                    if (mPresenter.isLastItem(position)) {
+                        mFocusMoveUtil.hideFocus();
+                        setLeftLayoutFocus(false);
+                        View childAt = mRecyclerView.getChildAt(position - 1);
+                        childAt.requestFocus();
+                        childAt.setFocusable(true);
+                        mFocusMoveUtil.showFocus(100);
+                        setLeftLayoutFocus(true);
+                    }
                     mPresenter.deleteOne(mCurrentPositon);
                     canDialog.dismiss();
                 }

@@ -140,7 +140,7 @@ public class PromptUtils {
             mToast.show();
             return;
         }
-        mToast = Toast.makeText(context, msg, Toast.LENGTH_SHORT);
+        mToast = Toast.makeText(context.getApplicationContext(), msg, Toast.LENGTH_SHORT);
         mToast.show();
     }
 
@@ -169,8 +169,21 @@ public class PromptUtils {
         pd.show();
         return pd;
     }
-    public static Dialog showLoadingDialog(Context context, int loadingSize,int offsetX) {
-        LoadingDialog pd = new LoadingDialog(context, loadingSize, offsetX);
+
+    public static Dialog showLoadingDialog(Context context, int loadingSize,int offsetX ) {
+        LoadingDialog pd = new LoadingDialog(context, loadingSize, offsetX );
+        pd.show();
+        return pd;
+    }
+
+    public static Dialog showLoadingDialog(Context context, int loadingSize,int offsetX , String msg, int textSize, int textColor , int spaceInPixels) {
+        LoadingDialog pd = new LoadingDialog(context, loadingSize, offsetX , msg , textSize , textColor , spaceInPixels);
+        pd.show();
+        return pd;
+    }
+
+    public static Dialog showLoadingDialog(Context context, int loadingSize , String msg, int textSize, int textColor , int spaceInPixels) {
+        LoadingDialog pd = new LoadingDialog(context, loadingSize , msg , textSize , textColor , spaceInPixels);
         pd.show();
         return pd;
     }

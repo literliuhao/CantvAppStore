@@ -36,6 +36,16 @@ public class ManagerFragment extends BaseFragment {
         View view = inflater.from(inflater.getContext()).inflate(R.layout.index_manage_grid, container, false);
         gridView = (GridView) view.findViewById(R.id.manage_grid);
         gridView.setFocusable(false);
+//        gridView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+//        gridView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View view, boolean b) {
+//                Log.i("ManagerFragment", view.getId() + " " + b);
+//                if (!b) {
+//                    gridView.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+//                }
+//            }
+//        });
         gridAdapter = new GridAdapter(inflater.getContext());
         gridAdapter.setNames(NAMES);
         gridAdapter.setIcons(ICONS);
@@ -51,7 +61,7 @@ public class ManagerFragment extends BaseFragment {
         gridAdapter.setClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("ManagerFragment", view.getId() + "");
+//                Log.i("ManagerFragment", view.getId() + "");
                 switch (view.getId()) {
                     //一键加速
                     case 0:

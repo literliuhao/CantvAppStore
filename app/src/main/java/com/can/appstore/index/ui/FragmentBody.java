@@ -115,7 +115,7 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
                 @Override
                 public void onClick(View view) {
                     try {
-                        //startActivty -- 之后在首页做统一处理
+                        //StartActivity
                         ActionUtils.convertAction(context, childBean.getAction(), childBean.getActionData());
                     } catch (Exception e) {
                         e.printStackTrace();

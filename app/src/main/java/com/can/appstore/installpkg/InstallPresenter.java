@@ -43,8 +43,8 @@ public class InstallPresenter implements InstallContract.Presenter {
         mView.showLoadingDialog();
         InstallPkgUtils.myFiles.clear();
         //mPath = Environment.getExternalStorageDirectory().getPath().toString();
-        mPath = Environment.getExternalStorageDirectory().getPath().toString() + File.separator + "Movies";
-        //mPath = MyApp.mContext.getExternalCacheDir().getPath().toString();
+        //mPath = Environment.getExternalStorageDirectory().getPath().toString() + File.separator + "Movies";
+        mPath = MyApp.mContext.getExternalCacheDir().getAbsolutePath();
         List appList = InstallPkgUtils.FindAllAPKFile(mPath);
         mDatas.clear();
         if (appList.size() < 1) {
@@ -77,7 +77,7 @@ public class InstallPresenter implements InstallContract.Presenter {
     public void deleteAll() {
         for (int i = mDatas.size() - 1; i >= 0; i--) {
             AppInfoBean bean = mDatas.get(i);
-//                InstallPkgUtils.deleteApkPkg(mDatas.get(i).getFliePath());//可以删除安装包
+            InstallPkgUtils.deleteApkPkg(mDatas.get(i).getFliePath());//可以删除安装包
             mDatas.remove(i);
         }
         //mDatas.clear();
@@ -95,9 +95,8 @@ public class InstallPresenter implements InstallContract.Presenter {
         for (int i = mDatas.size() - 1; i >= 0; i--) {
             AppInfoBean bean = mDatas.get(i);
             if (bean.getInstall()) {
-//                InstallPkgUtils.deleteApkPkg(mDatas.get(i).getFliePath());//可以删除安装包
+                InstallPkgUtils.deleteApkPkg(mDatas.get(i).getFliePath());//可以删除安装包
                 mDatas.remove(i);
-                //mView.removeItem(i);
             }
         }
         mView.refreshAll();
@@ -116,16 +115,13 @@ public class InstallPresenter implements InstallContract.Presenter {
     @Override
     public void deleteOne(int position) {
         mDatas.remove(position);
-//        InstallPkgUtils.deleteApkPkg(mDatas.get(position).getFliePath());//可以删除安装包
+        InstallPkgUtils.deleteApkPkg(mDatas.get(position).getFliePath());//可以删除安装包
         mView.refreshAll();
         if (mDatas.size() == 0) {
             mView.showNoData();
         }
         setNum(0);
         getSDInfo();
-        /*if (position == mDatas.size() - 1) {
-            mView.deleteLastItem(position);
-        }*/
     }
 
     @Override
@@ -133,12 +129,34 @@ public class InstallPresenter implements InstallContract.Presenter {
 
     }
 
+    /**
+     * 获取指定位置item
+     *
+     * @param position
+     * @return
+     */
     public AppInfoBean getItem(int position) {
         if (position < 0 || position > mDatas.size()) {
             return null;
         }
         AppInfoBean appInfoBean = mDatas.get(position);
         return appInfoBean;
+    }
+
+    /**
+     * 是否是最后一个item
+     *
+     * @param position
+     * @return
+     */
+    public boolean isLastItem(int position) {
+        if (position <= 0) {
+            return false;
+        }
+        if (position == mDatas.size() - 1) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -178,9 +196,8 @@ public class InstallPresenter implements InstallContract.Presenter {
             AppInfoBean bean = mDatas.get(i);
             if (bean.getPackageName().equals(packageName) && bean.getVersionCode().equals(String.valueOf(versionCode))) {
                 if (bean.getInstall()) {
-                    //bean.setInstall(true);
                     mView.refreshAll();
-                    Toast.makeText(MyApp.mContext, packageName + "111111", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(MyApp.mContext, packageName + "111111", Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -201,18 +218,12 @@ public class InstallPresenter implements InstallContract.Presenter {
      * 静默安装应用
      */
     public void installApp(int position) {
-        //mDatas.get(position).setInstalling(true);//开始安装
-        //mInstallDatas.add(mDatas.get(position));//加入安装中集合
-        //mDatas.get(position).setInstall(true);//positon传递
-        //mView.refreshAll();
-        //String path = Environment.getExternalStorageDirectory().getPath().toString() + File.separator + "Movies"+File.separator;
+        mDatas.get(position).setInstalling(true);//开始安装
         String fliePath = mDatas.get(position).getFliePath();
         int result = InstallPkgUtils.installApp2(fliePath);
         if (result == 0) {
             mDatas.get(position).setInstalling(false);
             mDatas.get(position).setInstall(true);
-            //isInstalled(mDatas.get(position).getPackageName());
-            //mView.refreshAll();
         } else {
             mDatas.get(position).setInstalling(true);
             mDatas.get(position).setInstall(false);

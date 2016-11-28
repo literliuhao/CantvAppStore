@@ -1,4 +1,4 @@
-package com.can.appstore.upgrade;
+package com.can.appstore.upgrade.view;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -8,6 +8,8 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.upgrade.widgets.UpgradeInfoNoticeCursor;
+import com.can.appstore.upgrade.widgets.UpgradeInfoScrollView;
 
 import cn.can.tvlib.utils.ToastUtils;
 
@@ -55,9 +57,8 @@ public class UpgradeInFoDialog extends Dialog {
         mSvUpgradeInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ToastUtils.showMessage(mContext, "安装");
-                mOnUpgradeClickListener.onClick();
                 dismiss();
+                mOnUpgradeClickListener.onClick();
             }
         });
     }

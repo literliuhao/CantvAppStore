@@ -3,25 +3,21 @@ package com.can.appstore.upgrade;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 
 import cn.can.downloadlib.utils.SdcardUtils;
-import cn.can.downloadlib.utils.ShellUtils;
-import cn.can.downloadlib.utils.ToastUtils;
+import cn.can.tvlib.utils.ShellUtils;
 import cn.can.tvlib.utils.StringUtils;
 
 /**
  * Created by syl on 2016/11/3.
  */
 
-public class Util {
+public class UpgradeUtil {
     public static String getFileMD5(String file) {
         if (file == null) {
             return "";
@@ -146,7 +142,7 @@ public class Util {
         ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r " + path, false);
         Log.d("", "inStallApk: "+res.result+"----"+res.errorMsg);
         if (res.result == 0) {
-            onInstallApkListener.onInstallSuccess();
+
         } else {
             onInstallApkListener.onInstallFail(mContext.getResources().getString(cn.can.downloadlib.R.string.error_install));
         }

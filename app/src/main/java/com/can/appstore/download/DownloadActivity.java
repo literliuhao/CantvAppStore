@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -215,7 +216,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
                 if (hasFocus) {
                     mFocusView = view;
                     if (lastFocusPos == pos) {
-                        focusMoveDelay(DELAY_MILLIS_RESOLVE_FOCUS-10);
+                        focusMoveDelay(DELAY_MILLIS_RESOLVE_FOCUS - 10);
                     } else {
                         focusMoveDelay();
                     }
@@ -226,7 +227,8 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
 
             @Override
             public void onItemContentClick(View view, int pos, DownloadTask downloadTask) {
-
+                // TODO: 2016/11/25  进入详情页
+                Log.i(TAG, "onItemContentClick: downloadTAsk="+downloadTask.toString());
             }
 
             @Override
@@ -244,7 +246,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
                         mFocusMoveUtil.hideFocusForShowDelay(DELAY_MILLIS_RESOLVE_FOCUS);
                         if (pos == tasks.size() - 1) {
                             focusMoveEnable = false;
-                            hanlder.postDelayed(mFocusResolveRunnable, DELAY_MILLIS_RESOLVE_FOCUS-10);
+                            hanlder.postDelayed(mFocusResolveRunnable, DELAY_MILLIS_RESOLVE_FOCUS - 10);
                         }
                     }
                 }

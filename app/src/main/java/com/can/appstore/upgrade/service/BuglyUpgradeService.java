@@ -1,4 +1,4 @@
-package com.can.appstore.upgrade.bugly;
+package com.can.appstore.upgrade.service;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -7,9 +7,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.can.appstore.upgrade.UpgradeFailDialog;
-import com.can.appstore.upgrade.UpgradeInFoDialog;
-import com.can.appstore.upgrade.Util;
+import com.can.appstore.R;
+import com.can.appstore.upgrade.view.UpgradeFailDialog;
+import com.can.appstore.upgrade.view.UpgradeInFoDialog;
+import com.can.appstore.upgrade.UpgradeUtil;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
 import com.tencent.bugly.beta.download.DownloadListener;
@@ -17,7 +18,6 @@ import com.tencent.bugly.beta.download.DownloadTask;
 
 import java.io.File;
 
-import cn.can.tvlib.utils.ToastUtils;
 
 /**
  * Created by syl on 2016/11/17.
@@ -43,13 +43,13 @@ public class BuglyUpgradeService extends IntentService {
                         public void onClick() {
                             //先清空本地存放Apk的空间
                             mUpdatePath = "/storage/emulated/0/Download/com.can.appstore";
-                            Util.delAllDateFile(mUpdatePath);
+                            UpgradeUtil.delAllDateFile(mUpdatePath);
                             DownloadTask downloadTask = Beta.startDownload();
                             Log.d(TAG, "checkUpgradeInfo: " + downloadTask.getSaveFile());
                         }
                     };
-                    UpgradeInFoDialog dialog = new UpgradeInFoDialog(BuglyUpgradeService.this, "系统升级", mUpgradeInfo
-                            .versionName, mUpgradeInfo.newFeature, "下载", listener);
+                    UpgradeInFoDialog dialog = new UpgradeInFoDialog(BuglyUpgradeService.this,getResources().getString(R.string.system_upgrade), mUpgradeInfo
+                            .versionName, mUpgradeInfo.newFeature, getResources().getString(R.string.download), listener);
                     dialog.show();
                     break;
                 case SHOW_UPGRADE_FAIL_DIALOG:
@@ -68,7 +68,6 @@ public class BuglyUpgradeService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        ToastUtils.showMessage(this, "启动服务");
         if (requestInfo()) {
             return;
         }
@@ -128,7 +127,7 @@ public class BuglyUpgradeService extends IntentService {
     private void onLoadingError() {
         Message msg = Message.obtain();
         msg.what = SHOW_UPGRADE_FAIL_DIALOG;
-        msg.obj = "下载异常，升级失败";
+        msg.obj = getResources().getString(R.string.load_error);
         mHandler.sendMessage(msg);
     }
 

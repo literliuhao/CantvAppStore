@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">CANAppStore</string>
+    <!-- custom -->
+    <string name="loading">加载中,请稍后...</string>
+
     <!--搜索-->
     <string name="search_content_hint">请输入首字母</string>
     <string name="search_content_del">删除</string>
@@ -43,6 +46,17 @@
     <string name="update_downloading">下载中</string>
     <string name="update_app_versionname">版本1.12</string>
     <string name="update_app_size">12.5M</string>
+    <string name="update_setting_start">已开启</string>
+    <string name="update_setting_stop">已关闭</string>
+    <string name="update_download_waitting">等待中</string>
+    <string name="update_download_installing">安装中</string>
+    <string name="update_download_installfalse">安装失败</string>
+    <string name="update_download_false">下载失败</string>
+    <string name="update_setting_title">更新设置</string>
+    <string name="update_setting_contenttop">自动更新</string>
+    <string name="update_setting_content">应用需要更新时，自动开始下载安装</string>
+    <string name="update_setting_btstart">关闭</string>
+    <string name="update_setting_btstop">开启</string>
     <!-- 安装包管理 -->
     <string name="install_start_autoupdate">已开启自动更新</string>
     <string name="install_end_autoupdate">关闭自动更新</string>
@@ -54,6 +68,7 @@
     <string name="install_bt_deleteinstall">删除已安装</string>
     <string name="install_updateall">暂未找到安装包!</string>
     <string name="install_installing">安装中</string>
+    <string name="install_installfalse">安装失败</string>
     <string name="install_app_versionname">版本1.12</string>
     <string name="install_app_size">12.5M</string>
     <string name="page_row_template" formatted="false">%d / %d</string>
@@ -63,7 +78,8 @@
     <string name="no_data">没有数据!</string>
     <string name="no_more_data">没有更多数据!</string>
     <string name="data_error">数据异常</string>
-
+    <string name="install_dialog_install">安装</string>
+    <string name="install_dialog_delete">删除</string>
     <!--专题-->
     <string name="special">"专题"</string>
     <!--下载页-->
@@ -74,6 +90,9 @@
     <string name="download_installed">安装完成</string>
     <string name="download_open_app_error">打开应用出现问题</string>
     <string name="download_file_error">文件异常</string>
+    <string name="download_no_downloading_task">当前没有可暂停的任务!</string>
+    <string name="download_no_resume_task">当前没有可恢复的任务!</string>
+
 
 
     <!--卸载管理-->
@@ -82,7 +101,6 @@
     <string name="uninsatll_manager_free_storage">可用空间&#160;:&#160;</string>
     <string name="downloaded">下载</string>
     <string name="select_app_count">已选择应用数</string>
-    <string name="loading">加载中,请稍后</string>
     <string name="not_uinstall_data">暂无应用&#160;!</string>
     <string name="uninstall_success">卸载成功</string>
     <string name="uninstall_fail">卸载失败</string>
@@ -94,8 +112,8 @@
     <!--应用详情页-->
     <string name="detail_app_name">%1$s&#160;V%2$s</string>
     <string name="detail_app_size">大小&#160;:&#160;%s</string>
-    <string name="detail_app_update_date">更新&#160;:&#160;%s</string>
-    <string name="detail_app_downlaod_count">下载&#160;:&#160;%s</string>
+    <string name="detail_app_update_date">更新时间&#160;:&#160;%s</string>
+    <string name="detail_app_downlaod_count">下载量&#160;:&#160;%s</string>
     <string name="detail_app_free_stroage">可用空间&#160;:&#160;%s</string>
     <string name="detail_app_operating_equipment">操作设备&#160;:</string>
     <string name="detail_developer">开发者&#160;:&#160;%s</string>
@@ -113,7 +131,7 @@
     <string name="detail_app_click_continue">点击继续下载</string>
     <string name="download_faild_memory_lack">内存不足%s下载失败</string>
     <string name="install_faild_memory_lack">安装内存不足%s安装失败</string>
-    <string name="pares_install_apk_fail">解析安装包失败</string>
+    <string name="install_apk_fail">安装失败</string>
     <string name="network_connection_error">网络连接异常</string>
     <string name="unkonw_error">发生未知错误</string>
     <string name="network_connection_disconnect">网络连接已断开</string>
@@ -147,6 +165,7 @@
     <string name="txt_empty_msg">暂无消息</string>
 
     <!--应用列表文本-->
+    <string name="illegal_page_type">非法页面类型！</string>
     <string name="no_network">没有网络，请检查您的网络连接！</string>
     <string name="no_more_content">没有更多了!</string>
     <string name="load_more_content">加载更多！</string>
@@ -170,4 +189,10 @@
     <string name="no_select_anyone">您没有选择任何应用</string>
     <string name="start_app">启动</string>
     <string name="uninstall_app">卸载</string>
+    <!--自更新文本-->
+    <string name="system_upgrade">系统升级</string>
+    <string name="install">安装</string>
+    <string name="run_apk">运行apk</string>
+    <string name="load_error">下载异常，升级失败</string>
+    <string name="download">下载</string>
 </resources>

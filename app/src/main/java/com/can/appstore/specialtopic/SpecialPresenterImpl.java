@@ -133,8 +133,8 @@ public class SpecialPresenterImpl implements SpecialContract.SpecialPresenter {
 
     @Override
     public void loadMore(final int lastVisiablePos) {
-        if(!NetworkUtils.isNetworkConnected(mView.getContext())){
-           //TODO 弹出网络连接提示
+        if (!NetworkUtils.isNetworkConnected(mView.getContext())) {
+            //TODO 弹出网络连接提示
             mView.showToast("没有网络链接！");
             return;
         }
