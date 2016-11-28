@@ -91,9 +91,10 @@
     <ProgressBar
         android:id="@+id/pb_updateapp_progressbar"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/px422"
         android:layout_height="@dimen/px10"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:visibility="gone"
         android:progressDrawable="@drawable/progress_updateapp" />
 </RelativeLayout>
