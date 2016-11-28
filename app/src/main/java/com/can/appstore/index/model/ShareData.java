@@ -45,6 +45,7 @@ public class ShareData {
             @Override
             public void onFailure(CanCall<ListResult<String>> call, CanErrorWrapper errorWrapper) {
                 Log.i("DataUtils", errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
+                hiddenList = null;
             }
         });
     }
@@ -56,8 +57,10 @@ public class ShareData {
         } else {
             list.clear();
         }
-//        list = hiddenList.getData();
-        list.add("com.cantv.media");
+        if (null != hiddenList) {
+            list = hiddenList.getData();
+        }
+//        list.add("com.cantv.media");
         return list;
     }
 

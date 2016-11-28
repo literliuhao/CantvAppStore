@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="@dimen/px220"
-    android:layout_height="@dimen/px61"
-    android:layout_marginBottom="@dimen/px18"
-    android:layout_marginLeft="@dimen/px10"
-    android:layout_marginRight="@dimen/px6"
-    android:layout_marginTop="@dimen/px10"
-    android:background="@drawable/search_keyboard_shape"
-    android:clickable="true"
-    android:focusable="true"
-    android:orientation="vertical">
+              android:layout_width="@dimen/px228"
+              android:layout_height="@dimen/px61"
+              android:layout_marginBottom="@dimen/px18"
+              android:layout_marginLeft="@dimen/px15"
+              android:layout_marginTop="@dimen/px10"
+              android:background="@drawable/search_keyboard_shape"
+              android:clickable="true"
+              android:focusable="true"
+              android:orientation="vertical">
 
     <TextView
         android:id="@+id/default_name_view"
@@ -17,6 +16,6 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:text="分类app"
-        android:textColor="#D9DADC"
-        android:textSize="@dimen/px32" />
+        android:textColor="@color/tr_20_white_color"
+        android:textSize="@dimen/px32"/>
 </LinearLayout>

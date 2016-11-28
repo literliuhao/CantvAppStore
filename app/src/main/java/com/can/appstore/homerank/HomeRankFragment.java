@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,6 +18,7 @@ import com.can.appstore.applist.AppListActivity;
 import com.can.appstore.entity.Ranking;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.ui.BaseFragment;
+import com.can.appstore.index.ui.FragmentEnum;
 import com.can.appstore.search.ToastUtil;
 
 import java.util.ArrayList;
@@ -39,6 +39,7 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
     private HorizontalScrollView mScrollView;
     private LinearLayout mLinearLayout;
     private IAddFocusListener mFocusListener;
+    private View mNoNetWorkView;
 
     public HomeRankFragment(IAddFocusListener focusListener) {
         this.mFocusListener = focusListener;
@@ -86,6 +87,7 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
         Log.w("onViewCreated", "onViewCreated");
         mScrollView = (HorizontalScrollView) view.findViewById(R.id.homeran_scrollview);
         mLinearLayout = (LinearLayout) view.findViewById(R.id.ll_par_view);
+        mNoNetWorkView = view.findViewById(R.id.rl_no_network);
     }
 
     @Override
@@ -116,7 +118,6 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
                 RecyclerView recyclerView = (RecyclerView) childView.findViewById(R.id.list_view);
                 //"更多" 布局
                 View ll_more_view = childView.findViewById(R.id.load_more_veiw);
-                ImageView categoryMoreImg = (ImageView) childView.findViewById(R.id.more_icon);
                 TextView categoryMoreText = (TextView) childView.findViewById(R.id.more_textview);
 
                 //设置布局背景
@@ -160,6 +161,12 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
         }, 1500);
     }
 
+    @Override
+    public void noNetWork() {
+        mScrollView.setVisibility(View.GONE);
+        mNoNetWorkView.setVisibility(View.VISIBLE);
+    }
+
     /**
      * 设置每列排行的背景色
      *
@@ -201,16 +208,35 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
         @Override
         public void onFocusChange(View view, boolean hasFocus) {
             view.setSelected(hasFocus);
-            mFocusListener.addFocusListener(view, hasFocus);
+            mFocusListener.addFocusListener(view, hasFocus, FragmentEnum.RANK);
         }
     }
 
-    private View mLastView;
+    private View mLastView = null;
 
     @Override
     public View getLastView() {
         return mLastView;
     }
 
+    @Override
+    public void registerFocus() {
 
+    }
+
+    @Override
+    public void removeFocus() {
+
+    }
+
+    public void onResume() {
+        super.onResume();
+        Log.w("HomeRank_onResume","");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.w("HomeRank_onPause","");
+    }
 }

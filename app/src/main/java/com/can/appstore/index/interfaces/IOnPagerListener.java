@@ -8,7 +8,7 @@ import android.view.View;
 public interface IOnPagerListener {
     void onExtraPageScrolled(int position, float positionOffset, int positionOffsetPixels);
 
-    void onExtraPageSelected(int position, View view);
+    void onExtraPageSelected(int position);
 
     void onExtraPageScrollStateChanged(int state, View view);
 }

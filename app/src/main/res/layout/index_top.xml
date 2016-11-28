@@ -13,13 +13,12 @@
 
     <RelativeLayout
         android:id="@+id/rl_search"
-        android:focusable="true"
-        android:clickable="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/iv_cibn"
         android:layout_marginRight="@dimen/px10"
         android:layout_toLeftOf="@+id/rl_message"
+        android:clickable="true"
         android:nextFocusLeft="@+id/tv_index_title_last"
         android:nextFocusRight="@+id/rl_message">
 
@@ -44,13 +43,12 @@
 
     <RelativeLayout
         android:id="@+id/rl_message"
-        android:focusable="true"
-        android:clickable="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/iv_cibn"
         android:layout_alignParentRight="true"
         android:layout_marginRight="@dimen/px160"
+        android:clickable="true"
         android:nextFocusLeft="@+id/rl_search">
 
         <ImageView
@@ -68,6 +66,17 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:src="@drawable/index_message"/>
+
+        <ImageView
+            android:id="@+id/iv_mssage_red"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/iv_message"
+            android:layout_alignTop="@+id/iv_message"
+            android:layout_marginTop="@dimen/px10"
+            android:src="@drawable/red_dote"
+            android:visibility="invisible"/>
+
     </RelativeLayout>
 
 

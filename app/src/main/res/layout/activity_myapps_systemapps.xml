@@ -19,7 +19,7 @@
             android:layout_width="@dimen/px7"
             android:layout_height="@dimen/px38"
             android:layout_gravity="center_vertical"
-            android:layout_marginRight="@dimen/px20"
+            android:layout_marginEnd="@dimen/px20"
             android:background="@mipmap/title_line"
             />
 
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:text="系统应用"
+            android:text="@string/system_app"
             android:textColor="@color/tv_cur_rows_color"
             android:textSize="@dimen/fontsize_38"/>
 
@@ -37,7 +37,7 @@
         android:id="@+id/linearLayout"
         android:layout_width="@dimen/px100"
         android:layout_height="@dimen/px36"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_marginEnd="@dimen/px160"
         android:layout_marginTop="@dimen/px80">
 
@@ -45,7 +45,6 @@
             android:id="@+id/systemapps_tv_currows"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1/"
             android:textColor="@color/tv_cur_rows_color"
             android:textSize="@dimen/fontsize_32"/>
 
@@ -53,7 +52,6 @@
             android:id="@+id/systemapps_tv_totalrows"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="4行"
             android:textColor="@color/tv_total_rows_color"
             android:textSize="@dimen/fontsize_32"/>
 
@@ -69,7 +67,7 @@
         android:layout_marginStart="@dimen/px140"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:paddingLeft="@dimen/px23"
-        android:paddingRight="@dimen/px23"
+        android:paddingEnd="@dimen/px23"
+        android:paddingStart="@dimen/px23"
         android:paddingTop="@dimen/px23"/>
 </RelativeLayout>

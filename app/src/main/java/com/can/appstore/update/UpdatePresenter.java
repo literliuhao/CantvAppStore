@@ -1,9 +1,7 @@
 package com.can.appstore.update;
 
 import android.content.Context;
-import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
@@ -21,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.downloadlib.DownloadManager;
-import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
@@ -32,9 +29,6 @@ import cn.can.tvlib.utils.SystemUtil;
 import cn.can.tvlib.utils.ToastUtils;
 import retrofit2.Response;
 
-import static android.R.attr.data;
-import static com.tencent.bugly.crashreport.inner.InnerApi.context;
-
 /**
  * Created by shenpx on 2016/11/10 0010.
  */
@@ -42,11 +36,11 @@ import static com.tencent.bugly.crashreport.inner.InnerApi.context;
 public class UpdatePresenter implements UpdateContract.Presenter {
 
     private static final String TAG = "updatePresenter";
-    private UpdateContract.View mView;
+    private static UpdateContract.View mView;
     private Context mContext;
     private List<AppInfoBean> mDatas;//更新应用集合
     private List<AppInfoBean> mAppInfoBeanList;
-    private List<AppInfoBean> mUpdateNumDatas;//未更新应用集合
+    private static List<AppInfoBean> mUpdateNumDatas;//未更新应用集合
 
     public UpdatePresenter(UpdateContract.View mView, Context mContext) {
         this.mView = mView;
@@ -74,7 +68,6 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         mView.showLoadingDialog();
         final List appList = UpdateUtils.getAppList();
         //mAppInfoBeanList = UpdateUtils.getAppInfoBeanList();
-        //date = AppInfoBean.getAppInfoList(appList);
          /*AppInfo appInfo1 = new AppInfo();
         appInfo1.setPackageName("cn.cibntv.ott");
         appInfo1.setVersionCode(4);
@@ -207,7 +200,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
      *
      * @param context
      */
-    public void autoUpdate(Context context) {
+    public static void autoUpdate(Context context) {
 
         //检测网络获取更新包数据
         if (!NetworkUtils.isNetworkConnected(context)) {
@@ -216,6 +209,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         }
 
         final List appList = UpdateUtils.getAppList();
+        //mAppInfoBeanList = UpdateUtils.getAppInfoBeanList();
         /*AppInfo appInfo1 = new AppInfo();
         appInfo1.setPackageName("cn.cibntv.ott");
         appInfo1.setVersionCode(4);
@@ -237,7 +231,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                     Log.i(TAG, "getUpdateApkNum: " + data.size());
                 }
                 Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
-                ToastUtil.toastShort("getUpdateApkNum: " + mUpdateNumDatas.size());
+                //ToastUtil.toastShort("getUpdateApkNum: " + mUpdateNumDatas.size());
                 //判断是否开启自动更新
                 Log.i(TAG, "autoUpdate: " + 111111);
                 boolean isAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
@@ -246,7 +240,8 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                 }
                 //添加队列
                 addAutoUpdateTask(mDownloadManager, data);
-                //mView.refreshAll();
+                Log.i(TAG, "autoUpdate: " + data.size());
+                mView.refreshAll();
                 Log.i(TAG, "autoUpdate: " + 444444);
             }
 
@@ -261,7 +256,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     }
 
     //添加自动更新队列
-    private void addAutoUpdateTask(DownloadManager mDownloadManager, List<AppInfo> data) {
+    private static void addAutoUpdateTask(DownloadManager mDownloadManager, List<AppInfo> data) {
         for (int i = 0; i < data.size(); i++) {
             String downloadUrl = data.get(i).getUrl();
             DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(downloadUrl));
@@ -272,7 +267,42 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                 downloadTask.setFileName(md5 + ".apk");
                 downloadTask.setId(md5);
                 downloadTask.setUrl(downloadUrl);
-                mDownloadManager.addDownloadTask(downloadTask, null);
+                mDownloadManager.addDownloadTask(downloadTask, new DownloadTaskListener() {
+                    @Override
+                    public void onPrepare(DownloadTask downloadTask) {
+
+                    }
+
+                    @Override
+                    public void onStart(DownloadTask downloadTask) {
+
+                    }
+
+                    @Override
+                    public void onDownloading(DownloadTask downloadTask) {
+
+                    }
+
+                    @Override
+                    public void onPause(DownloadTask downloadTask) {
+
+                    }
+
+                    @Override
+                    public void onCancel(DownloadTask downloadTask) {
+
+                    }
+
+                    @Override
+                    public void onCompleted(DownloadTask downloadTask) {
+
+                    }
+
+                    @Override
+                    public void onError(DownloadTask downloadTask, int errorCode) {
+
+                    }
+                });
                 Log.i(TAG, "autoUpdate: " + 333333);
             }
         }

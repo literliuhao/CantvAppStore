@@ -81,7 +81,7 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<PackageUtil.AppInfo>
         if (position == 1) {
             MyCustomViewHolder mMyCustomViewHolder = (MyCustomViewHolder) holder;
             mMyCustomViewHolder.mCustomFolderIcon.addMyIcon(mCustomSys);
-            mMyCustomViewHolder.mTextView.setText("系统应用");
+            mMyCustomViewHolder.mTextView.setText(R.string.system_app);
         } else {
             MyAppsViewHolder myAppsViewHolder = (MyAppsViewHolder) holder;
             myAppsViewHolder.mImageView.setImageDrawable(mList.get(position).appIcon);

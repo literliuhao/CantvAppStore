@@ -9,7 +9,6 @@ import android.util.Log;
 
 import com.can.appstore.R;
 import com.can.appstore.myapps.utils.MyAppsListDataUtil;
-import com.can.appstore.search.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +55,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
             @Override
             protected Void doInBackground(Void... params) {
                 mMyAppListData = new MyAppsListDataUtil(mContext);
-                if(addShowList != null){
+                if (addShowList != null) {
                     addShowList.clear();
                 }
                 isShown = mMyAppListData.getShowList(isShown);
@@ -76,10 +75,11 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
 
                 return null;
             }
+
             //加载完数据
             @Override
             protected void onPostExecute(Void aVoid) {
-                Log.d(TAG,"onPostExecute");
+                Log.d(TAG, "onPostExecute");
                 mView.loadAddAppInfoSuccess(addShowList);
                 mView.hideLoading();
             }
@@ -91,11 +91,12 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
     public void addListener() {
         registerInstallReceiver();
     }
+
     /**
      * 注册应用安装卸载的广播
      */
     private void registerInstallReceiver() {
-        Log.d(TAG,"registerInstallReceiver");
+        Log.d(TAG, "registerInstallReceiver");
         if (mAppInstallReceiver == null) {
             mAppInstallReceiver = new AddAppsPresenter.AppInstallReceiver();
             IntentFilter filter = new IntentFilter();
@@ -111,12 +112,12 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
      * 刷新之前已经选择的数据
      */
     public void refreshSelectDataPosition() {
-        Log.d(TAG,"refreshSelectDataPosition");
-        if(mSelectAppInfo!= null && mSelectAppInfo.size()> 0){
-            int[]  alreadySelect = new int[mSelectAppInfo.size()];
+        Log.d(TAG, "refreshSelectDataPosition");
+        if (mSelectAppInfo != null && mSelectAppInfo.size() > 0) {
+            int[] alreadySelect = new int[mSelectAppInfo.size()];
             for (int i = 0; i < mSelectAppInfo.size(); i++) {
                 for (int j = 0; j < addShowList.size(); j++) {
-                    if(mSelectAppInfo.get(i).packageName.equals(addShowList.get(j).packageName)){
+                    if (mSelectAppInfo.get(i).packageName.equals(addShowList.get(j).packageName)) {
                         alreadySelect[i] = j;
                     }
                 }
@@ -141,6 +142,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
             }
         }
     }
+
     private void refreshItemInListPosition(String packageName) {
         for (int j = 0; j < addShowList.size(); j++) {
             if (packageName.equals(addShowList.get(j).packageName)) {
@@ -182,6 +184,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
 
     /**
      * 计算当前总行数
+     *
      * @return
      */
     public int calculateCurTotalRows() {
@@ -195,6 +198,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
 
     /**
      * 计算当前行数
+     *
      * @param position
      * @return
      */
@@ -212,16 +216,11 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
     }
 
 
-
     public void saveSelectlist(List<AppInfo> list) {
-        boolean b = isShown.addAll(list);
-        if (b) {
-            ToastUtil.toastShort("添加成功");
-        } else {
-            ToastUtil.toastShort("添加失败");
-        }
+        isShown.addAll(list);
         mMyAppListData.saveShowList(isShown);
     }
+
     public void unRegiestr() {
         if (mAppInstallReceiver != null) {
             mContext.unregisterReceiver(mAppInstallReceiver);

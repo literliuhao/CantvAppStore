@@ -65,7 +65,7 @@ public class MyAppsListDataUtil {
 
     /**
      * 全部应用Activity显示的列表
-     * 本地已安装的所有非系统应用 + 白名单中的系统应用 - 黑名单
+     * 本地已安装的所有非系统应用 + 白名单中的系统应用
      *
      * @return
      */
@@ -115,7 +115,7 @@ public class MyAppsListDataUtil {
 
         for (int i = 0; i < split.length; i++) {
             AppInfo info = PackageUtil.getAppInfo(context, split[i]);
-            if (info != null ) {//TODO 除去获取的黑名单里的应用
+            if (info != null ) {
                 list.add(info);
             }
         }

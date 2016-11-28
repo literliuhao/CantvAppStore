@@ -11,33 +11,36 @@
               android:descendantFocusability="blocksDescendants"
               android:focusable="true"
               android:gravity="center_horizontal"
-              android:orientation="vertical"
-              android:padding="@dimen/px20">
+              android:orientation="vertical">
 
-    <ImageView
+    <cn.can.tvlib.ui.view.RoundCornerImageView
         android:id="@+id/app_icon"
         android:layout_width="@dimen/px120"
         android:layout_height="@dimen/px120"
-        android:background="@mipmap/ic_launcher"/>
+        android:layout_marginTop="@dimen/px20"
+        android:scaleType="fitXY"/>
 
     <TextView
         android:id="@+id/app_name_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/px15"
         android:duplicateParentState="true"
         android:ellipsize="marquee"
         android:focusable="true"
         android:gravity="center"
         android:marqueeRepeatLimit="marquee_forever"
+        android:paddingLeft="@dimen/px5"
+        android:paddingRight="@dimen/px5"
         android:singleLine="true"
         android:text="app名称"
-        android:textColor="#D9DADC"
+        android:textColor="@color/tr_20_white_color"
         android:textSize="@dimen/px30"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/px30"
-        android:layout_marginTop="@dimen/px5"
+        android:layout_marginTop="@dimen/px2"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -46,15 +49,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="20.16M"
-            android:textColor="#D9DADC"
+            android:textColor="@color/tr_50_white_color"
             android:textSize="@dimen/px24"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text=" | "
-            android:textColor="@android:color/darker_gray"
+            android:text="  |  "
+            android:textColor="@color/tr_50_white_color"
             android:textSize="@dimen/px22"/>
 
         <TextView
@@ -62,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="100万+"
-            android:textColor="#D9DADC"
+            android:textColor="@color/tr_50_white_color"
             android:textSize="@dimen/px24"/>
     </LinearLayout>
 </LinearLayout>

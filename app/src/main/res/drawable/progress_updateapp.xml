@@ -3,10 +3,10 @@
     <!--  设置背景色 -->
     <item android:id="@android:id/background">
         <shape>
-            <corners android:bottomLeftRadius="30px"
+            <corners android:bottomLeftRadius="@dimen/px12"
                 android:topLeftRadius="0px"
                 android:topRightRadius="0px"
-                android:bottomRightRadius="30px"/>
+                android:bottomRightRadius="@dimen/px12"/>
             <stroke
                 android:width="1px"
                 android:color="#33ffffff"/>
@@ -20,10 +20,10 @@
     <item android:id="@android:id/progress">
         <clip>
             <shape>
-                <corners android:bottomLeftRadius="30px"
+                <corners android:bottomLeftRadius="@dimen/px12"
                     android:topLeftRadius="0px"
                     android:topRightRadius="0px"
-                    android:bottomRightRadius="30px"/>
+                    android:bottomRightRadius="@dimen/px12"/>
                 <gradient
                     android:startColor="#d9019dd4"
                     android:endColor="#d9019dd4" />

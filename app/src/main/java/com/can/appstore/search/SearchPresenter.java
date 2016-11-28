@@ -42,28 +42,27 @@ public class SearchPresenter implements SearchContract.Presenter {
             mView.startSearch();
         }
 
-        HttpManager.getApiService().search(searCon).enqueue(new CanCallback<ListResult<AppInfo>>() {
+        HttpManager.getApiService().search(searCon, pageIndex, 18).enqueue(new CanCallback<ListResult<AppInfo>>() {
             @Override
             public void onResponse(CanCall<ListResult<AppInfo>> call, Response<ListResult<AppInfo>> response) throws Exception {
                 ListResult<AppInfo> body = response.body();
                 List<AppInfo> data = body.getData();
-                for (int i = 0; i < 20; i++) {
-                    AppInfo appInfo = new AppInfo();
-                    appInfo.setName(i + "测试数据");
-                    data.add(appInfo);
-                }
                 //说明是刚搜索,有内容就清空
                 if (pageIndex == 1 && mAppInfoList.size() > 0) {
                     mAppInfoList.clear();
                 }
-                mAppInfoList.addAll(data);
-                mView.getAppList(mAppInfoList);
+                if (!(data.size() > 0) && pageIndex != 1) {
+                    ToastUtil.toastShortTimeLimit("没有更多数据!", 5000);
+                } else {
+                    mAppInfoList.addAll(data);
+                    mView.getAppList(mAppInfoList);
+                }
             }
 
             @Override
             public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
                 String reason = errorWrapper.getReason();
-                ToastUtil.toastShort("加载数据失败,请稍后再试!" + reason);
+                ToastUtil.toastShort("加载数据失败,请稍后再试!");
                 mView.getAppList(null);
             }
         });
@@ -74,6 +73,7 @@ public class SearchPresenter implements SearchContract.Presenter {
     public void getDefaultList() {
 
         if (!NetworkUtils.isNetworkConnected(MyApp.getContext())) {
+            mView.hideLoading();
             mView.noNetWork();
             return;
         }
@@ -85,12 +85,14 @@ public class SearchPresenter implements SearchContract.Presenter {
                 ListResult<AppInfo> body = response.body();
                 List<AppInfo> appInfoList = body.getData();
                 mView.getHotRecomAppList(appInfoList);
-                ToastUtil.toastShort("加载数据成功!" + body.getMessage());
+//                ToastUtil.toastShort("加载数据成功!" + body.getMessage());
+                mView.hideLoading();
             }
 
             @Override
             public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
                 ToastUtil.toastShort("加载数据失败,请稍后再试!");
+                mView.hideLoading();
             }
         });
 
@@ -101,11 +103,13 @@ public class SearchPresenter implements SearchContract.Presenter {
                 ListResult<PopularWord> body = response.body();
                 List<PopularWord> popularWordList = body.getData();
                 mView.getHotKeyList(popularWordList);
+                mView.hideLoading();
             }
 
             @Override
             public void onFailure(CanCall<ListResult<PopularWord>> call, CanErrorWrapper errorWrapper) {
                 ToastUtil.toastShort("加载数据失败,请稍后再试!");
+                mView.hideLoading();
             }
         });
 

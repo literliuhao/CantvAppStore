@@ -9,10 +9,10 @@
 
     <com.can.appstore.myapps.ui.CustomFolderIcon
         android:id="@+id/my_icons"
-        android:layout_width="@dimen/px224"
-        android:layout_height="@dimen/px152"
+        android:layout_width="@dimen/px234"
+        android:layout_height="@dimen/px164"
         android:layout_centerInParent="true"
-        android:background="@drawable/shape_custom_item_myapps"
+        android:background="@drawable/folder_bj"
         android:focusable="false"
         >
     </com.can.appstore.myapps.ui.CustomFolderIcon>
@@ -22,12 +22,12 @@
         android:layout_width="@dimen/px270"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/shape_myapps_item_textbg"
+        android:background="@drawable/folder_title"
         android:focusable="false"
         android:gravity="center_horizontal"
         android:paddingBottom="@dimen/px20"
         android:paddingTop="@dimen/px16"
-        android:text="系统应用"
+        android:text="@string/system_app"
         android:textColor="@color/app_name_color"
         android:textSize="@dimen/fontsize_32"
         />

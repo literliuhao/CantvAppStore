@@ -156,11 +156,11 @@ public class AppListPresenter implements AppListContract.Presenter {
                 List<AppInfo> appInfos = data.getData();
                 mTopics.addAll(topics);
                 mMenuDataPosition = findMenuFocusPosition();//第一次加载完数据，找到需要获取焦点的位置
-                for (int i = 0; i < 6; i++) {
-                    Topic topic = new Topic();
-                    topic.setName(i + "");
-                    mTopics.add(topic);
-                }
+//                for (int i = 0; i < 6; i++) {
+//                    Topic topic = new Topic();
+//                    topic.setName(i + "");
+//                    mTopics.add(topic);
+//                }
                 mAppInfos.addAll(appInfos);
                 if (mPageType == AppListActivity.PAGE_TYPE_APP_LIST) {
                     mView.showSearchView();
@@ -192,7 +192,7 @@ public class AppListPresenter implements AppListContract.Presenter {
 
         //根据不同页面请求数据
         if (mPageType == AppListActivity.PAGE_TYPE_APP_LIST) {
-            mAppListInfoCall = HttpManager.getApiService().getAppinfos("", mTypeId, mPage, PAGE_SIZE);
+            mAppListInfoCall = HttpManager.getApiService().getAppinfos(mTopicId, mTypeId, mPage, PAGE_SIZE);
             mAppListInfoCall.enqueue(canCallback);
         } else {
             mAppsRanking = HttpManager.getApiService().getAppsRanking(mTopicId);
@@ -350,12 +350,9 @@ public class AppListPresenter implements AppListContract.Presenter {
      * @return 焦点位置
      */
     private int findMenuFocusPosition() {
-        //排行榜页面根据topic找到位置，其他页面定位在第一个位置
-        if (mPageType == AppListActivity.PAGE_TYPE_RANKING) {
-            for (int i = 0; i < mTopics.size(); i++) {
-                if (mTopicId.equals(mTopics.get(i).getId())) {
-                    return i;
-                }
+        for (int i = 0; i < mTopics.size(); i++) {
+            if (mTopicId.equals(mTopics.get(i).getId())) {
+                return i;
             }
         }
         return 0;

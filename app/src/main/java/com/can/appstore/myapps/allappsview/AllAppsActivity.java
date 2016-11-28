@@ -26,7 +26,6 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 import static com.can.appstore.MyApp.mContext;
 
 /**
@@ -35,6 +34,7 @@ import static com.can.appstore.MyApp.mContext;
 
 public class AllAppsActivity extends BaseActivity implements AllAppsContract.View {
 
+    public static String TAG = "AllAppsActivity";
     private List<AppInfo> allAppList = null;
     private CanRecyclerView mAllAppsRecyclerView;
     private AllAppsRecyclerViewAdapter mAdapter;
@@ -99,6 +99,7 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
 
     @Override
     public void loadAllAppInfoSuccess(List<AppInfo> infoList) {
+        Log.d(TAG, "loadAllAppInfoSuccess");
         if (mAdapter == null) {
             allAppList = infoList;
             mAdapter = new AllAppsRecyclerViewAdapter(infoList);
@@ -109,26 +110,28 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
         }
         //设置右上角总行数
         int total = mAllAppsPresenter.calculateCurTotalRows();
-        tvTotalRows.setText(total + "行");
+        tvTotalRows.setText("/" + total + "行");
     }
 
     /**
      * 卸载最后一个位置的应用时，让其上一个应用item获取焦点
+     *
      * @param position
      */
     @Override
     public void uninstallLastPosition(final int position) {
-    focusMoveUtil.hideFocusForShowDelay(600);
+        Log.d(TAG, "uninstallLastPosition,卸载最后一个应用");
+        focusMoveUtil.hideFocusForShowDelay(600);
         mAllAppsRecyclerView.postDelayed(new Runnable() {
             @Override
             public void run() {
                 View curItem = mAllAppsRecyclerView.getChildAt(position);
-                if(curItem!= null){
+                if (curItem != null) {
                     curItem.setFocusable(true);
                     curItem.requestFocus();
                 }
             }
-        },UNINSTALL_LAST_POSITION_DELAYE);
+        }, UNINSTALL_LAST_POSITION_DELAYE);
 
     }
 
@@ -174,7 +177,7 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
     }
 
     private void editItem(final View item, final int position) {
-
+        Log.d(TAG, "editItem" + "POSITION" + position);
         butStrartapp.requestFocus();
         butStrartapp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -227,6 +230,7 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
 
     @Override
     public void showUninstallDialog(AppInfo app) {
+        Log.d(TAG, "showUninstallDialog" + "app" + app.toString());
         String ok = mContext.getResources().getString(R.string.ok);
         String cancle = mContext.getResources().getString(R.string.cancle);
         String makesureUninstall = mContext.getResources().getString(R.string.makesure_uninstall_apk);
@@ -261,13 +265,14 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
     }
 
     private void silentUninstall(String name, String packname) {
+        Log.d(TAG, "silentUninstall" + "packname" + packname + "name" + name);
         mAllAppsPresenter.silentUninstall(name, packname);
     }
 
 
     @Override
     public void showLoading() {
-        mAllAppsPresenter.showLoading("加载中，请稍后...");
+        mAllAppsPresenter.showLoading("");
     }
 
     @Override
@@ -278,7 +283,7 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
 
     @Override
     protected void onHomeKeyDown() {
-        if(mCanDialog!= null){
+        if (mCanDialog != null) {
             mCanDialog.dismiss();
         }
         finish();
@@ -313,7 +318,7 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
                     mFocusedListChild = view;
                     mAllAppsRecyclerView.postDelayed(myFocusRunnable, 50);
                     int cur = mAllAppsPresenter.calculateCurRows(position);
-                    tvCurRows.setText(cur + "/");
+                    tvCurRows.setText(cur + "");
                 }
             }
         };
@@ -364,6 +369,7 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
     /**
      * 打开全部应用
      * *
+     *
      * @param context
      */
     public static void actionStart(Context context) {

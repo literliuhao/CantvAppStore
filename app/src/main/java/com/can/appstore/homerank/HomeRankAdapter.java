@@ -1,6 +1,7 @@
 package com.can.appstore.homerank;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,13 +11,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.can.appstore.MyApp;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.target.Target;
 import com.can.appstore.R;
+import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.entity.AppInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
 
 import static com.can.appstore.R.drawable.home_rank1;
@@ -39,16 +43,37 @@ public class HomeRankAdapter extends RecyclerView.Adapter<HomeRankAdapter.RankAp
 
     @Override
     public RankAppItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rank_list_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.homerank_list_item, parent, false);
         return new RankAppItemViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(RankAppItemViewHolder holder, int position) {
+    public void onBindViewHolder(final RankAppItemViewHolder holder, int position) {
         mViewList.add(holder.mView);
         final AppInfo mApp = (AppInfo) mList.get(position);
         holder.mAppName.setText(mApp.getName());
-        ImageLoader.getInstance().load(MyApp.mContext, holder.mAppIcon, mApp.getIcon());
+        ImageLoader.getInstance().load(mContext, holder.mAppIcon, mApp.getIcon(), R.mipmap
+                .cibn_icon, R.mipmap.cibn_icon, new GlideLoadTask
+                .SuccessCallback() {
+            @Override
+            public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean
+                    isFromMemoryCache, boolean isFirstResource) {
+                holder.mAppIcon.setScaleType(ImageView.ScaleType.FIT_XY);
+                holder.mAppIcon.setImageDrawable(resource);
+                holder.mAppIcon.setBackgroundColor(Color.TRANSPARENT);
+                return true;
+            }
+        }, new GlideLoadTask.FailCallback() {
+            @Override
+            public boolean onFail(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                holder.mAppIcon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                holder.mAppIcon.setImageResource(R.mipmap.cibn_icon);
+                holder.mAppIcon.setBackgroundResource(R.drawable.shap_app_list_icon_bg);
+                return true;
+            }
+        });
+
+
         if ((position + 1) % 2 == 0) {
             holder.mView.setBackgroundColor(mContext.getResources().getColor(R.color.h_rank_transulcent));
         }
@@ -56,7 +81,19 @@ public class HomeRankAdapter extends RecyclerView.Adapter<HomeRankAdapter.RankAp
         if (position == 0) {
             holder.mView.setLayoutParams(new LinearLayout.LayoutParams((int) mContext.getResources().getDimension(R.dimen.px490)
                     , (int) mContext.getResources().getDimension(R.dimen.px136)));
+            ViewGroup.LayoutParams layoutParams = holder.mAppIcon.getLayoutParams();
+            layoutParams.width = (int) mContext.getResources().getDimension(R.dimen.px96);
+            layoutParams.height = (int) mContext.getResources().getDimension(R.dimen.px96);
+            holder.mAppIcon.setLayoutParams(layoutParams);
         }
+
+        //控制阴影在最后一条显示
+        if (position == mList.size() - 1) {
+            holder.endShadow.setVisibility(View.VISIBLE);
+        } else {
+            holder.endShadow.setVisibility(View.GONE);
+        }
+
         //焦点变化监听
         holder.mView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -70,7 +107,7 @@ public class HomeRankAdapter extends RecyclerView.Adapter<HomeRankAdapter.RankAp
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                AppDetailActivity.actionStart(mContext,mApp.getId());
+                AppDetailActivity.actionStart(mContext, mApp.getId());
             }
         });
         setAppRImg(holder.mAppRImg, holder.mAPPRText, position);
@@ -118,12 +155,10 @@ public class HomeRankAdapter extends RecyclerView.Adapter<HomeRankAdapter.RankAp
             case 4:
                 w_dimen = R.dimen.px26;
                 h_dimen = R.dimen.px26;
-//                defaultImg = home_rank4;
                 break;
             case 5:
                 w_dimen = R.dimen.px26;
                 h_dimen = R.dimen.px26;
-//                defaultImg = home_rank5;
                 break;
             default:
                 break;
@@ -147,6 +182,7 @@ public class HomeRankAdapter extends RecyclerView.Adapter<HomeRankAdapter.RankAp
         private View mView;
         private ImageView mAppRImg;
         private TextView mAPPRText;
+        private ImageView endShadow;
 
         public RankAppItemViewHolder(View itemView) {
             super(itemView);
@@ -155,6 +191,7 @@ public class HomeRankAdapter extends RecyclerView.Adapter<HomeRankAdapter.RankAp
             mAppRImg = (ImageView) itemView.findViewById(R.id.rank_r_img);
             mAppName = (TextView) itemView.findViewById(R.id.app_name_view);
             mAPPRText = (TextView) itemView.findViewById(R.id.rank_r_text);
+            endShadow = (ImageView) itemView.findViewById(R.id.end_shadow);
         }
     }
 

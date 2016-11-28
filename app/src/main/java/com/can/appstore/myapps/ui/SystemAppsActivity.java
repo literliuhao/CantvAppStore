@@ -80,6 +80,7 @@ public class SystemAppsActivity extends BaseActivity {
             }
         }
     }
+
     private void addFocusListener() {
         mSystemAppsRvAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
             @Override
@@ -109,6 +110,7 @@ public class SystemAppsActivity extends BaseActivity {
     /**
      * 打开系统应用
      * *
+     *
      * @param context
      */
     public static void actionStart(Context context) {

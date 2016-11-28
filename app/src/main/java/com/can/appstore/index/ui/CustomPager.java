@@ -25,4 +25,9 @@ public class CustomPager extends ViewPager {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
         Log.i("CustomPager", "gainFocus " + gainFocus + " direction " + " previouslyFocusedRect " + previouslyFocusedRect);
     }
+
+    @Override
+    public boolean startNestedScroll(int axes) {
+        return super.startNestedScroll(axes);
+    }
 }

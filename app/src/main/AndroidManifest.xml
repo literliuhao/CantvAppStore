@@ -47,7 +47,8 @@
         </activity>
         <activity
             android:name=".PortalActivity"
-            android:hardwareAccelerated="false">
+            android:hardwareAccelerated="false"
+            android:theme="@style/AppTheme.Translucent.FadeIn">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

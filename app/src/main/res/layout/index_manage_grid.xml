@@ -15,7 +15,7 @@
     android:paddingBottom="@dimen/px50"
     android:paddingLeft="@dimen/px160"
     android:paddingRight="@dimen/px650"
-    android:paddingTop="@dimen/px50"
+    android:paddingTop="@dimen/px30"
     android:scrollbars="none"
     android:verticalSpacing="@dimen/px10">
 

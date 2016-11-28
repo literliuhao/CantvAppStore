@@ -36,21 +36,32 @@ public class ManagerFragment extends BaseFragment {
         View view = inflater.from(inflater.getContext()).inflate(R.layout.index_manage_grid, container, false);
         gridView = (GridView) view.findViewById(R.id.manage_grid);
         gridView.setFocusable(false);
+//        gridView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+//        gridView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View view, boolean b) {
+//                Log.i("ManagerFragment", view.getId() + " " + b);
+//                if (!b) {
+//                    gridView.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+//                }
+//            }
+//        });
         gridAdapter = new GridAdapter(inflater.getContext());
         gridAdapter.setNames(NAMES);
         gridAdapter.setIcons(ICONS);
         gridAdapter.setColors(COLORS);
         gridAdapter.setFocusListener(new IAddFocusListener() {
             @Override
-            public void addFocusListener(View v, boolean hasFocus) {
-                mFocusListener.addFocusListener(v, hasFocus);
+            public void addFocusListener(View v, boolean hasFocus,FragmentEnum sourceEnum) {
+                mFocusListener.addFocusListener(v, hasFocus,sourceEnum);
             }
         });
+
 
         gridAdapter.setClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("ManagerFragment", view.getId() + "");
+//                Log.i("ManagerFragment", view.getId() + "");
                 switch (view.getId()) {
                     //一键加速
                     case 0:
@@ -98,6 +109,24 @@ public class ManagerFragment extends BaseFragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        Log.i("ManagerFragment", "onStart");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i("ManagerFragment", "onStop");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i("ManagerFragment", "onResume");
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
     }
@@ -107,6 +136,15 @@ public class ManagerFragment extends BaseFragment {
         return gridView.getChildAt(3);
     }
 
+    @Override
+    public void registerFocus() {
+
+    }
+
+    @Override
+    public void removeFocus() {
+
+    }
 
 //    @Override
 //    public void onItemClick(AdapterView<?> adapterView, View view, int postion, long l) {
