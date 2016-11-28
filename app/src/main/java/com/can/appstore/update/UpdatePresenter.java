@@ -48,11 +48,6 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     private List<AppInfoBean> mAppInfoBeanList;
     private List<AppInfoBean> mUpdateNumDatas;//未更新应用集合
 
-    public UpdatePresenter(Context mContext) {
-        this.mContext = mContext;
-        mUpdateNumDatas = new ArrayList<AppInfoBean>();
-    }
-
     public UpdatePresenter(UpdateContract.View mView, Context mContext) {
         this.mView = mView;
         this.mContext = mContext;
@@ -303,15 +298,15 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     }
 
     //未更新app数量监听
-    interface OnUpdateAppNumListener {
+    public interface OnUpdateAppNumListener {
 
         void updateAppNum(int number);
     }
 
-    private OnUpdateAppNumListener mOnUpdateAppNumListener;
+    private static OnUpdateAppNumListener mOnUpdateAppNumListener;
 
-    public void setOnUpdateAppNumListener(OnUpdateAppNumListener listener) {
-        this.mOnUpdateAppNumListener = listener;
+    public static void setOnUpdateAppNumListener(OnUpdateAppNumListener listener) {
+        mOnUpdateAppNumListener = listener;
     }
 
 
