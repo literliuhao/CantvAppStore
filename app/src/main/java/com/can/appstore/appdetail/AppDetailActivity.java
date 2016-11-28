@@ -45,6 +45,8 @@ import cn.can.tvlib.utils.ApkUtils;
 import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.SystemUtil;
 
+import static android.R.id.message;
+
 /**
  * Created by JasonF on 2016/10/13.
  */
@@ -453,27 +455,29 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     };
 
     private void sendProgressMessage(int status, int what, float progress) {
-        Message message = mHandler.obtainMessage();
-        message.what = what;
-        message.arg1 = (int) progress;
-        if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_RUN && what == MESSAGE_TYPE_DOWNLAOD) {
-            message.obj = getResources().getString(R.string.detail_app_run);
-        } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_INSTALLING) {
-            message.obj = getResources().getString(R.string.detail_app_installing);
-        } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_PAUSE) {
-            message.obj = getResources().getString(R.string.detail_app_click_continue);
-        } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_PREPARE) {
-            message.obj = getResources().getString(R.string.detail_app_download);
-        } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_WAIT) {
-            message.obj = getResources().getString(R.string.detail_app_download_wait);
-        } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_DOWNLAODING) {
-            message.obj = getResources().getString(R.string.detail_app_click_pause);
-        } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_RESTART) {
-            message.obj = getResources().getString(R.string.downlaod_restart);
-        } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_UPDATE) {
-            message.obj = getResources().getString(R.string.detail_app_update);
+        if (mHandler != null) {
+            Message message = mHandler.obtainMessage();
+            message.what = what;
+            message.arg1 = (int) progress;
+            if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_RUN && what == MESSAGE_TYPE_DOWNLAOD) {
+                message.obj = getResources().getString(R.string.detail_app_run);
+            } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_INSTALLING) {
+                message.obj = getResources().getString(R.string.detail_app_installing);
+            } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_PAUSE) {
+                message.obj = getResources().getString(R.string.detail_app_click_continue);
+            } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_PREPARE) {
+                message.obj = getResources().getString(R.string.detail_app_download);
+            } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_WAIT) {
+                message.obj = getResources().getString(R.string.detail_app_download_wait);
+            } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_DOWNLAODING) {
+                message.obj = getResources().getString(R.string.detail_app_click_pause);
+            } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_RESTART) {
+                message.obj = getResources().getString(R.string.downlaod_restart);
+            } else if (status == AppDetailPresenter.DOWNLOAD_BUTTON_STATUS_UPDATE) {
+                message.obj = getResources().getString(R.string.detail_app_update);
+            }
+            mHandler.sendMessage(message);
         }
-        mHandler.sendMessage(message);
     }
 
     public void refreshButtonProgress(int refreshButtonProgress, String buttonText, float progress) {
@@ -719,11 +723,13 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     @Override
     protected void onStop() {
+        Log.d(TAG, "onStop: ");
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
         super.onDestroy();
         if (mHandler != null) {
             mHandler.removeMessages(MESSAGE_TYPE_UPDATE);

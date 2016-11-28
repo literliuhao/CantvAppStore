@@ -92,6 +92,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     private int mCurrMenuPaddingBottom;
     private int mMenuPaddingTopTmp;
     private int mMenuPaddingBottomTmp;
+    private boolean menuCanScroll;
     // 右侧应用列表
     private CanRecyclerView mAppList;
     private CanRecyclerViewAdapter mAppListAdapter;
@@ -472,9 +473,10 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
         mMenuAdapter.setItemKeyEventListener(new CanRecyclerViewAdapter.OnItemKeyEventListener() {
             @Override
             public boolean onItemKeyEvent(int position, View v, int keyCode, KeyEvent event) {
-                if (event.getAction() != KeyEvent.ACTION_DOWN) {
+                if (event.getAction() != KeyEvent.ACTION_DOWN || !menuCanScroll) {
                     return false;
                 }
+
                 if (position == 1 && keyCode == KeyEvent.KEYCODE_DPAD_UP) {
                     mHandler.removeMessages(MSG_HIDE_MENU_TOP_SHADOW);
                     mHandler.sendMessage(mHandler.obtainMessage(MSG_HIDE_MENU_TOP_SHADOW, true));
@@ -502,7 +504,15 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 mFocusMoveUtil.setFocusView(child);
                 mFocusMoveUtil.showFocus();
                 child.requestFocus();
+            }
+        };
 
+        mMenu.postDelayed(mSelectRunable, 100);
+
+        mMenu.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                View child = mMenu.getChildAt(focusPosition);
                 // measure menu child view height
                 int menuItemHeight = child != null ? child.getMeasuredHeight() : 0;
                 mMenuPaddingTopTmp = menuItemHeight + MENU_DIVIDER_SIZE;
@@ -511,15 +521,15 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 // judge if show menu bottom shadow
                 int lastVisibleMenuPos = mMenuLM.findLastCompletelyVisibleItemPosition();
                 int childCount = mMenuAdapter.getItemCount();
+                Log.d(TAG, "run: " + lastVisibleMenuPos + "---" + childCount);
                 if (lastVisibleMenuPos != childCount - 1) {
+                    menuCanScroll = true;
                     showMenuBottomArrow();
                     mCurrMenuPaddingBottom = mMenuPaddingBottomTmp;
                     refreshMenuPaddingWithFocusRegion();
                 }
             }
-        };
-
-        mMenu.post(mSelectRunable);
+        }, 1000);
     }
 
     private void hideMenuTopArrow() {

@@ -131,7 +131,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     }
 
     private void initDownloadButtonStatus() {
-        DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(Url));
+        DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(mTaskId);
         if (ApkUtils.isAvailable(mContext, mPackageName)) {
             mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_RUN, DOWNLOAD_INIT_PROGRESS);
             return;
@@ -170,7 +170,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     }
 
     private void initUpdateButtonStatus() {
-        DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(Url));
+        DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(mTaskId);
         mInstallApkPath = downloadPath + mTaskId;
         if (new File(mInstallApkPath).exists()) {
             mInstallApkFileMD5 = MD5Util.getFileMD5(mInstallApkPath);
@@ -322,43 +322,52 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     @Override
     public void onPrepare(DownloadTask downloadTask) {
-        Log.d(TAG, "onPrepare CompletedSize: " + downloadTask.getCompletedSize() + " TotalSize" + downloadTask.getTotalSize());
-        if (downloadTask.getCompletedSize() == 0) {
-            mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_WAIT, DOWNLOAD_INIT_PROGRESS);
-            if (isShowUpdateButton) {
-                mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_WAIT, DOWNLOAD_INIT_PROGRESS);
+        if (downloadTask.getId().equalsIgnoreCase(mTaskId)) {
+            Log.d(TAG, "onPrepare CompletedSize: " + downloadTask.getCompletedSize() + " TotalSize" + downloadTask.getTotalSize());
+            if (downloadTask.getCompletedSize() == 0) {
+                mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_WAIT, DOWNLOAD_INIT_PROGRESS);
+                if (isShowUpdateButton) {
+                    mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_WAIT, DOWNLOAD_INIT_PROGRESS);
+                }
             }
         }
     }
 
     @Override
     public void onStart(DownloadTask downloadTask) {
-        Log.d(TAG, "onStart CompletedSize: " + downloadTask.getCompletedSize() + " TotalSize" + downloadTask.getTotalSize());
-        if (downloadTask.getCompletedSize() == 0) {
-            mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_WAIT, DOWNLOAD_INIT_PROGRESS);
-            if (isShowUpdateButton) {
-                mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_WAIT, DOWNLOAD_INIT_PROGRESS);
+        if (downloadTask.getId().equalsIgnoreCase(mTaskId)) {
+            Log.d(TAG, "onStart CompletedSize: " + downloadTask.getCompletedSize() + " TotalSize" + downloadTask.getTotalSize());
+            if (downloadTask.getCompletedSize() == 0) {
+                mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_WAIT, DOWNLOAD_INIT_PROGRESS);
+                if (isShowUpdateButton) {
+                    mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_WAIT, DOWNLOAD_INIT_PROGRESS);
+                }
             }
         }
     }
 
     @Override
     public void onDownloading(DownloadTask downloadTask) {
-        Log.d(TAG, "onDownloading CompletedSize: " + downloadTask.getCompletedSize() + " TotalSize" + downloadTask.getTotalSize());
-        float per = calculatorPercent(downloadTask.getCompletedSize(), downloadTask.getTotalSize());
-        mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_DOWNLAODING, per);
-        if (isShowUpdateButton) {
-            mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_DOWNLAODING, per);
+        if (downloadTask.getId().equalsIgnoreCase(mTaskId)) {
+            Log.d(TAG, "onDownloading CompletedSize: " + downloadTask.getCompletedSize() + " TotalSize" + downloadTask.getTotalSize()
+                    + "   taskID : " + mTaskId);
+            float per = calculatorPercent(downloadTask.getCompletedSize(), downloadTask.getTotalSize());
+            mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_DOWNLAODING, per);
+            if (isShowUpdateButton) {
+                mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_DOWNLAODING, per);
+            }
         }
     }
 
     @Override
     public void onPause(DownloadTask downloadTask) {
-        Log.d(TAG, "onPause CompletedSize: " + downloadTask.getCompletedSize() + " TotalSize" + downloadTask.getTotalSize());
-        float per = calculatorPercent(downloadTask.getCompletedSize(), downloadTask.getTotalSize());
-        mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_PAUSE, per);
-        if (isShowUpdateButton) {
-            mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_PAUSE, per);
+        if (downloadTask.getId().equalsIgnoreCase(mTaskId)) {
+            Log.d(TAG, "onPause CompletedSize: " + downloadTask.getCompletedSize() + " TotalSize" + downloadTask.getTotalSize());
+            float per = calculatorPercent(downloadTask.getCompletedSize(), downloadTask.getTotalSize());
+            mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_PAUSE, per);
+            if (isShowUpdateButton) {
+                mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_PAUSE, per);
+            }
         }
     }
 
@@ -368,21 +377,25 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     @Override
     public void onCompleted(DownloadTask downloadTask) {
-        String saveDirPath = downloadTask.getSaveDirPath() + downloadTask.getFileName();
-        Log.d(TAG, "onCompleted CompletedSize: " + downloadTask.getCompletedSize() + " TotalSize" +
-                downloadTask.getTotalSize() + " getSaveDirPath : " + saveDirPath);
-        mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
-        if (isShowUpdateButton) {
-            mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
+        if (downloadTask.getId().equalsIgnoreCase(mTaskId)) {
+            String saveDirPath = downloadTask.getSaveDirPath() + downloadTask.getFileName();
+            Log.d(TAG, "onCompleted CompletedSize: " + downloadTask.getCompletedSize() + " TotalSize" +
+                    downloadTask.getTotalSize() + " getSaveDirPath : " + saveDirPath);
+            mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
+            if (isShowUpdateButton) {
+                mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
+            }
         }
     }
 
     @Override
     public void onInstalling(DownloadTask downloadTask) {
-        Log.d(TAG, "onInstalling: " + downloadTask);
-        mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
-        if (isShowUpdateButton) {
-            mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
+        if (downloadTask.getId().equalsIgnoreCase(mTaskId)) {
+            Log.d(TAG, "onInstalling: " + downloadTask);
+            mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
+            if (isShowUpdateButton) {
+                mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
+            }
         }
     }
 
@@ -406,21 +419,23 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     @Override
     public void onError(DownloadTask downloadTask, int errorCode) {
-        Log.d(TAG, "onError CompletedSize: " + downloadTask.getCompletedSize() + " errorCode:" + errorCode);
-        downlaodErrorCode = errorCode;
-        float per = calculatorPercent(downloadTask.getCompletedSize(), downloadTask.getTotalSize());
-        if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_FILE_NOT_FOUND) {
-            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.downlaod_error));
-            refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
-        } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_IO_ERROR) {
-            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.downlaod_error));
-            refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
-        } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR) {
-            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.network_connection_error));
-            refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_PAUSE, per);
-        } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_UNKONW_ERROR) {
-            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.unkonw_error));
-            refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, per);
+        if (downloadTask.getId().equalsIgnoreCase(mTaskId)) {
+            Log.d(TAG, "onError CompletedSize: " + downloadTask.getCompletedSize() + " errorCode:" + errorCode);
+            downlaodErrorCode = errorCode;
+            float per = calculatorPercent(downloadTask.getCompletedSize(), downloadTask.getTotalSize());
+            if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_FILE_NOT_FOUND) {
+                ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.downlaod_error));
+                refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
+            } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_IO_ERROR) {
+                ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.downlaod_error));
+                refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
+            } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR) {
+                ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.network_connection_error));
+                refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_PAUSE, per);
+            } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_UNKONW_ERROR) {
+                ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.unkonw_error));
+                refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, per);
+            }
         }
     }
 
@@ -512,7 +527,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         if (downloadTask != null) {
             mDownloadManager.removeDownloadListener(downloadTask, this);
             mDownloadManager.removeAppInstallListener(this);
-            mDownloadManager.release();
         }
         if (mAppDetailCall != null) {
             mAppDetailCall.cancel();
