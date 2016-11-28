@@ -50,6 +50,10 @@ public class IntroducGridAdapter extends CanRecyclerViewAdapter {
                 R.mipmap.cibn_picture, R.mipmap.icon_loading_fail, true);
     }
 
+    public void setData(List<String> thumbs) {
+        mIntroduceList = thumbs;
+    }
+
     class IntroducGridViewHolder extends CanRecyclerView.ViewHolder {
         GlideRoundCornerImageView introducItem;
 
