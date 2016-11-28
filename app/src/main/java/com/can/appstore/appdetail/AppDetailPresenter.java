@@ -1,5 +1,6 @@
 package com.can.appstore.appdetail;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -53,7 +54,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public final static String ARGUMENT_APPID = "appID";
     public final static String ARGUMENT_TOPICID = "topicid";
     public int downlaodErrorCode = 0;//下载错误
-    private Context mContext;
+    private Activity mContext;
     private AppDetailContract.View mView;
     private DownloadManager mDownloadManager;
     private AppDetailPresenter.AppInstallReceiver mInstalledReceiver;
@@ -75,7 +76,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     public AppDetailPresenter(AppDetailContract.View view, Context context, Intent intent) {
         this.mView = view;
-        this.mContext = context;
+        this.mContext = (Activity) context;
         getData(intent);
         initDownloadManager();
     }
