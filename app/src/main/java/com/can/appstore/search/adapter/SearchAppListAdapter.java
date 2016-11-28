@@ -96,7 +96,6 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
             ((SearchViewHolder) holder).mAppName.setText(app.getName());
             ((SearchViewHolder) holder).mAppSize.setText(app.getSizeStr());
             ((SearchViewHolder) holder).mAppDownloadCount.setText(app.getDownloadCount());
-            ((SearchViewHolder) holder).mView.setId(position + 10000);
             //第一行向上焦点是自己
             if (position < mActivity.SEARCH_APP_SPANCOUNT) {
                 ((SearchViewHolder) holder).mView.setNextFocusUpId(((SearchViewHolder) holder).mView.getId());
