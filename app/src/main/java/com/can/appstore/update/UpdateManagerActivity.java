@@ -489,7 +489,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 mAutoUpdate = true;
                 canDialog.dismiss();
                 mPresenter.getListSize();
-                //mPresenter.autoUpdate(UpdateManagerActivity.this);
+                mPresenter.autoUpdate(UpdateManagerActivity.this);
             }
 
             @Override
