@@ -7,15 +7,15 @@
         android:id="@+id/tv_update_number"
         android:layout_width="@dimen/px275"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:background="@drawable/index_update_shape"
-        android:paddingTop="@dimen/px20"
+        android:gravity="center"
         android:paddingBottom="@dimen/px20"
         android:paddingLeft="@dimen/px10"
         android:paddingRight="@dimen/px10"
+        android:paddingTop="@dimen/px20"
         android:text="@string/index_app_update"
         android:textColor="@color/color_80_ffffff"
-        android:visibility="gone"
-        android:textSize="@dimen/px32"/>
+        android:textSize="@dimen/px32"
+        android:visibility="gone"/>
 
 </RelativeLayout>

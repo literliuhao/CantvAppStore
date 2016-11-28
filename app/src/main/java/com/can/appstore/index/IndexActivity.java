@@ -66,8 +66,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private TextView textUpdate;
     private FocusMoveUtil mFocusUtils;
     private FocusScaleUtil mFocusScaleUtils;
-    private UpdatePresenter updatePresenter;
-    private ShareData shareData;
     private final int TOP_INDEX = 1;
     private final int DURATIONLARGE = 300;
     private final int DURATIONSMALL = 300;
@@ -155,7 +153,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mViewPager = (ViewPager) findViewById(R.id.id_custom_pager);
 
         textUpdate = (TextView) findViewById(R.id.tv_update_number);
-
     }
 
     /**
@@ -247,7 +244,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             @Override
             public void onExtraPageScrollStateChanged(int state, View view) {
                 scrollStatus = state;
-                switch (currentPage){
+                switch (currentPage) {
                     case 0:
                         textUpdate.setVisibility(View.VISIBLE);
                         break;
@@ -264,7 +261,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                         if (!(view instanceof LiteText) && currentPage == TOP_INDEX) {
                             mFocusUtils.setFocusView(view);
                             mFocusUtils.startMoveFocus(view);
-                        }else{
+                        } else {
                             mFocusUtils.setFocusView(view, SCALE);
                             mFocusUtils.startMoveFocus(view, SCALE);
                         }
@@ -276,7 +273,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                         if (currentPage == TOP_INDEX) {
                             mFocusUtils.setFocusView(view);
                             mFocusUtils.startMoveFocus(view);
-                        }else{
+                        } else {
                             mFocusUtils.setFocusView(view, SCALE);
                             mFocusUtils.startMoveFocus(view, SCALE);
                         }
@@ -306,16 +303,15 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         loadMore();
     }
 
-    private void loadMore(){
+    private void loadMore() {
         //开始获取第三方屏蔽列表
-        shareData.getInstance().execute();
+        ShareData.getInstance().execute();
         initUpdateListener();
         initMsgListener();
     }
 
     private void initUpdateListener() {
-        updatePresenter = new UpdatePresenter(IndexActivity.this);
-        updatePresenter.setOnUpdateAppNumListener(new UpdatePresenter.OnUpdateAppNumListener() {
+        UpdatePresenter.setOnUpdateAppNumListener(new UpdatePresenter.OnUpdateAppNumListener() {
             @Override
             public void updateAppNum(int number) {
                 refreshUpdate(number);
