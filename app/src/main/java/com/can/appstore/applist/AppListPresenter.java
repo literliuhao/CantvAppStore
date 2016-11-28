@@ -290,7 +290,6 @@ public class AppListPresenter implements AppListContract.Presenter {
             return;
         }
         mView.showToast(mContext.getResources().getString(R.string.load_more_content));
-        // mView.showLoadingDialog(mContext.getResources().getString(R.string.load_more_content),mLoadOffset,true);
         cancelCall();
         mAppListInfoCall = HttpManager.getApiService().getAppinfos(mTopics.get(mMenuDataPosition).getId(), mTypeId,
                 mPage, PAGE_SIZE);
@@ -302,8 +301,6 @@ public class AppListPresenter implements AppListContract.Presenter {
                 Log.d(TAG, "onResponse: " + body.toString());
                 AppInfoContainer data = body.getData();
                 List<AppInfo> appInfos = data.getData();
-
-                //mHandler.sendEmptyMessageDelayed(HIDE_LOADING,200);
 
                 //数据总数错误，重新计算
                 if (appInfos.size() == 0) {
