@@ -297,7 +297,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                     if (taskstatus == AppInstallListener.APP_INSTALL_FAIL) {
                         status.setText(getResources().getString(R.string.update_download_installing));
                         status.setVisibility(View.VISIBLE);
-                        installUpdateApk(progress, status, updatedIcon, saveDirPath);
+                        installUpdateApk(progress, status, updatedIcon, saveDirPath,position);
                     }/* else if (taskstatus == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
                         mDownloadManager.resume(downloadTask.getId());
                     }*/
@@ -343,11 +343,10 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                         @Override
                         public void onCompleted(final DownloadTask downloadTask) {
                             Log.d(TAG, "onCompleted: ");
-                            mPresenter.getUpdateApkNum(position);
                             progress.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    installUpdateApk(progress, status, updatedIcon, downloadTask.getSaveDirPath());
+                                    installUpdateApk(progress, status, updatedIcon, downloadTask.getSaveDirPath(),position);
                                 }
                             });
                         }
@@ -355,7 +354,14 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                         @Override
                         public void onError(DownloadTask downloadTask, int errorCode) {
                             Log.d(TAG, "onError: ");
-                            refreshStatus(downloadTask, status, progress, updatedIcon);
+                            status.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    status.setVisibility(View.VISIBLE);
+                                    status.setText(getResources().getString(R.string.update_download_false));
+                                    progress.setVisibility(View.INVISIBLE);
+                                }
+                            });
                             switch (errorCode) {
                                 case DOWNLOAD_ERROR_FILE_NOT_FOUND:
                                     ToastUtils.showMessage(UpdateManagerActivity.this, "未找到下载文件");
@@ -394,7 +400,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
      * @param updatedIcon
      * @param saveDirPath
      */
-    private void installUpdateApk(ProgressBar progress, final TextView status, final ImageView updatedIcon, final String saveDirPath) {
+    private void installUpdateApk(ProgressBar progress, final TextView status, final ImageView updatedIcon, final String saveDirPath, final int position) {
         status.setVisibility(View.VISIBLE);
         status.setText(getResources().getString(R.string.update_download_installing));
         progress.setVisibility(View.INVISIBLE);
@@ -404,8 +410,8 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 int result = InstallPkgUtils.installApp(saveDirPath);
                 if (result == 0) {
                     status.setVisibility(View.INVISIBLE);
-                    //status.setText("安装成功");
                     updatedIcon.setVisibility(View.VISIBLE);
+                    mPresenter.getUpdateApkNum(position);
                     Log.i(TAG, "run: " + 0);
                 } else {
                     status.setVisibility(View.VISIBLE);
@@ -467,10 +473,6 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 break;
             case AppInstallListener.APP_INSTALL_SUCESS:
                 status.setVisibility(View.INVISIBLE);
-                break;
-            case DownloadStatus.DOWNLOAD_STATUS_ERROR:
-                status.setVisibility(View.VISIBLE);
-                status.setText(getResources().getString(R.string.update_download_false));
                 break;
             default:
                 status.setVisibility(View.INVISIBLE);

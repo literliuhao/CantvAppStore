@@ -41,11 +41,6 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     private List<AppInfoBean> mAppInfoBeanList;
     private List<AppInfoBean> mUpdateNumDatas;//未更新应用集合
 
-    public UpdatePresenter(Context mContext) {
-        this.mContext = mContext;
-        mUpdateNumDatas = new ArrayList<AppInfoBean>();
-    }
-
     public UpdatePresenter(UpdateContract.View mView, Context mContext) {
         this.mView = mView;
         this.mContext = mContext;
@@ -97,6 +92,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                     mView.hideLoadingDialog();
                     mView.hideNoData();
                     mDatas.addAll(mAppInfoBeanList);
+                    mUpdateNumDatas.addAll(mAppInfoBeanList);
                     mView.showInstallPkgList(mDatas);
                     setNum(0);
                 }
@@ -113,6 +109,22 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                 mView.showNoData();
             }
         });
+
+        /*if (mAppInfoBeanList.size() < 1 || mAppInfoBeanList == null) {
+            mView.hideLoadingDialog();
+            mView.showNoData();
+        } else {
+            mView.hideLoadingDialog();
+            mView.hideNoData();
+            mDatas.addAll(mAppInfoBeanList);
+            mUpdateNumDatas.addAll(mAppInfoBeanList);
+            mView.showInstallPkgList(mDatas);
+            setNum(0);
+        }
+        if (mOnUpdateAppNumListener != null) {
+            mOnUpdateAppNumListener.updateAppNum(mUpdateNumDatas.size());
+        }
+        Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());*/
 
     }
 
@@ -197,14 +209,12 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         }
 
         final List appList = UpdateUtils.getAppList();
-       /* AppInfo appInfo1 = new AppInfo();
+        /*AppInfo appInfo1 = new AppInfo();
         appInfo1.setPackageName("cn.cibntv.ott");
         appInfo1.setVersionCode(4);
         AppInfo appInfo2 = new AppInfo();
         appInfo2.setPackageName("打怪");
         appInfo2.setVersionCode(4);
-        date.add(appInfo1);
-        date.add(appInfo2);
         appList.add(appInfo1);
         appList.add(appInfo2);*/
         final DownloadManager mDownloadManager = DownloadManager.getInstance(context);
@@ -267,13 +277,17 @@ public class UpdatePresenter implements UpdateContract.Presenter {
      * @return
      */
     public void getUpdateApkNum(int position) {
-        mUpdateNumDatas.remove(position);
-        if (mOnUpdateAppNumListener != null) {
-            mOnUpdateAppNumListener.updateAppNum(mUpdateNumDatas.size());
+        try {
+            mUpdateNumDatas.remove(0);
+            if (mOnUpdateAppNumListener != null) {
+                mOnUpdateAppNumListener.updateAppNum(mUpdateNumDatas.size());
+                Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
+            }
             Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
+        }catch (Exception e){
+            e.printStackTrace();
         }
         Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
-        //ToastUtil.toastShort("getUpdateApkNum: " + mUpdateNumDatas.size());
     }
 
     //未更新app数量监听
@@ -282,10 +296,10 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         void updateAppNum(int number);
     }
 
-    private OnUpdateAppNumListener mOnUpdateAppNumListener;
+    private static OnUpdateAppNumListener mOnUpdateAppNumListener;
 
-    public void setOnUpdateAppNumListener(OnUpdateAppNumListener listener) {
-        this.mOnUpdateAppNumListener = listener;
+    public static void setOnUpdateAppNumListener(OnUpdateAppNumListener listener) {
+        mOnUpdateAppNumListener = listener;
     }
 
 
