@@ -15,12 +15,12 @@ public interface UpdateContract {
         /**
          * 显示Dialog
          */
-        void showLoadingDialog();
+        void showLoading();
 
         /**
          * 关闭Dialog
          */
-        void hideLoadingDialog();
+        void hideLoading();
 
         /**
          * 无数据

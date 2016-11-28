@@ -1,6 +1,5 @@
 package com.can.appstore.update;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +20,7 @@ import android.widget.TextView;
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.TextProgressBar;
+import com.can.appstore.base.BaseActivity;
 import com.can.appstore.installpkg.utils.InstallPkgUtils;
 import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.widgets.CanDialog;
@@ -39,7 +39,6 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PreferencesUtils;
-import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.ToastUtils;
 
 /**
@@ -47,7 +46,7 @@ import cn.can.tvlib.utils.ToastUtils;
  * Created by shenpx on 2016/10/12 0012.
  */
 
-public class UpdateManagerActivity extends Activity implements UpdateContract.View {
+public class UpdateManagerActivity extends BaseActivity implements UpdateContract.View {
 
     private static final String TAG = "updateManagerActivity";
     private CanRecyclerView mRecyclerView;
@@ -529,21 +528,14 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
 
     }
 
-    public void showLoadingDialog() {
-        if (mLoadingDialog == null) {
-            mLoadingDialog = PromptUtils.showLoadingDialog(this);
-        } else if (mLoadingDialog.isShowing()) {
-            return;
-        } else {
-            mLoadingDialog.setCancelable(false);
-            mLoadingDialog.show();
-        }
+    @Override
+    public void showLoading() {
+        showLoadingDialog();
     }
 
-    public void hideLoadingDialog() {
-        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
-            mLoadingDialog.dismiss();
-        }
+    @Override
+    public void hideLoading() {
+        hideLoadingDialog();
     }
 
     @Override
