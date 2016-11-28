@@ -37,6 +37,7 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
     public List<View> mHotKeyViewList = new ArrayList<>(); //存每个热词的View
     private SearchActivity mActivity;
     private boolean isDefault = true; //当前是否处于"大家都在搜"状态
+    private int mChangePosition;
 
     public SearchAppListAdapter(List datas, Context context) {
         mDataList = datas;
@@ -95,7 +96,6 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
             ((SearchViewHolder) holder).mAppName.setText(app.getName());
             ((SearchViewHolder) holder).mAppSize.setText(app.getSizeStr());
             ((SearchViewHolder) holder).mAppDownloadCount.setText(app.getDownloadCount());
-            ((SearchViewHolder) holder).mView.setId(position + 10000);
             //第一行向上焦点是自己
             if (position < mActivity.SEARCH_APP_SPANCOUNT) {
                 ((SearchViewHolder) holder).mView.setNextFocusUpId(((SearchViewHolder) holder).mView.getId());
@@ -144,7 +144,7 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
          *
          * @param position
          */
-        public void setContent(int position) {
+        public void setContent(final int position) {
             final PopularWord app = (PopularWord) mDataList.get(position);
             mAppName.setText(app.getWord());
             //+1000是为了防止在搜索页出现相同的id
@@ -153,6 +153,14 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
                 @Override
                 public void onClick(View view) {
                     setInitials(app.getPinyin());
+                }
+            });
+            mView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean b) {
+                    if (null != mYOnFocusChangeListener) {
+                        mYOnFocusChangeListener.onItemFocusChanged(view, position, b);
+                    }
                 }
             });
         }
@@ -198,11 +206,9 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
      */
     public void setDataList(List dataList) {
         isDefault = false;
-        if (mDefaultList.size() > 0) {
-            mDefaultList.clear();
-        }
-        mDataList.addAll(dataList);
-        notifyDataSetChanged();
+        mDataList = dataList;
+        notifyItemRangeChanged(mChangePosition, dataList.size() - mChangePosition);
+        mChangePosition = dataList.size();
     }
 
 
@@ -213,16 +219,16 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
      */
     public void setDefaultApplist(List list) {
         isDefault = true;
-        if (mDefaultList.size() > 0) {
-            mDefaultList.clear();
+        if (mDataList.size() > 0) {
+            mDataList.clear();
         }
-        mDefaultList.addAll(list);
+        mDefaultList = list;
+        mDataList.addAll(list);
         notifyDataSetChanged();
     }
 
     public void setDefaultApplist() {
-        isDefault = true;
-        notifyDataSetChanged();
+        setDefaultApplist(mDefaultList);
     }
 
     /**

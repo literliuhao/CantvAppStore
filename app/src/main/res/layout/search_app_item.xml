@@ -30,6 +30,8 @@
         android:focusable="true"
         android:gravity="center"
         android:marqueeRepeatLimit="marquee_forever"
+        android:paddingLeft="@dimen/px5"
+        android:paddingRight="@dimen/px5"
         android:singleLine="true"
         android:text="app名称"
         android:textColor="@color/tr_20_white_color"
