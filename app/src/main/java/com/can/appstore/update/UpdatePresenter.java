@@ -39,7 +39,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     private Context mContext;
     private List<AppInfoBean> mDatas;//更新应用集合
     private List<AppInfoBean> mAppInfoBeanList;
-    private List<AppInfoBean> mUpdateNumDatas;//未更新应用集合
+    private static List<AppInfoBean> mUpdateNumDatas;//未更新应用集合
 
     public UpdatePresenter(UpdateContract.View mView, Context mContext) {
         this.mView = mView;
@@ -200,7 +200,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
      *
      * @param context
      */
-    public void autoUpdate(Context context) {
+    public static void autoUpdate(Context context) {
 
         //检测网络获取更新包数据
         if (!NetworkUtils.isNetworkConnected(context)) {
@@ -254,7 +254,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     }
 
     //添加自动更新队列
-    private void addAutoUpdateTask(DownloadManager mDownloadManager, List<AppInfo> data) {
+    private static void addAutoUpdateTask(DownloadManager mDownloadManager, List<AppInfo> data) {
         for (int i = 0; i < data.size(); i++) {
             String downloadUrl = data.get(i).getUrl();
             DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(downloadUrl));
