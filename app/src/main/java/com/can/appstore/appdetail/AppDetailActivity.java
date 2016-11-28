@@ -719,11 +719,13 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     @Override
     protected void onStop() {
+        Log.d(TAG, "onStop: ");
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
         super.onDestroy();
         if (mHandler != null) {
             mHandler.removeMessages(MESSAGE_TYPE_UPDATE);
