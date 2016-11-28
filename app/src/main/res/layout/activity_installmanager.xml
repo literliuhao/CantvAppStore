@@ -30,6 +30,7 @@
         android:background="@drawable/selector_updateitem"
         android:clickable="true"
         android:focusable="true"
+        android:gravity="center"
         android:nextFocusDown="@id/bt_install_delete"
         android:nextFocusLeft="@id/bt_install_delete"
         android:nextFocusUp="@id/bt_install_deleteall"

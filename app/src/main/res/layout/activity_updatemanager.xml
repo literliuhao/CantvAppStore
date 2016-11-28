@@ -29,6 +29,7 @@
         android:background="@drawable/selector_updateitem"
         android:clickable="true"
         android:focusable="true"
+        android:gravity="center"
         android:nextFocusDown="@id/bt_update_auto"
         android:nextFocusUp="@id/bt_update_detection"
         android:text="@string/update_bt_autosetting"
