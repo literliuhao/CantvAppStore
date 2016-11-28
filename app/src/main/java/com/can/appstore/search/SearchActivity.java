@@ -31,7 +31,6 @@ import java.util.List;
 
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
-import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 public class SearchActivity extends BaseActivity implements SearchContract.View, View.OnClickListener {
 
@@ -331,11 +330,12 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         showGoneView(TAG_SHOW_TOP_BOTTOM);
 
         //对显示行号的处理
-        mAppListAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
+        mAppListAdapter.setOnFocusChangeListener(new SearchAppListAdapter.YOnFocusChangeListener() {
+
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
                 if (hasFocus) {
-                    if (mAppListAdapter.SEARCH_APPLIST_TYPE == mAppListAdapter.getViewType(position)) {
+                    if (mAppListAdapter.SEARCH_APPLIST_TYPE == mAppListAdapter.getItemViewType(position)) {
                         //显示出行数View
                         mright_top.setVisibility(View.VISIBLE);
                         //行数

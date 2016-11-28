@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -119,7 +118,6 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
                 RecyclerView recyclerView = (RecyclerView) childView.findViewById(R.id.list_view);
                 //"更多" 布局
                 View ll_more_view = childView.findViewById(R.id.load_more_veiw);
-                ImageView categoryMoreImg = (ImageView) childView.findViewById(R.id.more_icon);
                 TextView categoryMoreText = (TextView) childView.findViewById(R.id.more_textview);
 
                 //设置布局背景
