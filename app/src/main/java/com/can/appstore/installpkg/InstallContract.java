@@ -12,9 +12,9 @@ public interface InstallContract {
 
     //控件接口
     interface View {
-        void showLoadingDialog();
+        void showLoading();
 
-        void hideLoadingDialog();
+        void hideLoading();
 
         void showNoData();
 

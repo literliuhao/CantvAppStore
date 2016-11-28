@@ -14,7 +14,7 @@ public interface SearchContract {
 
         void clearContent();
 
-        void getAppList(List list);
+        void getAppList(List list, boolean... isFirstSearch);
 
         void getInitials(String con);   //首字母
 

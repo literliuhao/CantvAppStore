@@ -55,14 +55,14 @@ public class SearchPresenter implements SearchContract.Presenter {
                     ToastUtil.toastShortTimeLimit("没有更多数据!", 5000);
                 } else {
                     mAppInfoList.addAll(data);
-                    mView.getAppList(mAppInfoList);
+                    mView.getAppList(mAppInfoList, pageIndex == 1 ? true : false);
                 }
             }
 
             @Override
             public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
-                String reason = errorWrapper.getReason();
-                ToastUtil.toastShort("加载数据失败,请稍后再试!");
+//                String reason = errorWrapper.getReason();
+//                ToastUtil.toastShort("加载数据失败,请稍后再试!");
                 mView.getAppList(null);
             }
         });

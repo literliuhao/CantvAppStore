@@ -3,7 +3,6 @@ package com.can.appstore.homerank;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -111,7 +110,6 @@ public class HomeRankAdapter extends RecyclerView.Adapter<HomeRankAdapter.RankAp
             }
         });
         setAppRImg(holder.mAppRImg, holder.mAPPRText, position);
-        Log.w("ranAdapter", holder.mAppRImg.getWidth() + "~ ~" + holder.mAppRImg.getHeight());
 
     }
 

@@ -58,7 +58,7 @@ import static com.can.appstore.index.ui.FragmentEnum.INDEX;
 /**
  * Created by liuhao on 2016/10/15.
  */
-public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener, View.OnKeyListener {
+public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener, View.OnKeyListener,View.OnFocusChangeListener {
     private List<BaseFragment> mFragmentLists;
     private IndexPagerAdapter mAdapter;
     private ViewPager mViewPager;
@@ -70,17 +70,17 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private FocusMoveUtil mFocusUtils;
     private FocusScaleUtil mFocusScaleUtils;
     private final int TOP_INDEX = 1;
-    private final int DURATIONLARGE = 300;
-    private final int DURATIONSMALL = 300;
+    private final int DURATION_LARGE = 300;
+    private final int DURATION_SMALL = 300;
     private final float SCALE = 1.1f;
-    private final int OFFSCREENPAGELIMIT = 5;
-    private final int PAGERCURRENTITEM = 0;
+    private final int SCREEN_PAGE_LIMIT = 5;
+    private final int PAGER_CURRENT = 0;
     //滚动中
     private final int SCROLLING = 2;
     //滚动完成
     private final int SCROLLED = 0;
     private int scrollStatus;
-    private final int FIND_FOCUS = 0X000001;
+    private final int INIT_FOCUS = 0X000001;
     private int currentPage;
     private CanCall<ListResult<Navigation>> mNavigationCall;
     private int updateNum;
@@ -108,12 +108,44 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         setContentView(R.layout.index);
     }
 
+    /**
+     * 首页初始化所有View
+     */
+    private void initView() {
+        //导航
+        mTitleBar = (TitleBar) findViewById(R.id.id_indicator);
+        mTitleBar.initTitle(this);
+        mViewPager = (ViewPager) findViewById(R.id.id_custom_pager);
+        //搜索
+        rlSearch = (RelativeLayout) this.findViewById(R.id.rl_search);
+        rlSearch.setOnFocusChangeListener(this);
+        rlSearch.setOnClickListener(this);
+        //消息
+        rlMessage = (RelativeLayout) this.findViewById(R.id.rl_message);
+        rlMessage.setOnFocusChangeListener(this);
+        rlMessage.setOnClickListener(this);
+        //消息提示
+        imageRed = (ImageView) this.findViewById(R.id.iv_mssage_red);
+        //更新
+        textUpdate = (TextView) findViewById(R.id.tv_update_number);
+    }
+
+    /**
+     * 首页焦点初始化，并且在IndexActivity做统一处理
+     */
+    private void initFocus() {
+        mFocusUtils = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
+        mFocusUtils.hideFocus();
+        mFocusScaleUtils = new FocusScaleUtil(DURATION_LARGE, DURATION_SMALL, SCALE, null, null);
+    }
+
     public void getNavigation() {
         mNavigationCall = HttpManager.getApiService().getNavigations();
         mNavigationCall.enqueue(new CanCallback<ListResult<Navigation>>() {
             @Override
             public void onResponse(CanCall<ListResult<Navigation>> call, Response<ListResult<Navigation>> response) throws Exception {
                 ListResult<Navigation> listResult = response.body();
+//                Log.i("IndexActivity", listResult.toString());
                 parseData(listResult);
             }
 
@@ -136,42 +168,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     /**
-     * 首页初始化所有View
-     */
-    private void initView() {
-        rlSearch = (RelativeLayout) this.findViewById(R.id.rl_search);
-        rlSearch.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                addFocusListener(view, hasFocus, INDEX);
-            }
-        });
-        rlSearch.setOnClickListener(this);
-
-        rlMessage = (RelativeLayout) this.findViewById(R.id.rl_message);
-        rlMessage.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                addFocusListener(view, hasFocus, INDEX);
-            }
-        });
-        rlMessage.setOnClickListener(this);
-
-        imageRed = (ImageView) this.findViewById(R.id.iv_mssage_red);
-
-        mTitleBar = (TitleBar) findViewById(R.id.id_indicator);
-        mTitleBar.initTitle(this);
-        mViewPager = (ViewPager) findViewById(R.id.id_custom_pager);
-
-        textUpdate = (TextView) findViewById(R.id.tv_update_number);
-    }
-
-    /**
      * 首页数据初始化
      */
     private void initData(ListResult<Navigation> navigationListResult) {
         mFragmentLists = new ArrayList<>();
-//        mPageBeans = JsonFormat.parseJson("");
         if (null == navigationListResult.getData()) return;
         //根据服务器配置文件生成不同样式加入Fragment列表中
         FragmentBody fragment;
@@ -199,7 +199,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
         MyAppsFragment myAppsFragment = new MyAppsFragment(this);
         mFragmentLists.add(myAppsFragment);
-
     }
 
     /**
@@ -223,15 +222,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mDatas.add(getResources().getString(R.string.index_myapp));
         //设置导航栏Title
         mTitleBar.setTabItemTitles(mDatas);
-    }
-
-    /**
-     * 首页焦点初始化，并且在IndexActivity做统一处理
-     */
-    private void initFocus() {
-        mFocusUtils = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
-        mFocusUtils.hideFocus();
-        mFocusScaleUtils = new FocusScaleUtil(DURATIONLARGE, DURATIONSMALL, SCALE, null, null);
     }
 
     /**
@@ -296,11 +286,17 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         });
 
         mViewPager.setAdapter(mAdapter);
-        mViewPager.setOffscreenPageLimit(OFFSCREENPAGELIMIT);
-        mViewPager.setCurrentItem(PAGERCURRENTITEM);
+        mViewPager.setOffscreenPageLimit(SCREEN_PAGE_LIMIT);
+        mViewPager.setCurrentItem(PAGER_CURRENT);
         mViewPager.setPageMargin((int) getResources().getDimension(R.dimen.px165));
         mViewPager.setOnKeyListener(this);
+        mTitleBar.setViewPager(mViewPager, PAGER_CURRENT);
+        mHandler.sendEmptyMessageDelayed(INIT_FOCUS, 200);
+        fixedScroll();
+        loadMore();
+    }
 
+    private void fixedScroll() {
         try {
             Field mScroller = ViewPager.class.getDeclaredField("mScroller");
             mScroller.setAccessible(true);
@@ -310,9 +306,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         } catch (Exception e) {
             e.printStackTrace();
         }
-        mTitleBar.setViewPager(mViewPager, PAGERCURRENTITEM);
-        mHandler.sendEmptyMessageDelayed(FIND_FOCUS, 200);
-        loadMore();
     }
 
     private void loadMore() {
@@ -364,7 +357,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case FIND_FOCUS:
+                case INIT_FOCUS:
                     View first = mTitleBar.getFirstView();
                     mFocusUtils.setFocusView(first, SCALE);
                     first.requestFocus();
@@ -386,13 +379,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     public void addFocusListener(View v, boolean hasFocus, FragmentEnum sourceEnum) {
         if (hasFocus) {
             if (null == v) return;
-//            count++;
-//            refreshUpdate();
-//            if (scrollStatus != SCROLLED) {
-//                return;
-//            }
-//            if (oldView.getId() == v.getId()) {
-//            Log.i("IndexActivity", "mViewPager.isSelected() " + mViewPager.isSelected());
             switch (sourceEnum) {
                 case INDEX:
                     v.bringToFront();
@@ -425,13 +411,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                     break;
 
             }
-//            } else if (oldView.getId() > v.getId()) {
-//                Log.i("IndexActivity", "else if oldView > newView");
-//            } else if (oldView.getId() < v.getId()) {
-//                Log.i("IndexActivity", "else  oldView < newView");
-//            }
         } else {
-//            oldView = v.geti;
             mFocusScaleUtils.scaleToNormal();
         }
     }
@@ -467,5 +447,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     public boolean onKey(View view, int i, KeyEvent keyEvent) {
         Log.i("IndexActivity", "scrollStatus " + scrollStatus);
         return false;
+    }
+
+    @Override
+    public void onFocusChange(View view, boolean hasFocus) {
+        addFocusListener(view, hasFocus, INDEX);
     }
 }
