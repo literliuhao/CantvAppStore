@@ -187,7 +187,7 @@ public class AppListPresenter implements AppListContract.Presenter {
 
         //根据不同页面请求数据
         if (mPageType == AppListActivity.PAGE_TYPE_APP_LIST) {
-            mAppListInfoCall = HttpManager.getApiService().getAppinfos("", mTypeId, mPage, PAGE_SIZE);
+            mAppListInfoCall = HttpManager.getApiService().getAppinfos(mTopicId, mTypeId, mPage, PAGE_SIZE);
             mAppListInfoCall.enqueue(canCallback);
         } else {
             mAppsRanking = HttpManager.getApiService().getAppsRanking(mTopicId);

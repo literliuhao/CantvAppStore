@@ -140,15 +140,15 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
 
             for (int i = 0; i < mTabTitles.size(); i++) {
                 LiteText liteText = generateTextView(mTabTitles.get(i));
+                if (i == mTabTitles.size()) {
+                    //得到最后titleBar进行相关设置
+                    liteText.setId(R.id.tv_index_title_last);
+                    liteText.setNextFocusRightId(R.id.rl_search);
+                }
                 addView(liteText, i);
             }
-            //得到最后titleBar进行相关设置
-            LiteText lastBar = (LiteText) this.getChildAt(mTabTitles.size() - 1);
-            lastBar.setId(R.id.tv_index_title_last);
-            lastBar.setNextFocusRightId(R.id.rl_search);
             // 设置item的click事件
             setItemClickEvent();
-
         }
     }
 

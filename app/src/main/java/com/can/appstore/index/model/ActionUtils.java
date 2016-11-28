@@ -49,7 +49,7 @@ public class ActionUtils {
                 break;
             //应用列表
             case "action_app_list":
-                AppListActivity.actionStart(mContext, 0x101, actionData, null);
+                AppListActivity.actionStart(mContext, AppListActivity.MSG_HIDE_MENU_TOP_SHADOW, null, actionData);
                 break;
             //活动详情
             case "action_app_activity_detail":
