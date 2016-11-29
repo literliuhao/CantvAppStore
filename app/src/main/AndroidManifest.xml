@@ -47,11 +47,6 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <service android:name=".active.AppInstallService">
-            <intent-filter>
-                <action android:name="com.can.appstore.active.AppInstall"/>
-            </intent-filter>
-        </service>
         <activity
             android:name=".PortalActivity"
             android:hardwareAccelerated="false">

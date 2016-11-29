@@ -142,8 +142,8 @@
 
     <!-- 活动页 -->
     <string name="active_click_participate">点击参加活动</string>
-    <string name="active_app_download_waiting">等待中</string>
-    <string name="active_app_installing">安装中</string>
+    <string name="download_continue">继续下载</string>
+    <string name="download_pause">已暂停下载</string>
     <string name="active_null_str"> </string>
 
     <string name="retry">"点击重试"</string>
