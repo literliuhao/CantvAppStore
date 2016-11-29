@@ -1,9 +1,6 @@
 package com.can.appstore.installpkg;
 
 import android.content.Context;
-import android.os.Environment;
-import android.view.View;
-import android.widget.Toast;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
@@ -40,7 +37,7 @@ public class InstallPresenter implements InstallContract.Presenter {
     public void getInstallPkgList() {
         mDatas.clear();
         mView.showInstallPkgList(mDatas);
-        mView.showLoadingDialog();
+        mView.showLoading();
         InstallPkgUtils.myFiles.clear();
         //mPath = Environment.getExternalStorageDirectory().getPath().toString();
         //mPath = Environment.getExternalStorageDirectory().getPath().toString() + File.separator + "Movies";
@@ -48,10 +45,10 @@ public class InstallPresenter implements InstallContract.Presenter {
         List appList = InstallPkgUtils.FindAllAPKFile(mPath);
         mDatas.clear();
         if (appList.size() < 1) {
-            mView.hideLoadingDialog();
+            mView.hideLoading();
             mView.showNoData();
         } else {
-            mView.hideLoadingDialog();
+            mView.hideLoading();
             mView.hideNoData();
             mDatas.addAll(appList);
             //setNum(0);
@@ -164,7 +161,7 @@ public class InstallPresenter implements InstallContract.Presenter {
      */
     @Override
     public void release() {
-        mView.hideLoadingDialog();
+        mView.hideLoading();
     }
 
     /**

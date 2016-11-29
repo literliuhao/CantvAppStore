@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.can.appstore.R;
-import com.can.appstore.search.ToastUtil;
 import com.can.appstore.search.widget.YIBaseCompatFocusAdapter;
 
 import java.util.ArrayList;
@@ -62,7 +61,6 @@ public class KeyboardAdapter extends YIBaseCompatFocusAdapter {
             public void onClick(View view, int position, Object data) {
                 if (null != mOnItemClickListener) {
                     mOnItemClickListener.onItemClick(position, mKeyList.get(position));
-                    ToastUtil.toastShort("key点击: " + mKeyList.get(position));
                 }
             }
         });

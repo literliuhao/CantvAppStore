@@ -10,12 +10,13 @@ import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.index.interfaces.IAddFocusListener;
+import com.can.appstore.index.ui.FragmentEnum;
 
 /**
  * Created by liuhao on 2016/11/15.
  */
 
-public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListener,View.OnClickListener {
+public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListener, View.OnClickListener {
     private Context mContext;
     private int[] mNames;
     private int[] mIcons;
@@ -94,7 +95,7 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
 
     @Override
     public void onFocusChange(View view, boolean b) {
-        mFocusListener.addFocusListener(view, b);
+        mFocusListener.addFocusListener(view, b, FragmentEnum.MANAGE);
     }
 
     @Override

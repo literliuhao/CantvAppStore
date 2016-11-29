@@ -23,6 +23,7 @@
     <string name="index_top">排行</string>
     <string name="index_manager">管理</string>
     <string name="index_myapp">我的应用</string>
+    <string name="index_app_update">个应用可更新</string>
     <!--首页管理-->
     <string name="index_manager_text1">一键加速</string>
     <string name="index_manager_text2">更新管理</string>
@@ -146,6 +147,7 @@
     <string name="active_click_participate">点击参加活动</string>
     <string name="active_app_download_waiting">等待中</string>
     <string name="active_app_installing">安装中</string>
+    <string name="active_null_str"> </string>
 
     <string name="retry">"点击重试"</string>
     <string name="load_fail">"网络访问错误"</string>
@@ -172,6 +174,23 @@
     <string name="backslashes">/</string>
     <string name="ranking">排行</string>
 
+    <!--我的应用-->
+    <string name="menu_management_of_sorting">按菜单可管理应用排序</string>
+    <string name="system_app">系统应用</string>
+    <string name="add_app">添加应用</string>
+    <string name="all_app">全部应用</string>
+    <string name="menu_get_more_function">按菜单键获取更多功能</string>
+    <string name="make_sure_add">确认添加</string>
+    <string name="already_select_count">已选择应用数</string>
+    <string name="already_add_">已添加</string>
+    <string name="_app_also_can_add_">个应用，还可以添加</string>
+    <string name="_individual">个</string>
+    <string name="app_top">置顶</string>
+    <string name="app_remove">移除</string>
+    <string name="table_full_cant_add">当前桌面已满，无法继续添加</string>
+    <string name="no_select_anyone">您没有选择任何应用</string>
+    <string name="start_app">启动</string>
+    <string name="uninstall_app">卸载</string>
     <!--自更新文本-->
     <string name="system_upgrade">系统升级</string>
     <string name="install">安装</string>

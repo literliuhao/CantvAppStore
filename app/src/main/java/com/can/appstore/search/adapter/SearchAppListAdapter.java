@@ -1,6 +1,7 @@
 package com.can.appstore.search.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,33 +9,37 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.can.appstore.MyApp;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.target.Target;
 import com.can.appstore.R;
+import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.PopularWord;
 import com.can.appstore.search.SearchActivity;
-import com.can.appstore.search.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
-import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
+
+import static com.can.appstore.MyApp.mContext;
 
 
 /**
  * Created by yibh on 2016/10/13 17:36 .
  */
 
-public class SearchAppListAdapter extends CanRecyclerViewAdapter {
+public class SearchAppListAdapter extends RecyclerView.Adapter {
     public List mDataList;
     public List mDefaultList;  //"大家都在搜"的数据
     private OnInitialsListener mOnInitialsListener;
     public List<View> mHotKeyViewList = new ArrayList<>(); //存每个热词的View
     private SearchActivity mActivity;
+    private boolean isDefault = true; //当前是否处于"大家都在搜"状态
+    private int mChangePosition = 0;
 
     public SearchAppListAdapter(List datas, Context context) {
-        super(datas);
         mDataList = datas;
         mDefaultList = datas;
         mActivity = (SearchActivity) context;
@@ -43,25 +48,8 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
     public static final int DEFAULT_APPLIST_TYPE = 11;    //默认大家都在搜的类型
     public static final int SEARCH_APPLIST_TYPE = 12;     //搜索出来的类型
 
-
     @Override
-    protected RecyclerView.ViewHolder generateViewHolder(final ViewGroup parent, final int viewType) {
-        setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onClick(View view, int position, Object data) {
-                switch (viewType) {
-                    case DEFAULT_APPLIST_TYPE:
-                        PopularWord defaultApp = (PopularWord) mDataList.get(position);
-                        ToastUtil.toastShort("点击 " + defaultApp.getWord());
-                        setInitials(defaultApp.getPinyin());
-                        break;
-                    case SEARCH_APPLIST_TYPE:
-                        AppInfo searchApp = (AppInfo) mDataList.get(position);
-                        ToastUtil.toastShort("点击 " + searchApp.getName());
-                        break;
-                }
-            }
-        });
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater mLayoutInflater = LayoutInflater.from(parent.getContext());
         switch (viewType) {
             case DEFAULT_APPLIST_TYPE:
@@ -78,29 +66,61 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
         };
     }
 
-
     @Override
-    protected void bindContentData(Object mDatas, RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof DefaultSearchViewHolder) {
             ((DefaultSearchViewHolder) holder).setContent(position);
         } else {
             final AppInfo app = (AppInfo) mDataList.get(position);
-            ImageLoader.getInstance().load(MyApp.mContext, ((SearchViewHolder) holder).mAppIcon, app.getIcon());
+            ImageLoader.getInstance().load(mContext, ((SearchViewHolder) holder).mAppIcon, app.getIcon(), R.mipmap
+                    .cibn_icon, R.mipmap.cibn_icon, new GlideLoadTask
+                    .SuccessCallback() {
+                @Override
+                public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean
+                        isFromMemoryCache, boolean isFirstResource) {
+                    ((SearchViewHolder) holder).mAppIcon.setScaleType(ImageView.ScaleType.FIT_XY);
+                    ((SearchViewHolder) holder).mAppIcon.setImageDrawable(resource);
+                    ((SearchViewHolder) holder).mAppIcon.setBackgroundColor(Color.TRANSPARENT);
+                    return true;
+                }
+            }, new GlideLoadTask.FailCallback() {
+                @Override
+                public boolean onFail(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                    ((SearchViewHolder) holder).mAppIcon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                    ((SearchViewHolder) holder).mAppIcon.setImageResource(R.mipmap.cibn_icon);
+                    ((SearchViewHolder) holder).mAppIcon.setBackgroundResource(R.drawable.shap_app_list_icon_bg);
+                    return true;
+                }
+            });
+
             ((SearchViewHolder) holder).mAppName.setText(app.getName());
             ((SearchViewHolder) holder).mAppSize.setText(app.getSizeStr());
             ((SearchViewHolder) holder).mAppDownloadCount.setText(app.getDownloadCount());
-            ((SearchViewHolder) holder).mView.setId(position + 10000);
-            ((SearchViewHolder) holder).mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-//                    AppDetailActivity.actionStart(mActivity,app.getId());
-                }
-            });
             //第一行向上焦点是自己
             if (position < mActivity.SEARCH_APP_SPANCOUNT) {
                 ((SearchViewHolder) holder).mView.setNextFocusUpId(((SearchViewHolder) holder).mView.getId());
             }
+            ((SearchViewHolder) holder).mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AppDetailActivity.actionStart(mActivity, app.getId());
+                }
+            });
+
+            ((SearchViewHolder) holder).mView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean b) {
+                    if (null != mYOnFocusChangeListener) {
+                        mYOnFocusChangeListener.onItemFocusChanged(view, position, b);
+                    }
+                }
+            });
         }
+    }
+
+    @Override
+    public int getItemCount() {
+        return isDefault ? mDefaultList.size() : mDataList.size();
     }
 
     /**
@@ -124,11 +144,25 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
          *
          * @param position
          */
-        public void setContent(int position) {
-            PopularWord app = (PopularWord) mDataList.get(position);
+        public void setContent(final int position) {
+            final PopularWord app = (PopularWord) mDataList.get(position);
             mAppName.setText(app.getWord());
             //+1000是为了防止在搜索页出现相同的id
             mView.setId(position + 1000);
+            mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    setInitials(app.getPinyin());
+                }
+            });
+            mView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean b) {
+                    if (null != mYOnFocusChangeListener) {
+                        mYOnFocusChangeListener.onItemFocusChanged(view, position, b);
+                    }
+                }
+            });
         }
     }
 
@@ -157,7 +191,7 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
     }
 
     @Override
-    public int getViewType(int position) {
+    public int getItemViewType(int position) {
         if (mDataList.get(position) instanceof PopularWord) {
             return DEFAULT_APPLIST_TYPE;
         } else {
@@ -170,18 +204,18 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
      *
      * @param dataList
      */
-    public void setDataList(List dataList) {
+    public void setDataList(List dataList, boolean isFirstSearch) {
+        isDefault = false;
         mDataList = dataList;
-        setDatas(dataList);
-        notifyDataSetChanged();
+        if (isFirstSearch) {
+            mChangePosition = dataList.size();
+            notifyDataSetChanged();
+        } else {
+            notifyItemRangeChanged(mChangePosition, dataList.size() - mChangePosition);
+            mChangePosition = dataList.size();
+        }
     }
 
-    /**
-     * 设置默认数据
-     */
-    public void setDefaultApplist() {
-        setDataList(mDefaultList);
-    }
 
     /**
      * 设置默认数据
@@ -189,8 +223,17 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
      * @param list
      */
     public void setDefaultApplist(List list) {
+        isDefault = true;
+        if (mDataList.size() > 0) {
+            mDataList.clear();
+        }
         mDefaultList = list;
-        setDefaultApplist();
+        mDataList.addAll(list);
+        notifyDataSetChanged();
+    }
+
+    public void setDefaultApplist() {
+        setDefaultApplist(mDefaultList);
     }
 
     /**
@@ -217,5 +260,15 @@ public class SearchAppListAdapter extends CanRecyclerViewAdapter {
         }
     }
 
+    //焦点变化的监听
+    private YOnFocusChangeListener mYOnFocusChangeListener;
+
+    public interface YOnFocusChangeListener {
+        void onItemFocusChanged(View view, int position, boolean hasFocus);
+    }
+
+    public void setOnFocusChangeListener(YOnFocusChangeListener onFocusChangeListener) {
+        this.mYOnFocusChangeListener = onFocusChangeListener;
+    }
 
 }

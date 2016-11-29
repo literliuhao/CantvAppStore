@@ -621,8 +621,28 @@ public class DownloadManager implements AppInstallListener {
         new Thread(task).start();
     }
 
-    public DownloadTask getSingleTask(String taskId) {
+    public DownloadTask addSingleTaskListener(String taskId, DownloadTaskListener downloadTaskListener) {
+        if(mSingleTaskMap != null){
+            DownloadTask task =  mSingleTaskMap.get(taskId);
+            if (task == null) {
+                return null;
+            }
+            task.addDownloadListener(downloadTaskListener);
+            return task;
+        }
+        return null;
+    }
+
+    public DownloadTask getSigleTaskById(String taskId){
+        if(mSingleTaskMap == null){
+            return null;
+        }
         return mSingleTaskMap.get(taskId);
+    }
+
+    public void deleteSigleTask(String taskId){
+        mSingleTaskMap.remove(taskId);
+        mDownloadDao.deleteByKey(taskId);
     }
 
     public void setLimitSpace(int size) {
@@ -718,6 +738,9 @@ public class DownloadManager implements AppInstallListener {
     }
 
     public void install(DownloadTask downloadTask) {
+        if (mSingleTaskMap.containsKey(downloadTask.getId())) {
+            return;
+        }
         downloadTask.setDownloadStatus(AppInstallListener.APP_INSTALLING);
         Message msg = new Message();
         msg.what = MSG_APP_INSTALL;
@@ -736,5 +759,4 @@ public class DownloadManager implements AppInstallListener {
         msg.setData(bundle);
         mHander.sendMessage(msg);
     }
-
 }

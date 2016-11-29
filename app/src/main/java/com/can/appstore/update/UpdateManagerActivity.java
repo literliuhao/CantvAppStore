@@ -1,14 +1,10 @@
 package com.can.appstore.update;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,19 +13,16 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.TextProgressBar;
+import com.can.appstore.base.BaseActivity;
 import com.can.appstore.installpkg.utils.InstallPkgUtils;
-import com.can.appstore.installpkg.view.LoadingDialog;
 import com.can.appstore.update.model.AppInfoBean;
-import com.can.appstore.update.utils.UpdateUtils;
 import com.can.appstore.widgets.CanDialog;
 
 import java.util.List;
@@ -46,7 +39,6 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PreferencesUtils;
-import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.ToastUtils;
 
 /**
@@ -54,13 +46,13 @@ import cn.can.tvlib.utils.ToastUtils;
  * Created by shenpx on 2016/10/12 0012.
  */
 
-public class UpdateManagerActivity extends Activity implements UpdateContract.View {
+public class UpdateManagerActivity extends BaseActivity implements UpdateContract.View {
 
     private static final String TAG = "updateManagerActivity";
     private CanRecyclerView mRecyclerView;
     private UpdateManagerAdapter mRecyclerAdapter;
-    private Button mDetectionButton;
-    private Button mAutoButton;
+    private TextView mDetectionButton;
+    private TextView mAutoButton;
     private TextView mReminder;
     private int mCurrentPositon;
     private boolean mAutoUpdate;
@@ -134,10 +126,10 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                     mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mDetectionButton, 1.0f);
                     boolean isNull = mPresenter.isNull(0);
-                    if(isNull){
+                    if (isNull) {
                         mCurrentnum.setVisibility(View.INVISIBLE);
                         mTotalnum.setVisibility(View.INVISIBLE);
-                    }else{
+                    } else {
                         mPresenter.setNum(0);
                     }
                 } else {
@@ -153,10 +145,10 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                     mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mAutoButton, 1.0f);
                     boolean isNull = mPresenter.isNull(0);
-                    if(isNull){
+                    if (isNull) {
                         mCurrentnum.setVisibility(View.INVISIBLE);
                         mTotalnum.setVisibility(View.INVISIBLE);
-                    }else{
+                    } else {
                         mPresenter.setNum(0);
                     }
                 } else {
@@ -243,8 +235,6 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                     return;
                 } else {
                     mPresenter.getInstallPkgList(mAutoUpdate);
-                    mCurrentnum.setVisibility(View.VISIBLE);
-                    mTotalnum.setVisibility(View.VISIBLE);
                     if (!NetworkUtils.isNetworkConnected(UpdateManagerActivity.this)) {
                         mCurrentnum.setVisibility(View.INVISIBLE);
                         mTotalnum.setVisibility(View.INVISIBLE);
@@ -297,14 +287,14 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                     if (taskstatus == AppInstallListener.APP_INSTALL_FAIL) {
                         status.setText(getResources().getString(R.string.update_download_installing));
                         status.setVisibility(View.VISIBLE);
-                        installUpdateApk(progress, status, updatedIcon, saveDirPath,position);
+                        installUpdateApk(progress, status, updatedIcon, saveDirPath, position);
                     }/* else if (taskstatus == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
                         mDownloadManager.resume(downloadTask.getId());
                     }*/
                 } else {
                     downloadTask = new DownloadTask();
                     String md5 = MD5.MD5(downloadUrl);
-                    downloadTask.setFileName(md5 + ".apk");
+                    downloadTask.setFileName(md5);
                     downloadTask.setId(md5);
                     downloadTask.setUrl(downloadUrl);
                     status.setText(getResources().getString(R.string.update_download_waitting));
@@ -346,7 +336,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                             progress.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    installUpdateApk(progress, status, updatedIcon, downloadTask.getSaveDirPath(),position);
+                                    installUpdateApk(progress, status, updatedIcon, downloadTask.getSaveDirPath(), position);
                                 }
                             });
                         }
@@ -491,7 +481,7 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
                 mAutoUpdate = true;
                 canDialog.dismiss();
                 mPresenter.getListSize();
-                //mPresenter.autoUpdate(UpdateManagerActivity.this);
+                mPresenter.autoUpdate(UpdateManagerActivity.this);
             }
 
             @Override
@@ -515,8 +505,8 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
     private void initView() {
         mTotalnum = (TextView) findViewById(R.id.tv_update_totalnum);
         mCurrentnum = (TextView) findViewById(R.id.tv_update_currentnum);
-        mDetectionButton = (Button) findViewById(R.id.bt_update_detection);
-        mAutoButton = (Button) findViewById(R.id.bt_update_auto);
+        mDetectionButton = (TextView) findViewById(R.id.bt_update_detection);
+        mAutoButton = (TextView) findViewById(R.id.bt_update_auto);
         mRecyclerView = (CanRecyclerView) findViewById(R.id.rv_update_recyclerview);
         mReminder = (TextView) findViewById(R.id.tv_update_reminder);
         mSizeProgressBar = (TextProgressBar) findViewById(R.id.pb_update_progressbar);
@@ -538,25 +528,19 @@ public class UpdateManagerActivity extends Activity implements UpdateContract.Vi
 
     }
 
-    public void showLoadingDialog() {
-        if (mLoadingDialog == null) {
-            mLoadingDialog = PromptUtils.showLoadingDialog(this);
-        } else if (mLoadingDialog.isShowing()) {
-            return;
-        } else {
-            mLoadingDialog.setCancelable(false);
-            mLoadingDialog.show();
-        }
+    @Override
+    public void showLoading() {
+        showLoadingDialog();
     }
 
-    public void hideLoadingDialog() {
-        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
-            mLoadingDialog.dismiss();
-        }
+    @Override
+    public void hideLoading() {
+        hideLoadingDialog();
     }
 
     @Override
     public void showNoData() {
+        mReminder.setText(getResources().getString(R.string.update_updateall));
         mReminder.setVisibility(View.VISIBLE);
         mCurrentnum.setVisibility(View.INVISIBLE);
         mTotalnum.setVisibility(View.INVISIBLE);

@@ -1,51 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="@dimen/px720"
-    android:layout_height="match_parent"
-    android:background="#2D313A"
-    android:orientation="vertical"
-    android:paddingTop="@dimen/px110">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="@dimen/px720"
+              android:layout_height="match_parent"
+              android:background="#2D313A"
+              android:orientation="vertical"
+              android:paddingTop="@dimen/px110">
 
     <RelativeLayout
-        android:layout_width="@dimen/px516"
+        android:layout_width="@dimen/px520"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/px128">
 
+        <ImageView
+            android:id="@+id/search_icon"
+            android:layout_width="@dimen/px35"
+            android:layout_height="@dimen/px35"
+            android:layout_centerVertical="true"
+            android:src="@drawable/icon_02"/>
+
         <TextView
             android:id="@+id/show_se_con_view"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/icon_02"
-            android:drawablePadding="@dimen/px16"
+            android:layout_centerVertical="true"
+            android:ellipsize="none"
             android:gravity="center_vertical"
-            android:hint="@string/search_content_hint"
-            android:maxLines="1"
+            android:singleLine="true"
             android:textColor="@android:color/white"
             android:textColorHint="@android:color/white"
-            android:textSize="@dimen/px32" />
+            android:textSize="@dimen/px80"/>
+        <!--android:hint="@string/search_content_hint"-->
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/px1"
-            android:layout_below="@id/show_se_con_view"
-            android:layout_marginTop="@dimen/px10"
-            android:background="@android:color/darker_gray" />
     </RelativeLayout>
+
+    <View
+        android:layout_width="@dimen/px520"
+        android:layout_height="0.5dp"
+        android:layout_below="@id/show_se_con_view"
+        android:layout_marginLeft="@dimen/px128"
+        android:layout_marginTop="@dimen/px18"
+        android:background="#33FFFFFF"/>
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/px220"
-        android:layout_marginTop="@dimen/px28">
+        android:layout_marginTop="@dimen/px32">
 
         <TextView
             android:id="@+id/con_clear_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/px6"
-            android:layout_marginTop="@dimen/px6"
-            android:background="@drawable/search_keyboard_shape"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
@@ -53,8 +59,9 @@
             android:paddingLeft="@dimen/px8"
             android:paddingRight="@dimen/px8"
             android:text="@string/search_content_clear"
-            android:textColor="#D9DADC"
-            android:textSize="@dimen/px32" />
+            android:textColor="@color/tr_20_white_color"
+            android:textSize="@dimen/px32"/>
+        <!--android:background="@drawable/search_keyboard_shape"-->
 
         <TextView
             android:id="@+id/con_del_view"
@@ -62,8 +69,6 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/px210"
             android:layout_marginRight="@dimen/px6"
-            android:layout_marginTop="@dimen/px6"
-            android:background="@drawable/search_keyboard_shape"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
@@ -71,8 +76,9 @@
             android:paddingLeft="@dimen/px8"
             android:paddingRight="@dimen/px8"
             android:text="@string/search_content_del"
-            android:textColor="#D9DADC"
-            android:textSize="@dimen/px32" />
+            android:textColor="@color/tr_20_white_color"
+            android:textSize="@dimen/px32"/>
+        <!--android:background="@drawable/search_keyboard_shape"-->
 
     </RelativeLayout>
 
@@ -82,22 +88,22 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/px124"
         android:layout_marginRight="@dimen/px46"
-        android:layout_marginTop="@dimen/px28"
-        android:paddingBottom="@dimen/px20" />
+        android:layout_marginTop="@dimen/px20"
+        android:paddingBottom="@dimen/px20"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/px60"
+        android:layout_marginTop="@dimen/px40"
         android:gravity="center"
         android:text="@string/search_prompt1"
-        android:textColor="#75777B"
-        android:textSize="@dimen/px32" />
+        android:textColor="@color/tr_50_white_color"
+        android:textSize="@dimen/px32"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/px20"
+        android:layout_marginTop="@dimen/px18"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -106,24 +112,24 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/search_prompt2"
-            android:textColor="#75777B"
-            android:textSize="@dimen/px32" />
+            android:textColor="@color/tr_50_white_color"
+            android:textSize="@dimen/px32"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/search_prompt3"
-            android:textColor="#B9B56A"
-            android:textSize="@dimen/px32" />
+            android:textColor="@color/tr_20_gold_color"
+            android:textSize="@dimen/px32"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/search_prompt4"
-            android:textColor="#75777B"
-            android:textSize="@dimen/px32" />
+            android:textColor="@color/tr_50_white_color"
+            android:textSize="@dimen/px32"/>
 
     </LinearLayout>
 

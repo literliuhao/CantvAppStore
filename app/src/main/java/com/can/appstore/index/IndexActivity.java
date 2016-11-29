@@ -5,13 +5,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Interpolator;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.entity.ListResult;
@@ -24,16 +28,24 @@ import com.can.appstore.http.HttpManager;
 import com.can.appstore.index.adapter.IndexPagerAdapter;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.interfaces.IOnPagerListener;
+import com.can.appstore.index.model.DataUtils;
 import com.can.appstore.index.model.ShareData;
 import com.can.appstore.index.ui.BaseFragment;
+import com.can.appstore.index.ui.FixedScroller;
 import com.can.appstore.index.ui.FragmentBody;
+import com.can.appstore.index.ui.FragmentEnum;
 import com.can.appstore.index.ui.LiteText;
 import com.can.appstore.index.ui.ManagerFragment;
 import com.can.appstore.index.ui.TitleBar;
 import com.can.appstore.message.MessageActivity;
+import com.can.appstore.message.manager.MessageManager;
 import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
+import com.can.appstore.update.UpdatePresenter;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,31 +53,37 @@ import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import retrofit2.Response;
 
+import static com.can.appstore.index.ui.FragmentEnum.INDEX;
+
 /**
  * Created by liuhao on 2016/10/15.
  */
-public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener, View.OnFocusChangeListener {
+public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener, View.OnKeyListener,View.OnFocusChangeListener {
     private List<BaseFragment> mFragmentLists;
     private IndexPagerAdapter mAdapter;
     private ViewPager mViewPager;
     private TitleBar mTitleBar;
     private RelativeLayout rlSearch;
     private RelativeLayout rlMessage;
+    private ImageView imageRed;
+    private TextView textUpdate;
     private FocusMoveUtil mFocusUtils;
     private FocusScaleUtil mFocusScaleUtils;
-    private ShareData shareData;
     private final int TOP_INDEX = 1;
-    private final int DURATIONLARGE = 300;
-    private final int DURATIONSMALL = 300;
+    private final int DURATION_LARGE = 300;
+    private final int DURATION_SMALL = 300;
     private final float SCALE = 1.1f;
-    private final int OFFSCREENPAGELIMIT = 3;
-    private final int PAGERCURRENTITEM = 0;
+    private final int SCREEN_PAGE_LIMIT = 5;
+    private final int PAGER_CURRENT = 0;
     //滚动中
     private final int SCROLLING = 2;
     //滚动完成
     private final int SCROLLED = 0;
-    private final int FIND_FOCUS = 0X000001;
+    private int scrollStatus;
+    private final int INIT_FOCUS = 0X000001;
+    private int currentPage;
     private CanCall<ListResult<Navigation>> mNavigationCall;
+    private int updateNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +94,12 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         getNavigation();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshMsg();
+    }
+
     /**
      * 当前Activity样式及载入的布局
      */
@@ -84,51 +108,63 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         setContentView(R.layout.index);
     }
 
+    /**
+     * 首页初始化所有View
+     */
+    private void initView() {
+        //导航
+        mTitleBar = (TitleBar) findViewById(R.id.id_indicator);
+        mTitleBar.initTitle(this);
+        mViewPager = (ViewPager) findViewById(R.id.id_custom_pager);
+        //搜索
+        rlSearch = (RelativeLayout) this.findViewById(R.id.rl_search);
+        rlSearch.setOnFocusChangeListener(this);
+        rlSearch.setOnClickListener(this);
+        //消息
+        rlMessage = (RelativeLayout) this.findViewById(R.id.rl_message);
+        rlMessage.setOnFocusChangeListener(this);
+        rlMessage.setOnClickListener(this);
+        //消息提示
+        imageRed = (ImageView) this.findViewById(R.id.iv_mssage_red);
+        //更新
+        textUpdate = (TextView) findViewById(R.id.tv_update_number);
+    }
+
+    /**
+     * 首页焦点初始化，并且在IndexActivity做统一处理
+     */
+    private void initFocus() {
+        mFocusUtils = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
+        mFocusUtils.hideFocus();
+        mFocusScaleUtils = new FocusScaleUtil(DURATION_LARGE, DURATION_SMALL, SCALE, null, null);
+    }
+
     public void getNavigation() {
         mNavigationCall = HttpManager.getApiService().getNavigations();
         mNavigationCall.enqueue(new CanCallback<ListResult<Navigation>>() {
             @Override
             public void onResponse(CanCall<ListResult<Navigation>> call, Response<ListResult<Navigation>> response) throws Exception {
-                ListResult<Navigation> info = response.body();
-                if (null != info.getData()) {
-                    initData(info);
-                    bindData(info);
-                }
+                ListResult<Navigation> listResult = response.body();
+//                Log.i("IndexActivity", listResult.toString());
+                parseData(listResult);
             }
 
             @Override
             public void onFailure(CanCall<ListResult<Navigation>> call, CanErrorWrapper errorWrapper) {
                 Log.i("DataUtils", errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
+                Gson gson = new Gson();
+                ListResult<Navigation> listResult = gson.fromJson(DataUtils.indexData, new TypeToken<ListResult<Navigation>>() {
+                }.getType());
+                parseData(listResult);
             }
         });
     }
 
-    /**
-     * 首页初始化所有View
-     */
-    private void initView() {
-        rlSearch = (RelativeLayout) this.findViewById(R.id.rl_search);
-        rlSearch.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                addFocusListener(view, b);
-            }
-        });
-        rlSearch.setOnClickListener(this);
-
-        rlMessage = (RelativeLayout) this.findViewById(R.id.rl_message);
-        rlMessage.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                addFocusListener(view, b);
-            }
-        });
-        rlMessage.setOnClickListener(this);
-
-        mTitleBar = (TitleBar) findViewById(R.id.id_indicator);
-        mTitleBar.initTitle(this);
-        mViewPager = (ViewPager) findViewById(R.id.id_vp);
-
+    private void parseData(ListResult<Navigation> listResult) {
+        if (null != listResult.getData()) {
+            initData(listResult);
+            bindData(listResult);
+        }
     }
 
     /**
@@ -136,7 +172,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      */
     private void initData(ListResult<Navigation> navigationListResult) {
         mFragmentLists = new ArrayList<>();
-//        mPageBeans = JsonFormat.parseJson("");
         if (null == navigationListResult.getData()) return;
         //根据服务器配置文件生成不同样式加入Fragment列表中
         FragmentBody fragment;
@@ -161,9 +196,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         }
         ManagerFragment managerFragment = new ManagerFragment(this);
         mFragmentLists.add(managerFragment);
+
         MyAppsFragment myAppsFragment = new MyAppsFragment(this);
         mFragmentLists.add(myAppsFragment);
-
     }
 
     /**
@@ -190,15 +225,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     /**
-     * 首页焦点初始化，并且在IndexActivity做统一处理
-     */
-    private void initFocus() {
-        mFocusUtils = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
-//        mFocusUtils.hideFocus();
-        mFocusScaleUtils = new FocusScaleUtil(DURATIONLARGE, DURATIONSMALL, SCALE, null, null);
-    }
-
-    /**
      * mViewPager、mTitleBar 数据绑定与页面绑定
      */
     private void bindData(ListResult<Navigation> listResult) {
@@ -211,53 +237,133 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             }
 
             @Override
-            public void onExtraPageSelected(int position, View view) {
+            public void onExtraPageSelected(int position) {
+                currentPage = position;
+                mFocusUtils.showFocus();
             }
 
             @Override
             public void onExtraPageScrollStateChanged(int state, View view) {
+                scrollStatus = state;
+                switch (currentPage) {
+                    case 0:
+                        refreshUpdate(updateNum);
+                        break;
+                    default:
+                        textUpdate.setVisibility(View.GONE);
+                        break;
+                }
                 if (state == SCROLLING) {
                     if (!(IndexActivity.this.getCurrentFocus() instanceof LiteText)) {
                         mFocusUtils.hideFocus();
                     }
                 } else if (state == SCROLLED) {
                     if (null == view) {
-                        mFocusUtils.setFocusView(IndexActivity.this.getCurrentFocus(), SCALE);
-                        mFocusUtils.startMoveFocus(IndexActivity.this.getCurrentFocus(), SCALE);
+                        view = IndexActivity.this.getCurrentFocus();
+                        if (!(view instanceof LiteText) && currentPage == TOP_INDEX) {
+                            mFocusUtils.setFocusView(view);
+                            mFocusUtils.startMoveFocus(view);
+                        } else {
+                            mFocusUtils.setFocusView(view, SCALE);
+                            mFocusUtils.startMoveFocus(view, SCALE);
+                        }
                         mFocusUtils.showFocus();
                         return;
                     }
                     if (!(IndexActivity.this.getCurrentFocus() instanceof LiteText)) {
                         view.requestFocus();
-                        mFocusUtils.setFocusView(view, SCALE);
-                        mFocusUtils.startMoveFocus(view, SCALE);
-                        mFocusUtils.showFocus();
+                        if (currentPage == TOP_INDEX) {
+                            mFocusUtils.setFocusView(view);
+                            mFocusUtils.startMoveFocus(view);
+                        } else {
+                            mFocusUtils.setFocusView(view, SCALE);
+                            mFocusUtils.startMoveFocus(view, SCALE);
+                        }
                     }
+                    mFocusUtils.showFocus();
                 }
             }
         });
+
         mViewPager.setAdapter(mAdapter);
-        mViewPager.setOffscreenPageLimit(OFFSCREENPAGELIMIT);
-        mViewPager.setCurrentItem(PAGERCURRENTITEM);
+        mViewPager.setOffscreenPageLimit(SCREEN_PAGE_LIMIT);
+        mViewPager.setCurrentItem(PAGER_CURRENT);
         mViewPager.setPageMargin((int) getResources().getDimension(R.dimen.px165));
-//        mViewPager.setOnFocusChangeListener(this);
-        mTitleBar.setViewPager(mViewPager, PAGERCURRENTITEM);
-        mHandler.sendEmptyMessageAtTime(FIND_FOCUS, 1000);
+        mViewPager.setOnKeyListener(this);
+        mTitleBar.setViewPager(mViewPager, PAGER_CURRENT);
+        mHandler.sendEmptyMessageDelayed(INIT_FOCUS, 200);
+        fixedScroll();
+        loadMore();
+    }
 
+    private void fixedScroll() {
+        try {
+            Field mScroller = ViewPager.class.getDeclaredField("mScroller");
+            mScroller.setAccessible(true);
+            Interpolator sInterpolator = new AccelerateDecelerateInterpolator();
+            FixedScroller scroller = new FixedScroller(mViewPager.getContext(), sInterpolator);
+            mScroller.set(mViewPager, scroller);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadMore() {
         //开始获取第三方屏蔽列表
-        shareData.getInstance().execute();
+        ShareData.getInstance().execute();
+        initUpdateListener();
+        initMsgListener();
+    }
 
+    private void initUpdateListener() {
+        UpdatePresenter.autoUpdate(IndexActivity.this);
+        UpdatePresenter.setOnUpdateAppNumListener(new UpdatePresenter.OnUpdateAppNumListener() {
+            @Override
+            public void updateAppNum(int number) {
+                updateNum = number;
+                refreshUpdate(updateNum);
+            }
+        });
+    }
+
+    private void refreshUpdate(int number) {
+        if (number > 0) {
+            //伪代码 可更新不等于0时显示
+            textUpdate.setText(number + getResources().getString(R.string.index_app_update));
+            textUpdate.setVisibility(View.VISIBLE);
+        } else {
+            textUpdate.setVisibility(View.GONE);
+        }
+    }
+
+    private void initMsgListener() {
+        MessageManager.setCallMsgDataUpdate(new MessageManager.CallMsgDataUpdate() {
+            @Override
+            public void onUpdate() {
+                Log.i("IndexActivity", "有新的消息数据了");
+                imageRed.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    private void refreshMsg() {
+        if (MessageManager.existUnreadMsg()) {
+            textUpdate.setVisibility(View.VISIBLE);
+        } else {
+            textUpdate.setVisibility(View.GONE);
+        }
     }
 
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case FIND_FOCUS:
-//                    View first = mTitleBar.getFirstView();
-//                    mFocusUtils.setFocusView(first, SCALE);
-//                    mFocusUtils.showFocus();
-//                    Log.i("IndexActivity","first " + first.toString());
-//                    first.requestFocus();
+                case INIT_FOCUS:
+                    View first = mTitleBar.getFirstView();
+                    mFocusUtils.setFocusView(first, SCALE);
+                    first.requestFocus();
+                    mFocusUtils.showFocus(100);
+                    rlSearch.setFocusable(true);
+                    rlMessage.setFocusable(true);
                     break;
             }
         }
@@ -270,28 +376,55 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      * @param hasFocus 是否获得焦点
      */
     @Override
-    public void addFocusListener(View v, boolean hasFocus) {
+    public void addFocusListener(View v, boolean hasFocus, FragmentEnum sourceEnum) {
         if (hasFocus) {
-            if (v == null) return;
-            Log.i("IndexActivity", v.getId() + "");
-            if (v instanceof LiteText) {
-                v.callOnClick();
-            } else {
-                v.bringToFront();
-                mFocusScaleUtils.scaleToLarge(v);
+            if (null == v) return;
+            switch (sourceEnum) {
+                case INDEX:
+                    v.bringToFront();
+                    mFocusUtils.setFocusRes(IndexActivity.this, R.drawable.btn_circle_focus);
+                    mFocusUtils.startMoveFocus(v);
+//                    mFocusScaleUtils.scaleToLarge(v);
+                    break;
+                case TITLE:
+                    if (v instanceof LiteText) {
+                        v.callOnClick();
+                    } else {
+                        v.bringToFront();
+                        mFocusScaleUtils.scaleToLarge(v);
+                    }
+                    mFocusUtils.setFocusRes(IndexActivity.this, R.drawable.btn_focus);
+                    mFocusUtils.startMoveFocus(v, SCALE);
+                    break;
+                case RANK:
+                    v.bringToFront();
+                    mFocusUtils.setFocusRes(IndexActivity.this, R.drawable.btn_focus);
+                    mFocusUtils.startMoveFocus(v);
+                    break;
+                case NORMAL:
+                case MYAPP:
+                case MANAGE:
+                    v.bringToFront();
+                    mFocusUtils.setFocusRes(IndexActivity.this, R.drawable.btn_focus);
+                    mFocusUtils.startMoveFocus(v, SCALE);
+                    mFocusScaleUtils.scaleToLarge(v);
+                    break;
+
             }
-            mFocusUtils.startMoveFocus(v, SCALE);
         } else {
             mFocusScaleUtils.scaleToNormal();
         }
     }
 
-    @Nullable
-    @Override
-    public View getCurrentFocus() {
-        Log.i("IndexActivity", "getCurrentFocus ");
-        return super.getCurrentFocus();
-    }
+//    @Override
+//    public boolean onKeyUp(int keyCode, KeyEvent event) {
+//        Log.i("IndexActivity", "scrollStatus " + scrollStatus);
+//        if (scrollStatus == SCROLLED) {
+//            return super.onKeyUp(keyCode, event);
+//        } else {
+//            return true;
+//        }
+//    }
 
     @Override
     public void onClick(View view) {
@@ -305,13 +438,19 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         }
     }
 
-    @Override
-    public void onFocusChange(View view, boolean b) {
-        Log.i("IndexActivity", "view...." + view.getId());
-    }
-
     public static void actionStart(Context context, String topicId) {
         Intent intent = new Intent(context, IndexActivity.class);
         context.startActivity(intent);
+    }
+
+    @Override
+    public boolean onKey(View view, int i, KeyEvent keyEvent) {
+        Log.i("IndexActivity", "scrollStatus " + scrollStatus);
+        return false;
+    }
+
+    @Override
+    public void onFocusChange(View view, boolean hasFocus) {
+        addFocusListener(view, hasFocus, INDEX);
     }
 }

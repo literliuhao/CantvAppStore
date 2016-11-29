@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat
+
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
@@ -12,15 +14,49 @@ android {
         versionName "1.0"
     }
 
+    signingConfigs {
+        debug{
+        }
+    }
+
     buildTypes {
         release {
             debuggable true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug // 默认签名
         }
-
+        update{
+            initWith(release)
+        }
     }
 
+    applicationVariants.all { variant ->
+        //为升级包配置versionCode、versionName
+        if (variant.buildType.name == 'update') {
+            def newVersionCode = variant.versionCode + 1
+            variant.mergedFlavor.versionCode = newVersionCode
+        }
+        //修改生成的apk名字
+        variant.outputs.each { output ->
+            def oldFile = output.outputFile
+            if (variant.buildType.name in ['release', 'update']) {
+                def releaseApkName = "AppStore_V${variant.versionCode}_${getDateTime()}.apk";
+                if (project.hasProperty("appReleaseDir")) {
+                    File releasePath = new File(project.property("appReleaseDir"), getDate());
+                    output.outputFile = new File(releasePath, releaseApkName);
+                } else {
+                    output.outputFile = new File(oldFile.parent, releaseApkName)
+                }
+            }
+        }
+    }
+
+
+}
+
+def getDateTime(){
+    return new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 }
 
 apt {

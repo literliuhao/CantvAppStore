@@ -111,7 +111,7 @@ public class ManagerFragmentTest extends BaseFragment implements View.OnFocusCha
      */
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
-        mICallBack.addFocusListener(view, hasFocus);
+        mICallBack.addFocusListener(view, hasFocus, FragmentEnum.MANAGE);
     }
 
     @Override
@@ -126,9 +126,18 @@ public class ManagerFragmentTest extends BaseFragment implements View.OnFocusCha
         }
     }
 
-
     @Override
     public View getLastView() {
         return mrl_4;
+    }
+
+    @Override
+    public void registerFocus() {
+
+    }
+
+    @Override
+    public void removeFocus() {
+
     }
 }

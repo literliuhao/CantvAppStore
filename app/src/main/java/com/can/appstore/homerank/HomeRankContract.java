@@ -11,6 +11,8 @@ public interface HomeRankContract {
         void startLoading();
 
         void getData(List list);
+
+        void noNetWork();
     }
 
     interface Presenter {

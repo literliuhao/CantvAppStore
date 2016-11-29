@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
@@ -43,13 +42,13 @@ public class RoundCornerImageView extends ImageView {
     private int mMaskSize;
     private Drawable mBgDrawable;
     private Bitmap mSrcBmp;
+    private Bitmap mFinalBmp;
+    private Canvas mFinalCanvas;
 
     private Paint mPaint;
     private RectF mSrcRect;
     private Paint mMaskPaint;
     private RectF mMaskRect;
-    private Path mMaskClipPath;
-    private RectF mMaskClipRect;
     private RectF mDrawRect;
     private boolean maskParamsLegal;
     private boolean showMask;
@@ -193,21 +192,27 @@ public class RoundCornerImageView extends ImageView {
 //            return null;
 //        }
 
-        Bitmap finalBmp = null;
-        try {
-            finalBmp = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.ARGB_4444);
-        } catch (OutOfMemoryError e) {
-            System.gc();
+        if(mFinalBmp == null){
             try {
-                finalBmp = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.ARGB_4444);
-            } catch (OutOfMemoryError e1) {
+                mFinalBmp = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.ARGB_4444);
+            } catch (OutOfMemoryError e) {
+                System.gc();
+                try {
+                    mFinalBmp = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.ARGB_4444);
+                } catch (OutOfMemoryError e1) {
+                }
             }
         }
+        Bitmap finalBmp = mFinalBmp;
         if(finalBmp == null){
             return null;
         }
+        finalBmp.eraseColor(0);
 
-        Canvas canvas = new Canvas(finalBmp);
+        if(mFinalCanvas == null){
+            mFinalCanvas = new Canvas(finalBmp);
+        }
+        Canvas canvas = mFinalCanvas;
         //draw bg
         if (bg != null) {
             bg.setBounds(0, 0, viewWidth, viewHeight);

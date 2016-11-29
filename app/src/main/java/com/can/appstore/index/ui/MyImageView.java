@@ -32,8 +32,7 @@ public class MyImageView extends ImageView {
     public MyImageView(Context context) {
         super(context);
         mContext = context;
-//        setScaleType(ScaleType.CENTER_CROP);
-        cornerRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, 12, context.getResources().getDisplayMetrics());
+        cornerRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, 8, context.getResources().getDisplayMetrics());
         mRect = new RectF();
         path = new Path();
     }

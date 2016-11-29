@@ -74,7 +74,7 @@ public class AddAppsRvAdapter extends CanRecyclerViewAdapter {
 
         @Override
         public void refreshTagViewOnSelectChanged(boolean selected) throws IllegalStateException {
-            if(selected){
+            if (selected) {
                 getTagView().setBackgroundResource(R.drawable.select);
             } else {
                 getTagView().setBackgroundResource(R.drawable.unselect);

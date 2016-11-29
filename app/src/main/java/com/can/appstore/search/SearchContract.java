@@ -14,7 +14,7 @@ public interface SearchContract {
 
         void clearContent();
 
-        void getAppList(List list);
+        void getAppList(List list, boolean... isFirstSearch);
 
         void getInitials(String con);   //首字母
 
@@ -23,6 +23,8 @@ public interface SearchContract {
         void getHotKeyList(List list); //大家都在搜
 
         void noNetWork();
+
+        void hideLoading();
     }
 
     interface Presenter {

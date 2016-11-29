@@ -1,6 +1,5 @@
 package com.can.appstore.index.adapter;
 
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
@@ -38,7 +37,7 @@ public class IndexPagerAdapter extends PagerAdapter implements ViewPager.OnPageC
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        container.removeView(mFragmentList.get(position).getView());//删除页卡
+        container.removeView(mFragmentList.get(position).getView());
     }
 
     @Override
@@ -57,7 +56,8 @@ public class IndexPagerAdapter extends PagerAdapter implements ViewPager.OnPageC
      */
     @Override
     public Object instantiateItem(ViewGroup container, int position) {    //这个方法用来实例化页卡
-        Fragment fragment = mFragmentList.get(position);
+        Log.i("IndexPagerAdapter", "position " + position);
+        BaseFragment fragment = mFragmentList.get(position);
         if (!fragment.isAdded()) {
             FragmentTransaction ft = mFragmentManager.beginTransaction();
             ft.add(fragment, fragment.getClass().getSimpleName());
@@ -84,7 +84,6 @@ public class IndexPagerAdapter extends PagerAdapter implements ViewPager.OnPageC
     public void setCurrentPageIndex(int index) {
         currentPageIndex = index;
     }
-
 
     /**
      * 设置页面切换额外功能监听器
@@ -116,15 +115,19 @@ public class IndexPagerAdapter extends PagerAdapter implements ViewPager.OnPageC
             mFragmentList.get(position).onResume();
         }
 
-        BaseFragment fragment = mFragmentList.get(position);
+//        BaseFragment oldFragment = mFragmentList.get(getCurrentPageIndex());
+//        oldFragment.removeFocus();
+        BaseFragment newFragment = mFragmentList.get(position);
         markView = null;
         if (getCurrentPageIndex() > position) {
-            markView = fragment.getLastView();
+            markView = newFragment.getLastView();
         }
         setCurrentPageIndex(position);
 
+//        newFragment.registerFocus();
+
         if (null != onExtraPageChangeListener) {
-            onExtraPageChangeListener.onExtraPageSelected(position, markView);
+            onExtraPageChangeListener.onExtraPageSelected(position);
         }
 
     }

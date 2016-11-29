@@ -25,7 +25,7 @@ public class RequestParamsInterceptor implements Interceptor {
                 .newBuilder()
                 .addQueryParameter("channelId", "12")
                 .addQueryParameter("internalModel", "1")
-                .addQueryParameter("commercialModel", "f66")
+                .addQueryParameter("commercialModel", "f55")
                 .addQueryParameter("mac", "1")
                 .addQueryParameter("versionId", "1")
                 .build();

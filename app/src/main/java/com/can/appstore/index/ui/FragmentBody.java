@@ -19,6 +19,7 @@ import com.can.appstore.index.model.ActionUtils;
 
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
+import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.utils.DisplayUtil;
 
 import static cn.can.tvlib.imageloader.GlideLoadTask.SuccessCallback;
@@ -33,6 +34,7 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
     private IAddFocusListener mFocusListener;
     private int bodeColor = 0x782A2B2B;
     private View lastView = null;
+    private FrameLayout frameLayout;
 
     public FragmentBody(IAddFocusListener focusListener, Navigation navigation) {
         mFocusListener = focusListener;
@@ -83,24 +85,28 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
         FrameLayout mainLayout = new FrameLayout(context);
         ViewGroup.LayoutParams mainParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         mainLayout.setLayoutParams(mainParams);
-        mainLayout.setPadding((int) getResources().getDimension(R.dimen.px160), (int) getResources().getDimension(R.dimen.px50), (int) getResources().getDimension(R.dimen.px110), (int) getResources().getDimension(R.dimen.px50));
+        mainLayout.setPadding((int) getResources().getDimension(R.dimen.px160), (int) getResources().getDimension(R.dimen.px30), (int) getResources().getDimension(R.dimen.px100), (int) getResources().getDimension(R.dimen.px0));
         mainLayout.setClipToPadding(false);
         mainLayout.setClipChildren(false);
+        mainLayout.setFocusable(false);
 
         HorizontalScrollView horizontalScrollView = new HorizontalScrollView(context);
         horizontalScrollView.setClipToPadding(false);
         horizontalScrollView.setClipChildren(false);
         horizontalScrollView.setHorizontalScrollBarEnabled(false);
-        FrameLayout frameLayout = new FrameLayout(context);
+        horizontalScrollView.setFocusable(false);
+        frameLayout = new FrameLayout(context);
+        frameLayout.setId(Integer.parseInt(mNavigation.getId()));
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        frameLayout.setFocusable(false);
         frameLayout.setLayoutParams(params);
 
         FrameLayout imageFrame;
         for (int j = 0; j < mNavigation.getLayout().size(); j++) {
             final Layout childBean = mNavigation.getLayout().get(j);
-            final MyImageView myImageView = new MyImageView(getActivity());
-            myImageView.setScaleType(MyImageView.ScaleType.CENTER_CROP);
-            myImageView.setImageURI(childBean.getIcon());
+            final RoundCornerImageView myImageView = new RoundCornerImageView(getActivity());
+            myImageView.setScaleType(MyImageView.ScaleType.CENTER_INSIDE);
+//            myImageView.setImageURI(childBean.getIcon());
             imageFrame = new FrameLayout(context);
             imageFrame.setId(j);
             imageFrame.setBackground(getResources().getDrawable(R.drawable.index_recommend));
@@ -110,15 +116,14 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
                 @Override
                 public void onClick(View view) {
                     try {
-                        //startActivty -- 之后在首页做统一处理
+                        //StartActivity
                         ActionUtils.convertAction(context, childBean.getAction(), childBean.getActionData());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             });
-
-            ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, getResources().getDimension(R.dimen.px8))).size(childBean.getWidth(),childBean.getHeight()).placeholder(R.mipmap.icon_load_default).errorHolder(R.mipmap.icon_loading_fail).successCallback(new SuccessCallback() {
+            ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, getResources().getDimension(R.dimen.px8))).size(childBean.getWidth(), childBean.getHeight()).placeholder(R.mipmap.icon_load_default).errorHolder(R.mipmap.icon_loading_fail).successCallback(new SuccessCallback() {
                 @Override
                 public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                     myImageView.setImageDrawable(resource);
@@ -181,6 +186,25 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
     }
 
     @Override
+    public void registerFocus() {
+        for (int i = 0; i < frameLayout.getChildCount(); i++) {
+            frameLayout.getChildAt(i).setFocusable(true);
+        }
+    }
+
+    @Override
+    public void removeFocus() {
+        for (int i = 0; i < frameLayout.getChildCount(); i++) {
+            frameLayout.getChildAt(i).setFocusable(false);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
     }
@@ -195,7 +219,7 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
     public void onFocusChange(View v, boolean hasFocus) {
         Log.i("FragmentBody", v.getId() + "");
 //        v.bringToFront();
-        mFocusListener.addFocusListener(v, hasFocus);
+        mFocusListener.addFocusListener(v, hasFocus, FragmentEnum.NORMAL);
     }
 
     @Override

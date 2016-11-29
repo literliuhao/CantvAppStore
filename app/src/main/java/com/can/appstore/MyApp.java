@@ -22,6 +22,7 @@ import java.util.List;
 
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
+import cn.can.tvlib.utils.ToastUtils;
 
 /**
  * ================================================
@@ -62,6 +63,7 @@ public class MyApp extends Application {
         PRE_APPS.add("com.tvm.suntv.news.client.activity");
         PRE_APPS.add("com.cantv.market");
 
+
         //所有的第三方应用
         myAppList = PackageUtil.findAllThirdPartyAppsNoDelay(this, myAppList);
         registerInstallReceiver();
@@ -96,6 +98,8 @@ public class MyApp extends Application {
             // 接收广播：设备上新安装了一个应用程序包后自动启动新安装应用程序。
             if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)) {
                 String packageName = intent.getDataString().substring(8);
+                String appName = PackageUtil.getAppInfo(mContext, packageName).appName;
+                ToastUtils.showMessage(mContext, appName + getResources().getString(R.string.install_success));
             } else if (intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)) {
                 String packageName = intent.getData().getSchemeSpecificPart();
             }
