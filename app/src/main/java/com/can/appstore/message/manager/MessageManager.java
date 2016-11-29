@@ -1,5 +1,6 @@
 package com.can.appstore.message.manager;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -77,7 +78,8 @@ public class MessageManager {
     /**
      * 请求服务器消息数据
      * */
-    public static void requestMsg(){
+    public static void requestMsg(Context context){
+        if (NetworkUtils.isNetworkConnected(context)){
             CanCall<Result<MessageContainer>> mMessageContainer = HttpManager.getApiService().getMessages();
             mMessageContainer.enqueue(new CanCallback<Result<MessageContainer>>() {
                 @Override
@@ -123,6 +125,7 @@ public class MessageManager {
                     Log.w(TAG, errorWrapper.getReason(), errorWrapper.getThrowable());
                 }
             });
+        }
     }
 
 }

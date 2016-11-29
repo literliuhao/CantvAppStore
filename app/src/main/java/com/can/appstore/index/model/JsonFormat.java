@@ -20,7 +20,7 @@ public class JsonFormat {
         PageBean pageBean = null;
         try {
             pageBean = new PageBean();
-            JSONObject mainObject = new JSONObject(DataUtils.indexData);
+            JSONObject mainObject = new JSONObject(json);
 
 
             JSONArray jsonArray = mainObject.getJSONArray("data");
