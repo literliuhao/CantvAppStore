@@ -6,12 +6,13 @@
               android:layout_marginLeft="@dimen/px15"
               android:layout_marginRight="@dimen/px15"
               android:layout_marginTop="@dimen/px15"
-              android:background="@drawable/search_keyboard_shape"
+              android:background="@drawable/selector_shap_applist_bg"
               android:clickable="true"
               android:descendantFocusability="blocksDescendants"
               android:focusable="true"
               android:gravity="center_horizontal"
               android:orientation="vertical">
+              <!--android:background="@drawable/search_keyboard_shape"-->
 
     <cn.can.tvlib.ui.view.RoundCornerImageView
         android:id="@+id/app_icon"

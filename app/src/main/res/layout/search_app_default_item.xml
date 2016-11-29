@@ -5,10 +5,11 @@
               android:layout_marginBottom="@dimen/px18"
               android:layout_marginLeft="@dimen/px15"
               android:layout_marginTop="@dimen/px10"
-              android:background="@drawable/search_keyboard_shape"
+              android:background="@drawable/selector_shap_applist_bg"
               android:clickable="true"
               android:focusable="true"
               android:orientation="vertical">
+    <!--android:background="@drawable/search_keyboard_shape"-->
 
     <TextView
         android:id="@+id/default_name_view"
