@@ -158,8 +158,6 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".message.MessageStartActivity"/>
-        <activity android:name=".message.MessageHomeActivity"/>
         <activity android:name=".message.MessageActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION_MESSAGE"/>
