@@ -103,12 +103,25 @@ public class GreenDaoManager {
 
     /**
      * 查询数据库数据
+     * @param mCurrentTime  // 当前系统时间
      *
-     * @param mCurrentTime
      */
     public List<MessageInfo> queryMsg(long mCurrentTime) {
         QueryBuilder qb = msgDao.queryBuilder();
         qb.where(MessageInfoDao.Properties.MsgExpires.ge(mCurrentTime));
+        qb.orderDesc(MessageInfoDao.Properties.MsgDate);
+        List<MessageInfo> msgList = qb.list();
+        if (msgList == null || msgList.isEmpty()) {
+            return Collections.EMPTY_LIST;  // 返回一个空集合
+        }
+        return msgList;
+    }
+
+    /**
+     * 查询数据库数据（无擦拭农户）
+     */
+    public List<MessageInfo> queryMsg() {
+        QueryBuilder qb = msgDao.queryBuilder();
         qb.orderDesc(MessageInfoDao.Properties.MsgDate);
         List<MessageInfo> msgList = qb.list();
         if (msgList == null || msgList.isEmpty()) {
