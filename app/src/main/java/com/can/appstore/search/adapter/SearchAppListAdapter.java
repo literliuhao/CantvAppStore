@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.Target;
+import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.entity.AppInfo;
@@ -22,8 +23,6 @@ import java.util.List;
 
 import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
-
-import static com.can.appstore.MyApp.mContext;
 
 
 /**
@@ -72,7 +71,7 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
             ((DefaultSearchViewHolder) holder).setContent(position);
         } else {
             final AppInfo app = (AppInfo) mDataList.get(position);
-            ImageLoader.getInstance().load(mContext, ((SearchViewHolder) holder).mAppIcon, app.getIcon(), R.mipmap
+            ImageLoader.getInstance().load(MyApp.getContext(), ((SearchViewHolder) holder).mAppIcon, app.getIcon(), R.mipmap
                     .cibn_icon, R.mipmap.cibn_icon, new GlideLoadTask
                     .SuccessCallback() {
                 @Override

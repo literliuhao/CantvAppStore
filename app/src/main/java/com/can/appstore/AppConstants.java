@@ -1,5 +1,8 @@
 package com.can.appstore;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * ================================================
  * 作    者：
@@ -12,4 +15,13 @@ package com.can.appstore;
 public class AppConstants {
     public static final String BASE_URL = "http://172.16.11.32:8011/api/";
     //    public static final String BASE_URL = "http://192.168.0.2:8088/CanAppStoreServer/";  //本地测试地址
+    public final static List<String> PRE_APPS = new ArrayList<String>(){
+        {
+            add("com.cantv.wechatphoto");
+            add("com.cantv.media");
+            add("com.tvkou.linker");
+            add("com.tvm.suntv.news.client.activity");
+            add("com.cantv.market");
+        }
+    };
 }

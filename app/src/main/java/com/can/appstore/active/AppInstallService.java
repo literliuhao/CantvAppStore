@@ -23,7 +23,6 @@ import cn.can.tvlib.utils.ApkUtils;
 import cn.can.tvlib.utils.MD5Util;
 import cn.can.tvlib.utils.PackageUtil;
 
-import static com.can.appstore.MyApp.mContext;
 import static com.can.appstore.R.string.active_app_installing;
 
 
@@ -38,9 +37,13 @@ public class AppInstallService extends Service implements DownloadTaskListener {
     private DownloadTask mDownloadTask;
     private long mLastClickTime;
     private String mDownloadUrl;
-
     public AppInstallService() {
 
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
     }
 
     @Override
@@ -51,7 +54,7 @@ public class AppInstallService extends Service implements DownloadTaskListener {
     public void initDownloadTask(String downloadUrl) {
         Log.d(TAG, "初始化下载状态");
         mDownloadUrl = downloadUrl;
-        mDownloadManager = DownloadManager.getInstance(this.getApplicationContext());
+        mDownloadManager = DownloadManager.getInstance(getApplicationContext());
         DownloadTask downloadTask = mDownloadManager.addSingleTaskListener(MD5.MD5(downloadUrl), this);
         mDownloadTask = downloadTask;
         if (downloadTask != null) {
@@ -76,8 +79,8 @@ public class AppInstallService extends Service implements DownloadTaskListener {
         if (isFastContinueClickView()) {
             return;
         }
-        if (ApkUtils.isAvailable(mContext, appInfo.getPackageName())) {
-            PackageUtil.openApp(mContext, appInfo.getPackageName());
+        if (ApkUtils.isAvailable(this.getApplicationContext(), appInfo.getPackageName())) {
+            PackageUtil.openApp(this.getApplicationContext(), appInfo.getPackageName());
             return;
         }
         if (!NetworkUtils.isNetworkConnected(this.getApplicationContext())) {
@@ -203,7 +206,7 @@ public class AppInstallService extends Service implements DownloadTaskListener {
         long space = SdcardUtils.getSDCardAvailableSpace() / 1014 / 1024;
 
         if (space < mLimitSpace) {
-            ToastUtils.showMessageLong(mContext.getApplicationContext(), cn.can.downloadlib.R.string.error_msg);
+            ToastUtils.showMessageLong(this.getApplicationContext(), cn.can.downloadlib.R.string.error_msg);
             return false;
         }
         ShellUtils.CommandResult res = ShellUtils.execCommand("pm install " + path, false);

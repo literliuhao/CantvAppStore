@@ -20,7 +20,6 @@ import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -65,7 +64,6 @@ public class DownloadManager implements AppInstallListener {
     private String mDownloadPath;
     private ExecutorService mExecutorService;
     private OkHttpClient mOkHttpClient;
-    //    private AppInstallListener mAppInstallListener;
     private List<AppInstallListener> mAppInstallListeners;
     private Map<String, DownloadTask> mSingleTaskMap;
 
@@ -78,11 +76,14 @@ public class DownloadManager implements AppInstallListener {
         public boolean handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_SUBMIT_TASK:
-                    if (NetworkUtils.isNetworkConnected(mContext.getApplicationContext())) {
+                    if (NetworkUtils.isNetworkConnected(mContext)) {
                         if (((ThreadPoolExecutor) mExecutorService).getActiveCount() < mPoolSize) {
                             DownloadTask task = mTaskManager.poll();
                             if (task != null) {
-                                mExecutorService.submit(task);
+                                Future future = mExecutorService.submit(task);
+                            } else {
+                                mHander.removeMessages(MSG_SUBMIT_TASK);
+                                break;
                             }
                         }
                     }
@@ -131,7 +132,7 @@ public class DownloadManager implements AppInstallListener {
     }
 
     private DownloadManager(Context context, InputStream in) {
-        this.mContext = context;
+        this.mContext = context.getApplicationContext();
         init(in, null);
         mAppInstallListeners = new ArrayList<>();
     }
@@ -222,7 +223,6 @@ public class DownloadManager implements AppInstallListener {
      * @return
      */
     public Map<String, DownloadTask> getCurrentTaskList() {
-//        return mCurrentTaskList;
         return mTaskManager.getCurrentTaskList();
     }
 
@@ -246,14 +246,17 @@ public class DownloadManager implements AppInstallListener {
         if (TextUtils.isEmpty(mDownloadPath)) {
             mDownloadPath = mContext.getExternalCacheDir().getAbsolutePath();
         }
+
         mHandlerThread = new HandlerThread("queue");
         mHandlerThread.start();
         mHander = new Handler(mHandlerThread.getLooper(), mCallback);
 
         mExecutorService = Executors.newFixedThreadPool(mPoolSize);
+
         DaoMaster.OpenHelper openHelper = new DaoMaster.DevOpenHelper(mContext, "downloadDB", null);
         DaoMaster daoMaster = new DaoMaster(openHelper.getWritableDatabase());
         mDownloadDao = daoMaster.newSession().getDownloadDao();
+
         if (okHttpClient != null) {
             mOkHttpClient = okHttpClient;
         } else {
@@ -279,35 +282,39 @@ public class DownloadManager implements AppInstallListener {
      * @return
      */
     public boolean addDownloadTask(DownloadTask task, DownloadTaskListener listener) {
-        if (!NetworkUtils.isNetworkConnected(mContext.getApplicationContext())) {
+        if (!NetworkUtils.isNetworkConnected(mContext)) {
             return false;
         }
 
         long space = SdcardUtils.getSDCardAvailableSpace() / 1014 / 1024;
         if (space < mLimitSpace) {
-            ToastUtils.showMessageLong(mContext.getApplicationContext(), R.string.error_msg);
+            ToastUtils.showMessageLong(mContext, R.string.error_msg);
             task.setDownloadStatus(DownloadStatus.SPACE_NOT_ENOUGH);
             return false;
         }
+
         DownloadTask downloadTask = mTaskManager.get(task.getId());
         if (null != downloadTask && downloadTask.getDownloadStatus() != DownloadStatus
                 .DOWNLOAD_STATUS_CANCEL) {
-            Log.d(TAG, "task already exist");
+            Log.i(TAG, "task already exist");
             return false;
         }
-        mTaskManager.put(task);
+
         task.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_PREPARE);
         task.setDownloadDao(mDownloadDao);
         task.setHttpClient(mOkHttpClient);
         task.addDownloadListener(listener);
         task.setSaveDirPath(mDownloadPath);
         task.setAppListener(this);
+        mTaskManager.put(task);
+
         if (getDBTaskById(task.getId()) == null) {
             DownloadDBEntity dbEntity = new DownloadDBEntity(task.getId(), task.getTotalSize(),
                     task.getCompletedSize(), task.getUrl(), task.getSaveDirPath(), task
                     .getFileName(), task.getDownloadStatus(), task.getIcon());
             mDownloadDao.insertOrReplace(dbEntity);
         }
+
         mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
         return true;
     }
@@ -319,36 +326,56 @@ public class DownloadManager implements AppInstallListener {
      * @return
      */
     public DownloadTask resume(String taskId) {
-        if (!NetworkUtils.isNetworkConnected(mContext.getApplicationContext())) {
+        if (!NetworkUtils.isNetworkConnected(mContext)) {
             return null;
         }
-        /**读取数据库task，不轮询提交任务问题 xingzhaolei 2016-11-4 17:05:13 start*/
-        mHander.removeMessages(MSG_SUBMIT_TASK);
-        mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
+//        /**读取数据库task，不轮询提交任务问题 xingzhaolei 2016-11-4 17:05:13 start*/
+//        mHander.removeMessages(MSG_SUBMIT_TASK);
+//        mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
+//
+//        DownloadTask downloadTask = getCurrentTaskById(taskId);
+//        if (downloadTask != null) {
+//            if (downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
+//                downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
+//                Future future = mExecutorService.submit(downloadTask);
+//            }
+//        } else {
+//            downloadTask = getDBTaskById(taskId);
+//            if (downloadTask != null) {
+//                downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
+//                /**修复数据库获取task 无法resume 问题  xingzl 2016-11-4 16:51:58 start*/
+//                downloadTask.setDownloadDao(mDownloadDao);
+//                downloadTask.setHttpClient(mOkHttpClient);
+//                downloadTask.setAppListener(this);
+//                mTaskManager.put(downloadTask);
+//                Future future = mExecutorService.submit(downloadTask);
+//            }
+//        }
 
         DownloadTask downloadTask = getCurrentTaskById(taskId);
-        if (downloadTask != null) {
-            if (downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
-                downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
-                Future future = mExecutorService.submit(downloadTask);
-            }
-        } else {
+        if (downloadTask == null) {
             downloadTask = getDBTaskById(taskId);
-            if (downloadTask != null) {
-                downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
-                /**修复数据库获取task 无法resume 问题  xingzl 2016-11-4 16:51:58 start*/
+            if (downloadTask == null) {
+               return null;
+            } else {
                 downloadTask.setDownloadDao(mDownloadDao);
                 downloadTask.setHttpClient(mOkHttpClient);
                 downloadTask.setAppListener(this);
                 mTaskManager.put(downloadTask);
-                Future future = mExecutorService.submit(downloadTask);
             }
         }
+        if (downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_PAUSE
+                || downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_ERROR
+                || downloadTask.getDownloadStatus() == DownloadStatus.SPACE_NOT_ENOUGH) {
+            downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
+        }
+
+        mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
         return downloadTask;
     }
 
     /**
-     * 添加下载监听
+     * 添加下载监听，安装app监听
      *
      * @param task
      * @param listener
@@ -395,7 +422,8 @@ public class DownloadManager implements AppInstallListener {
     public void cancelAll() {
         mDownloadDao.deleteAll();
         mTaskManager.release();
-        mHander.removeCallbacksAndMessages(null);
+//        mHander.removeCallbacksAndMessages(null);
+        mHander.removeMessages(MSG_SUBMIT_TASK);
     }
 
     /**
@@ -519,6 +547,9 @@ public class DownloadManager implements AppInstallListener {
 //            }
 //        }
         /***************************************************/
+        if (!NetworkUtils.isNetworkConnected(mContext)) {
+            return;
+        }
         List<DownloadTask> list = loadAllDownloadTaskFromDB();
         if (list != null) {
             for (DownloadTask task : list) {
@@ -529,7 +560,7 @@ public class DownloadManager implements AppInstallListener {
             }
         }
         /**读取数据库task，不轮询提交任务问题 xingzhaolei 2016-11-23 17:53:25 start*/
-        if(list!=null&&list.size()>0){
+        if (list != null && list.size() > 0) {
             mHander.removeMessages(MSG_SUBMIT_TASK);
             mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
         }
@@ -670,9 +701,10 @@ public class DownloadManager implements AppInstallListener {
         DownloadTask task = getCurrentTaskById(id);
         if (task != null) {
             task.setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
-            Log.d(TAG, "onInstallSucess: name=" + task.getFileName());
+            Log.i(TAG, "InstallSucess:" + task.getFileName());
             deleteTask(id);
         }
+        ToastUtils.showMessageLong(mContext, task.getFileName() + mContext.getResources().getString(R.string.install_sucess));
         if (mAppInstallListeners != null) {
             Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
             while (iter.hasNext()) {
@@ -687,8 +719,9 @@ public class DownloadManager implements AppInstallListener {
         DownloadTask task = getCurrentTaskById(id);
         if (task != null) {
             task.setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
-            Log.d(TAG, "onInstallSucess: name=" + task.getFileName());
+            Log.i(TAG, "InstallFail:" + task.getFileName());
         }
+        ToastUtils.showMessageLong(mContext, task.getFileName() + mContext.getResources().getString(R.string.error_install));
         if (mAppInstallListeners != null) {
             Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
             while (iter.hasNext()) {
@@ -720,6 +753,10 @@ public class DownloadManager implements AppInstallListener {
         }
     }
 
+    /**
+     * 设置应用安装监听器
+     * @param listener
+     */
     public void setAppInstallListener(AppInstallListener listener) {
         if (mAppInstallListeners == null) {
             mAppInstallListeners = new ArrayList<>();
@@ -727,18 +764,22 @@ public class DownloadManager implements AppInstallListener {
         mAppInstallListeners.add(listener);
     }
 
+    /**
+     * 删除安装应用监听
+     * @param listener
+     */
     public void removeAppInstallListener(AppInstallListener listener) {
         if (mAppInstallListeners != null) {
             mAppInstallListeners.remove(listener);
         }
     }
 
-    public void dispatchAppListener () {
-
-    }
-
+    /**
+     * 安装APP
+     * @param downloadTask
+     */
     public void install(DownloadTask downloadTask) {
-        if (mSingleTaskMap.containsKey(downloadTask.getId())) {
+        if (mSingleTaskMap != null && mSingleTaskMap.containsKey(downloadTask.getId())) {
             return;
         }
         downloadTask.setDownloadStatus(AppInstallListener.APP_INSTALLING);
@@ -751,6 +792,10 @@ public class DownloadManager implements AppInstallListener {
         mHander.sendMessage(msg);
     }
 
+    /**
+     * 卸载
+     * @param pkg
+     */
     public void uninstall(String pkg) {
         Message msg = new Message();
         msg.what = MSG_APP_UNINSTALL;

@@ -29,16 +29,14 @@ import com.can.appstore.http.CanCall;
 import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
-import com.can.appstore.search.ToastUtil;
 import com.can.appstore.widgets.TextProgressBar;
 
 import cn.can.downloadlib.NetworkUtils;
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.StringUtils;
+import cn.can.tvlib.utils.ToastUtils;
 import retrofit2.Response;
-
-import static com.can.appstore.MyApp.mContext;
 
 /**
  * Created by Atangs on 2016/11/1.
@@ -149,7 +147,7 @@ public class ActiveActivity extends BaseActivity implements View.OnClickListener
 
             @Override
             public void onFailure(CanCall<Result<com.can.appstore.entity.Activity>> call, CanErrorWrapper errorWrapper) {
-                if (!cn.can.tvlib.utils.NetworkUtils.isNetworkConnected(mContext.getApplicationContext())) {
+                if (!cn.can.tvlib.utils.NetworkUtils.isNetworkConnected(getApplicationContext())) {
                     showNetworkRetryView(true, false);
                 }
             }
@@ -228,7 +226,7 @@ public class ActiveActivity extends BaseActivity implements View.OnClickListener
                     mActiveTextProgressBar.setProgress(msg.arg1);
                     break;
                 case SHOW_TOAST:
-                    ToastUtil.toastShort(getString(msg.arg1));
+                    ToastUtils.showMessageLong(ActiveActivity.this.getApplicationContext(),msg.arg1);
                     break;
             }
         }

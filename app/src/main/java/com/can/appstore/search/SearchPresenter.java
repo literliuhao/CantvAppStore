@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.tvlib.utils.NetworkUtils;
+import cn.can.tvlib.utils.ToastUtils;
 import retrofit2.Response;
 
 /**
@@ -52,7 +53,8 @@ public class SearchPresenter implements SearchContract.Presenter {
                     mAppInfoList.clear();
                 }
                 if (!(data.size() > 0) && pageIndex != 1) {
-                    ToastUtil.toastShortTimeLimit("没有更多数据!", 5000);
+//                    ToastUtil.toastShortTimeLimit("没有更多数据!", 5000);
+                    ToastUtils.showMessageLong(MyApp.getContext(), "没有更多数据!");
                 } else {
                     mAppInfoList.addAll(data);
                     mView.getAppList(mAppInfoList, pageIndex == 1 ? true : false);
@@ -91,7 +93,8 @@ public class SearchPresenter implements SearchContract.Presenter {
 
             @Override
             public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
-                ToastUtil.toastShort("加载数据失败,请稍后再试!");
+//                ToastUtil.toastShort("加载数据失败,请稍后再试!");
+                ToastUtils.showMessageLong(MyApp.getContext(), "加载数据失败,请稍后再试!");
                 mView.hideLoading();
             }
         });
@@ -108,7 +111,8 @@ public class SearchPresenter implements SearchContract.Presenter {
 
             @Override
             public void onFailure(CanCall<ListResult<PopularWord>> call, CanErrorWrapper errorWrapper) {
-                ToastUtil.toastShort("加载数据失败,请稍后再试!");
+//                ToastUtil.toastShort("加载数据失败,请稍后再试!");
+                ToastUtils.showMessageLong(MyApp.getContext(), "加载数据失败,请稍后再试!");
                 mView.hideLoading();
             }
         });
