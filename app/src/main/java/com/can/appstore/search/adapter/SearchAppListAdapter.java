@@ -37,7 +37,7 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
     public List<View> mHotKeyViewList = new ArrayList<>(); //存每个热词的View
     private SearchActivity mActivity;
     private boolean isDefault = true; //当前是否处于"大家都在搜"状态
-    private int mChangePosition;
+    private int mChangePosition = 0;
 
     public SearchAppListAdapter(List datas, Context context) {
         mDataList = datas;
@@ -204,11 +204,16 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
      *
      * @param dataList
      */
-    public void setDataList(List dataList) {
+    public void setDataList(List dataList, boolean isFirstSearch) {
         isDefault = false;
         mDataList = dataList;
-        notifyItemRangeChanged(mChangePosition, dataList.size() - mChangePosition);
-        mChangePosition = dataList.size();
+        if (isFirstSearch) {
+            mChangePosition = dataList.size();
+            notifyDataSetChanged();
+        } else {
+            notifyItemRangeChanged(mChangePosition, dataList.size() - mChangePosition);
+            mChangePosition = dataList.size();
+        }
     }
 
 

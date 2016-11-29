@@ -274,11 +274,11 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
      * @param list
      */
     @Override
-    public void getAppList(List list) {
+    public void getAppList(List list, boolean... isFirstSearch) {
         mleft_top.setText(R.string.search_left_top_prompt2);
         if (null != list && list.size() > 0) {
             showGoneView(TAG_S_TOP_APPLIST_G_BOTTOM);
-            mAppListAdapter.setDataList(list);
+            mAppListAdapter.setDataList(list, isFirstSearch[0]);
         } else {
             showGoneView(TAG_S_NULLAPP_G_TOP_APPLIST);
         }
@@ -291,7 +291,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
      */
     @Override
     public void getInitials(String con) {
-        mSearch_con_view.setText(con);
+        mSearch_con_view.setText(con.toUpperCase());
     }
 
     /**
@@ -555,6 +555,9 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
      */
     private void setDefaultNextFocus() {
         Log.w("setDefaultNextFocus", "");
+        if (setRightNextFocus) {
+            return;
+        }
         if (null != mAppListAdapter && null != mHotRecommendAdapter) {
             //热词(大家都在搜)
             List<View> hotKeyViewList = mAppListAdapter.mHotKeyViewList;
@@ -570,7 +573,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
             if (hotKeySize == 0 || hotRecomSize == 0) {
                 return;
             }
-
+            setRightNextFocus = true;
             if (hotKeySize > hotRecomSize) {
                 for (int i = 0; i < hotKeySize; i++) {
                     if (i < hotRecomSize) {
@@ -590,7 +593,6 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                     }
                 }
             }
-            setRightNextFocus = true;
             Log.w("设置焦点完成", "");
         }
     }

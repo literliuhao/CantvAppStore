@@ -178,8 +178,10 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                     } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
                         menuFocusMoveToRight();
                         return true;
+                    }else if(keyCode == KeyEvent.KEYCODE_DPAD_UP){
+                        return true;
                     }
-                    return true;
+                    return false;
                 }
             });
         }
@@ -421,10 +423,9 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                     }
 
                     mFocusMoveUtil.startMoveFocus(view, MENU_FOCUS_SCALE);
-
-                    //刚进入页面的时候，不重新加载数据，记录view
                     //焦点从搜索下来时，不重新加载数据，记录view
-                    if (mSearchBtn == mSelectedMenuChild || mSelectedMenuChild == null) {
+                    //刚进入页面的时候，不重新加载数据，记录view
+                    if (mSearchBtn == mSelectedMenuChild) {
                         mSelectedMenuChild = view;
                         return;
                     }
@@ -722,7 +723,9 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
 
             case R.id.tv_load_retry://重试按钮
                 if (hasFocus && mSelectedMenuChild != null) {
-                    mSelectedMenuChild.setBackgroundResource(R.drawable.shap_app_list_menu);
+                    if (mSearchBtn != mSelectedMenuChild) {
+                        mSelectedMenuChild.setBackgroundResource(R.drawable.shap_app_list_menu);
+                    }
                     mFocusMoveUtil.startMoveFocus(v, MENU_FOCUS_SCALE);
                 } else if (mSelectedMenuChild != null) {
                     mSelectedMenuChild.setBackgroundColor(Color.TRANSPARENT);
@@ -741,6 +744,10 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 showLoadingDialog(mLoadOffset);
                 mPresenter.loadAppListData();
                 if (mSelectedMenuChild != null) {
+                    if(mSearchBtn == mSelectedMenuChild){
+                        mSearchBtn.setFocusable(true);
+                        refreshFocusActiveRegion(NO_LIMIT_REGION);
+                    }
                     mSelectedMenuChild.requestFocus();
                     mLoadFailView.setVisibility(View.INVISIBLE);
                 }

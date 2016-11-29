@@ -117,7 +117,8 @@
     </style>
 
     <style name="CanDialog">
-        <item name="android:windowBackground">@color/introduce_one_bg</item>
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowIsTranslucent">true</item>
@@ -129,7 +130,7 @@
         <item name="android:layout_height">@dimen/px80</item>
         <item name="android:layout_weight">1</item>
         <item name="android:gravity">center</item>
-        <item name="android:background">@drawable/bg_btn_candialog_shape</item>
+        <item name="android:background">@drawable/bg_btn_candialog_selector</item>
         <item name="android:textColor">@color/white_opa80</item>
         <item name="android:textSize">@dimen/px34</item>
         <!--<item name="android:visibility">gone</item>-->
