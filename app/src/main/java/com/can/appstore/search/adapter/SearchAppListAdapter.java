@@ -23,8 +23,6 @@ import java.util.List;
 import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
 
-import static com.can.appstore.MyApp.mContext;
-
 
 /**
  * Created by yibh on 2016/10/13 17:36 .
@@ -72,7 +70,7 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
             ((DefaultSearchViewHolder) holder).setContent(position);
         } else {
             final AppInfo app = (AppInfo) mDataList.get(position);
-            ImageLoader.getInstance().load(mContext, ((SearchViewHolder) holder).mAppIcon, app.getIcon(), R.mipmap
+            ImageLoader.getInstance().load(mActivity, ((SearchViewHolder) holder).mAppIcon, app.getIcon(), R.mipmap
                     .cibn_icon, R.mipmap.cibn_icon, new GlideLoadTask
                     .SuccessCallback() {
                 @Override
@@ -115,6 +113,14 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
                     }
                 }
             });
+
+            //标签
+            if (app.getMarker() != null && !app.getMarker().equals("")) {
+                ((SearchViewHolder) holder).mAppLabelImg.setVisibility(View.VISIBLE);
+                ImageLoader.getInstance().load(mActivity, ((SearchViewHolder) holder).mAppLabelImg, app.getMarker());
+            } else {
+                ((SearchViewHolder) holder).mAppLabelImg.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -176,6 +182,7 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
         ImageView mAppIcon;
         TextView mAppSize;  //app大小
         TextView mAppDownloadCount; //下载量
+        ImageView mAppLabelImg; //标签(左上角展示)
         View mView;
 
         public SearchViewHolder(View itemView) {
@@ -185,6 +192,7 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
             mAppName = (TextView) itemView.findViewById(R.id.app_name_view);
             mAppSize = (TextView) itemView.findViewById(R.id.app_size_view);
             mAppDownloadCount = (TextView) itemView.findViewById(R.id.app_dwoncount_view);
+            mAppLabelImg = (ImageView) itemView.findViewById(R.id.label_img);
         }
 
 
