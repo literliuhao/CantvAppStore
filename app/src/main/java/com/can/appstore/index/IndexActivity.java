@@ -347,7 +347,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void refreshMsg() {
-        if (MessageManager.existUnreadMsg()) {
+        if (MessageManager.existUnreadMsg(this)) {
             textUpdate.setVisibility(View.VISIBLE);
         } else {
             textUpdate.setVisibility(View.GONE);

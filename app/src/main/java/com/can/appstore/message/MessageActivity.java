@@ -34,7 +34,7 @@ import cn.can.tvlib.utils.ToastUtils;
  */
 public class MessageActivity extends BaseActivity implements View.OnClickListener, View.OnFocusChangeListener {
 
-    private final static String TAG = "MessageActivity";
+    private final String TAG = "MessageActivity";
     private List<MessageInfo> msgList;
     private GreenDaoManager dbManager;
     private FocusMoveUtil focusMoveUtil;
@@ -76,7 +76,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void initData() {
-        dbManager = new GreenDaoManager();
+        dbManager = new GreenDaoManager(this);
         //查询数据库消息数据
         msgList = dbManager.queryMsg(System.currentTimeMillis() / 1000);
         hideLoadingDialog();
@@ -111,7 +111,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
 
 
     private void initAdapter() {
-        mAdapter = new MessageAdapter(msgList);
+        mAdapter = new MessageAdapter(this , msgList);
         mAdapter.setFocusListener(this);
         mAdapter.setOnMsgFocusLayoutClickListener(new MessageAdapter.OnMsgFocusLayoutClickListener() {
             @Override
@@ -198,7 +198,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
      */
     private void refreshRecyclerItem(MessageInfo msg, int position) {
         if (msg.getStatus()) {
-            MessageManager.updateStatus(msg.getMsgId());
+            MessageManager.updateStatus(this , msg.getMsgId());
             msg.setStatus(false);
             msgList.set(position, msg);
             mAdapter.setMsgList(msgList);
@@ -321,7 +321,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_tag:
-                if (msgList == null || msgList.isEmpty() || !MessageManager.existUnreadMsg()) {
+                if (msgList == null || msgList.isEmpty() || !MessageManager.existUnreadMsg(this)) {
                     return;
                 }
                 new Thread() {

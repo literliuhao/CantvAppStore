@@ -55,7 +55,7 @@ public class MessageHomeActivity extends Activity implements View.OnClickListene
     }
 
     private void initData() {
-        if (MessageManager.existUnreadMsg()) {
+        if (MessageManager.existUnreadMsg(this)) {
             dotMsg.setVisibility(View.VISIBLE);
         } else {
             dotMsg.setVisibility(View.INVISIBLE);

@@ -27,7 +27,7 @@ import retrofit2.Response;
 
 public class MessageManager {
 
-    private  static final  String TAG = "MessageManager";
+    private static final  String TAG = "MessageManager";
 
     // 数据库消息数据更新
     private static  CallMsgDataUpdate mCallMsgDataUpdate;
@@ -45,16 +45,16 @@ public class MessageManager {
      * 删除数据库过期消息数据
      * 参数：从服务器解析拿到的时间戳
      */
-    public static void deleteExceedMsg(long timestamp) {
-        new GreenDaoManager().deleteExceedMsg(timestamp);
+    public static void deleteExceedMsg( Context context , long timestamp) {
+        new GreenDaoManager(context).deleteExceedMsg(timestamp);
     }
 
     /**
      * 插入数据
      * 参数：插入的数据集合
      */
-    public static void insert(List<MessageInfo> msgList) {
-        new GreenDaoManager().insert(msgList);
+    public static void insert( Context context , List<MessageInfo> msgList) {
+        new GreenDaoManager(context).insert(msgList);
         if (mCallMsgDataUpdate != null){
             mCallMsgDataUpdate.onUpdate();
         }
@@ -63,22 +63,22 @@ public class MessageManager {
     /**
      * 检查数据库是否有未读消息
      */
-    public static boolean existUnreadMsg() {
-        return new GreenDaoManager().existUnreadMsg();
+    public static boolean existUnreadMsg(Context context) {
+        return new GreenDaoManager(context).existUnreadMsg();
     }
 
-    public static void  deleteMsg(String msgId){
-        new GreenDaoManager().deleteMsg(msgId);
+    public static void  deleteMsg(Context context , String msgId){
+        new GreenDaoManager(context).deleteMsg(msgId);
     }
 
-    public static  void updateStatus(String msgId){
-        new GreenDaoManager().updateStatus(msgId);
+    public static  void updateStatus(Context context , String msgId){
+        new GreenDaoManager(context).updateStatus(msgId);
     }
 
     /**
      * 请求服务器消息数据
      * */
-    public static void requestMsg(Context context){
+    public static void requestMsg(final  Context context){
         if (NetworkUtils.isNetworkConnected(context)){
             CanCall<Result<MessageContainer>> mMessageContainer = HttpManager.getApiService().getMessages();
             mMessageContainer.enqueue(new CanCallback<Result<MessageContainer>>() {
@@ -91,7 +91,7 @@ public class MessageManager {
                         return;
                     }
                     long timestamp = msgContainer.getTimestamp();
-                    MessageManager.deleteExceedMsg(timestamp); // 删除过期数据
+                    MessageManager.deleteExceedMsg( context ,timestamp); // 删除过期数据
                     List<Message> list = msgContainer.getMessages();
                     if (list != null && !list.isEmpty()) {
                         List<MessageInfo> msgList = new ArrayList<MessageInfo>();
@@ -114,7 +114,7 @@ public class MessageManager {
                             msgInfo.setUserId(NetworkUtils.getMac());
                             msgList.add(msgInfo);
                         }
-                        MessageManager.insert(msgList); // 插入数据库
+                        MessageManager.insert(context , msgList); // 插入数据库
                     }else{
                         Log.i(TAG, "no new message");
                     }

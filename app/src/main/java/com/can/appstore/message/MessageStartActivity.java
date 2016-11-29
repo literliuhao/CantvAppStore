@@ -26,6 +26,7 @@ import retrofit2.Response;
 
 /**
  * 启动页
+ * Created by HEKANG on 2016/10/18.
  */
 public class MessageStartActivity extends AppCompatActivity {
 
@@ -65,7 +66,7 @@ public class MessageStartActivity extends AppCompatActivity {
                     return;
                 }
                 long timestamp = msgContainer.getTimestamp();
-                MessageManager.deleteExceedMsg(timestamp); // 删除过期数据
+                MessageManager.deleteExceedMsg(MessageStartActivity.this , timestamp); // 删除过期数据
                 List<Message> list = msgContainer.getMessages();
                 if (list != null && !list.isEmpty()) {
                     List<MessageInfo> msgList = new ArrayList<MessageInfo>();
@@ -88,7 +89,7 @@ public class MessageStartActivity extends AppCompatActivity {
                         msgInfo.setUserId(NetworkUtils.getMac());
                         msgList.add(msgInfo);
                     }
-                    MessageManager.insert(msgList); // 插入数据库
+                    MessageManager.insert(MessageStartActivity.this , msgList); // 插入数据库
                 }else{
                     Log.i(TAG, "no new message");
                 }

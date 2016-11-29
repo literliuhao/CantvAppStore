@@ -1,5 +1,6 @@
 package com.can.appstore.message.adapter;
 
+import android.content.Context;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
@@ -28,6 +29,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
     private View.OnFocusChangeListener mFocusListener;
     private OnItemRemoveListener mRemoveListener;
     private View mFocusedDeleteBtn;
+    private Context context;
     private LayoutInflater mLayoutInflater;
     private Handler mHandler = new Handler();
     Runnable showMsgDelete = new Runnable() {
@@ -67,7 +69,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
         this.mFocusListener = focusListener;
     }
 
-    public MessageAdapter(List<MessageInfo> msgList) {
+    public MessageAdapter(Context context , List<MessageInfo> msgList) {
+        this.context = context;
         this.msgList = msgList;
     }
 
@@ -134,7 +137,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.item_iv_btn_delete:
-                    MessageManager.deleteMsg(msgList.get(getLayoutPosition()).getMsgId());
+                    MessageManager.deleteMsg(context , msgList.get(getLayoutPosition()).getMsgId());
                     msgList.remove(getLayoutPosition());
                     notifyItemRemoved(getLayoutPosition());
                     if (mRemoveListener != null) {
