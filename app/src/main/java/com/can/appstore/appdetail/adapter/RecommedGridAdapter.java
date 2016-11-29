@@ -27,14 +27,12 @@ public class RecommedGridAdapter extends CanRecyclerViewAdapter {
     private List<AppInfo> mRecommedApps;
     private LayoutInflater mInflater;
     private String mRecommendAppsInfo;
-    private int mRoundSize;
 
     public RecommedGridAdapter(Context context, List<AppInfo> datas) {
         super(datas);
         this.mContext = context;
         this.mRecommedApps = datas;
         mRecommendAppsInfo = mContext.getResources().getString(R.string.recommend_apps_info);
-        mRoundSize = mContext.getResources().getDimensionPixelSize(R.dimen.dimen_20px);
         mInflater = LayoutInflater.from(mContext);
     }
 
