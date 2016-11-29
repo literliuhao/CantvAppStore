@@ -7,6 +7,9 @@ import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.applist.AppListActivity;
 import com.can.appstore.specialdetail.SpecialDetailActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by liuhao on 2016/11/23.
  */
@@ -54,6 +57,17 @@ public class ActionUtils {
             //活动详情
             case "action_app_activity_detail":
                 ActiveActivity.actionStart(mContext, actionData);
+                break;
+            //特定应用分类
+            case "action_app_list_with_type":
+                try {
+                    JSONObject jsonObject = new JSONObject(actionData);
+                    String typeId = jsonObject.getString("typeId");
+                    String topicId = jsonObject.getString("topicId");
+                    AppListActivity.actionStart(mContext, AppListActivity.MSG_HIDE_MENU_TOP_SHADOW, typeId, topicId);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }
