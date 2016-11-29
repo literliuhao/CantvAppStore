@@ -70,6 +70,7 @@ public class SystemAppsActivity extends BaseActivity {
 
         mFocusMoveUtils = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
         mFocusRunnable = new MyFocusRunnable();
+        mFocusMoveUtils.hideFocusForShowDelay(500);
     }
 
     private class MyFocusRunnable implements Runnable {
