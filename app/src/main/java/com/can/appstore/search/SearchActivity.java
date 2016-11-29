@@ -31,6 +31,7 @@ import java.util.List;
 
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
+import cn.can.tvlib.utils.ToastUtils;
 
 public class SearchActivity extends BaseActivity implements SearchContract.View, View.OnClickListener {
 
@@ -241,7 +242,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
 
     @Override
     public void startSearch() {
-        ToastUtil.toastShort("开始搜索...");
+        ToastUtils.showMessage(this.getApplicationContext(), "开始搜索...");
     }
 
     /**

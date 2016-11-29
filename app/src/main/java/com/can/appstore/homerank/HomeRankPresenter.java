@@ -8,12 +8,12 @@ import com.can.appstore.http.CanCall;
 import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
-import com.can.appstore.search.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.tvlib.utils.NetworkUtils;
+import cn.can.tvlib.utils.ToastUtils;
 import retrofit2.Response;
 
 /**
@@ -45,7 +45,7 @@ public class HomeRankPresenter implements HomeRankContract.Presenter {
 
             @Override
             public void onFailure(CanCall<ListResult<Ranking>> call, CanErrorWrapper errorWrapper) {
-                ToastUtil.toastShort("加载数据失败,请稍后再试!");
+                ToastUtils.showMessage(MyApp.getContext().getApplicationContext(), "加载数据失败,请稍后再试!");
             }
         });
     }

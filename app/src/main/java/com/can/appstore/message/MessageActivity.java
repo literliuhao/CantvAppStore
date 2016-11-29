@@ -20,13 +20,13 @@ import com.can.appstore.message.adapter.MessageAdapter;
 import com.can.appstore.message.db.entity.MessageInfo;
 import com.can.appstore.message.manager.GreenDaoManager;
 import com.can.appstore.message.manager.MessageManager;
-import com.can.appstore.search.ToastUtil;
 import com.can.appstore.specialdetail.SpecialDetailActivity;
 
 import java.util.List;
 
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.utils.NetworkUtils;
+import cn.can.tvlib.utils.ToastUtils;
 
 /**
  * 消息主页面
@@ -122,7 +122,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                     return;
                 }
                 if (!isNetConnected && !msg.getAction().equals(ActionConstants.ACTION_NOTHIN)) {
-                    ToastUtil.toastShort(getString(R.string.connect_net_fail));
+                    ToastUtils.showMessageLong(MessageActivity.this.getApplicationContext(), R.string.connect_net_fail);
                     return;
                 }
                 switch (msg.getAction()) {

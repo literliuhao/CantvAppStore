@@ -3,7 +3,7 @@ package com.can.appstore.myapps.utils;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.can.appstore.MyApp;
+import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.index.model.ShareData;
 
@@ -75,7 +75,7 @@ public class MyAppsListDataUtil {
         } else {
             allAppslist.clear();
         }
-        allAppslist = PackageUtil.findAllComplexAppsNoDelay(context, allAppslist, MyApp.PRE_APPS);
+        allAppslist = PackageUtil.findAllComplexAppsNoDelay(context, allAppslist, AppConstants.PRE_APPS);
         ComparatorAppInfo comparatorAppInfo = new ComparatorAppInfo();
         Collections.sort(allAppslist, comparatorAppInfo);
 
@@ -135,8 +135,8 @@ public class MyAppsListDataUtil {
         } else {
             list.clear();
         }
-        for (int i = 0; i < MyApp.PRE_APPS.size(); i++) {
-            AppInfo appInfo = PackageUtil.getAppInfo(context, MyApp.PRE_APPS.get(i));
+        for (int i = 0; i < AppConstants.PRE_APPS.size(); i++) {
+            AppInfo appInfo = PackageUtil.getAppInfo(context, AppConstants.PRE_APPS.get(i));
             //如果该应用已卸载，返回为空
             if (appInfo != null) {
                 list.add(appInfo);

@@ -223,12 +223,11 @@ public class DownloadTask implements Runnable {
                 }
             }
         }
-        if (mTotalSize == mDownloadedSize)
+        if (mTotalSize == mDownloadedSize) {
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_COMPLETED;
+        }
         mDbEntity.setDownloadStatus(mDownloadStatus);
         mDownloadDao.update(mDbEntity);
-        Log.d(TAG,"*****onDownloadComplete2*****   "+ mDbEntity.toString());
-
 
         switch (mDownloadStatus) {
             case DownloadStatus.DOWNLOAD_STATUS_COMPLETED:
@@ -363,7 +362,6 @@ public class DownloadTask implements Runnable {
     }
 
     private void onDownloading() {
-        Log.d(TAG,"*****onDownloading***** task+"+this.toString() + " listener size:" + mDownloadlisteners.size());
         for (DownloadTaskListener listener : mDownloadlisteners) {
             listener.onDownloading(this);
         }

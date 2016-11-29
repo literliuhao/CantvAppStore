@@ -17,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
@@ -71,11 +70,13 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
     private String mCurrentId;
     private int mWinH;
     private int mWinW;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_updatemanager);
+        mContext = this;
         mPresenter = new UpdatePresenter(this, UpdateManagerActivity.this);
         //获取到屏幕的宽高
         WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
@@ -83,7 +84,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         wm.getDefaultDisplay().getMetrics(outMetrics);
         mWinH = outMetrics.heightPixels;
         mWinW = outMetrics.widthPixels;
-        mAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
+        mAutoUpdate = PreferencesUtils.getBoolean(this, "AUTO_UPDATE", false);
         initView();
         initData();
         initFocusChange();
@@ -224,7 +225,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         mDetectionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
+                mAutoUpdate = PreferencesUtils.getBoolean(mContext, "AUTO_UPDATE", false);
                 if (mAutoUpdate) {
                     mPresenter.clearList();
                     mCurrentnum.setVisibility(View.INVISIBLE);
@@ -248,13 +249,13 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
             @Override
             public void onClick(View view) {
                 if (mAutoUpdate) {
-                    PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", false);
+                    PreferencesUtils.putBoolean(mContext, "AUTO_UPDATE", false);
                     mAutoUpdate = false;
                     initDialog(getResources().getString(R.string.update_setting_start));
 //                    mReminder.setVisibility(View.INVISIBLE);
                     //Toast.makeText(UpdateManagerActivity.this, R.string.update_start_autoupdate, Toast.LENGTH_SHORT).show();
                 } else {
-                    PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", true);
+                    PreferencesUtils.putBoolean(mContext, "AUTO_UPDATE", true);
                     mAutoUpdate = true;
                     initDialog(getResources().getString(R.string.update_setting_stop));
 //                    mPresenter.getListSize();
@@ -477,7 +478,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         canDialog.setOnCanBtnClickListener(new CanDialog.OnClickListener() {
             @Override
             public void onClickPositive() {
-                PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", true);
+                PreferencesUtils.putBoolean(mContext, "AUTO_UPDATE", true);
                 mAutoUpdate = true;
                 canDialog.dismiss();
                 mPresenter.getListSize();
@@ -486,7 +487,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
 
             @Override
             public void onClickNegative() {
-                PreferencesUtils.putBoolean(MyApp.mContext, "AUTO_UPDATE", false);
+                PreferencesUtils.putBoolean(mContext, "AUTO_UPDATE", false);
                 mAutoUpdate = false;
                 canDialog.dismiss();
                 mReminder.setVisibility(View.INVISIBLE);

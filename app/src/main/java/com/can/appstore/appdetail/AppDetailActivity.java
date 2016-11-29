@@ -45,8 +45,6 @@ import cn.can.tvlib.utils.ApkUtils;
 import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.SystemUtil;
 
-import static android.R.id.message;
-
 /**
  * Created by JasonF on 2016/10/13.
  */
@@ -155,8 +153,6 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         mIntroducGrid = (CanRecyclerView) findViewById(R.id.crlv_introduce_grid);
         mButtonDownload.setTextSize(getResources().getDimensionPixelSize(R.dimen.dimen_36px));
         mButtonUpdate.setTextSize(getResources().getDimensionPixelSize(R.dimen.dimen_36px));
-        mButtonDownload.requestFocus();
-        mButtonDownload.setFocusable(true);
         setGridLayoutManager();
         addButtonListener();
     }
@@ -297,7 +293,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         return super.onKeyDown(keyCode, event);
     }
 
-    public void startTabLineAnimation(int moveDirection) {
+    public void startTabLineAnimation(int moveDirection, int duration) {
         mIvTabLine.clearAnimation();
         TranslateAnimation translateAnimation = null;
         if (moveDirection == TO_MOVE_RIGHT) {
@@ -309,7 +305,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                     0f, Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f);
             isTabLineMoveToRecommend = false;
         }
-        translateAnimation.setDuration(100);
+        translateAnimation.setDuration(duration);
         translateAnimation.setFillAfter(true);
         mIvTabLine.startAnimation(translateAnimation);
     }
@@ -343,7 +339,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     private void startMoveAnmi(int moveDirection) {
         startMoveLayout(moveDirection);
-        startTabLineAnimation(moveDirection);
+        startTabLineAnimation(moveDirection, 100);
     }
 
     private void recommendGridPositionRequestFocus(final int hideFocusTime, final int position) {
@@ -524,11 +520,17 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     @Override
     public void loadAppInfoOnSuccess(AppInfo appInfo) {
         mFocusMoveUtil.hideFocusForShowDelay(500);
-        mLayoutAppDetail.setVisibility(View.VISIBLE);
+        requestFocus(mButtonDownload);
         mAppinfo = appInfo;
         setData();
         setIntroduceAdapter();
         setRecommendAdapter();
+        mIntroducGrid.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mLayoutAppDetail.setVisibility(View.VISIBLE);
+            }
+        }, 500);
     }
 
     private void setIntroduceAdapter() {
@@ -632,7 +634,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             addRecommendSetting();
         } else {
             mRecommedGridAdapter.setData(mAppinfo.getRecommend());
-            mRecommedGridAdapter.notifyDataSetChanged();
+            mRecommedGridAdapter.notifyItemRangeChanged(0, mAppinfo.getRecommend().size());
         }
     }
 
@@ -680,6 +682,9 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             public void onClick(View view, int position, Object data) {
                 String appId = mAppinfo.getRecommend().get(position).getId();
                 if (appId != mAppinfo.getId()) {
+                    mFocusMoveUtil.hideFocus();
+                    backInitPosition();
+                    mLayoutAppDetail.setVisibility(View.INVISIBLE);
                     mAppDetailPresenter.mAppId = appId;
                     mAppDetailPresenter.startLoad();
                 }
@@ -697,6 +702,14 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 mListFocusMoveRunnable.run();
             }
         });
+    }
+
+    private void backInitPosition() {
+        mViewFlipper.clearAnimation();
+        mViewFlipper.setOutAnimation(null);
+        mViewFlipper.setInAnimation(null);
+        mViewFlipper.showNext();
+        startTabLineAnimation(TO_MOVE_LEFT, 0);
     }
 
     private void introduceGridRequestFocus(int hideTime, final int position) {

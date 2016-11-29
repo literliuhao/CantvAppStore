@@ -54,7 +54,7 @@ public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapte
         public void setContent(int position) {
             final AppInfo app = (AppInfo) mDataList.get(position);
             mAppName.setText(app.getName());
-            ImageLoader.getInstance().load(MyApp.mContext, mAppIcon, app.getIcon());
+            ImageLoader.getInstance().load(MyApp.getContext(), mAppIcon, app.getIcon());
             //+100是为了防止在搜索页出现相同的id
             mView.setId(position + 100);
             mView.setOnClickListener(new View.OnClickListener() {

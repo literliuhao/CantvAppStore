@@ -18,7 +18,6 @@ import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
@@ -118,7 +117,7 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
                 public void onReceive(Context context, Intent intent) {
                     if (intent.getAction().equals("android.intent.action.PACKAGE_ADDED") || intent.getAction().equals("android.intent.action.PACKAGE_REPLACED")) {
                         String packageName = intent.getDataString().substring(8);
-                        int versonCode = UpdateUtils.getVersonCode(MyApp.mContext, packageName);
+                        int versonCode = UpdateUtils.getVersonCode(InstallManagerActivity.this, packageName);
                         mPresenter.isInstalled(packageName, versonCode);
                         //Toast.makeText(MyApp.mContext, packageName + "安装成功啦!!!", Toast.LENGTH_LONG).show();
                         Log.i(TAG, "onReceive: " + packageName + "安装成功啦!!!");
