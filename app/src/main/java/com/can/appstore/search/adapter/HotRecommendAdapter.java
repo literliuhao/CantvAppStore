@@ -35,6 +35,7 @@ public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapte
     public class HotViewHolder extends RecyclerView.ViewHolder {
         TextView mAppName;
         ImageView mAppIcon;
+        ImageView mAppLabelImg; //标签(左上角展示)
         View mView;
 
         public HotViewHolder(View itemView) {
@@ -42,6 +43,7 @@ public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapte
             mView = itemView;
             mAppName = (TextView) itemView.findViewById(R.id.app_name_view);
             mAppIcon = (ImageView) itemView.findViewById(R.id.app_icon);
+            mAppLabelImg = (ImageView) itemView.findViewById(R.id.label_img);
         }
 
         /**
@@ -62,6 +64,13 @@ public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapte
                 }
             });
 
+            //标签
+            if (app.getMarker() != null && !app.getMarker().equals("")) {
+                mAppLabelImg.setVisibility(View.VISIBLE);
+                ImageLoader.getInstance().load(mContext, mAppLabelImg, app.getMarker());
+            } else {
+                mAppLabelImg.setVisibility(View.GONE);
+            }
 
         }
 
