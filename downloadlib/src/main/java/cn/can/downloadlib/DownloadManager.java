@@ -738,9 +738,6 @@ public class DownloadManager implements AppInstallListener {
     }
 
     public void install(DownloadTask downloadTask) {
-        if (mSingleTaskMap.containsKey(downloadTask.getId())) {
-            return;
-        }
         downloadTask.setDownloadStatus(AppInstallListener.APP_INSTALLING);
         Message msg = new Message();
         msg.what = MSG_APP_INSTALL;

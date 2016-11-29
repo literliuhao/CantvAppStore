@@ -96,17 +96,33 @@
             android:layout_height="wrap_content"
             android:src="@drawable/noapp"/>
 
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:layout_marginLeft="@dimen/px16"
-            android:gravity="center"
-            android:text="@string/search_null"
-            android:textColor="@color/tr_20_white_color"
-            android:textSize="@dimen/px36"/>
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/null_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/search_null"
+                android:textColor="@color/tr_20_white_color"
+                android:textSize="@dimen/px36"/>
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/search_null1"
+                android:textColor="@color/tr_50_white_color"
+                android:textSize="@dimen/px30"/>
+
+        </LinearLayout>
     </LinearLayout>
+
 
     <include layout="@layout/search_no_network"/>
 
