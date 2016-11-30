@@ -83,7 +83,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
         if (mLayoutInflater == null) {
             mLayoutInflater = LayoutInflater.from(parent.getContext());
         }
-        View view = mLayoutInflater.inflate(R.layout.item_msg_recycleriew, parent, false);
+        View view = mLayoutInflater.inflate(R.layout.item_msg_recyclerview, parent, false);
         MessageAdapter.MyViewHolder holder = new MessageAdapter.MyViewHolder(view, msgFocusLayoutClickListener, msgFocusLayoutFocusChangeListener);
         view.setOnFocusChangeListener(mFocusListener);
         return holder;

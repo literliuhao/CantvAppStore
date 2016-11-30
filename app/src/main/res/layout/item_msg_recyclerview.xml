@@ -36,6 +36,7 @@
             android:focusable="true"
             android:includeFontPadding="false"
             android:marqueeRepeatLimit="marquee_forever"
+            android:maxLines="1"
             android:singleLine="true"
             android:textColor="@color/msg_white_80"
             android:textSize="@dimen/fontsize_36"

@@ -79,6 +79,22 @@ public class MessageManager {
      * 请求服务器消息数据
      * */
     public static void requestMsg(final  Context context){
+       /* //假数据
+        MessageManager.deleteExceedMsg(context , System.currentTimeMillis()/1000);
+        List<MessageInfo> list = new ArrayList<>();
+        for (int i = 0 ; i < 10 ; i ++){
+            MessageInfo msgInfo = new MessageInfo();
+            msgInfo.setMsgId(System.currentTimeMillis()+i+"");
+            msgInfo.setMsgExpires(System.currentTimeMillis()/1000+600);
+            msgInfo.setMsgTitle("【活动专区】下载有礼，下载有礼，下载有礼，下载有礼下载有礼，下载有礼，下载有礼，下载有礼");
+            msgInfo.setStatus(true);
+            msgInfo.setAction("action_nothing");
+            msgInfo.setActionData("0");
+            msgInfo.setMsgDate("2016-11-28");
+            list.add(msgInfo);
+        }
+        MessageManager.insert(context , list);
+        */
         if (NetworkUtils.isNetworkConnected(context)){
             CanCall<Result<MessageContainer>> mMessageContainer = HttpManager.getApiService().getMessages();
             mMessageContainer.enqueue(new CanCallback<Result<MessageContainer>>() {

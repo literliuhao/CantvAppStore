@@ -321,7 +321,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         ShareData.getInstance().execute();
         initUpdateListener();
         initMsgListener();
-        MessageManager.requestMsg(this);  //请求消息数据
     }
 
     private void initUpdateListener() {
@@ -345,7 +344,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void initMsgListener() {
-        MessageManager.requestMsg(mContext);
         MessageManager.setCallMsgDataUpdate(new MessageManager.CallMsgDataUpdate() {
             @Override
             public void onUpdate() {
@@ -353,11 +351,12 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 imageRed.setVisibility(View.VISIBLE);
             }
         });
+        MessageManager.requestMsg(mContext);
     }
 
     private void refreshMsg() {
         if (MessageManager.existUnreadMsg(this)) {
-            textUpdate.setVisibility(View.VISIBLE);
+            imageRed.setVisibility(View.VISIBLE);
         } else {
             imageRed.setVisibility(View.GONE);
         }
