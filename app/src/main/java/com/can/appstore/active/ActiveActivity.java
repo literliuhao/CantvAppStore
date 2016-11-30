@@ -27,7 +27,7 @@ import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.utils.PromptUtils;
 
 /**
- * Created by Atangs on 2016/11/1.
+ * Created by Fuwen on 2016/11/1.
  * 活动页
  */
 
@@ -119,11 +119,6 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
         mActiveWebview.loadUrl(url);
     }
 
-    /**
-     * 需要考虑背景图片位加载成功的情况
-     *
-     * @param url
-     */
     @Override
     public void setNativeLayout(String url) {
         mActiveLayout.setVisibility(View.VISIBLE);
@@ -136,7 +131,7 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
         mActiveWebview.setVisibility(!isRetry && isWebView ? View.VISIBLE : View.GONE);
         mActiveLayout.setVisibility(!isRetry && !isWebView ? View.VISIBLE : View.GONE);
         mNetworkLayout.setVisibility(isRetry ? View.VISIBLE : View.GONE);
-        if(isRetry){
+        if (isRetry) {
             mRetryBtn.requestFocus();
         }
     }
@@ -147,12 +142,10 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
             switch (msg.what) {
                 case REFRESH_PROGRESSBAR_TEXT:
                     int status = msg.arg1;
-                    if(status == R.string.active_click_participate){
-                        mShowType = ACTIVE_PARTICIPATE;
-                    }else {
-                        mShowType = ACTIVE_NORMAL;
+                    int showType = status == R.string.active_click_participate ? ACTIVE_PARTICIPATE : ACTIVE_NORMAL;
+                    if (mShowType != showType) {
+                        mFocusLayout.setBackgroundResource(mShowType);
                     }
-                    mFocusLayout.setBackgroundResource(mShowType);
                     mActiveTextProgressBar.setText(getString(status));
                     break;
                 case REFRESH_PROGRESSBAR_PROGRESS:
@@ -172,7 +165,7 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
                 mActivePresenter.clickBtnDownload();
                 break;
             case R.id.network_retry_btn:
-                if (!NetworkUtils.isNetworkConnected(ActiveActivity.this.getApplicationContext())) {
+                if (!NetworkUtils.isNetworkConnected(ActiveActivity.this)) {
                     showToast(R.string.network_connection_disconnect);
                     return;
                 }

@@ -22,21 +22,17 @@ import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 /**
- * Created by atang on 2016/10/24.
+ * sss
+ * Created by Fuwen on 2016/10/24.
  * 专题详情适配器
  */
 
 public class SpecialDetailAdapter extends CanRecyclerViewAdapter<AppInfo> {
     private Context mContext;
 
-    private List<AppInfo> mAppInfos;
-
-    private CanRecyclerViewFocusHelper mCanFocusHelper;
-
     public SpecialDetailAdapter(List<AppInfo> appInfos, Context context) {
         super(appInfos);
         this.mContext = context;
-        this.mAppInfos = appInfos;
     }
 
     @Override
@@ -48,7 +44,7 @@ public class SpecialDetailAdapter extends CanRecyclerViewAdapter<AppInfo> {
     @Override
     protected void bindContentData(AppInfo appInfo, RecyclerView.ViewHolder holder, int position) {
         MyViewHolder viewHolder = (MyViewHolder) holder;
-        viewHolder.mAppImgView.load(appInfo.getIcon(),0,R.mipmap.cibn_icon);
+        viewHolder.mAppImgView.load(appInfo.getIcon(), 0, R.mipmap.cibn_icon);
         viewHolder.mAppNameView.setText(appInfo.getName());
         viewHolder.mAppSize.setText(appInfo.getSizeStr());
         viewHolder.mAppDownloadNum.setText(appInfo.getDownloadCount());
