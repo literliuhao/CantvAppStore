@@ -94,10 +94,13 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
                 boolean isWebView = StringUtils.isEmpty(active.getUrl());
                 mOperationView.showNetworkRetryView(false, isWebView);
                 if (isWebView) {
+                    mOperationView.showBackground(active.getBackground());
                     mAppInfo = active.getRecommend();
-                    mDownloadUrl = mAppInfo.getUrl();
-                    mOperationView.setNativeLayout(active.getBackground());
-                    initDownloadTask(mDownloadUrl);
+                    if(mAppInfo != null){
+                        mDownloadUrl = mAppInfo.getUrl();
+                        mOperationView.showProgreessbar();
+                        initDownloadTask(mDownloadUrl);
+                    }
                 } else {
                     mOperationView.loadwebview(active.getUrl());
                 }

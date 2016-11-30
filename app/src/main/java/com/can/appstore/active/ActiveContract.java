@@ -23,7 +23,9 @@ public class ActiveContract {
 
         void loadwebview(String url);
 
-        void setNativeLayout(String url);
+        void showBackground(String url);
+
+        void showProgreessbar();
 
         void showNetworkRetryView(boolean isRetry, boolean isWebView);
 
