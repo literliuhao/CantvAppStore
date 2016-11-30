@@ -16,6 +16,7 @@ import com.tencent.bugly.beta.upgrade.UpgradeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.downloadlib.DownloadManager;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
@@ -48,6 +49,8 @@ public class MyApp extends Application {
         //所有的第三方应用
         myAppList = PackageUtil.findAllThirdPartyAppsNoDelay(this, myAppList);
         initBuly(true);
+        //恢复下载任务。2016-11-29 11:47:23 xzl
+        DownloadManager.getInstance(this).resumeAllTasks();
     }
 
     public static Context getContext() {

@@ -779,11 +779,11 @@ public class DownloadManager implements AppInstallListener {
      * @param downloadTask
      */
     public void install(DownloadTask downloadTask) {
-        if (mSingleTaskMap != null && mSingleTaskMap.containsKey(downloadTask.getId())) {
+        if (mSingleTaskMap!=null&&mSingleTaskMap.containsKey(downloadTask.getId())) {
             return;
         }
         downloadTask.setDownloadStatus(AppInstallListener.APP_INSTALLING);
-        Message msg = new Message();
+        Message msg = Message.obtain();
         msg.what = MSG_APP_INSTALL;
         Bundle bundle = new Bundle();
         bundle.putString("path", downloadTask.getFilePath());
@@ -797,7 +797,7 @@ public class DownloadManager implements AppInstallListener {
      * @param pkg
      */
     public void uninstall(String pkg) {
-        Message msg = new Message();
+        Message msg = Message.obtain();
         msg.what = MSG_APP_UNINSTALL;
         Bundle bundle = new Bundle();
         bundle.putString("pkgname", pkg);
