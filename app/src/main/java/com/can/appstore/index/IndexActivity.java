@@ -321,6 +321,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         ShareData.getInstance().execute();
         initUpdateListener();
         initMsgListener();
+        MessageManager.requestMsg(this);  //请求消息数据
     }
 
     private void initUpdateListener() {
