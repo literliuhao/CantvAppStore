@@ -344,7 +344,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void initMsgListener() {
-        MessageManager.requestMsg(mContext);
         MessageManager.setCallMsgDataUpdate(new MessageManager.CallMsgDataUpdate() {
             @Override
             public void onUpdate() {
@@ -352,10 +351,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 imageRed.setVisibility(View.VISIBLE);
             }
         });
+        MessageManager.requestMsg(mContext);
     }
 
     private void refreshMsg() {
-        if (MessageManager.existUnreadMsg()) {
+        if (MessageManager.existUnreadMsg(this)) {
             imageRed.setVisibility(View.VISIBLE);
         } else {
             imageRed.setVisibility(View.GONE);

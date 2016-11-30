@@ -314,7 +314,9 @@ public class DownloadManager implements AppInstallListener {
                     .getFileName(), task.getDownloadStatus(), task.getIcon());
             mDownloadDao.insertOrReplace(dbEntity);
         }
-
+        /**修复添加任务时，多个消息同时轮询问题 xzl 2016-11-30 16:20:33  start */
+        mHander.removeMessages(MSG_SUBMIT_TASK);
+        /**修复添加任务时，多个消息同时轮询问题 xzl 2016-11-30 16:20:33  end */
         mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
         return true;
     }
@@ -369,7 +371,10 @@ public class DownloadManager implements AppInstallListener {
                 || downloadTask.getDownloadStatus() == DownloadStatus.SPACE_NOT_ENOUGH) {
             downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
         }
-
+        /**修复暂停恢复任务无法继续下载问题xzl 2016-11-30 16:20:33  start */
+        mTaskManager.put(downloadTask);
+        mHander.removeMessages(MSG_SUBMIT_TASK);
+        /**修复暂停恢复任务无法继续下载问题xzl 2016-11-30 16:20:33  end */
         mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
         return downloadTask;
     }
@@ -701,10 +706,10 @@ public class DownloadManager implements AppInstallListener {
         DownloadTask task = getCurrentTaskById(id);
         if (task != null) {
             task.setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
-            Log.i(TAG, "InstallSucess:" + task.getFileName());
+            Log.e(TAG, "***InstallSucess***" + task.getFileName());
+            ToastUtils.showMessageLong(mContext, task.getFileName() + mContext.getResources().getString(R.string.install_sucess));
             deleteTask(id);
         }
-        ToastUtils.showMessageLong(mContext, task.getFileName() + mContext.getResources().getString(R.string.install_sucess));
         if (mAppInstallListeners != null) {
             Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
             while (iter.hasNext()) {
@@ -719,9 +724,9 @@ public class DownloadManager implements AppInstallListener {
         DownloadTask task = getCurrentTaskById(id);
         if (task != null) {
             task.setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
-            Log.i(TAG, "InstallFail:" + task.getFileName());
+            Log.e(TAG, "***InstallFail***" + task.getFileName());
+            ToastUtils.showMessageLong(mContext, task.getFileName() + mContext.getResources().getString(R.string.error_install));
         }
-        ToastUtils.showMessageLong(mContext, task.getFileName() + mContext.getResources().getString(R.string.error_install));
         if (mAppInstallListeners != null) {
             Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
             while (iter.hasNext()) {
@@ -779,11 +784,11 @@ public class DownloadManager implements AppInstallListener {
      * @param downloadTask
      */
     public void install(DownloadTask downloadTask) {
-        if (mSingleTaskMap != null && mSingleTaskMap.containsKey(downloadTask.getId())) {
+        if (mSingleTaskMap!=null&&mSingleTaskMap.containsKey(downloadTask.getId())) {
             return;
         }
         downloadTask.setDownloadStatus(AppInstallListener.APP_INSTALLING);
-        Message msg = new Message();
+        Message msg = Message.obtain();
         msg.what = MSG_APP_INSTALL;
         Bundle bundle = new Bundle();
         bundle.putString("path", downloadTask.getFilePath());
@@ -797,7 +802,7 @@ public class DownloadManager implements AppInstallListener {
      * @param pkg
      */
     public void uninstall(String pkg) {
-        Message msg = new Message();
+        Message msg = Message.obtain();
         msg.what = MSG_APP_UNINSTALL;
         Bundle bundle = new Bundle();
         bundle.putString("pkgname", pkg);

@@ -114,7 +114,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:name=".specialtopic.SpecialActivity">
+        <activity android:name=".speciallist.SpecialActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION_SPECIAL_TOPIC"/>
 
@@ -153,8 +153,6 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".message.MessageStartActivity"/>
-        <activity android:name=".message.MessageHomeActivity"/>
         <activity android:name=".message.MessageActivity">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION_MESSAGE"/>

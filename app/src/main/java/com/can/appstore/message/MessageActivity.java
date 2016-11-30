@@ -34,7 +34,6 @@ import cn.can.tvlib.utils.ToastUtils;
  */
 public class MessageActivity extends BaseActivity implements View.OnClickListener, View.OnFocusChangeListener {
 
-    private final static String TAG = "MessageActivity";
     private List<MessageInfo> msgList;
     private GreenDaoManager dbManager;
     private FocusMoveUtil focusMoveUtil;
@@ -76,7 +75,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void initData() {
-        dbManager = new GreenDaoManager();
+        dbManager = new GreenDaoManager(this);
         //查询数据库消息数据
         msgList = dbManager.queryMsg(System.currentTimeMillis() / 1000);
         hideLoadingDialog();
@@ -111,11 +110,11 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
 
 
     private void initAdapter() {
-        mAdapter = new MessageAdapter(msgList);
+        mAdapter = new MessageAdapter(this , msgList);
         mAdapter.setFocusListener(this);
         mAdapter.setOnMsgFocusLayoutClickListener(new MessageAdapter.OnMsgFocusLayoutClickListener() {
             @Override
-            public void onMsgFocusLayoutClick(View view, int position) {
+            public void onMsgFocusLayoutClick(int position) {
                 boolean isNetConnected = NetworkUtils.isNetworkConnected(MessageActivity.this);
                 MessageInfo msg = msgList.get(position);
                 if (msg == null) {
@@ -158,17 +157,18 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         mAdapter.setOnItemRemoveListener(new MessageAdapter.OnItemRemoveListener() {
             @Override
             public void onRemoveItem(int position) {
-                focusMoveUtil.hideFocusForShowDelay(400);
                 int msgCount = msgList.size();
-                refreshTotalText(msgCount);
                 if (msgCount == 0) {
                     itemTotal.setVisibility(View.INVISIBLE);
                     itemPos.setVisibility(View.INVISIBLE);
                     mRecyclerView.setVisibility(View.INVISIBLE);
                     btnClear.setVisibility(View.INVISIBLE);
                     empty.setVisibility(View.VISIBLE);
+                    focusMoveUtil.setFocusView(btnTag);  // 直接设置焦点，无动画
                     return;
                 }
+                refreshTotalText(msgCount);
+                focusMoveUtil.hideFocusForShowDelay(500);
                 if (position > msgCount - 1) {
                     focusMsgItem(position - 1);
                     return;
@@ -198,7 +198,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
      */
     private void refreshRecyclerItem(MessageInfo msg, int position) {
         if (msg.getStatus()) {
-            MessageManager.updateStatus(msg.getMsgId());
+            MessageManager.updateStatus(this , msg.getMsgId());
             msg.setStatus(false);
             msgList.set(position, msg);
             mAdapter.setMsgList(msgList);
@@ -216,7 +216,10 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         mRecyclerView.post(new Runnable() {
             @Override
             public void run() {
+                //开始焦点在第一个item上
                 mRecyclerView.getChildAt(0).requestFocus();
+                focusMoveUtil.setFocusView(mRecyclerView.getChildAt(0));
+                focusMoveUtil.hideFocusForShowDelay(400);
             }
         });
         llManager = new LinearLayoutManager(this);
@@ -240,17 +243,17 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                     if (deleteLastItem) {
                         focusViewMoveEnable = true;
                     }
-                    mHandler.postDelayed(mFocusMoveRunnable, 300);
+                    mHandler.postDelayed(mFocusMoveRunnable, 500);
                 }
             }
         });
     }
 
-    private void focusMsgItemInRunnable(final int focusPosi) {
+    private void focusMsgItemInRunnable(final int focusPos) {
         mRecyclerView.post(new Runnable() {
             @Override
             public void run() {
-                View childView = mRecyclerView.getChildAt(focusPosi - llManager.findFirstVisibleItemPosition());
+                View childView = mRecyclerView.getChildAt(focusPos - llManager.findFirstVisibleItemPosition());
                 if (childView != null) {
                     mFocusedView = childView.findViewById(R.id.item_ll_focus_msg);
                     mFocusedView.requestFocus();
@@ -321,7 +324,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_tag:
-                if (msgList == null || msgList.isEmpty() || !MessageManager.existUnreadMsg()) {
+                if (msgList == null || msgList.isEmpty() || !MessageManager.existUnreadMsg(this)) {
                     return;
                 }
                 new Thread() {
@@ -365,11 +368,6 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                 mHandler.postDelayed(mFocusMoveRunnable, 50);
             }
         }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
     }
 
     @Override
