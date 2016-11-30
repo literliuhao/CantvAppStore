@@ -59,9 +59,7 @@ public abstract class BaseActivity extends FragmentActivity {
         if (mLoadingDialog == null) {
             mLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, getString(R.string.loading),
                     mMsgTextSize, mMsgTextColor, spaceInPixels);
-        } else if (mLoadingDialog.isShowing()) {
-            return;
-        } else {
+        } else if (!mLoadingDialog.isShowing()) {
             mLoadingDialog.setCancelable(false);
             mLoadingDialog.show();
         }
@@ -70,9 +68,7 @@ public abstract class BaseActivity extends FragmentActivity {
     public void showLoadingDialog(String msg) {
         if (mLoadingDialog == null) {
             mLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, msg, mMsgTextSize, mMsgTextColor, spaceInPixels);
-        } else if (mLoadingDialog.isShowing()) {
-            return;
-        } else {
+        } else if (!mLoadingDialog.isShowing()) {
             mLoadingDialog.setCancelable(false);
             mLoadingDialog.show();
         }
@@ -82,9 +78,7 @@ public abstract class BaseActivity extends FragmentActivity {
         if (mOffsetLoadingDialog == null) {
             mOffsetLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, offsetX, getString(R.string.loading),
                     mMsgTextSize, mMsgTextColor, spaceInPixels);
-        } else if (mOffsetLoadingDialog.isShowing()) {
-            return;
-        } else {
+        } else if (!mOffsetLoadingDialog.isShowing()) {
             mOffsetLoadingDialog.show();
         }
     }
@@ -92,9 +86,7 @@ public abstract class BaseActivity extends FragmentActivity {
     public void showLoadingDialog(String msg, int offsetX) {
         if (mOffsetLoadingDialog == null) {
             mOffsetLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, offsetX, msg, mMsgTextSize, mMsgTextColor, spaceInPixels);
-        } else if (mOffsetLoadingDialog.isShowing()) {
-            return;
-        } else {
+        } else if (!mOffsetLoadingDialog.isShowing()) {
             mOffsetLoadingDialog.show();
         }
     }

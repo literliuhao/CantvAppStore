@@ -63,6 +63,7 @@ public class DownloadTask implements Runnable {
         task.setDownloadStatus(entity.getDownloadStatus());
         task.setId(entity.getDownloadId());
         task.setUrl(entity.getUrl());
+        task.setIcon(entity.getIcon());
         task.setFileName(entity.getFileName());
         task.setSaveDirPath(entity.getSaveDirPath());
         task.setCompletedSize(entity.getDownloadedSize());
@@ -173,6 +174,7 @@ public class DownloadTask implements Runnable {
             }
 
         } catch (FileNotFoundException e) {
+            Log.d(TAG, "*******FileNotFoundException*******");
             e.printStackTrace();
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
             onError(DownloadTaskListener.DOWNLOAD_ERROR_FILE_NOT_FOUND);
@@ -451,6 +453,7 @@ public class DownloadTask implements Runnable {
                 ", mTotalSize=" + mTotalSize +
                 ", mDownloadedSize=" + mDownloadedSize +
                 ", mUrl='" + mUrl + '\'' +
+                ", mIcon='" + mIcon + '\'' +
                 ", mSaveDirPath='" + mSaveDirPath + '\'' +
                 ", mDownloadStatus=" + mDownloadStatus +
                 ", mFileName='" + mFileName + '\'' +

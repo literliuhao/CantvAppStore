@@ -1,4 +1,4 @@
-package com.can.appstore.specialtopic;
+package com.can.appstore.speciallist;
 
 import com.can.appstore.base.BasePresenter;
 import com.can.appstore.base.BaseView;

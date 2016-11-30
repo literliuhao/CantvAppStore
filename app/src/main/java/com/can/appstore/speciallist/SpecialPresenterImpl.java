@@ -1,4 +1,4 @@
-package com.can.appstore.specialtopic;
+package com.can.appstore.speciallist;
 
 import android.graphics.Color;
 import android.os.Handler;

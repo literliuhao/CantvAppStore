@@ -15,7 +15,7 @@ import com.can.appstore.active.ActiveActivity;
 import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.applist.AppListActivity;
 import com.can.appstore.download.DownloadLeadAcitivity;
-import com.can.appstore.message.MessageStartActivity;
+import com.can.appstore.message.MessageActivity;
 import com.can.appstore.specialdetail.SpecialDetailActivity;
 import com.can.appstore.uninstallmanager.UninstallManagerActivity;
 
@@ -118,7 +118,7 @@ public class PortalActivity extends Activity {
                     intent.putExtra("appID", "3");
                     startActivity(intent);
                 } else if (position == 6) {
-                    Intent intent = new Intent(PortalActivity.this, MessageStartActivity.class);
+                    Intent intent = new Intent(PortalActivity.this, MessageActivity.class);
                     startActivity(intent);
                 } else if (position == 7) {
                     Intent intent = new Intent(PortalActivity.this, MainActivity.class);

@@ -1,6 +1,7 @@
 package com.can.appstore.message.manager;
 
-import com.can.appstore.MyApp;
+import android.content.Context;
+
 import com.can.appstore.message.db.dao.DaoMaster;
 import com.can.appstore.message.db.dao.MessageInfoDao;
 import com.can.appstore.message.db.entity.MessageInfo;
@@ -18,14 +19,14 @@ public class GreenDaoManager {
     private MessageInfoDao msgDao;
     private final String DB_NAME = "AppStore.db";   // 数据库名称
 
-    public GreenDaoManager() {
+    public GreenDaoManager(Context context) {
         /*
         * 初始化数据库
         * 数据库名称：AppStrore.db
         * 版本：1（gradle配置）
         * 表名：MESSAGE_INFO（消息数据存储表）
         * */
-        DaoMaster.DevOpenHelper devOpenHelper = new DaoMaster.DevOpenHelper(MyApp.getContext(), DB_NAME, null);
+        DaoMaster.DevOpenHelper devOpenHelper = new DaoMaster.DevOpenHelper(context, DB_NAME, null);
         msgDao = new DaoMaster(devOpenHelper.getWritableDatabase()).newSession().getMessageInfoDao();
     }
 
@@ -45,6 +46,7 @@ public class GreenDaoManager {
     /**
      * 更新全部数据status
      */
+    @SuppressWarnings("unchecked")
     public void updateAllMsgStatus() {
         //第一步：查询出status为true的数据
         QueryBuilder qb = msgDao.queryBuilder();
@@ -106,6 +108,7 @@ public class GreenDaoManager {
      * @param mCurrentTime  // 当前系统时间
      *
      */
+    @SuppressWarnings("unchecked")
     public List<MessageInfo> queryMsg(long mCurrentTime) {
         QueryBuilder qb = msgDao.queryBuilder();
         qb.where(MessageInfoDao.Properties.MsgExpires.ge(mCurrentTime));
@@ -118,8 +121,9 @@ public class GreenDaoManager {
     }
 
     /**
-     * 查询数据库数据（无擦拭农户）
+     * 查询数据库数据（无参数）
      */
+    @SuppressWarnings("unchecked")
     public List<MessageInfo> queryMsg() {
         QueryBuilder qb = msgDao.queryBuilder();
         qb.orderDesc(MessageInfoDao.Properties.MsgDate);
@@ -133,6 +137,7 @@ public class GreenDaoManager {
     /**
      * 查询数据表中是否有未读消息
      */
+    @SuppressWarnings("unchecked")
     public boolean existUnreadMsg() {
         QueryBuilder qb = msgDao.queryBuilder();
         qb.limit(1);
@@ -140,8 +145,9 @@ public class GreenDaoManager {
         List<MessageInfo> msgList = qb.list();
         if (msgList != null && !msgList.isEmpty()) {
             return true;
+        }else{
+            return false;
         }
-        return false;
     }
 
     /**

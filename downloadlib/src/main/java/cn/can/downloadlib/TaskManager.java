@@ -62,8 +62,11 @@ public class TaskManager {
      * @return
      */
     public synchronized boolean put(DownloadTask task) {
-        boolean flg =  mWorkTaskQueue.offer(task.getId());
-        if (flg) {
+       boolean flg = false;
+        if (!mWorkTaskQueue.contains(task.getId())) {
+           flg=mWorkTaskQueue.offer(task.getId());
+        }
+        if (!mCurrentTaskMap.containsValue(task)) {
             mCurrentTaskMap.put(task.getId(), task);
         }
         return flg;

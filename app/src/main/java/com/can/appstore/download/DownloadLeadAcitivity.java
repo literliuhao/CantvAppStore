@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.can.appstore.R;
-import com.can.appstore.specialtopic.SpecialActivity;
+import com.can.appstore.speciallist.SpecialActivity;
 
 import java.io.File;
 import java.util.Map;
@@ -64,8 +64,8 @@ public class DownloadLeadAcitivity extends AppCompatActivity {
 
     private void initTest() {
         mDownLoadManager = DownloadManager.getInstance(this.getApplicationContext());
-        mDownLoadManager.resumeAllTasks();
-        mDownLoadManager.setPoolSize(3);
+       // mDownLoadManager.resumeAllTasks();
+       // mDownLoadManager.setPoolSize(3);
 
         this.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override

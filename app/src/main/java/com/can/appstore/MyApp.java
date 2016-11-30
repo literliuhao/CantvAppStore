@@ -13,6 +13,13 @@ import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
 import com.tencent.bugly.beta.upgrade.UpgradeListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.can.downloadlib.DownloadManager;
+import cn.can.tvlib.utils.PackageUtil;
+import cn.can.tvlib.utils.PackageUtil.AppInfo;
+
 /**
  * ================================================
  * 作    者：
@@ -40,6 +47,8 @@ public class MyApp extends Application {
         INSTANCE = this;
 
         initBuly(true);
+        //恢复下载任务。2016-11-29 11:47:23 xzl
+        DownloadManager.getInstance(this).resumeAllTasks();
     }
 
     public static Context getContext() {
