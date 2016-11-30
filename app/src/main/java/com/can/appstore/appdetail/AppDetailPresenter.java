@@ -269,7 +269,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             } else {
                 ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.install_apk_fail));
                 //                mDownloadManager.removeTask(mTaskId);  // 应该需要从任务中移除
-                downloadStatus = DownloadStatus.DOWNLOAD_STATUS_INIT;
+                //                downloadStatus = DownloadStatus.DOWNLOAD_STATUS_INIT;
                 return;
             }
         }
@@ -396,6 +396,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     @Override
     public void onInstallFail(String id) {
         Log.d(TAG, "onInstallFail: " + id);
+        mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, DOWNLOAD_FINISH_PROGRESS);
     }
 
     @Override
