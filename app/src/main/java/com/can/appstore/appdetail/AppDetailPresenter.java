@@ -213,17 +213,13 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     /**
      * 计算下载的百分比
-     *
-     * @param completedSize
-     * @param totalSize
-     * @return
      */
 
-    public float calculatorPercent(long completedSize, long totalSize) {
+    private float calculatorPercent(long completedSize, long totalSize) {
         return totalSize == 0 ? 0 : (float) (completedSize * 100f / totalSize);
     }
 
-    public void initDownloadManager() {
+    private void initDownloadManager() {
         mDownloadManager = DownloadManager.getInstance(mContext.getApplicationContext());
         downloadPath = mDownloadManager.getDownloadPath();
     }
@@ -291,7 +287,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         }
     }
 
-    public void clickRefreshButtonStatus(boolean isClickUpdateButton, float per) {
+    private void clickRefreshButtonStatus(boolean isClickUpdateButton, float per) {
         if (isClickUpdateButton) {
             mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_WAIT, per);
         } else {
@@ -396,7 +392,9 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     @Override
     public void onInstallFail(String id) {
         Log.d(TAG, "onInstallFail: " + id);
-        mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, DOWNLOAD_FINISH_PROGRESS);
+        if (id.equalsIgnoreCase(mTaskId)) {
+            refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, DOWNLOAD_FINISH_PROGRESS);
+        }
     }
 
     @Override
@@ -429,7 +427,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         }
     }
 
-    public void refreshButtonStatus(int statusCode, float per) {
+    private void refreshButtonStatus(int statusCode, float per) {
         if (isShowUpdateButton) {
             mView.refreshUpdateButtonStatus(statusCode, per);
         } else {
@@ -456,8 +454,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     /**
      * 进入到图片放大页面
-     *
-     * @param currentIndex
      */
     public void enterImageScaleActivity(int currentIndex) {
         Intent intent = new Intent(mContext, ImageScaleActivity.class);
@@ -468,8 +464,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     /**
      * 获取当前apk的包名
-     *
-     * @return
      */
     public String getCurAppPackageName() {
         return mPackageName;
@@ -528,10 +522,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     /**
      * 静默安装
-     *
-     * @param appName
      */
-    public void silentInstall(String appName) {
+    private void silentInstall(String appName) {
         Log.d(TAG, "silentInstall ");
         if (SdcardUtils.getApkInstallDirSzie(mContext) <= (mLimitInstallSace + mAppInfo.getSize() * 1.5)) {  // 安装内存不足
             showInsufficientStorageSpaceDialog();
@@ -545,7 +537,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     /**
      * 显示内存不足安装失败的提示框
      */
-    public void showInsufficientStorageSpaceDialog() {
+    private void showInsufficientStorageSpaceDialog() {
         String title = mContext.getResources().getString(R.string.space_inequacy);
         String ok = mContext.getResources().getString(R.string.ok);
         String hint = mContext.getResources().getString(R.string.space_inequacy_hint);

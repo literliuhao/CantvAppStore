@@ -268,9 +268,9 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         if (mSelectPackageName != null && mSelectPackageName.size() > 0) {
             mSelectPackageName.clear();
         }
-        for (int i = 0; i < selectPosition.length; i++) {
-            Log.d(TAG, "refreshSelectPosition: " + selectPosition[i]);
-            mUninstallManagerAdapter.setItemSelected(selectPosition[i]);
+        for (int aSelectPosition : selectPosition) {
+            Log.d(TAG, "refreshSelectPosition: " + aSelectPosition);
+            mUninstallManagerAdapter.setItemSelected(aSelectPosition);
         }
     }
 
@@ -409,8 +409,6 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
 
     /**
      * 打开卸载管理
-     *
-     * @param context
      */
     public static void actionStart(Context context) {
         Intent intent = new Intent(context, UninstallManagerActivity.class);

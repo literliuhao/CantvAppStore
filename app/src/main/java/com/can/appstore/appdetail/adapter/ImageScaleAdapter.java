@@ -25,8 +25,8 @@ import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 
 public class ImageScaleAdapter extends PagerAdapter {
     private Context mContext;
-    private LinkedList<ImageView> mRecycledViews = new LinkedList<ImageView>();
-    private List<String> mUrlList = new ArrayList<String>();
+    private LinkedList<ImageView> mRecycledViews = new LinkedList<>();
+    private List<String> mUrlList = new ArrayList<>();
     private int pageCount;
     private int mRoundSize;
 
@@ -52,7 +52,7 @@ public class ImageScaleAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         int index = getRealPosition(position);
-        ImageView imageView = null;
+        ImageView imageView;
         if (mRecycledViews != null && mRecycledViews.size() > 0) {
             imageView = mRecycledViews.getFirst();
             mRecycledViews.removeFirst();

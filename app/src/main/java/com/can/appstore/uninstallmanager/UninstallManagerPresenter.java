@@ -58,7 +58,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
         addListener();
     }
 
-    public void initDownloadManager() {
+    private void initDownloadManager() {
         mDownloadManager = DownloadManager.getInstance(mContext.getApplicationContext());
     }
 
@@ -234,8 +234,6 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
 
     /**
      * 卸载最后一个让此时最后一个请求焦点
-     *
-     * @param packageName
      */
     private void refreshLastFocus(String packageName) {
         int curUninstallPosition = getCurUninstallPosition(packageName);
@@ -247,8 +245,6 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
 
     /**
      * 刷新列表页数据
-     *
-     * @param packageName
      */
     private void refreshItemInListPosition(String packageName) {
         for (int j = 0; j < mAppInfoList.size(); j++) {
@@ -289,7 +285,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     /**
      * 开始卸载
      */
-    public void startUninstall(boolean isClickbatchUninstall) {
+    private void startUninstall(boolean isClickbatchUninstall) {
         int curUninstallPosition = getCurUninstallPosition(mSelectPackageName.get(0));
         PackageUtil.AppInfo appInfo = mAppInfoList.get(curUninstallPosition);
         Log.d(TAG, "startUninstall: curUninstallPosition : " + curUninstallPosition + "  info : " + appInfo);
@@ -299,10 +295,6 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
 
     /**
      * 显示卸载对话框
-     *
-     * @param drawable
-     * @param name
-     * @param packName
      */
     public void showUninstallDialog(Drawable drawable, final String name, final String packName, final boolean isClickbatchUninstall) {
         this.isClickBatchUninstall = isClickbatchUninstall;
@@ -326,7 +318,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
                     mSelectPackageName.remove(packName);
                     mView.clickNegativeRefreshPage(curClickNegativePosition, mSelectPackageName.size());
                     if (mSelectPackageName.size() > 0) {
-                        startUninstall(isClickbatchUninstall);
+                        startUninstall(true);
                     }
                 }
             }
@@ -345,9 +337,6 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
 
     /**
      * 获取当前卸载包名位置应用名称
-     *
-     * @param packName
-     * @return
      */
     public int getCurUninstallPosition(String packName) {
         int uninstallPosition = 0;
@@ -375,10 +364,8 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
 
     /**
      * 静默卸载
-     *
-     * @param packageName
      */
-    public void silentUninstall(String appName, String packageName) {
+    private void silentUninstall(String appName, String packageName) {
         mCurUninstallApkName = appName;
         mDownloadManager.uninstall(packageName);
     }
