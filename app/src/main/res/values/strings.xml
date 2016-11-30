@@ -12,6 +12,7 @@
     <string name="search_left_top_prompt2">搜索结果:</string>
     <string name="search_bottom_recommend_st">热门推荐:</string>
     <string name="search_null">搜不到相关应用</string>
+    <string name="search_null1">请重新搜索您想要找的应用</string>
     <string name="search_prompt1">输入拼音首字母</string>
     <string name="search_prompt2">如搜环球视讯: 输入“</string>
     <string name="search_prompt3">HQSX</string>
@@ -145,8 +146,8 @@
 
     <!-- 活动页 -->
     <string name="active_click_participate">点击参加活动</string>
-    <string name="active_app_download_waiting">等待中</string>
-    <string name="active_app_installing">安装中</string>
+    <string name="download_continue">继续下载</string>
+    <string name="download_pause">已暂停下载</string>
     <string name="active_null_str"> </string>
 
     <string name="retry">"点击重试"</string>

@@ -44,10 +44,9 @@ public class MyApp extends Application {
         WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
         Width = wm.getDefaultDisplay().getWidth();
         Height = wm.getDefaultDisplay().getHeight();
-
+        INSTANCE = this;
         //所有的第三方应用
         myAppList = PackageUtil.findAllThirdPartyAppsNoDelay(this, myAppList);
-
         initBuly(true);
     }
 

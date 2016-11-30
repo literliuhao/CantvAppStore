@@ -23,7 +23,7 @@ import cn.can.tvlib.utils.ApkUtils;
 import cn.can.tvlib.utils.MD5Util;
 import cn.can.tvlib.utils.PackageUtil;
 
-import static com.can.appstore.R.string.active_app_installing;
+//import static com.can.appstore.R.string.active_app_installing;
 
 
 public class AppInstallService extends Service implements DownloadTaskListener {
@@ -59,7 +59,7 @@ public class AppInstallService extends Service implements DownloadTaskListener {
         mDownloadTask = downloadTask;
         if (downloadTask != null) {
             if (downloadTask.getDownloadStatus() == APP_INSTALLING) {
-                mActiveActivity.refreshTextProgressbarTextStatus(active_app_installing);
+//                mActiveActivity.refreshTextProgressbarTextStatus(active_app_installing);
                 return;
             }
             float downloadPercent = downloadTask.getPercent();
@@ -165,7 +165,7 @@ public class AppInstallService extends Service implements DownloadTaskListener {
         Log.d(TAG, "onCompleted: " + downloadTask.getCompletedSize());
         if (downloadTask.getId().equalsIgnoreCase(MD5.MD5(mDownloadUrl))) {
             mActiveActivity.refreshProgressbarProgress(0);
-            mActiveActivity.refreshTextProgressbarTextStatus(active_app_installing);
+//            mActiveActivity.refreshTextProgressbarTextStatus(active_app_installing);
             installApk(downloadTask);
             release();
         }

@@ -51,6 +51,7 @@ import java.util.List;
 
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
+import cn.can.tvlib.utils.NetworkUtils;
 import retrofit2.Response;
 
 import static com.can.appstore.index.ui.FragmentEnum.INDEX;
@@ -58,7 +59,7 @@ import static com.can.appstore.index.ui.FragmentEnum.INDEX;
 /**
  * Created by liuhao on 2016/10/15.
  */
-public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener, View.OnKeyListener,View.OnFocusChangeListener {
+public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener, View.OnKeyListener, View.OnFocusChangeListener {
     private List<BaseFragment> mFragmentLists;
     private IndexPagerAdapter mAdapter;
     private ViewPager mViewPager;
@@ -84,6 +85,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private int currentPage;
     private CanCall<ListResult<Navigation>> mNavigationCall;
     private int updateNum;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +114,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      * 首页初始化所有View
      */
     private void initView() {
+        mContext = IndexActivity.this;
         //导航
         mTitleBar = (TitleBar) findViewById(R.id.id_indicator);
         mTitleBar.initTitle(this);
@@ -140,24 +143,29 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     public void getNavigation() {
-        mNavigationCall = HttpManager.getApiService().getNavigations();
-        mNavigationCall.enqueue(new CanCallback<ListResult<Navigation>>() {
-            @Override
-            public void onResponse(CanCall<ListResult<Navigation>> call, Response<ListResult<Navigation>> response) throws Exception {
-                ListResult<Navigation> listResult = response.body();
-//                Log.i("IndexActivity", listResult.toString());
-                parseData(listResult);
-            }
+        if (NetworkUtils.isNetworkConnected(mContext)) {
+            mNavigationCall = HttpManager.getApiService().getNavigations();
+            mNavigationCall.enqueue(new CanCallback<ListResult<Navigation>>() {
+                @Override
+                public void onResponse(CanCall<ListResult<Navigation>> call, Response<ListResult<Navigation>> response) throws Exception {
+                    ListResult<Navigation> listResult = response.body();
+                    parseData(listResult);
+//                    DataUtils.getInstance(mContext).setCache(new Gson().toJson(listResult));
+                    Log.i("IndexActivity", listResult.toString());
+                }
 
-            @Override
-            public void onFailure(CanCall<ListResult<Navigation>> call, CanErrorWrapper errorWrapper) {
-                Log.i("DataUtils", errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
-                Gson gson = new Gson();
-                ListResult<Navigation> listResult = gson.fromJson(DataUtils.indexData, new TypeToken<ListResult<Navigation>>() {
-                }.getType());
-                parseData(listResult);
-            }
-        });
+                @Override
+                public void onFailure(CanCall<ListResult<Navigation>> call, CanErrorWrapper errorWrapper) {
+//                Log.i("DataUtils", errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
+                    ListResult<Navigation> listResult = new Gson().fromJson(DataUtils.getInstance(mContext).getCache(), new TypeToken<ListResult<Navigation>>() {
+                    }.getType());
+                    parseData(listResult);
+                }
+            });
+        } else {
+            ListResult<Navigation> listResult = new Gson().fromJson(DataUtils.getInstance(mContext).getCache(), new TypeToken<ListResult<Navigation>>() {}.getType());
+            parseData(listResult);
+        }
     }
 
     private void parseData(ListResult<Navigation> listResult) {
@@ -328,7 +336,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     private void refreshUpdate(int number) {
         if (number > 0) {
-            //伪代码 可更新不等于0时显示
             textUpdate.setText(number + getResources().getString(R.string.index_app_update));
             textUpdate.setVisibility(View.VISIBLE);
         } else {
@@ -337,6 +344,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void initMsgListener() {
+        MessageManager.requestMsg(mContext);
         MessageManager.setCallMsgDataUpdate(new MessageManager.CallMsgDataUpdate() {
             @Override
             public void onUpdate() {
@@ -347,10 +355,15 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void refreshMsg() {
+<<<<<<< HEAD
         if (MessageManager.existUnreadMsg(this)) {
             textUpdate.setVisibility(View.VISIBLE);
+=======
+        if (MessageManager.existUnreadMsg()) {
+            imageRed.setVisibility(View.VISIBLE);
+>>>>>>> 04ec0e30f1a79c77e8b99aba2da95f97766ea202
         } else {
-            textUpdate.setVisibility(View.GONE);
+            imageRed.setVisibility(View.GONE);
         }
     }
 
@@ -382,7 +395,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             switch (sourceEnum) {
                 case INDEX:
                     v.bringToFront();
-                    mFocusUtils.setFocusRes(IndexActivity.this, R.drawable.btn_circle_focus);
+                    mFocusUtils.setFocusRes(mContext, R.drawable.btn_circle_focus);
                     mFocusUtils.startMoveFocus(v);
 //                    mFocusScaleUtils.scaleToLarge(v);
                     break;
@@ -393,19 +406,19 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                         v.bringToFront();
                         mFocusScaleUtils.scaleToLarge(v);
                     }
-                    mFocusUtils.setFocusRes(IndexActivity.this, R.drawable.btn_focus);
+                    mFocusUtils.setFocusRes(mContext, R.drawable.btn_focus);
                     mFocusUtils.startMoveFocus(v, SCALE);
                     break;
                 case RANK:
                     v.bringToFront();
-                    mFocusUtils.setFocusRes(IndexActivity.this, R.drawable.btn_focus);
+                    mFocusUtils.setFocusRes(mContext, R.drawable.btn_focus);
                     mFocusUtils.startMoveFocus(v);
                     break;
                 case NORMAL:
                 case MYAPP:
                 case MANAGE:
                     v.bringToFront();
-                    mFocusUtils.setFocusRes(IndexActivity.this, R.drawable.btn_focus);
+                    mFocusUtils.setFocusRes(mContext, R.drawable.btn_focus);
                     mFocusUtils.startMoveFocus(v, SCALE);
                     mFocusScaleUtils.scaleToLarge(v);
                     break;
