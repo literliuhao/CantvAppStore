@@ -72,6 +72,8 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
     private static final String TAG = "installManagerActivity";
     private int mWinH;
     private int mWinW;
+    private long mLastClickTime;
+    private long moveTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -514,5 +516,38 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
     public static void actionStart(Context context) {
         Intent intent = new Intent(context, InstallManagerActivity.class);
         context.startActivity(intent);
+    }
+
+    /**
+     * 限制点击频率
+     * @return
+     */
+    private boolean isFastContinueClickView() {
+        long curClickTime = System.currentTimeMillis();
+        if (curClickTime - mLastClickTime < 1500) {
+            return true;
+        }
+        mLastClickTime = curClickTime;
+        return false;
+    }
+
+    /**
+     * 限制移动速度
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        switch (event.getAction()) {
+            //控制按键响应的速度
+            case KeyEvent.ACTION_DOWN:
+                if (System.currentTimeMillis() - moveTime > 200) {
+                    moveTime = System.currentTimeMillis();
+                } else {
+                    return true;
+                }
+        }
+        return super.dispatchKeyEvent(event);
+
     }
 }

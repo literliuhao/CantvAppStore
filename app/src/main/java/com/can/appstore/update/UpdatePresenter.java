@@ -110,10 +110,10 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         });
 
         /*if (mAppInfoBeanList.size() < 1 || mAppInfoBeanList == null) {
-            mView.hideLoadingDialog();
+            mView.hideLoading();
             mView.showNoData();
         } else {
-            mView.hideLoadingDialog();
+            mView.hideLoading();
             mView.hideNoData();
             mDatas.addAll(mAppInfoBeanList);
             mUpdateNumDatas.addAll(mAppInfoBeanList);
