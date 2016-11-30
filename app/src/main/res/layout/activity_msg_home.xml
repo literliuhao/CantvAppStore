@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bj"
     tools:context="com.can.appstore.message.MessageHomeActivity">
 
     <ImageView
@@ -15,7 +14,7 @@
         android:src="@drawable/msg_icon"
         android:layout_marginTop="50dp"
         android:layout_marginEnd="88dp"
-        android:onClick="true"
+        android:clickable="true"
         android:focusable="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"/>

@@ -19,21 +19,19 @@
             android:id="@+id/item_green_dot"
             android:layout_width="@dimen/px16"
             android:layout_height="@dimen/px16"
-            android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/px16"
             android:layout_marginRight="@dimen/px16"
-            android:onClick="true"
+            android:clickable="true"
             android:src="@drawable/green_dot"
             android:visibility="invisible"
-            ></ImageView>
+            />
 
+        <!--textView文本跑马灯效果，在4.x版本上必须加上android:singleLine="true"-->
         <TextView
             android:id="@+id/item_tv_msg_title"
             android:layout_width="@dimen/px860"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="@dimen/px120"
-            android:layout_toRightOf="@id/item_green_dot"
+            android:layout_marginEnd="@dimen/px120"
             android:ellipsize="marquee"
             android:focusable="true"
             android:includeFontPadding="false"
@@ -47,10 +45,7 @@
             android:id="@+id/item_tv_msg_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
             android:includeFontPadding="false"
-            android:text="2016-10-20"
             android:textColor="@color/msg_white_50"
             android:textSize="@dimen/fontsize_34"
             />
@@ -60,12 +55,12 @@
         android:id="@+id/item_iv_btn_delete"
         android:layout_width="@dimen/px51"
         android:layout_height="@dimen/px51"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="@dimen/px16"
+        android:layout_marginEnd="@dimen/px16"
         android:focusable="true"
-        android:paddingLeft="@dimen/px3"
-        android:paddingRight="@dimen/px2"
+        android:paddingStart="@dimen/px3"
+        android:paddingEnd="@dimen/px2"
         android:src="@drawable/msg_del"
         android:visibility="gone"
         />
@@ -77,6 +72,6 @@
         android:paddingLeft="@dimen/px5"
         android:paddingRight="@dimen/px5"
         android:src="@drawable/msg_item_line"
-        ></ImageView>
+        />
 
 </RelativeLayout>

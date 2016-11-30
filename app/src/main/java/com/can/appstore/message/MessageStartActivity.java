@@ -69,7 +69,7 @@ public class MessageStartActivity extends AppCompatActivity {
                 MessageManager.deleteExceedMsg(MessageStartActivity.this , timestamp); // 删除过期数据
                 List<Message> list = msgContainer.getMessages();
                 if (list != null && !list.isEmpty()) {
-                    List<MessageInfo> msgList = new ArrayList<MessageInfo>();
+                    List<MessageInfo> msgList = new ArrayList<>();
                     int size = list.size();
                     for (int i = 0; i < size; i++) {
                         Message msg = list.get(i);
@@ -108,8 +108,4 @@ public class MessageStartActivity extends AppCompatActivity {
         finish();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
 }

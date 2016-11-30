@@ -17,7 +17,6 @@ import com.can.appstore.message.manager.MessageManager;
 public class MessageHomeActivity extends Activity implements View.OnClickListener {
 
     private final String TAG = "MessageHomeActivity";
-    private ImageView btnMsg;
     private ImageView dotMsg;
 
     @Override
@@ -37,7 +36,7 @@ public class MessageHomeActivity extends Activity implements View.OnClickListene
 
     private void initView() {
         dotMsg = (ImageView) findViewById(R.id.iv_dot_msg);
-        btnMsg = (ImageView) findViewById(R.id.btn_iv_msg);
+        ImageView btnMsg = (ImageView) findViewById(R.id.btn_iv_msg);
         btnMsg.setOnClickListener(this);
     }
 

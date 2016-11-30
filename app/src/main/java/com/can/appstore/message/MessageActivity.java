@@ -34,7 +34,6 @@ import cn.can.tvlib.utils.ToastUtils;
  */
 public class MessageActivity extends BaseActivity implements View.OnClickListener, View.OnFocusChangeListener {
 
-    private final String TAG = "MessageActivity";
     private List<MessageInfo> msgList;
     private GreenDaoManager dbManager;
     private FocusMoveUtil focusMoveUtil;
@@ -115,7 +114,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         mAdapter.setFocusListener(this);
         mAdapter.setOnMsgFocusLayoutClickListener(new MessageAdapter.OnMsgFocusLayoutClickListener() {
             @Override
-            public void onMsgFocusLayoutClick(View view, int position) {
+            public void onMsgFocusLayoutClick(int position) {
                 boolean isNetConnected = NetworkUtils.isNetworkConnected(MessageActivity.this);
                 MessageInfo msg = msgList.get(position);
                 if (msg == null) {
@@ -246,11 +245,11 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         });
     }
 
-    private void focusMsgItemInRunnable(final int focusPosi) {
+    private void focusMsgItemInRunnable(final int focusPos) {
         mRecyclerView.post(new Runnable() {
             @Override
             public void run() {
-                View childView = mRecyclerView.getChildAt(focusPosi - llManager.findFirstVisibleItemPosition());
+                View childView = mRecyclerView.getChildAt(focusPos - llManager.findFirstVisibleItemPosition());
                 if (childView != null) {
                     mFocusedView = childView.findViewById(R.id.item_ll_focus_msg);
                     mFocusedView.requestFocus();
@@ -365,11 +364,6 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                 mHandler.postDelayed(mFocusMoveRunnable, 50);
             }
         }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
     }
 
     @Override
