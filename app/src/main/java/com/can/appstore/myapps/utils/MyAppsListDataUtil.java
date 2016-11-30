@@ -125,7 +125,7 @@ public class MyAppsListDataUtil {
 
 
     /**
-     * 获取全部系统应用,必须是APK存在的
+     * 获取全部白名单应用,必须是APK存在的
      * 文件管理器
      * 微信相册等
      */
