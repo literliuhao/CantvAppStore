@@ -129,11 +129,10 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                     mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mDetectionButton, 1.0f);
                     boolean isNull = mPresenter.isNull(0);
-                    if(isNull){
-                        mDetectionButton.setNextFocusRightId(R.id.bt_update_detection);
+                    if (isNull) {
                         mCurrentnum.setVisibility(View.INVISIBLE);
                         mTotalnum.setVisibility(View.INVISIBLE);
-                    }else{
+                    } else {
                         mPresenter.setNum(0);
                     }
                 } else {
@@ -149,11 +148,10 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                     mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mAutoButton, 1.0f);
                     boolean isNull = mPresenter.isNull(0);
-                    if(isNull){
-                        mAutoButton.setNextFocusRightId(R.id.bt_update_auto);
+                    if (isNull) {
                         mCurrentnum.setVisibility(View.INVISIBLE);
                         mTotalnum.setVisibility(View.INVISIBLE);
-                    }else{
+                    } else {
                         mPresenter.setNum(0);
                     }
                 } else {
@@ -229,7 +227,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         mDetectionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(isFastContinueClickView()){
+                if (isFastContinueClickView()) {
                     return;
                 }
                 mAutoUpdate = PreferencesUtils.getBoolean(mContext, "AUTO_UPDATE", false);
@@ -660,6 +658,12 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         }
         mRecyclerView.setAdapter(mRecyclerAdapter);
         mRecyclerAdapter.notifyDataSetChanged();
+        if (mDatas.size() > 0) {
+            mDetectionButton.setNextFocusRightId(R.id.rv_update_recyclerview);
+        } else {
+            mDetectionButton.setNextFocusRightId(R.id.bt_update_detection);
+            mAutoButton.setNextFocusRightId(R.id.bt_update_auto);
+        }
     }
 
     @Override
@@ -707,6 +711,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
 
     /**
      * 限制点击频率
+     *
      * @return
      */
     private boolean isFastContinueClickView() {
@@ -720,6 +725,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
 
     /**
      * 限制移动速度
+     *
      * @param event
      * @return
      */
