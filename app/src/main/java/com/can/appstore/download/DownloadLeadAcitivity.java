@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.can.appstore.R;
-import com.can.appstore.specialtopic.SpecialActivity;
+import com.can.appstore.speciallist.SpecialActivity;
 
 import java.io.File;
 import java.util.Map;

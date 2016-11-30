@@ -174,6 +174,7 @@ public class DownloadTask implements Runnable {
             }
 
         } catch (FileNotFoundException e) {
+            Log.d(TAG, "*******FileNotFoundException*******");
             e.printStackTrace();
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
             onError(DownloadTaskListener.DOWNLOAD_ERROR_FILE_NOT_FOUND);

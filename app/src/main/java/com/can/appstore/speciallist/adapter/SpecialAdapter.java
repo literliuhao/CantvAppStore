@@ -1,4 +1,4 @@
-package com.can.appstore.specialtopic.adapter;
+package com.can.appstore.speciallist.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

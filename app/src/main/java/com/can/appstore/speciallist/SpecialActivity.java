@@ -1,4 +1,4 @@
-package com.can.appstore.specialtopic;
+package com.can.appstore.speciallist;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,7 +17,7 @@ import com.can.appstore.R;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.entity.SpecialTopic;
 import com.can.appstore.specialdetail.SpecialDetailActivity;
-import com.can.appstore.specialtopic.adapter.SpecialAdapter;
+import com.can.appstore.speciallist.adapter.SpecialAdapter;
 
 import java.util.List;
 
