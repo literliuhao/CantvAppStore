@@ -363,6 +363,7 @@ public class DownloadManager implements AppInstallListener {
                 downloadTask.setDownloadDao(mDownloadDao);
                 downloadTask.setHttpClient(mOkHttpClient);
                 downloadTask.setAppListener(this);
+                mTaskManager.put(downloadTask);
             }
         }
         if (downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_PAUSE
@@ -705,10 +706,10 @@ public class DownloadManager implements AppInstallListener {
         DownloadTask task = getCurrentTaskById(id);
         if (task != null) {
             task.setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
-            Log.i(TAG, "InstallSucess:" + task.getFileName());
+            Log.e(TAG, "***InstallSucess***" + task.getFileName());
+            ToastUtils.showMessageLong(mContext, task.getFileName() + mContext.getResources().getString(R.string.install_sucess));
             deleteTask(id);
         }
-        ToastUtils.showMessageLong(mContext, task.getFileName() + mContext.getResources().getString(R.string.install_sucess));
         if (mAppInstallListeners != null) {
             Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
             while (iter.hasNext()) {
@@ -723,9 +724,9 @@ public class DownloadManager implements AppInstallListener {
         DownloadTask task = getCurrentTaskById(id);
         if (task != null) {
             task.setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
-            Log.i(TAG, "InstallFail:" + task.getFileName());
+            Log.e(TAG, "***InstallFail***" + task.getFileName());
+            ToastUtils.showMessageLong(mContext, task.getFileName() + mContext.getResources().getString(R.string.error_install));
         }
-        ToastUtils.showMessageLong(mContext, task.getFileName() + mContext.getResources().getString(R.string.error_install));
         if (mAppInstallListeners != null) {
             Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
             while (iter.hasNext()) {
