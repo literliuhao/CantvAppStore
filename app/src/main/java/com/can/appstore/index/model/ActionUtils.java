@@ -2,6 +2,7 @@ package com.can.appstore.index.model;
 
 import android.content.Context;
 
+import com.can.appstore.R;
 import com.can.appstore.active.ActiveActivity;
 import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.applist.AppListActivity;
@@ -9,6 +10,9 @@ import com.can.appstore.specialdetail.SpecialDetailActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by liuhao on 2016/11/23.
@@ -35,12 +39,12 @@ public class ActionUtils {
      * 活动详情⻚ ok
      * com.can.appstore.ACTION_ACTIVITY_DETAIL
      * activeId(String)
-     *
-     * @param mContext
+     *  @param mContext
+     * @param id
      * @param actionStr
      * @param actionData
      */
-    public static void convertAction(Context mContext, String actionStr, String actionData) {
+    public static void convertAction(Context mContext, String id, String actionStr, String actionData) {
         switch (actionStr) {
             //应用详情
             case "action_app_detail":
@@ -69,6 +73,26 @@ public class ActionUtils {
                     e.printStackTrace();
                 }
                 break;
+        }
+    }
+
+    public static Boolean checkURL(String mURL) {
+        String regex = "(http|https):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?";
+        Pattern p = Pattern.compile(regex);
+        Matcher matcher = p.matcher(mURL);
+        return matcher.matches();
+    }
+
+    public static int getResourceId(String iconName){
+        switch (iconName){
+            case "resource_photo1":
+                return R.drawable.homerank_bottom_bg1;
+            case "resource_photo2":
+                return R.drawable.homerank_bottom_bg2;
+            case "resource_photo3":
+                return R.drawable.homerank_bottom_bg3;
+            default:
+                return R.drawable.homerank_bottom_bg4;
         }
     }
 }

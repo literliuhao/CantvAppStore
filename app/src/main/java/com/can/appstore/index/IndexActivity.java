@@ -151,20 +151,27 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                     ListResult<Navigation> listResult = response.body();
                     parseData(listResult);
 //                    DataUtils.getInstance(mContext).setCache(new Gson().toJson(listResult));
-                    Log.i("IndexActivity", listResult.toString());
                 }
 
                 @Override
                 public void onFailure(CanCall<ListResult<Navigation>> call, CanErrorWrapper errorWrapper) {
-//                Log.i("DataUtils", errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
-                    ListResult<Navigation> listResult = new Gson().fromJson(DataUtils.getInstance(mContext).getCache(), new TypeToken<ListResult<Navigation>>() {
-                    }.getType());
-                    parseData(listResult);
+                    Log.i("DataUtils", errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
+                    ProxyCache();
                 }
             });
         } else {
-            ListResult<Navigation> listResult = new Gson().fromJson(DataUtils.getInstance(mContext).getCache(), new TypeToken<ListResult<Navigation>>() {}.getType());
+            ProxyCache();
+        }
+    }
+
+    private void ProxyCache() {
+        //JSON不完整或错误会出现异常
+        try {
+            ListResult<Navigation> listResult = new Gson().fromJson(DataUtils.getInstance(mContext).getCache(), new TypeToken<ListResult<Navigation>>() {
+            }.getType());
             parseData(listResult);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -189,13 +196,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         }
 
         //排行、管理、我的应用、不受服务器后台配置，因此手动干预位置
-//        ManagerFragmentTest topFragment = new ManagerFragmentTest(this);
-//        if (mFragmentLists.size() > 0) {
-//            mFragmentLists.add(TOP_INDEX, topFragment);
-//        } else {
-//            mFragmentLists.add(topFragment);
-//        }
-
         HomeRankFragment homeRankFragment = new HomeRankFragment(this);
         if (mFragmentLists.size() > 0) {
             mFragmentLists.add(TOP_INDEX, homeRankFragment);

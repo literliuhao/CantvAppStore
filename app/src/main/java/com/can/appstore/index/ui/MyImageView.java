@@ -150,6 +150,7 @@ public class MyImageView extends ImageView {
      */
     public void setImageURI(String s) {
         mIcon = s;
+
     }
 
 
