@@ -13,12 +13,6 @@ import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
 import com.tencent.bugly.beta.upgrade.UpgradeListener;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.PackageUtil.AppInfo;
-
 /**
  * ================================================
  * 作    者：
@@ -33,8 +27,7 @@ public class MyApp extends Application {
     private static MyApp INSTANCE;
     public static int Width;
     public static int Height;
-    //内存维护的全局应用List
-    public static List<AppInfo> myAppList = new ArrayList<AppInfo>(){};
+
 
 
     @Override
@@ -45,8 +38,7 @@ public class MyApp extends Application {
         Width = wm.getDefaultDisplay().getWidth();
         Height = wm.getDefaultDisplay().getHeight();
         INSTANCE = this;
-        //所有的第三方应用
-        myAppList = PackageUtil.findAllThirdPartyAppsNoDelay(this, myAppList);
+
         initBuly(true);
     }
 
