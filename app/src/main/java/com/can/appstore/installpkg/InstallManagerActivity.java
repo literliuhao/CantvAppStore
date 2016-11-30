@@ -169,6 +169,9 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
                     mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mDeleteAllButton, 1.0f);
                     mPresenter.setNum(0);
+                    if (mPresenter.isNull()) {
+                        mDeleteAllButton.setNextFocusRightId(R.id.bt_install_deleteall);
+                    }
                 } else {
                     mFocusScaleUtil.scaleToNormal(mDeleteAllButton);
                 }
@@ -182,6 +185,9 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
                     mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mDeleteButton, 1.0f);
                     mPresenter.setNum(0);
+                    if (mPresenter.isNull()) {
+                        mDeleteButton.setNextFocusRightId(R.id.bt_install_delete);
+                    }
                 } else {
                     mFocusScaleUtil.scaleToNormal(mDeleteButton);
                 }
@@ -269,6 +275,10 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
             @Override
             public void onClick(View view) {
                 mPresenter.deleteAll();
+                if (mPresenter.isNull()) {
+                    mDeleteAllButton.setFocusable(true);
+                    mDeleteAllButton.requestFocus();
+                }
             }
         });
 
@@ -276,6 +286,10 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
             @Override
             public void onClick(View view) {
                 mPresenter.deleteInstall();
+                if (mPresenter.isNull()) {
+                    mDeleteAllButton.setFocusable(true);
+                    mDeleteAllButton.requestFocus();
+                }
             }
         });
 
@@ -484,7 +498,7 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
                         mFocusMoveUtil.showFocus(100);
                         setLeftLayoutFocus(true);
                     }
-                    mPresenter.deleteOne(mCurrentPositon);
+                    mPresenter.deleteOne(position);
                     canDialog.dismiss();
                 }
             });

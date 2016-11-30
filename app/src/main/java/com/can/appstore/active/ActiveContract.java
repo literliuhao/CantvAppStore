@@ -1,7 +1,7 @@
 package com.can.appstore.active;
 
 /**
- * Created by Atangs on 2016/11/2.
+ * Created by Fuwen on 2016/11/2.
  */
 
 public class ActiveContract {

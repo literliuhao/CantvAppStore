@@ -39,7 +39,7 @@ import cn.can.tvlib.utils.ToastUtils;
 import retrofit2.Response;
 
 /**
- * Created by Atangs on 2016/11/1.
+ * Created by Fuwen on 2016/11/1.
  * 活动页
  */
 
@@ -195,11 +195,6 @@ public class ActiveActivity extends BaseActivity implements View.OnClickListener
         mActiveWebview.loadUrl(url);
     }
 
-    /**
-     * 需要考虑背景图片位加载成功的情况
-     *
-     * @param url
-     */
     public void setNativeLayout(String url) {
         mActiveLayout.setVisibility(View.VISIBLE);
         mActiveTextProgressBar.requestFocus();
@@ -220,6 +215,12 @@ public class ActiveActivity extends BaseActivity implements View.OnClickListener
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case REFRESH_PROGRESSBAR_TEXT:
+                    int status = msg.arg1;
+                    int showType = status == R.string.active_click_participate ? ACTIVE_PARTICIPATE : ACTIVE_NORMAL;
+                    if (mShowType != showType) {
+                        mFocusLayout.setBackgroundResource(mShowType);
+                    }
+                    mActiveTextProgressBar.setText(getString(status));
                     setTextProgressbarText(msg.arg1);
                     break;
                 case REFRESH_PROGRESSBAR_PROGRESS:
@@ -239,7 +240,7 @@ public class ActiveActivity extends BaseActivity implements View.OnClickListener
                 mInstallService.clickBtnDownload(mAppInfo);
                 break;
             case R.id.network_retry_btn:
-                if (!NetworkUtils.isNetworkConnected(ActiveActivity.this.getApplicationContext())) {
+                if (!NetworkUtils.isNetworkConnected(ActiveActivity.this)) {
                     showToast(R.string.network_connection_disconnect);
                     return;
                 }

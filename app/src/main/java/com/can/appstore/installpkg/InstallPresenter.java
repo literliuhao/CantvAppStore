@@ -110,8 +110,8 @@ public class InstallPresenter implements InstallContract.Presenter {
      */
     @Override
     public void deleteOne(int position) {
-        mDatas.remove(position);
         InstallPkgUtils.deleteApkPkg(mDatas.get(position).getFliePath());//可以删除安装包
+        mDatas.remove(position);
         mView.refreshAll();
         if (mDatas.size() == 0) {
             mView.showNoData();
@@ -178,6 +178,17 @@ public class InstallPresenter implements InstallContract.Presenter {
             cur = 0;
         }
         mView.showCurrentNum(cur, total);
+    }
+
+    /**
+     *判断数据是否为空
+     */
+    public boolean isNull() {
+        if (mDatas.size() == 0 || mDatas == null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

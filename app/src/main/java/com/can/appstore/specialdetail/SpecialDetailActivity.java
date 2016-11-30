@@ -34,6 +34,10 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.NetworkUtils;
 import retrofit2.Response;
 
+/**
+ * Created by Fuwen on 2016/11/s2.
+ * 专题详情页
+ */
 public class SpecialDetailActivity extends BaseActivity {
     public static final String EXTRA_TOPIC_ID = "topicId";
     public static final int FOCUS_IMAGE = R.mipmap.image_focus;
@@ -105,11 +109,8 @@ public class SpecialDetailActivity extends BaseActivity {
             public void onResponse(CanCall<Result<SpecialTopic>> call, Response<Result<SpecialTopic>> response) throws Exception {
                 Result<SpecialTopic> info = response.body();
                 Log.d("SpecialDetailActivity", info.toString());
-                if (info == null) {
-                    showNetworkRetryView(true);
-                    return;
-                }
                 if (info.getData() == null) {
+                    showToast(R.string.no_data);
                     return;
                 }
                 ImageLoader.getInstance().load(SpecialDetailActivity.this, mDetailImgBg, info.getData().getBackground());
@@ -120,7 +121,7 @@ public class SpecialDetailActivity extends BaseActivity {
             @Override
             public void onFailure(CanCall<Result<SpecialTopic>> call, CanErrorWrapper errorWrapper) {
                 Log.d("SpecialDetailActivity", errorWrapper.getReason());
-                if(!NetworkUtils.isNetworkConnected(SpecialDetailActivity.this.getApplicationContext())){
+                if (!NetworkUtils.isNetworkConnected(SpecialDetailActivity.this)) {
                     showToast(R.string.network_connection_disconnect);
                     showNetworkRetryView(true);
                 }
@@ -157,7 +158,7 @@ public class SpecialDetailActivity extends BaseActivity {
         adapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, int position, Object data) {
-                if (!NetworkUtils.isNetworkConnected(SpecialDetailActivity.this.getApplicationContext())) {
+                if (!NetworkUtils.isNetworkConnected(SpecialDetailActivity.this)) {
                     showToast(R.string.network_connection_disconnect);
                     return;
                 }
@@ -199,7 +200,7 @@ public class SpecialDetailActivity extends BaseActivity {
         mRetryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!NetworkUtils.isNetworkConnected(SpecialDetailActivity.this.getApplicationContext())) {
+                if (!NetworkUtils.isNetworkConnected(SpecialDetailActivity.this)) {
                     showToast(R.string.network_connection_disconnect);
                     return;
                 }

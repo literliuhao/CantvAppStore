@@ -326,6 +326,26 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
     }
 
+    /**
+     * 获取指定item位置
+     * @param url
+     * @return
+     */
+    public int getItemPosition(String url) {
+
+        for (int i=0;i<mDatas.size();i++){
+            String downloadUrl = mDatas.get(i).getDownloadUrl();
+            if(downloadUrl.equals(url)){
+                return i;
+            }else if(MD5.MD5(downloadUrl).equals(url)){
+                return i;
+            }
+        }
+
+        return 0;
+
+    }
+
     //未更新app数量监听
     public interface OnUpdateAppNumListener {
 

@@ -127,10 +127,11 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                     mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mDetectionButton, 1.0f);
                     boolean isNull = mPresenter.isNull(0);
-                    if (isNull) {
+                    if(isNull){
+                        mDetectionButton.setNextFocusRightId(R.id.bt_update_detection);
                         mCurrentnum.setVisibility(View.INVISIBLE);
                         mTotalnum.setVisibility(View.INVISIBLE);
-                    } else {
+                    }else{
                         mPresenter.setNum(0);
                     }
                 } else {
@@ -146,10 +147,11 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                     mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mAutoButton, 1.0f);
                     boolean isNull = mPresenter.isNull(0);
-                    if (isNull) {
+                    if(isNull){
+                        mAutoButton.setNextFocusRightId(R.id.bt_update_auto);
                         mCurrentnum.setVisibility(View.INVISIBLE);
                         mTotalnum.setVisibility(View.INVISIBLE);
-                    } else {
+                    }else{
                         mPresenter.setNum(0);
                     }
                 } else {
@@ -337,7 +339,9 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                             progress.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    installUpdateApk(progress, status, updatedIcon, downloadTask.getSaveDirPath(), position);
+                                    status.setVisibility(View.VISIBLE);
+                                    status.setText(getResources().getString(R.string.update_download_installing));
+                                    progress.setVisibility(View.INVISIBLE);
                                 }
                             });
                         }
@@ -374,6 +378,67 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                                     break;
                             }
                             mDownloadManager.cancel(downloadTask);
+                        }
+                    });
+                    mDownloadManager.setAppInstallListener(new AppInstallListener() {
+                        @Override
+                        public void onInstalling(DownloadTask downloadTask) {
+                            String url = downloadTask.getUrl();
+                            //获取position
+                            int itemPosition = mPresenter.getItemPosition(url);
+                            View childAt = mRecyclerView.getChildAt(itemPosition);
+                            final TextView status = (TextView) childAt.findViewById(R.id.tv_updateapp_downloading);
+                            final ProgressBar progressBar = (ProgressBar) childAt.findViewById(R.id.pb_updateapp_progressbar);
+                            status.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    status.setText(getResources().getString(R.string.update_download_installing));
+                                    status.setVisibility(View.VISIBLE);
+                                    progressBar.setVisibility(View.INVISIBLE);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onInstallSucess(String id) {
+                            int itemPosition = mPresenter.getItemPosition(id);
+                            View childAt = mRecyclerView.getChildAt(itemPosition);
+                            final TextView status = (TextView) childAt.findViewById(R.id.tv_updateapp_downloading);
+                            final ImageView updatedicon = (ImageView) childAt.findViewById(R.id.iv_updateapp_updatedicon);
+                            status.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    status.setVisibility(View.INVISIBLE);
+                                    updatedicon.setVisibility(View.VISIBLE);
+                                    mPresenter.getUpdateApkNum(position);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onInstallFail(String id) {
+                            int itemPosition = mPresenter.getItemPosition(id);
+                            View childAt = mRecyclerView.getChildAt(itemPosition);
+                            final TextView status = (TextView) childAt.findViewById(R.id.tv_updateapp_downloading);
+                            final ImageView updatedicon = (ImageView) childAt.findViewById(R.id.iv_updateapp_updatedicon);
+                            status.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    status.setVisibility(View.VISIBLE);
+                                    status.setText(getResources().getString(R.string.update_download_installfalse));
+                                    updatedicon.setVisibility(View.INVISIBLE);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onUninstallSucess(String id) {
+
+                        }
+
+                        @Override
+                        public void onUninstallFail(String id) {
+
                         }
                     });
                 }
