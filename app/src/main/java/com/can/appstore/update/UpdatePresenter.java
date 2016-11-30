@@ -110,10 +110,10 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         });
 
         /*if (mAppInfoBeanList.size() < 1 || mAppInfoBeanList == null) {
-            mView.hideLoadingDialog();
+            mView.hideLoading();
             mView.showNoData();
         } else {
-            mView.hideLoadingDialog();
+            mView.hideLoading();
             mView.hideNoData();
             mDatas.addAll(mAppInfoBeanList);
             mUpdateNumDatas.addAll(mAppInfoBeanList);
@@ -324,6 +324,26 @@ public class UpdatePresenter implements UpdateContract.Presenter {
             e.printStackTrace();
         }
         Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
+    }
+
+    /**
+     * 获取指定item位置
+     * @param url
+     * @return
+     */
+    public int getItemPosition(String url) {
+
+        for (int i=0;i<mDatas.size();i++){
+            String downloadUrl = mDatas.get(i).getDownloadUrl();
+            if(downloadUrl.equals(url)){
+                return i;
+            }else if(MD5.MD5(downloadUrl).equals(url)){
+                return i;
+            }
+        }
+
+        return 0;
+
     }
 
     //未更新app数量监听

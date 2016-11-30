@@ -600,7 +600,7 @@ public class PackageUtil {
             ApplicationInfo applicationInfo = info.applicationInfo;
             boolean isSystemApp = (applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM;
             // 排除不在白名单中的系统应用
-            if (isSystemApp || appWhiteList.contains(info.packageName)) {
+            if (isSystemApp || appWhiteList.contains(info.packageName) || context.getPackageName().equals(info.packageName)) {
                 continue;
             }
             index.incrementAndGet();
