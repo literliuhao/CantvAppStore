@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -91,43 +92,49 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     @Override
     public void startLoad() {
         mView.showLoadingDialog();
-        mAppDetailCall = HttpManager.getApiService().getAppInfo(mAppId, mTopicId);
-        mAppDetailCall.enqueue(new CanCallback<Result<AppInfo>>() {
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void onResponse(CanCall<Result<AppInfo>> call, Response<Result<AppInfo>> response) throws Exception {
-                mView.hideLoadingDialog();
-                Result<AppInfo> info = response.body();
-                if (info == null) {
-                    mView.loadDataFail();
-                    return;
-                }
-                if (info.getData() == null) {
-                    mView.loadDataFail();
-                    return;
-                }
-                mAppInfo = info.getData();
-                mPackageName = mAppInfo.getPackageName();
-                Url = mAppInfo.getUrl();
-                mTaskId = MD5.MD5(Url);
-                initDownloadButtonStatus();
-                if (mAppInfo.getVersionCode() > PackageUtils.getVersionCode(mContext, mPackageName) && ApkUtils.isAvailable(mContext, mPackageName)) {
-                    isShowUpdateButton = true;
-                    initUpdateButtonStatus();
-                    mView.refreshUpdateButton(true);
-                } else {
-                    mView.refreshUpdateButton(false);
-                }
-                mView.loadAppInfoOnSuccess(mAppInfo);
-            }
+            public void run() {
+                mAppDetailCall = HttpManager.getApiService().getAppInfo(mAppId, mTopicId);
+                mAppDetailCall.enqueue(new CanCallback<Result<AppInfo>>() {
+                    @Override
+                    public void onResponse(CanCall<Result<AppInfo>> call, Response<Result<AppInfo>> response) throws Exception {
+                        mView.hideLoadingDialog();
+                        Result<AppInfo> info = response.body();
+                        if (info == null) {
+                            mView.loadDataFail();
+                            return;
+                        }
+                        if (info.getData() == null) {
+                            mView.loadDataFail();
+                            return;
+                        }
+                        mAppInfo = null;
+                        mAppInfo = info.getData();
+                        mPackageName = mAppInfo.getPackageName();
+                        Url = mAppInfo.getUrl();
+                        mTaskId = MD5.MD5(Url);
+                        initDownloadButtonStatus();
+                        if (mAppInfo.getVersionCode() > PackageUtils.getVersionCode(mContext, mPackageName) && ApkUtils.isAvailable(mContext, mPackageName)) {
+                            isShowUpdateButton = true;
+                            initUpdateButtonStatus();
+                            mView.refreshUpdateButton(true);
+                        } else {
+                            mView.refreshUpdateButton(false);
+                        }
+                        mView.loadAppInfoOnSuccess(mAppInfo);
+                    }
 
-            @Override
-            public void onFailure(CanCall<Result<AppInfo>> call, CanErrorWrapper errorWrapper) {
-                Log.d(TAG, "onFailure: " + errorWrapper.getReason());
-                ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.load_data_faild));
-                mView.hideLoadingDialog();
-                mView.loadDataFail();
+                    @Override
+                    public void onFailure(CanCall<Result<AppInfo>> call, CanErrorWrapper errorWrapper) {
+                        Log.d(TAG, "onFailure: " + errorWrapper.getReason());
+                        ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.load_data_faild));
+                        mView.hideLoadingDialog();
+                        mView.loadDataFail();
+                    }
+                });
             }
-        });
+        }, 300);
     }
 
     private void initDownloadButtonStatus() {

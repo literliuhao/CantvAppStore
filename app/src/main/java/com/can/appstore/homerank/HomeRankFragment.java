@@ -19,10 +19,11 @@ import com.can.appstore.entity.Ranking;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.index.ui.FragmentEnum;
-import com.can.appstore.search.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.can.tvlib.utils.ToastUtils;
 
 public class HomeRankFragment extends BaseFragment implements HomeRankContract.View {
 
@@ -99,7 +100,7 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
 
     @Override
     public void startLoading() {
-        ToastUtil.toastLong("开始加载数据...");
+        ToastUtils.showMessageLong(getActivity().getApplicationContext(), "开始加载数据...");
     }
 
     @Override

@@ -112,7 +112,7 @@ public class UpdateUtils {
      */
     public static List<AppInfo> getAppList() {
         ArrayList<AppInfo> appList = new ArrayList<AppInfo>();
-        PackageManager pm = MyApp.mContext.getPackageManager();
+        PackageManager pm = MyApp.getContext().getPackageManager();
         List<PackageInfo> packages = pm.getInstalledPackages(0);
         for (PackageInfo packageInfo : packages) {
             // 判断系统/非系统应用
@@ -176,7 +176,7 @@ public class UpdateUtils {
     public static List<AppInfoBean> getAppInfoBeanList() {
         ArrayList<AppInfoBean> appList = new ArrayList<AppInfoBean>();
         int i = 30;
-        PackageManager pm = MyApp.mContext.getPackageManager();
+        PackageManager pm = MyApp.getContext().getPackageManager();
         List<PackageInfo> packages = pm.getInstalledPackages(0);
         for (PackageInfo packageInfo : packages) {
             // 判断系统/非系统应用

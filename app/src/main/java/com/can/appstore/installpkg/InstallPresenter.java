@@ -2,7 +2,6 @@ package com.can.appstore.installpkg;
 
 import android.content.Context;
 
-import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.installpkg.utils.InstallPkgUtils;
 import com.can.appstore.update.model.AppInfoBean;
@@ -41,7 +40,7 @@ public class InstallPresenter implements InstallContract.Presenter {
         InstallPkgUtils.myFiles.clear();
         //mPath = Environment.getExternalStorageDirectory().getPath().toString();
         //mPath = Environment.getExternalStorageDirectory().getPath().toString() + File.separator + "Movies";
-        mPath = MyApp.mContext.getExternalCacheDir().getAbsolutePath();
+        mPath = mContext.getExternalCacheDir().getAbsolutePath();
         List appList = InstallPkgUtils.FindAllAPKFile(mPath);
         mDatas.clear();
         if (appList.size() < 1) {
@@ -207,7 +206,7 @@ public class InstallPresenter implements InstallContract.Presenter {
         mDatas.get(position).setInstalling(true);//开始安装
         //mInstallDatas.add(mDatas.get(position));//加入安装中集合
         mDatas.get(position).setInstall(true);//positon传递
-        InstallPkgUtils.installApkFromF(MyApp.mContext,
+        InstallPkgUtils.installApkFromF(mContext,
                 new File(mDatas.get(position).getFliePath()), true, mDatas.get(position).getPackageName());
     }
 

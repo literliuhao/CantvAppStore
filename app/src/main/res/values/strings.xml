@@ -164,6 +164,7 @@
     <string name="btn_tag_msg">全标为已读</string>
     <string name="btn_clear_msg">清空</string>
     <string name="txt_empty_msg">暂无消息</string>
+    <string name="connect_net_fail">网络链接失败</string>
 
     <!--应用、排行列表文本-->
     <string name="illegal_page_type">非法页面类型！</string>

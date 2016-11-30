@@ -19,7 +19,6 @@ import com.can.appstore.index.model.ActionUtils;
 
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
-import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.utils.DisplayUtil;
 
 import static cn.can.tvlib.imageloader.GlideLoadTask.SuccessCallback;
@@ -104,7 +103,7 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
         FrameLayout imageFrame;
         for (int j = 0; j < mNavigation.getLayout().size(); j++) {
             final Layout childBean = mNavigation.getLayout().get(j);
-            final RoundCornerImageView myImageView = new RoundCornerImageView(getActivity());
+            final MyImageView myImageView = new MyImageView(getActivity());
             myImageView.setScaleType(MyImageView.ScaleType.CENTER_INSIDE);
 //            myImageView.setImageURI(childBean.getIcon());
             imageFrame = new FrameLayout(context);

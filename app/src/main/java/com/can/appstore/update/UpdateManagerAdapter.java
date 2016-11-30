@@ -47,7 +47,7 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
     public UpdateManagerAdapter(List<AppInfoBean> datas) {
         super(datas);
         mDatas = datas;
-        mDownloadManager = DownloadManager.getInstance(MyApp.mContext);
+        mDownloadManager = DownloadManager.getInstance(MyApp.getContext());
     }
 
     @Override
@@ -98,32 +98,32 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
             //获取更新状态
             if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PREPARE) {
                 updateHolder.downloading.setVisibility(View.VISIBLE);
-                updateHolder.downloading.setText(MyApp.mContext.getResources().getString(R.string.update_download_waitting));
+                updateHolder.downloading.setText(MyApp.getContext().getResources().getString(R.string.update_download_waitting));
                 updateHolder.progressbar.setVisibility(View.INVISIBLE);
             } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
                 updateHolder.downloading.setVisibility(View.VISIBLE);
-                updateHolder.downloading.setText(MyApp.mContext.getResources().getString(R.string.update_download_waitting));
+                updateHolder.downloading.setText(MyApp.getContext().getResources().getString(R.string.update_download_waitting));
                 updateHolder.progressbar.setVisibility(View.VISIBLE);
                 updateHolder.progressbar.setProgress((int) curDownloadTask.getPercent());
             } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING) {
                 updateHolder.downloading.setVisibility(View.VISIBLE);
-                updateHolder.downloading.setText(MyApp.mContext.getResources().getString(R.string.update_downloading));
+                updateHolder.downloading.setText(MyApp.getContext().getResources().getString(R.string.update_downloading));
                 updateHolder.progressbar.setVisibility(View.VISIBLE);
                 updateHolder.progressbar.setProgress((int) curDownloadTask.getPercent());
             } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_COMPLETED || downloadStatus == AppInstallListener.APP_INSTALLING) {
                 updateHolder.downloading.setVisibility(View.VISIBLE);
-                updateHolder.downloading.setText(MyApp.mContext.getResources().getString(R.string.update_download_installing));
+                updateHolder.downloading.setText(MyApp.getContext().getResources().getString(R.string.update_download_installing));
                 updateHolder.progressbar.setVisibility(View.INVISIBLE);
             } else if (downloadStatus == AppInstallListener.APP_INSTALL_FAIL) {
                 updateHolder.downloading.setVisibility(View.VISIBLE);
-                updateHolder.downloading.setText(MyApp.mContext.getResources().getString(R.string.update_download_installfalse));
+                updateHolder.downloading.setText(MyApp.getContext().getResources().getString(R.string.update_download_installfalse));
                 updateHolder.progressbar.setVisibility(View.INVISIBLE);
             } else if (downloadStatus == AppInstallListener.APP_INSTALL_SUCESS) {
                 updateHolder.downloading.setVisibility(View.INVISIBLE);
                 updateHolder.progressbar.setVisibility(View.INVISIBLE);
             } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {
                 updateHolder.downloading.setVisibility(View.VISIBLE);
-                updateHolder.downloading.setText(MyApp.mContext.getResources().getString(R.string.update_download_false));
+                updateHolder.downloading.setText(MyApp.getContext().getResources().getString(R.string.update_download_false));
                 updateHolder.progressbar.setVisibility(View.INVISIBLE);
             } else {
                 updateHolder.downloading.setVisibility(View.INVISIBLE);
@@ -184,25 +184,25 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                         @Override
                         public void run() {
                             updateHolder.downloading.setVisibility(View.VISIBLE);
-                            updateHolder.downloading.setText(MyApp.mContext.getResources().getString(R.string.update_download_false));
+                            updateHolder.downloading.setText(MyApp.getContext().getResources().getString(R.string.update_download_false));
                             updateHolder.progressbar.setVisibility(View.INVISIBLE);
                         }
                     });
                     switch (errorCode) {
                         case DOWNLOAD_ERROR_FILE_NOT_FOUND:
-                            ToastUtils.showMessage(MyApp.mContext, "未找到下载文件");
+                            ToastUtils.showMessage(MyApp.getContext(), "未找到下载文件");
                             Log.i(TAG, "未找到下载文件: ");
                             break;
                         case DOWNLOAD_ERROR_IO_ERROR:
-                            ToastUtils.showMessage(MyApp.mContext, "IO异常");
+                            ToastUtils.showMessage(MyApp.getContext(), "IO异常");
                             Log.i(TAG, "IO异常: ");
                             break;
                         case DOWNLOAD_ERROR_NETWORK_ERROR:
-                            ToastUtils.showMessage(MyApp.mContext, "网络异常，请重试！");
+                            ToastUtils.showMessage(MyApp.getContext(), "网络异常，请重试！");
                             Log.i(TAG, "网络异常，请重试！");
                             break;
                         case DOWNLOAD_ERROR_UNKONW_ERROR:
-                            ToastUtils.showMessage(MyApp.mContext, "未知错误");
+                            ToastUtils.showMessage(MyApp.getContext(), "未知错误");
                             Log.i(TAG, "未知错误: ");
                             break;
                         default:
@@ -227,7 +227,7 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
             Log.i(TAG, "run: " + "安装成功");
         } else {
             updateHolder.downloading.setVisibility(View.VISIBLE);
-            updateHolder.downloading.setText(MyApp.mContext.getResources().getString(R.string.update_download_installfalse));
+            updateHolder.downloading.setText(MyApp.getContext().getResources().getString(R.string.update_download_installfalse));
             updateHolder.updatedIcon.setVisibility(View.INVISIBLE);
             Log.i(TAG, "run: " + "安装失败");
         }
@@ -254,30 +254,30 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
         switch (downloadStatus) {
             case DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING:
                 status.setVisibility(View.VISIBLE);
-                status.setText(MyApp.mContext.getResources().getString(R.string.update_downloading));
+                status.setText(MyApp.getContext().getResources().getString(R.string.update_downloading));
                 break;
             case DownloadStatus.DOWNLOAD_STATUS_INIT:
             case DownloadStatus.DOWNLOAD_STATUS_PREPARE:
             case DownloadStatus.DOWNLOAD_STATUS_START:
             case DownloadStatus.DOWNLOAD_STATUS_PAUSE:
                 status.setVisibility(View.VISIBLE);
-                status.setText(MyApp.mContext.getResources().getString(R.string.update_download_waitting));
+                status.setText(MyApp.getContext().getResources().getString(R.string.update_download_waitting));
                 break;
             case DownloadStatus.DOWNLOAD_STATUS_COMPLETED:
             case AppInstallListener.APP_INSTALLING:
                 status.setVisibility(View.VISIBLE);
-                status.setText(MyApp.mContext.getResources().getString(R.string.update_download_installing));
+                status.setText(MyApp.getContext().getResources().getString(R.string.update_download_installing));
                 break;
             case AppInstallListener.APP_INSTALL_FAIL:
                 status.setVisibility(View.VISIBLE);
-                status.setText(MyApp.mContext.getResources().getString(R.string.update_download_installfalse));
+                status.setText(MyApp.getContext().getResources().getString(R.string.update_download_installfalse));
                 break;
             case AppInstallListener.APP_INSTALL_SUCESS:
                 status.setVisibility(View.INVISIBLE);
                 break;
             case DownloadStatus.DOWNLOAD_STATUS_ERROR:
                 status.setVisibility(View.VISIBLE);
-                status.setText(MyApp.mContext.getResources().getString(R.string.update_download_false));
+                status.setText(MyApp.getContext().getResources().getString(R.string.update_download_false));
                 break;
             default:
                 status.setVisibility(View.INVISIBLE);

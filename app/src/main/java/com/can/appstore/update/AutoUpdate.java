@@ -2,7 +2,6 @@ package com.can.appstore.update;
 
 import android.content.Context;
 
-import com.can.appstore.MyApp;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.ListResult;
 import com.can.appstore.http.CanCall;
@@ -35,7 +34,7 @@ public class AutoUpdate {
      */
     public static void autoUpdate(Context context) {
         //判断是否开启自动更新
-        boolean isAutoUpdate = PreferencesUtils.getBoolean(MyApp.mContext, "AUTO_UPDATE", false);
+        boolean isAutoUpdate = PreferencesUtils.getBoolean(context, "AUTO_UPDATE", false);
         if (isAutoUpdate == false) {
             return;
         }

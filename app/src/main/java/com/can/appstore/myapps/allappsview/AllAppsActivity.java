@@ -26,7 +26,6 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
-import static com.can.appstore.MyApp.mContext;
 
 /**
  * Created by wei on 2016/10/26.
@@ -34,12 +33,13 @@ import static com.can.appstore.MyApp.mContext;
 
 public class AllAppsActivity extends BaseActivity implements AllAppsContract.View {
 
+    public static final int MIN_DOWN_INTERVAL = 80;//响应点击事件的最小间隔事件
+    public static final int UNINSTALL_LAST_POSITION_DELAYE = 490;//卸载最后一个位置延时请求焦点
     public static String TAG = "AllAppsActivity";
     private List<AppInfo> allAppList = null;
     private CanRecyclerView mAllAppsRecyclerView;
     private AllAppsRecyclerViewAdapter mAdapter;
     private AllAppsPresenter mAllAppsPresenter;
-
     private TextView tvCurRows;
     private TextView tvTotalRows;
     private LinearLayout ll_edit;
@@ -48,7 +48,6 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
     private Button butUninstall;
     //卸载对话框
     private CanDialog mCanDialog;
-
     //焦点框和焦点处理
     private FocusMoveUtil focusMoveUtil;
     private View mFocusedListChild;
@@ -56,8 +55,17 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
     private boolean focusSearchFailed;
     private CanRecyclerViewAdapter.OnFocusChangeListener myFocusChangesListener;
     private long mTime;
-    public static final int MIN_DOWN_INTERVAL = 80;//响应点击事件的最小间隔事件
-    public static final int UNINSTALL_LAST_POSITION_DELAYE = 490;//卸载最后一个位置延时请求焦点
+
+    /**
+     * 打开全部应用
+     * *
+     *
+     * @param context
+     */
+    public static void actionStart(Context context) {
+        Intent intent = new Intent(context, AllAppsActivity.class);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +103,6 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
         });
         mAllAppsRecyclerView.addItemDecoration(new CanRecyclerViewDivider(android.R.color.transparent, 40, 0));
     }
-
 
     @Override
     public void loadAllAppInfoSuccess(List<AppInfo> infoList) {
@@ -227,13 +234,12 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
         });
     }
 
-
     @Override
     public void showUninstallDialog(AppInfo app) {
         Log.d(TAG, "showUninstallDialog" + "app" + app.toString());
-        String ok = mContext.getResources().getString(R.string.ok);
-        String cancle = mContext.getResources().getString(R.string.cancle);
-        String makesureUninstall = mContext.getResources().getString(R.string.makesure_uninstall_apk);
+        String ok = getResources().getString(R.string.ok);
+        String cancle = getResources().getString(R.string.cancle);
+        String makesureUninstall = getResources().getString(R.string.makesure_uninstall_apk);
         Drawable mIcon = app.appIcon;
         final String mName = app.appName;
         final String mPackName = app.packageName;
@@ -269,7 +275,6 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
         mAllAppsPresenter.silentUninstall(name, packname);
     }
 
-
     @Override
     public void showLoading() {
         mAllAppsPresenter.showLoading("");
@@ -280,7 +285,6 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
         mAllAppsPresenter.hideLoading();
     }
 
-
     @Override
     protected void onHomeKeyDown() {
         if (mCanDialog != null) {
@@ -288,27 +292,6 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
         }
         finish();
     }
-
-    private class myOnItemClickListener implements CanRecyclerViewAdapter.OnItemClickListener {
-        @Override
-        public void onClick(View view, int position, Object data) {
-            mAllAppsPresenter.startApp(position);
-        }
-    }
-
-    private class MyFocusRunnable implements Runnable {
-        @Override
-        public void run() {
-            if (mFocusedListChild != null) {
-                if (focusSearchFailed) {
-                    focusMoveUtil.startMoveFocus(mFocusedListChild);
-                } else {
-                    focusMoveUtil.startMoveFocus(mFocusedListChild, 0);
-                }
-            }
-        }
-    }
-
 
     private void addFocusListener() {
         myFocusChangesListener = new CanRecyclerViewAdapter.OnFocusChangeListener() {
@@ -323,26 +306,6 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
             }
         };
         mAdapter.setOnFocusChangeListener(myFocusChangesListener);
-    }
-
-    private class MyOnItemKeyEventListener implements CanRecyclerViewAdapter.OnItemKeyEventListener {
-        @Override
-        public boolean onItemKeyEvent(int position, View v, int keyCode, KeyEvent event) {
-            if (keyCode == KeyEvent.KEYCODE_MENU) {
-                mAdapter.setOnFocusChangeListener(null);
-                ll_edit = (LinearLayout) v.findViewById(R.id.allapps_ll_edit);
-                butStrartapp = (Button) ll_edit.findViewById(R.id.allapps_but_startapp);
-                butUninstall = (Button) ll_edit.findViewById(R.id.allapps_but_uninstallapp);
-                ll_edit.setVisibility(View.VISIBLE);
-                if (allAppList.get(position).isSystemApp) {
-                    butUninstall.setVisibility(View.GONE);
-                } else {
-                    butUninstall.setVisibility(View.VISIBLE);
-                }
-                editItem(v, position);
-            }
-            return false;
-        }
     }
 
     public void hideEditView(View item) {
@@ -366,15 +329,44 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
         super.onDestroy();
     }
 
-    /**
-     * 打开全部应用
-     * *
-     *
-     * @param context
-     */
-    public static void actionStart(Context context) {
-        Intent intent = new Intent(context, AllAppsActivity.class);
-        context.startActivity(intent);
+    private class myOnItemClickListener implements CanRecyclerViewAdapter.OnItemClickListener {
+        @Override
+        public void onClick(View view, int position, Object data) {
+            mAllAppsPresenter.startApp(position);
+        }
+    }
+
+    private class MyFocusRunnable implements Runnable {
+        @Override
+        public void run() {
+            if (mFocusedListChild != null) {
+                if (focusSearchFailed) {
+                    focusMoveUtil.startMoveFocus(mFocusedListChild);
+                } else {
+                    focusMoveUtil.startMoveFocus(mFocusedListChild, 0);
+                }
+            }
+        }
+    }
+
+    private class MyOnItemKeyEventListener implements CanRecyclerViewAdapter.OnItemKeyEventListener {
+        @Override
+        public boolean onItemKeyEvent(int position, View v, int keyCode, KeyEvent event) {
+            if (keyCode == KeyEvent.KEYCODE_MENU) {
+                mAdapter.setOnFocusChangeListener(null);
+                ll_edit = (LinearLayout) v.findViewById(R.id.allapps_ll_edit);
+                butStrartapp = (Button) ll_edit.findViewById(R.id.allapps_but_startapp);
+                butUninstall = (Button) ll_edit.findViewById(R.id.allapps_but_uninstallapp);
+                ll_edit.setVisibility(View.VISIBLE);
+                if (allAppList.get(position).isSystemApp) {
+                    butUninstall.setVisibility(View.GONE);
+                } else {
+                    butUninstall.setVisibility(View.VISIBLE);
+                }
+                editItem(v, position);
+            }
+            return false;
+        }
     }
 
 }

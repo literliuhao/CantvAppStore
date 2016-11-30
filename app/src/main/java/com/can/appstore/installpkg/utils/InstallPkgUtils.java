@@ -58,7 +58,7 @@ public class InstallPkgUtils {
                     AppInfoBean bean = new AppInfoBean();
                     String apk_path = null;
                     apk_path = file.getAbsolutePath();
-                    PackageManager pm = MyApp.mContext.getPackageManager();
+                    PackageManager pm = MyApp.getContext().getPackageManager();
                     PackageInfo packageInfo = pm.getPackageArchiveInfo(apk_path, GET_ACTIVITIES);
                     ApplicationInfo appInfo = packageInfo.applicationInfo;
                     /**获取apk的图标 */
@@ -216,7 +216,7 @@ public class InstallPkgUtils {
 
         long space = SdcardUtils.getSDCardAvailableSpace() / 1014 / 1024;
         if (space < 50) {
-            ToastUtils.showMessageLong(MyApp.mContext, cn.can.downloadlib.R.string.error_msg);
+            ToastUtils.showMessageLong(MyApp.getContext(), cn.can.downloadlib.R.string.error_msg);
             return 50;
         }
         ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r" + path, false);
@@ -250,7 +250,7 @@ public class InstallPkgUtils {
 
         long space = SdcardUtils.getSDCardAvailableSpace() / 1014 / 1024;
         if (space < 50) {
-            ToastUtils.showMessageLong(MyApp.mContext, cn.can.downloadlib.R.string.error_msg);
+            ToastUtils.showMessageLong(MyApp.getContext(), cn.can.downloadlib.R.string.error_msg);
             return 50;
         }
 

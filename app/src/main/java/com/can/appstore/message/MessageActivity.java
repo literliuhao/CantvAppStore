@@ -20,13 +20,13 @@ import com.can.appstore.message.adapter.MessageAdapter;
 import com.can.appstore.message.db.entity.MessageInfo;
 import com.can.appstore.message.manager.GreenDaoManager;
 import com.can.appstore.message.manager.MessageManager;
-import com.can.appstore.search.ToastUtil;
 import com.can.appstore.specialdetail.SpecialDetailActivity;
 
 import java.util.List;
 
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.utils.NetworkUtils;
+import cn.can.tvlib.utils.ToastUtils;
 
 /**
  * 消息主页面
@@ -54,8 +54,8 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
         initView();
-        initData();
         initFocusView();
+        initData();
     }
 
     private void initView() {
@@ -63,12 +63,12 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         btnClear = (Button) findViewById(R.id.btn_clear);
         btnTag.setOnClickListener(this);
         btnClear.setOnClickListener(this);
-        btnTag.setOnFocusChangeListener(this);
+        //btnTag.setOnFocusChangeListener(this);
         btnClear.setOnFocusChangeListener(this);
         itemPos = (TextView) findViewById(R.id.tv_item_pos);
         itemTotal = (TextView) findViewById(R.id.tv_item_total);
         empty = (TextView) findViewById(R.id.tv_empty_msg);
-        showLoadingDialog(getResources().getDimensionPixelSize(R.dimen.px132));
+        showLoadingDialog(getResources().getDimensionPixelSize(R.dimen.px132));   //显示偏移的Loading
     }
 
     private void initFocusView() {
@@ -76,32 +76,39 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void initData() {
-        mHandler = new Handler();
         dbManager = new GreenDaoManager();
-        mFocusMoveRunnable = new Runnable() {
-            @Override
-            public void run() {
-                View focusedView = MessageActivity.this.mFocusedView;
-                if (focusedView == null || !focusedView.isFocused()) {
-                    return;
-                }
-                focusMoveUtil.startMoveFocus(focusedView);
-            }
-        };
-        msgList = queryData();
+        //查询数据库消息数据
+        msgList = dbManager.queryMsg(System.currentTimeMillis() / 1000);
         hideLoadingDialog();
         if (msgList != null && !msgList.isEmpty()) {
+            mHandler = new Handler();
+            mFocusMoveRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    View focusedView = MessageActivity.this.mFocusedView;
+                    if (focusedView == null || !focusedView.isFocused()) {
+                        return;
+                    }
+                    focusMoveUtil.startMoveFocus(focusedView);
+                }
+            };
+            btnTag.setOnFocusChangeListener(this);
             initAdapter();
             initRecyclerView();
             refreshTotalText(msgList.size());
         } else {
+            //注意：在onCreate方法中并没有真正的创建出btnTag，直接使用btnTag.requestFocus();是设不上焦点框的。
+            btnTag.post(new Runnable() {
+                @Override
+                public void run() {
+                    btnTag.requestFocus();
+                    focusMoveUtil.setFocusView(btnTag);
+                }
+            });
             empty.setVisibility(View.VISIBLE);
         }
     }
 
-    private List<MessageInfo> queryData() {
-        return dbManager.queryMsg(System.currentTimeMillis() / 1000);
-    }
 
     private void initAdapter() {
         mAdapter = new MessageAdapter(msgList);
@@ -115,7 +122,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                     return;
                 }
                 if (!isNetConnected && !msg.getAction().equals(ActionConstants.ACTION_NOTHIN)) {
-                    ToastUtil.toastShort("网络连接失败");
+                    ToastUtils.showMessageLong(MessageActivity.this.getApplicationContext(), R.string.connect_net_fail);
                     return;
                 }
                 switch (msg.getAction()) {
@@ -173,13 +180,13 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                     return;
                 }
                 deleteLastItem = position == msgCount + 1;
-                final int posi = deleteLastItem ? position - 1 : position;
-                focusMsgItem(posi);
+                final int pos = deleteLastItem ? position - 1 : position;
+                focusMsgItem(pos);
                 focusViewMoveEnable = false;
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        focusMsgItemInRunnable(posi);
+                        focusMsgItemInRunnable(pos);
                     }
                 }, 400);
             }
@@ -255,8 +262,8 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         });
     }
 
-    private void focusMsgItem(int focusPosi) {
-        View childView = mRecyclerView.getChildAt(focusPosi - llManager.findFirstVisibleItemPosition());
+    private void focusMsgItem(int focusPos) {
+        View childView = mRecyclerView.getChildAt(focusPos - llManager.findFirstVisibleItemPosition());
         if (childView != null) {
             mFocusedView = childView.findViewById(R.id.item_ll_focus_msg);
             mFocusedView.requestFocus();
