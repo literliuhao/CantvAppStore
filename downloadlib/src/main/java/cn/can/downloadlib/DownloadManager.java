@@ -314,7 +314,9 @@ public class DownloadManager implements AppInstallListener {
                     .getFileName(), task.getDownloadStatus(), task.getIcon());
             mDownloadDao.insertOrReplace(dbEntity);
         }
-
+        /**修复添加任务时，多个消息同时轮询问题 xzl 2016-11-30 16:20:33  start */
+        mHander.removeMessages(MSG_SUBMIT_TASK);
+        /**修复添加任务时，多个消息同时轮询问题 xzl 2016-11-30 16:20:33  end */
         mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
         return true;
     }
@@ -361,7 +363,6 @@ public class DownloadManager implements AppInstallListener {
                 downloadTask.setDownloadDao(mDownloadDao);
                 downloadTask.setHttpClient(mOkHttpClient);
                 downloadTask.setAppListener(this);
-                mTaskManager.put(downloadTask);
             }
         }
         if (downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_PAUSE
@@ -369,7 +370,10 @@ public class DownloadManager implements AppInstallListener {
                 || downloadTask.getDownloadStatus() == DownloadStatus.SPACE_NOT_ENOUGH) {
             downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
         }
-
+        /**修复暂停恢复任务无法继续下载问题xzl 2016-11-30 16:20:33  start */
+        mTaskManager.put(downloadTask);
+        mHander.removeMessages(MSG_SUBMIT_TASK);
+        /**修复暂停恢复任务无法继续下载问题xzl 2016-11-30 16:20:33  end */
         mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
         return downloadTask;
     }

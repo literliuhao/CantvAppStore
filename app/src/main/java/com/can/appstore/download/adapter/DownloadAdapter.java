@@ -72,7 +72,6 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
 
     @Override
     protected void bindContentData(DownloadTask task, RecyclerView.ViewHolder holder, int position) {
-        Log.i(TAG, "bindContentData: task=" + task.toString());
         final DownloadViewHolder viewHolder = (DownloadViewHolder) holder;
         viewHolder.appNameTv.setText(task.getFileName());
         viewHolder.position = position;

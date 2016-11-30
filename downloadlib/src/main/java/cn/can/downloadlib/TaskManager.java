@@ -62,7 +62,12 @@ public class TaskManager {
      * @return
      */
     public synchronized boolean put(DownloadTask task) {
-        boolean flg =  mWorkTaskQueue.offer(task.getId());
+        boolean flg = false;
+        /**添加工作任务队列判断，是否包含下载任务 xzl 2016-11-30 17:41:42 start*/
+        if(!mWorkTaskQueue.contains(task.getId())){
+            flg=mWorkTaskQueue.offer(task.getId());
+        }
+        /**添加工作任务队列判断，是否包含下载任务 xzl 2016-11-30 17:41:42 end*/
         if (flg) {
             mCurrentTaskMap.put(task.getId(), task);
         }
