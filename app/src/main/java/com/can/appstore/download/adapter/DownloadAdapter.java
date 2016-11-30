@@ -498,9 +498,10 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                         }
                         break;
                     case AppInstallListener.APP_INSTALL_FAIL:
+                    case DownloadStatus.DOWNLOAD_STATUS_COMPLETED:
                         //TODO 安装失败的重试 待改。
                         if (FileUtils.isFileExist(holder.downloadTask.getFilePath())) {
-                            DownloadManager.getInstance(v.getContext().getApplicationContext()).onInstalling(holder
+                            DownloadManager.getInstance(v.getContext().getApplicationContext()).install(holder
                                     .downloadTask);
                         } else {
                             //如果文件被删除，重新下载。

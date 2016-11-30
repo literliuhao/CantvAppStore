@@ -64,8 +64,8 @@ public class DownloadLeadAcitivity extends AppCompatActivity {
 
     private void initTest() {
         mDownLoadManager = DownloadManager.getInstance(this.getApplicationContext());
-        mDownLoadManager.resumeAllTasks();
-        mDownLoadManager.setPoolSize(3);
+       // mDownLoadManager.resumeAllTasks();
+       // mDownLoadManager.setPoolSize(3);
 
         this.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override

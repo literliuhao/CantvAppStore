@@ -63,6 +63,7 @@ public class DownloadTask implements Runnable {
         task.setDownloadStatus(entity.getDownloadStatus());
         task.setId(entity.getDownloadId());
         task.setUrl(entity.getUrl());
+        task.setIcon(entity.getIcon());
         task.setFileName(entity.getFileName());
         task.setSaveDirPath(entity.getSaveDirPath());
         task.setCompletedSize(entity.getDownloadedSize());
@@ -451,6 +452,7 @@ public class DownloadTask implements Runnable {
                 ", mTotalSize=" + mTotalSize +
                 ", mDownloadedSize=" + mDownloadedSize +
                 ", mUrl='" + mUrl + '\'' +
+                ", mIcon='" + mIcon + '\'' +
                 ", mSaveDirPath='" + mSaveDirPath + '\'' +
                 ", mDownloadStatus=" + mDownloadStatus +
                 ", mFileName='" + mFileName + '\'' +

@@ -277,7 +277,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_INIT || downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PREPARE) {
             DownloadTask Task = new DownloadTask();
             String fileName = mTaskId;
-            Task.setFileName(fileName);
+            Task.setFileName(mAppInfo.getName());
             Task.setId(fileName);
             Task.setUrl(Url);
             Task.setIcon(mAppInfo.getIcon());
