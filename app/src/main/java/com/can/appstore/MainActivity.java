@@ -15,7 +15,7 @@ import com.can.appstore.installpkg.InstallManagerActivity;
 import com.can.appstore.message.MessageActivity;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.specialdetail.SpecialDetailActivity;
-import com.can.appstore.specialtopic.SpecialActivity;
+import com.can.appstore.speciallist.SpecialActivity;
 import com.can.appstore.uninstallmanager.UninstallManagerActivity;
 
 //import com.can.appstore.myapps.ui.CustomFolderIconActivity;

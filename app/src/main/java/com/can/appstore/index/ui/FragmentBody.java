@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.Target;
 import com.can.appstore.R;
@@ -17,11 +18,11 @@ import com.can.appstore.entity.Navigation;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.model.ActionUtils;
 
+import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
+import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.utils.DisplayUtil;
-
-import static cn.can.tvlib.imageloader.GlideLoadTask.SuccessCallback;
 
 /**
  * Created by liuhao on 2016/10/17.
@@ -103,11 +104,11 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
         FrameLayout imageFrame;
         for (int j = 0; j < mNavigation.getLayout().size(); j++) {
             final Layout childBean = mNavigation.getLayout().get(j);
-            final MyImageView myImageView = new MyImageView(getActivity());
+            final RoundCornerImageView myImageView = new RoundCornerImageView(getActivity());
             myImageView.setScaleType(MyImageView.ScaleType.CENTER_INSIDE);
 //            myImageView.setImageURI(childBean.getIcon());
             imageFrame = new FrameLayout(context);
-            imageFrame.setId(j);
+            imageFrame.setId(Integer.parseInt(childBean.getId()));
             imageFrame.setBackground(getResources().getDrawable(R.drawable.index_recommend));
             imageFrame.setFocusable(true);
             imageFrame.setOnFocusChangeListener(FragmentBody.this);
@@ -116,19 +117,24 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
                 public void onClick(View view) {
                     try {
                         //StartActivity
-                        ActionUtils.convertAction(context, childBean.getAction(), childBean.getActionData());
+                        ActionUtils.convertAction(context, childBean.getId(), childBean.getAction(), childBean.getActionData());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             });
-            ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, getResources().getDimension(R.dimen.px8))).size(childBean.getWidth(), childBean.getHeight()).placeholder(R.mipmap.icon_load_default).errorHolder(R.mipmap.icon_loading_fail).successCallback(new SuccessCallback() {
-                @Override
-                public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                    myImageView.setImageDrawable(resource);
-                    return true;
-                }
-            }).build().start(context);
+
+            if (ActionUtils.checkURL(childBean.getIcon())) {
+                ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, getResources().getDimension(R.dimen.px8))).size(childBean.getWidth(), childBean.getHeight()).placeholder(R.mipmap.icon_load_default).errorHolder(R.mipmap.icon_loading_fail).successCallback(new GlideLoadTask.SuccessCallback() {
+                    @Override
+                    public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        myImageView.setImageDrawable(resource);
+                        return true;
+                    }
+                }).build().start(context);
+            } else {
+                Glide.with(context).load(ActionUtils.getResourceId(childBean.getIcon())).into(myImageView);
+            }
 
             FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             imageFrame.setLeft(childBean.getX());
@@ -146,6 +152,15 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
         mainLayout.addView(horizontalScrollView);
         return mainLayout;
     }
+
+//    private String getResourceId(String str) {
+//        switch (str) {
+//            case "1":
+//                return R.drawable.app_introduce_bg;
+//            default:
+//                return R.drawable.icon_02;
+//        }
+//    }
 
     private Navigation converPosition(Navigation mNavigation, float scale) {
         Navigation converNavigation = mNavigation;

@@ -1,5 +1,6 @@
 package com.can.appstore.message.adapter;
 
+import android.content.Context;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
@@ -28,9 +29,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
     private View.OnFocusChangeListener mFocusListener;
     private OnItemRemoveListener mRemoveListener;
     private View mFocusedDeleteBtn;
+    private final Context context;
     private LayoutInflater mLayoutInflater;
-    private Handler mHandler = new Handler();
-    Runnable showMsgDelete = new Runnable() {
+    private final Handler mHandler = new Handler();
+    private final Runnable showMsgDelete = new Runnable() {
         @Override
         public void run() {
             if (mFocusedDeleteBtn != null) {
@@ -48,7 +50,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
     }
 
     public interface OnMsgFocusLayoutClickListener {
-        void onMsgFocusLayoutClick(View view, int position);
+        void onMsgFocusLayoutClick(int position);
     }
 
     public void setOnMsgFocusLayoutClickListener(OnMsgFocusLayoutClickListener msgFocusLayoutClickListener) {
@@ -67,7 +69,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
         this.mFocusListener = focusListener;
     }
 
-    public MessageAdapter(List<MessageInfo> msgList) {
+    public MessageAdapter(Context context , List<MessageInfo> msgList) {
+        this.context = context;
         this.msgList = msgList;
     }
 
@@ -80,7 +83,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
         if (mLayoutInflater == null) {
             mLayoutInflater = LayoutInflater.from(parent.getContext());
         }
-        View view = mLayoutInflater.inflate(R.layout.item_msg_recycleriew, parent, false);
+        View view = mLayoutInflater.inflate(R.layout.item_msg_recyclerview, parent, false);
         MessageAdapter.MyViewHolder holder = new MessageAdapter.MyViewHolder(view, msgFocusLayoutClickListener, msgFocusLayoutFocusChangeListener);
         view.setOnFocusChangeListener(mFocusListener);
         return holder;
@@ -107,11 +110,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnFocusChangeListener, View.OnKeyListener {
-        private OnMsgFocusLayoutClickListener mFocusClickListener;
-        private OnMsgFocusLayoutFocusChangeListener mFocusChangeListener;
-        TextView msgTitle, msgDate;
-        ImageView greenDot, msgDelete;
-        LinearLayout msgFocusLayout;
+        private final OnMsgFocusLayoutClickListener mFocusClickListener;
+        private final OnMsgFocusLayoutFocusChangeListener mFocusChangeListener;
+        final TextView msgTitle, msgDate;
+        final ImageView greenDot, msgDelete;
+        final LinearLayout msgFocusLayout;
 
         public MyViewHolder(View view, OnMsgFocusLayoutClickListener msgClickListener, OnMsgFocusLayoutFocusChangeListener msgFocusChangeListener) {
             super(view);
@@ -134,7 +137,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.item_iv_btn_delete:
-                    MessageManager.deleteMsg(msgList.get(getLayoutPosition()).getMsgId());
+                    MessageManager.deleteMsg(context , msgList.get(getLayoutPosition()).getMsgId());
                     msgList.remove(getLayoutPosition());
                     notifyItemRemoved(getLayoutPosition());
                     if (mRemoveListener != null) {
@@ -143,7 +146,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
                     break;
                 case R.id.item_ll_focus_msg:
                     if (mFocusClickListener != null) {
-                        mFocusClickListener.onMsgFocusLayoutClick(v, getLayoutPosition());
+                        mFocusClickListener.onMsgFocusLayoutClick(getLayoutPosition());
                     }
                     break;
             }
@@ -154,8 +157,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
             int adapterPosition = getAdapterPosition();
             if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_UP && adapterPosition == 0) {
                 return true;
+            }else{
+                return false;
             }
-            return false;
         }
 
         @Override

@@ -52,7 +52,7 @@ public class HomeRankAdapter extends RecyclerView.Adapter<HomeRankAdapter.RankAp
         final AppInfo mApp = (AppInfo) mList.get(position);
         holder.mAppName.setText(mApp.getName());
         ImageLoader.getInstance().load(mContext, holder.mAppIcon, mApp.getIcon(), R.mipmap
-                .cibn_icon, R.mipmap.cibn_icon, new GlideLoadTask
+                .cibn_icon_mini, R.mipmap.cibn_icon_mini, new GlideLoadTask
                 .SuccessCallback() {
             @Override
             public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean
@@ -66,7 +66,7 @@ public class HomeRankAdapter extends RecyclerView.Adapter<HomeRankAdapter.RankAp
             @Override
             public boolean onFail(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
                 holder.mAppIcon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                holder.mAppIcon.setImageResource(R.mipmap.cibn_icon);
+                holder.mAppIcon.setImageResource(R.mipmap.cibn_icon_mini);
                 holder.mAppIcon.setBackgroundResource(R.drawable.shap_app_list_icon_bg);
                 return true;
             }

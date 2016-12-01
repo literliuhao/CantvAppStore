@@ -72,7 +72,6 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
 
     @Override
     protected void bindContentData(DownloadTask task, RecyclerView.ViewHolder holder, int position) {
-        Log.i(TAG, "bindContentData: task=" + task.toString());
         final DownloadViewHolder viewHolder = (DownloadViewHolder) holder;
         viewHolder.appNameTv.setText(task.getFileName());
         viewHolder.position = position;
@@ -465,22 +464,19 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     case DownloadStatus.DOWNLOAD_STATUS_INIT:
                     case DownloadStatus.DOWNLOAD_STATUS_PREPARE:
                     case DownloadStatus.DOWNLOAD_STATUS_START:
-                        DownloadManager.getInstance(v.getContext().
-                                getApplicationContext()).pause(holder.downloadTask);
+                        DownloadManager.getInstance(v.getContext()).pause(holder.downloadTask);
                         break;
                     case DownloadStatus.DOWNLOAD_STATUS_PAUSE:
-                        DownloadManager.getInstance(v.getContext().
-                                getApplicationContext()).resume(holder.downloadTask.getId());
+                        DownloadManager.getInstance(v.getContext()).resume(holder.downloadTask.getId());
                         break;
                     case DownloadStatus.DOWNLOAD_STATUS_ERROR:
                         holder.downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
-                        DownloadManager.getInstance(v.getContext().getApplicationContext()).
+                        DownloadManager.getInstance(v.getContext()).
                                 addDownloadTask(holder.downloadTask, holder.downloadListener);
                         break;
                     case DownloadStatus.SPACE_NOT_ENOUGH:
                         holder.downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_PAUSE);
-                        DownloadManager.getInstance(v.getContext().
-                                getApplicationContext()).resume(holder.downloadTask.getId());
+                        DownloadManager.getInstance(v.getContext()).resume(holder.downloadTask.getId());
                         break;
                     case AppInstallListener.APP_INSTALLING:
                         //正在安装
@@ -489,25 +485,26 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     case AppInstallListener.APP_INSTALL_SUCESS:
                         String pacageName = ApkUtils.getPkgNameFromApkFile(v.getContext().getApplicationContext(),
                                 holder.downloadTask.getFilePath());
-                        boolean isAvailable = ApkUtils.isAvailable(v.getContext().getApplicationContext(), pacageName);
+                        boolean isAvailable = ApkUtils.isAvailable(v.getContext(), pacageName);
                         if (isAvailable) {
-                            PackageUtil.openApp(v.getContext().getApplicationContext(), pacageName);
+                            PackageUtil.openApp(v.getContext(), pacageName);
                         } else {
                             PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string
                                     .download_open_app_error));
                         }
                         break;
                     case AppInstallListener.APP_INSTALL_FAIL:
+                    case DownloadStatus.DOWNLOAD_STATUS_COMPLETED:
                         //TODO 安装失败的重试 待改。
                         if (FileUtils.isFileExist(holder.downloadTask.getFilePath())) {
-                            DownloadManager.getInstance(v.getContext().getApplicationContext()).onInstalling(holder
+                            DownloadManager.getInstance(v.getContext()).install(holder
                                     .downloadTask);
                         } else {
                             //如果文件被删除，重新下载。
                             PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string
                                     .download_file_error));
                             holder.downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
-                            DownloadManager.getInstance(v.getContext().getApplicationContext()).addDownloadTask
+                            DownloadManager.getInstance(v.getContext()).addDownloadTask
                                     (holder.downloadTask, holder.downloadListener);
                         }
                         break;
