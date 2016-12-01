@@ -28,7 +28,6 @@ public interface AppListContract {
     }
 
     interface View extends BaseView<Presenter> {
-        void hideLoadingDialog();
         void showSearchView();
         void showAppList();
         void showFailUI();

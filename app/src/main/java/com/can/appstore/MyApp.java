@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.WindowManager;
 
 import com.can.appstore.upgrade.service.BuglyUpgradeService;
+import com.can.appstore.upgrade.service.SingleProcessService;
 import com.can.appstore.upgrade.service.UpgradeService;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
@@ -32,8 +33,6 @@ import cn.can.tvlib.utils.PackageUtil.AppInfo;
 public class MyApp extends Application {
     private static final String TAG = "MyApp";
     private static MyApp INSTANCE;
-    public static int Width;
-    public static int Height;
     //内存维护的全局应用List
     public static List<AppInfo> myAppList = new ArrayList<AppInfo>(){};
 
@@ -41,10 +40,6 @@ public class MyApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-        Width = wm.getDefaultDisplay().getWidth();
-        Height = wm.getDefaultDisplay().getHeight();
         INSTANCE = this;
         //所有的第三方应用
         myAppList = PackageUtil.findAllThirdPartyAppsNoDelay(this, myAppList);

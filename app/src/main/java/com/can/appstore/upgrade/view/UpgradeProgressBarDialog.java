@@ -21,11 +21,10 @@ public class UpgradeProgressBarDialog extends Dialog{
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            mHandler.sendEmptyMessageDelayed(1,10);
             mProgressBar.setProgress(mProgress);
             mProgress++;
-            if(mProgress > 200){
-                mProgress = 0;
+            if(mProgress <= 100){
+                mHandler.sendEmptyMessageDelayed(1,10);
             }
         }
     };
@@ -39,15 +38,15 @@ public class UpgradeProgressBarDialog extends Dialog{
     private void initView(Context context) {
         setContentView(R.layout.layout_upgrade_progress_bar);
         mProgressBar = (UpgradeProgressBar) findViewById(R.id.pb_upgrade);
-        mProgressBar.setMax(200);
-        mHandler.sendEmptyMessageDelayed(1,100);
+        mProgressBar.setMax(100);
+        mHandler.sendEmptyMessage(1);
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-//        if(keyCode == KeyEvent.KEYCODE_BACK){
-//          return true;
-//        }
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+          return true;
+        }
         return super.onKeyDown(keyCode, event);
     }
 

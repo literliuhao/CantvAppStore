@@ -197,5 +197,6 @@
     <string name="install">安装</string>
     <string name="run_apk">运行apk</string>
     <string name="load_error">下载异常，升级失败</string>
+    <string name="install_error">升级失败</string>
     <string name="download">下载</string>
 </resources>
