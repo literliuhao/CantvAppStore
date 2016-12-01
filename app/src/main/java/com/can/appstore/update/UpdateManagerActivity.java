@@ -267,7 +267,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
             @Override
             public void onClick(View view, final int position, Object data) {
                 if (!NetworkUtils.isNetworkConnected(UpdateManagerActivity.this)) {
-                    showToast(getResources().getString(R.string.update_internet_error));
+                    showToast(getResources().getString(R.string.no_network));
                     return;
                 }
                 mCurrentPositon = position;

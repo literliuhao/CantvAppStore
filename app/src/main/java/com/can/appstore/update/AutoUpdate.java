@@ -61,7 +61,7 @@ public class AutoUpdate {
 
         //检测网络获取更新包数据
         if (!NetworkUtils.isNetworkConnected(context)) {
-            PromptUtils.toast(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.update_internet_error));
+            PromptUtils.toast(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.no_network));
             EventBus.getDefault().post(new UpdateApkModel(0));
             return;
         }

@@ -65,7 +65,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         }
         if (!NetworkUtils.isNetworkConnected(mContext)) {
             mView.showInternetError();
-            PromptUtils.toast(mContext, MyApp.getContext().getResources().getString(R.string.update_internet_error));
+            PromptUtils.toast(mContext, MyApp.getContext().getResources().getString(R.string.no_network));
             return;
         }
         mView.showLoading();
@@ -204,7 +204,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
 
         //检测网络获取更新包数据
         if (!NetworkUtils.isNetworkConnected(context)) {
-            PromptUtils.toast(mContext, MyApp.getContext().getResources().getString(R.string.update_internet_error));
+            PromptUtils.toast(mContext, MyApp.getContext().getResources().getString(R.string.no_network));
             return;
         }
 
@@ -230,7 +230,6 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                 EventBus.getDefault().post(new UpdateApkModel(data.size()));
                 Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
                 //判断是否开启自动更新
-                Log.i(TAG, "autoUpdate: " + 111111);
                 boolean isAutoUpdate = PreferencesUtils.getBoolean(MyApp.getContext(), "AUTO_UPDATE", false);
                 if (isAutoUpdate == false) {
                     return;
@@ -239,7 +238,6 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                 addAutoUpdateTask(mDownloadManager, data);
                 Log.i(TAG, "autoUpdate: " + data.size());
                 mView.refreshAll();
-                Log.i(TAG, "autoUpdate: " + 444444);
             }
 
             @Override
@@ -247,9 +245,6 @@ public class UpdatePresenter implements UpdateContract.Presenter {
 
             }
         });
-        /*List<AppInfoBean> appInfoBeanList = UpdateUtils.getAppInfoBeanList();
-        List<AppInfo> appInfoList = AppInfoBean.getAppInfoList(appInfoBeanList);
-        addAutoUpdateTask(mDownloadManager, appInfoList);*/
     }
 
     //添加自动更新队列
@@ -257,7 +252,6 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         for (int i = 0; i < data.size(); i++) {
             String downloadUrl = data.get(i).getUrl();
             DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(downloadUrl));
-            Log.i(TAG, "autoUpdate: " + 222222);
             if (downloadTask == null) {
                 downloadTask = new DownloadTask();
                 String md5 = MD5.MD5(downloadUrl);
@@ -300,7 +294,6 @@ public class UpdatePresenter implements UpdateContract.Presenter {
 
                     }
                 });
-                Log.i(TAG, "autoUpdate: " + 333333);
             }
         }
     }
