@@ -77,7 +77,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     private void initData() {
         dbManager = new GreenDaoManager(this);
         //查询数据库消息数据
-        msgList = dbManager.queryMsg(System.currentTimeMillis() / 1000);
+        msgList = dbManager.queryMsg();
         hideLoadingDialog();
         if (msgList != null && !msgList.isEmpty()) {
             mHandler = new Handler();

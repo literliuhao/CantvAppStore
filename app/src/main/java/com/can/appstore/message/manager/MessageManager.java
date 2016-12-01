@@ -115,7 +115,7 @@ public class MessageManager {
                         for (int i = 0; i < size; i++) {
                             Message msg = list.get(i);
                             MessageInfo msgInfo = new MessageInfo();
-                            msgInfo.setMsgId(msg.getId()+ System.currentTimeMillis()); //注：测试阶段给每个msgId后拼接一个当前系统时间串，避免id重复操作数据库时报错
+                            msgInfo.setMsgId(msg.getId()+ System.currentTimeMillis());
                             msgInfo.setMsgDate(msg.getDate());
                             msgInfo.setMsgExpires(msg.getExpires());
                             msgInfo.setMsgTitle(msg.getTitle());
