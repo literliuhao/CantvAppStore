@@ -11,6 +11,7 @@ import com.can.appstore.entity.Ranking;
 import com.can.appstore.entity.Result;
 import com.can.appstore.entity.SpecialTopic;
 import com.can.appstore.http.CanCall;
+import com.can.appstore.http.TvInfoHolderWrapper;
 
 import java.util.List;
 
@@ -117,4 +118,11 @@ public interface ApiService {
      */
     @GET("application/getmessage")
     CanCall<Result<MessageContainer>> getMessages();
+
+    /**
+     * 获取机型信息
+     * @return
+     */
+    @GET("http://tms.can.cibntv.net/api/sync/getInfoByMac")
+    CanCall<TvInfoHolderWrapper> getTvInfo();
 }

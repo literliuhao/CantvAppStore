@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.WindowManager;
 
+import com.can.appstore.http.HttpManager;
 import com.can.appstore.upgrade.service.BuglyUpgradeService;
 import com.can.appstore.upgrade.service.UpgradeService;
 import com.tencent.bugly.Bugly;
@@ -41,6 +42,7 @@ public class MyApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        HttpManager.init(this);
 
         WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
         Width = wm.getDefaultDisplay().getWidth();
