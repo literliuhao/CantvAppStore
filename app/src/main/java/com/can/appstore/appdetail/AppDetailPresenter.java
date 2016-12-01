@@ -91,6 +91,11 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     @Override
     public void startLoad() {
+        if (!NetworkUtils.isNetworkConnected(mContext)) {
+            mView.loadDataFail();
+            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.no_network));
+            return;
+        }
         mView.showLoadingDialog();
         new Handler().postDelayed(new Runnable() {
             @Override
