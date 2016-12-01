@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.can.appstore.R;
@@ -22,7 +21,6 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
-import cn.can.tvlib.utils.ToastUtils;
 
 /**
  * Created by wei on 2016/10/26.
@@ -176,6 +174,11 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
         }
     }
 
+    @Override
+    public void setPresenter(Object presenter) {
+
+    }
+
 
     class MyFocusRunnable implements Runnable {
         @Override
@@ -214,7 +217,7 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
             public void onClick(View v) {
                 Log.d(TAG, "addBut" + "的点击时间");
                 if (mSelectAppInfo == null || mSelectAppInfo.size() == 0) {
-                    ToastUtils.showMessage(getContext(), getResources().getString(R.string.no_select_anyone));
+                    showToast(getResources().getString(R.string.no_select_anyone));
                 } else {
                     saveSelectInfo(mSelectAppInfo);
                     Intent intent = new Intent();
@@ -247,7 +250,7 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
                 }
                 if (selected) {
                     if (mSelectAppInfo.size() >= canSelect) {
-                        ToastUtils.showMessage(getContext(), getResources().getString(R.string.table_full_cant_add));
+                        showToast(getResources().getString(R.string.table_full_cant_add));
                         mAddAppsPresenter.mSelectAppInfo = mSelectAppInfo;
                         tv_select.setText("" + mSelectAppInfo.size());
                         return true;
@@ -286,16 +289,6 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
         });
 
 
-    }
-
-    @Override
-    public void showLoading() {
-        mAddAppsPresenter.showLoading("");
-    }
-
-    @Override
-    public void hideLoading() {
-        mAddAppsPresenter.hideLoading();
     }
 
     @Override

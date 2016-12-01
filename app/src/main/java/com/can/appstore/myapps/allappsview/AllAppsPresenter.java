@@ -55,7 +55,7 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
             //加载数据之前
             @Override
             protected void onPreExecute() {
-                mView.showLoading();
+                mView.showLoadingDialog();
             }
 
             //加载数据
@@ -71,7 +71,7 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
             protected void onPostExecute(Void aVoid) {
                 Log.d(TAG, "onPostExecute");
                 mView.loadAllAppInfoSuccess(allAppsList);
-                mView.hideLoading();
+                mView.hideLoadingDialog();
                 removeHideApps();
             }
         }.execute();
@@ -96,21 +96,6 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
         if (allAppsList != null) {
             allAppsList.clear();
             allAppsList = null;
-        }
-        hideLoading();
-    }
-
-    public void showLoading(String msg) {
-        if (mLoadingDialog == null) {
-            mLoadingDialog = new LoadingDialog(mContext, mContext.getResources().getDimensionPixelSize(R.dimen.px80));
-            mLoadingDialog.setMessage(msg);
-            mLoadingDialog.show();
-        }
-    }
-
-    public void hideLoading() {
-        if (mLoadingDialog != null) {
-            mLoadingDialog.dismiss();
         }
     }
 

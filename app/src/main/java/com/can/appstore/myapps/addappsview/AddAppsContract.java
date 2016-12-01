@@ -1,6 +1,9 @@
 package com.can.appstore.myapps.addappsview;
 
 
+import com.can.appstore.base.BasePresenter;
+import com.can.appstore.base.BaseView;
+
 import java.util.List;
 
 import cn.can.tvlib.utils.PackageUtil;
@@ -11,16 +14,15 @@ import cn.can.tvlib.utils.PackageUtil.AppInfo;
  */
 
 public interface AddAppsContract {
-    interface Presenter {
+    interface Presenter extends BasePresenter {
         void startLoad();
+
         void addListener();
+
         void release();
     }
 
-    interface View {
-        void showLoading();
-
-        void hideLoading();
+    interface View extends BaseView{
 
         void loadAddAppInfoSuccess(List<PackageUtil.AppInfo> infoList);
 
