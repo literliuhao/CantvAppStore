@@ -168,7 +168,7 @@
 
     <!--应用、排行列表文本-->
     <string name="illegal_page_type">非法页面类型！</string>
-    <string name="no_network">网络断开：没有网络，请检查您的网络连接！</string>
+    <string name="no_network">没有网络，请检查您的网络连接！</string>
     <string name="no_more_content">没有更多了!</string>
     <string name="load_more_content">加载更多!</string>
     <string name="line">行</string>
