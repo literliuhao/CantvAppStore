@@ -5,5 +5,6 @@ package com.can.appstore.upgrade;
  */
 
 public interface InstallApkListener {
+    void onInstallSuccess();
     void onInstallFail(String reason);
 }

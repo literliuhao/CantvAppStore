@@ -36,7 +36,8 @@ public class AppListPresenter implements AppListContract.Presenter {
     //常量
     public static final int PAGE_SIZE = 18;   //每次加载请求的总App数
     public static final int REFRESH_APP = 0;  //整个刷新adpter
-    public static final int REQUEST_DELAY = 1000;  //请求延迟时间
+    public static final int REQUEST_DELAY = 500;  //请求延迟时间
+    public static final int HIDE_LOADING_DELAY = 200;//加载更多失败延时小时loading
     //handler msg.what  request
     public static final int REQUEST_DATA = 1;
     public static final int REFRESH_APP_LIST = 2;
@@ -64,7 +65,7 @@ public class AppListPresenter implements AppListContract.Presenter {
     private List<AppInfo> mAppInfos;//右侧列表数据
     //标识
     private boolean isLoadFail;
-    //其他
+    //全局参数
     private AppListContract.View mView;
     private Handler mHandler;
     private Context mContext;
@@ -96,7 +97,6 @@ public class AppListPresenter implements AppListContract.Presenter {
                             //显示隐藏的UI
                             noLoadShowHideUI();
                         } else {
-
                             mMenuDataPosition = msg.arg1;
                             loadAppListData(mTopics.get(mMenuDataPosition).getId());
                         }
@@ -152,6 +152,7 @@ public class AppListPresenter implements AppListContract.Presenter {
                 AppInfoContainer data = body.getData();
                 mTotalSize = data.getTotal();
                 String typeName = data.getTypeName();
+                mTypeId = data.getTypeId();
                 List<Topic> topics = data.getTopics();
                 List<AppInfo> appInfos = data.getData();
                 mTopics.addAll(topics);
@@ -234,7 +235,7 @@ public class AppListPresenter implements AppListContract.Presenter {
                 List<AppInfo> appInfos = data.getData();
                 mAppInfos.addAll(appInfos);
 
-                //数据为空的情况下不刷新列表,隐藏loding框
+                //数据为空的情况下不刷新列表,隐藏loading框
                 if (mAppInfos.size() == 0) {
                     mView.hideLoadingDialog();
                     return;
@@ -318,7 +319,7 @@ public class AppListPresenter implements AppListContract.Presenter {
 
             @Override
             public void onFailure(CanCall<Result<AppInfoContainer>> call, CanErrorWrapper errorWrapper) {
-                mHandler.sendEmptyMessageDelayed(HIDE_LOADING, 200);
+                mHandler.sendEmptyMessageDelayed(HIDE_LOADING, HIDE_LOADING_DELAY);
                 Log.d(TAG, "onFailure:loadMoreData");
             }
         });

@@ -91,6 +91,11 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     @Override
     public void startLoad() {
+        if (!NetworkUtils.isNetworkConnected(mContext)) {
+            mView.loadDataFail();
+            mView.showToast(R.string.no_network);
+            return;
+        }
         mView.showLoadingDialog();
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -128,7 +133,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                     @Override
                     public void onFailure(CanCall<Result<AppInfo>> call, CanErrorWrapper errorWrapper) {
                         Log.d(TAG, "onFailure: " + errorWrapper.getReason());
-                        ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.load_data_faild));
+                        mView.showToast(R.string.load_data_faild);
                         mView.hideLoadingDialog();
                         mView.loadDataFail();
                     }
@@ -251,7 +256,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 downloadStatus == AppInstallListener.APP_INSTALLING) {//完成 , 并且正在安装时不能点击
             return;
         } else if (!NetworkUtils.isNetworkConnected(mContext)) { // 网络连接断开时不能点击
-            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.network_connection_disconnect));
+            mView.showToast(R.string.no_network);
             return;
         } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {   // 下载错误 , 设置取消,重新添加任务
             downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
@@ -263,7 +268,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 silentInstall(mAppInfo.getName());
                 return;
             } else {
-                ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.install_apk_fail));
+                mView.showToast(R.string.install_apk_fail);
                 //                mDownloadManager.removeTask(mTaskId);  // 应该需要从任务中移除
                 //                downloadStatus = DownloadStatus.DOWNLOAD_STATUS_INIT;
                 return;
@@ -412,16 +417,16 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             downlaodErrorCode = errorCode;
             float per = calculatorPercent(downloadTask.getCompletedSize(), downloadTask.getTotalSize());
             if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_FILE_NOT_FOUND) {
-                ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.downlaod_error));
+                mView.showToast(R.string.downlaod_error);
                 refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
             } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_IO_ERROR) {
-                ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.downlaod_error));
+                mView.showToast(R.string.downlaod_error);
                 refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
             } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR) {
-                ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.network_connection_error));
+                mView.showToast(R.string.network_connection_error);
                 refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_PAUSE, per);
             } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_UNKONW_ERROR) {
-                ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.unkonw_error));
+                mView.showToast(R.string.unkonw_error);
                 refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, per);
             }
         }
