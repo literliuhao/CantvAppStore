@@ -16,7 +16,7 @@ import java.util.List;
  */
 
 public class JsonFormat {
-    public static PageBean parseJson(String json) {
+    public PageBean parseJson(String json) {
         PageBean pageBean = null;
         try {
             pageBean = new PageBean();

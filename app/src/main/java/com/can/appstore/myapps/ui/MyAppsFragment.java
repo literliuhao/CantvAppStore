@@ -17,7 +17,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 
-import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.ui.BaseFragment;
@@ -86,10 +85,10 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
     }
 
     @Override
-    public void loadAppInfoSuccess(List<AppInfo> infoList) {
+    public void loadAppInfoSuccess(List<AppInfo> infoList,int myapplistsize) {
         mShowList = infoList;
-        if (infoList.size() - 2 < MyApp.myAppList.size() && infoList.size() < 18 && !infoList.get(infoList.size() - 1).packageName.isEmpty()) {
-            infoList.add(new AppInfo(   getResources().getString(R.string.add_app), getActivity().getResources().getDrawable(R.drawable.addapp_icon)));
+        if (infoList.size() - 2 < myapplistsize && infoList.size() < 18 && !infoList.get(infoList.size() - 1).packageName.isEmpty()) {
+            infoList.add(new AppInfo(getResources().getString(R.string.add_app), getActivity().getResources().getDrawable(R.drawable.addapp_icon)));
         }
         if (mMyAppsRvAdapter == null) {
             mMyAppsRvAdapter = new MyAppsRvAdapter(infoList);

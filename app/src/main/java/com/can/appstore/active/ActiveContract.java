@@ -1,7 +1,7 @@
 package com.can.appstore.active;
 
 /**
- * Created by Atangs on 2016/11/2.
+ * Created by Fuwen on 2016/11/2.
  */
 
 public class ActiveContract {
@@ -19,13 +19,15 @@ public class ActiveContract {
 
         void refreshTextProgressbarTextStatus(int status);
 
-        void showToast(int toastStrId);
+        void showActiveToast(int toastStrId);
 
         void loadwebview(String url);
 
-        void setNativeLayout(String url);
+        void showBackground(String url);
 
-        void showNetworkRetryView(boolean isRetry, boolean isWebView);
+        void showProgreessbar();
+
+        void loadDataFail(int toastId);
 
     }
 }

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
+import com.can.appstore.AppConstants;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +30,6 @@ public class CustomAsyncTaskLoader extends AsyncTaskLoader<List<PackageUtil.AppI
         super(contex);
         this.mContext = contex;
         this.mAppsType = getAppsType;
-        mAppWhiteList.add("com.can.appstore");
-        mAppWhiteList.add("cn.cibntv.ott");
-        mAppWhiteList.add("com.dangbeimarket");
     }
 
     @Override
@@ -49,7 +48,7 @@ public class CustomAsyncTaskLoader extends AsyncTaskLoader<List<PackageUtil.AppI
                 mAppinfos = PackageUtil.findAllComplexApps(mContext, mAppinfos, mAppWhiteList);
                 break;
             case FILTER_LOSE_PRE_INSTALL_THIRD_APP:
-                mAppinfos = PackageUtil.findLoseWhiteAllComplexApps(mContext, mAppinfos, mAppWhiteList);
+                mAppinfos = PackageUtil.findLoseWhiteAllComplexApps(mContext, mAppinfos, AppConstants.PRE_APPS);
                 break;
             default:
                 break;

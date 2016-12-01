@@ -1,6 +1,5 @@
 package com.can.appstore.update;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
@@ -58,7 +58,6 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
     private TextView mTotalnum;
     private TextView mCurrentnum;
     private TextProgressBar mSizeProgressBar;
-    private Dialog mLoadingDialog;
     private FocusMoveUtil mFocusMoveUtil;
     private FocusScaleUtil mFocusScaleUtil;
     private View mFocusedListChild;
@@ -67,10 +66,11 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
     private UpdatePresenter mPresenter;
     private List<AppInfoBean> mUpdateList;
     private cn.can.downloadlib.DownloadManager mDownloadManager;
-    private String mCurrentId;
     private int mWinH;
     private int mWinW;
     private Context mContext;
+    private long mLastClickTime;
+    private long moveTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -225,6 +225,9 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         mDetectionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (isFastContinueClickView()) {
+                    return;
+                }
                 mAutoUpdate = PreferencesUtils.getBoolean(mContext, "AUTO_UPDATE", false);
                 if (mAutoUpdate) {
                     mPresenter.clearList();
@@ -232,7 +235,6 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                     mTotalnum.setVisibility(View.INVISIBLE);
                     mReminder.setVisibility(View.VISIBLE);
                     mReminder.setText(R.string.update_start_autoupdate);
-                    //Toast.makeText(MyApp.mContext, R.string.update_start_autoupdate, Toast.LENGTH_LONG).show();
                     return;
                 } else {
                     mPresenter.getInstallPkgList(mAutoUpdate);
@@ -252,14 +254,10 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                     PreferencesUtils.putBoolean(mContext, "AUTO_UPDATE", false);
                     mAutoUpdate = false;
                     initDialog(getResources().getString(R.string.update_setting_start));
-//                    mReminder.setVisibility(View.INVISIBLE);
-                    //Toast.makeText(UpdateManagerActivity.this, R.string.update_start_autoupdate, Toast.LENGTH_SHORT).show();
                 } else {
                     PreferencesUtils.putBoolean(mContext, "AUTO_UPDATE", true);
                     mAutoUpdate = true;
                     initDialog(getResources().getString(R.string.update_setting_stop));
-//                    mPresenter.getListSize();
-                    //Toast.makeText(UpdateManagerActivity.this, R.string.update_end_autoupdate, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -269,7 +267,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
             @Override
             public void onClick(View view, final int position, Object data) {
                 if (!NetworkUtils.isNetworkConnected(UpdateManagerActivity.this)) {
-                    ToastUtils.showMessage(UpdateManagerActivity.this, "网络连接异常，请检查网络。");
+                    showToast(getResources().getString(R.string.no_network));
                     return;
                 }
                 mCurrentPositon = position;
@@ -289,9 +287,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                         status.setText(getResources().getString(R.string.update_download_installing));
                         status.setVisibility(View.VISIBLE);
                         installUpdateApk(progress, status, updatedIcon, saveDirPath, position);
-                    }/* else if (taskstatus == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
-                        mDownloadManager.resume(downloadTask.getId());
-                    }*/
+                    }
                 } else {
                     downloadTask = new DownloadTask();
                     String md5 = MD5.MD5(downloadUrl);
@@ -300,7 +296,6 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                     downloadTask.setUrl(downloadUrl);
                     status.setText(getResources().getString(R.string.update_download_waitting));
                     status.setVisibility(View.VISIBLE);
-                    //Toast.makeText(MyApp.mContext, downloadUrl, Toast.LENGTH_SHORT).show();
                     mDownloadManager.addDownloadTask(downloadTask, new DownloadTaskListener() {
                         @Override
                         public void onPrepare(DownloadTask downloadTask) {
@@ -337,7 +332,9 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                             progress.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    installUpdateApk(progress, status, updatedIcon, downloadTask.getSaveDirPath(), position);
+                                    status.setVisibility(View.VISIBLE);
+                                    status.setText(getResources().getString(R.string.update_download_installing));
+                                    progress.setVisibility(View.INVISIBLE);
                                 }
                             });
                         }
@@ -355,25 +352,82 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                             });
                             switch (errorCode) {
                                 case DOWNLOAD_ERROR_FILE_NOT_FOUND:
-                                    ToastUtils.showMessage(UpdateManagerActivity.this, "未找到下载文件");
-                                    Log.i(TAG, "未找到下载文件: ");
+                                    showToast(getResources().getString(R.string.downlaod_error));
                                     break;
                                 case DOWNLOAD_ERROR_IO_ERROR:
-                                    ToastUtils.showMessage(UpdateManagerActivity.this, "IO异常");
-                                    Log.i(TAG, "IO异常: ");
+                                    showToast(getResources().getString(R.string.downlaod_error));
                                     break;
                                 case DOWNLOAD_ERROR_NETWORK_ERROR:
-                                    ToastUtils.showMessage(UpdateManagerActivity.this, "网络异常，请重试！");
-                                    Log.i(TAG, "网络异常，请重试！");
+                                    showToast(getResources().getString(R.string.network_connection_error));
                                     break;
                                 case DOWNLOAD_ERROR_UNKONW_ERROR:
-                                    ToastUtils.showMessage(UpdateManagerActivity.this, "未知错误");
-                                    Log.i(TAG, "未知错误: ");
+                                    showToast(getResources().getString(R.string.unkonw_error));
                                     break;
                                 default:
                                     break;
                             }
                             mDownloadManager.cancel(downloadTask);
+                        }
+                    });
+                    mDownloadManager.setAppInstallListener(new AppInstallListener() {
+                        @Override
+                        public void onInstalling(DownloadTask downloadTask) {
+                            String url = downloadTask.getUrl();
+                            //获取position
+                            int itemPosition = mPresenter.getItemPosition(url);
+                            View childAt = mRecyclerView.getChildAt(itemPosition);
+                            final TextView status = (TextView) childAt.findViewById(R.id.tv_updateapp_downloading);
+                            final ProgressBar progressBar = (ProgressBar) childAt.findViewById(R.id.pb_updateapp_progressbar);
+                            status.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    status.setText(getResources().getString(R.string.update_download_installing));
+                                    status.setVisibility(View.VISIBLE);
+                                    progressBar.setVisibility(View.INVISIBLE);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onInstallSucess(String id) {
+                            int itemPosition = mPresenter.getItemPosition(id);
+                            View childAt = mRecyclerView.getChildAt(itemPosition);
+                            final TextView status = (TextView) childAt.findViewById(R.id.tv_updateapp_downloading);
+                            final ImageView updatedicon = (ImageView) childAt.findViewById(R.id.iv_updateapp_updatedicon);
+                            status.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    status.setVisibility(View.INVISIBLE);
+                                    updatedicon.setVisibility(View.VISIBLE);
+                                    mPresenter.getUpdateApkNum(position);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onInstallFail(String id) {
+                            int itemPosition = mPresenter.getItemPosition(id);
+                            View childAt = mRecyclerView.getChildAt(itemPosition);
+                            final TextView status = (TextView) childAt.findViewById(R.id.tv_updateapp_downloading);
+                            final ImageView updatedicon = (ImageView) childAt.findViewById(R.id.iv_updateapp_updatedicon);
+                            status.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    status.setVisibility(View.VISIBLE);
+                                    status.setText(getResources().getString(R.string.update_download_installfalse));
+                                    updatedicon.setVisibility(View.INVISIBLE);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onUninstallSucess(String id) {
+
+                        }
+
+                        @Override
+                        public void onUninstallFail(String id) {
+
                         }
                     });
                 }
@@ -403,12 +457,10 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                     status.setVisibility(View.INVISIBLE);
                     updatedIcon.setVisibility(View.VISIBLE);
                     mPresenter.getUpdateApkNum(position);
-                    Log.i(TAG, "run: " + 0);
                 } else {
                     status.setVisibility(View.VISIBLE);
                     status.setText(getResources().getString(R.string.update_download_installfalse));
                     updatedIcon.setVisibility(View.INVISIBLE);
-                    Log.i(TAG, "run: " + 1);
                 }
             }
         }, 1000);
@@ -591,6 +643,12 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         }
         mRecyclerView.setAdapter(mRecyclerAdapter);
         mRecyclerAdapter.notifyDataSetChanged();
+        if (mDatas.size() > 0) {
+            mDetectionButton.setNextFocusRightId(R.id.rv_update_recyclerview);
+        } else {
+            mDetectionButton.setNextFocusRightId(R.id.bt_update_detection);
+            mAutoButton.setNextFocusRightId(R.id.bt_update_auto);
+        }
     }
 
     @Override
@@ -606,7 +664,6 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         public void run() {
             if (mFocusedListChild != null) {
                 mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f);
-                //mFocusScaleUtil.scaleToLarge(mFocusedListChild);
             }
         }
     }
@@ -634,5 +691,46 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
     public static void actionStart(Context context) {
         Intent intent = new Intent(context, UpdateManagerActivity.class);
         context.startActivity(intent);
+    }
+
+    /**
+     * 限制点击频率
+     *
+     * @return
+     */
+    private boolean isFastContinueClickView() {
+        long curClickTime = System.currentTimeMillis();
+        if (curClickTime - mLastClickTime < 2000) {
+            return true;
+        }
+        mLastClickTime = curClickTime;
+        return false;
+    }
+
+    /**
+     * 限制移动速度
+     *
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        switch (event.getAction()) {
+            //控制按键响应的速度
+            case KeyEvent.ACTION_DOWN:
+                if (System.currentTimeMillis() - moveTime > 200) {
+                    moveTime = System.currentTimeMillis();
+                } else {
+                    return true;
+                }
+        }
+        return super.dispatchKeyEvent(event);
+
+    }
+
+    @Override
+    protected void onHomeKeyDown() {
+        mPresenter.release();
+        finish();
     }
 }

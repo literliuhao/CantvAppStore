@@ -15,15 +15,22 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.update.model.AppInfoBean;
+import com.can.appstore.update.model.UpdateApkModel;
 import com.can.appstore.update.utils.UpdateUtils;
 import com.can.appstore.widgets.CanDialog;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,36 +55,28 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
     private TextView mReminder;
     private TextView mDeleteButton;
     private TextView mDeleteAllButton;
-    //private Button mUpdateButton;
-    private int mCurrentPositon;
-    private RelativeLayout deleteLayout;
-    private TextView mRoomSize;
     private TextView mTotalnum;
     private TextView mCurrentnum;
     private TextProgressBar mProgressBar;
     private BroadcastReceiver mInstallApkReceiver;
     private IntentFilter intentFilter;
-    private List<AppInfoBean> mInstallDatas;//安装中集合
-    private List<AppInfoBean> mInstalledDatas;//安装完成集合
-    private Dialog mLoadingDialog;
     FocusMoveUtil mFocusMoveUtil;
     FocusScaleUtil mFocusScaleUtil;
     private View mFocusedListChild;
     private MyFocusRunnable myFocusRunnable;
-    private String mCurPackageName = "";//当前包名
-    private String mCurVersionCode = "";//当前版本号
     private InstallPresenter mPresenter;
     private CanDialog canDialog;
     private GridLayoutManager mGridLayoutManager;
     private static final String TAG = "installManagerActivity";
     private int mWinH;
     private int mWinW;
+    private long mLastClickTime;
+    private long moveTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_installmanager);
-        mInstallDatas = new ArrayList<AppInfoBean>();
         mPresenter = new InstallPresenter(this, InstallManagerActivity.this);
         //获取到屏幕的宽高
         WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
@@ -119,11 +118,7 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
                         String packageName = intent.getDataString().substring(8);
                         int versonCode = UpdateUtils.getVersonCode(InstallManagerActivity.this, packageName);
                         mPresenter.isInstalled(packageName, versonCode);
-                        //Toast.makeText(MyApp.mContext, packageName + "安装成功啦!!!", Toast.LENGTH_LONG).show();
-                        Log.i(TAG, "onReceive: " + packageName + "安装成功啦!!!");
                     } else if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
-                        Log.i(TAG, "onReceive: " + "安装失败");
-                        //Toast.makeText(MyApp.mContext, "安装失败", Toast.LENGTH_LONG).show();
                     }
                 }
             };
@@ -169,6 +164,9 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
                     mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mDeleteAllButton, 1.0f);
                     mPresenter.setNum(0);
+                    if (mPresenter.isNull()) {
+                        mDeleteAllButton.setNextFocusRightId(R.id.bt_install_deleteall);
+                    }
                 } else {
                     mFocusScaleUtil.scaleToNormal(mDeleteAllButton);
                 }
@@ -182,6 +180,9 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
                     mFocusedListChild = view;
                     mFocusMoveUtil.startMoveFocus(mDeleteButton, 1.0f);
                     mPresenter.setNum(0);
+                    if (mPresenter.isNull()) {
+                        mDeleteButton.setNextFocusRightId(R.id.bt_install_delete);
+                    }
                 } else {
                     mFocusScaleUtil.scaleToNormal(mDeleteButton);
                 }
@@ -207,7 +208,6 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
                     mFocusedListChild = view;
                     mRecyclerView.postDelayed(myFocusRunnable, 80);
                     mPresenter.setNum(position);
-                    mCurrentPositon = position;
 
                 } else {
                     mFocusScaleUtil.scaleToNormal();
@@ -269,6 +269,10 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
             @Override
             public void onClick(View view) {
                 mPresenter.deleteAll();
+                if (mPresenter.isNull()) {
+                    mDeleteAllButton.setFocusable(true);
+                    mDeleteAllButton.requestFocus();
+                }
             }
         });
 
@@ -276,6 +280,10 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
             @Override
             public void onClick(View view) {
                 mPresenter.deleteInstall();
+                if (mPresenter.isNull()) {
+                    mDeleteAllButton.setFocusable(true);
+                    mDeleteAllButton.requestFocus();
+                }
             }
         });
 
@@ -446,7 +454,7 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
         canDialog = new CanDialog(InstallManagerActivity.this);
         AppInfoBean bean = mPresenter.getItem(position);
         if (bean != null && bean.getIsInstalling() && !bean.getInstalledFalse()) {
-            ToastUtils.showMessageLong(InstallManagerActivity.this, "安装包正在安装中，请稍后");
+            showToast(getResources().getString(R.string.install_dialog_installing));
             return;
         }
         if (bean != null) {
@@ -461,7 +469,7 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
                     canDialog.dismiss();
                     int versonCode = mPresenter.getVersonCode(InstallManagerActivity.this, position);
                     if (versonCode == 0) {
-                        ToastUtils.showMessageLong(InstallManagerActivity.this, "安装包版本低于已安装版本,请先卸载原应用");
+                        showToast(getResources().getString(R.string.install_dialog_error));
                     } else {
                         new Handler().postDelayed(new Runnable() {
                             @Override
@@ -484,7 +492,7 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
                         mFocusMoveUtil.showFocus(100);
                         setLeftLayoutFocus(true);
                     }
-                    mPresenter.deleteOne(mCurrentPositon);
+                    mPresenter.deleteOne(position);
                     canDialog.dismiss();
                 }
             });
@@ -500,5 +508,44 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
     public static void actionStart(Context context) {
         Intent intent = new Intent(context, InstallManagerActivity.class);
         context.startActivity(intent);
+    }
+
+    /**
+     * 限制点击频率
+     * @return
+     */
+    private boolean isFastContinueClickView() {
+        long curClickTime = System.currentTimeMillis();
+        if (curClickTime - mLastClickTime < 1500) {
+            return true;
+        }
+        mLastClickTime = curClickTime;
+        return false;
+    }
+
+    /**
+     * 限制移动速度
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        switch (event.getAction()) {
+            //控制按键响应的速度
+            case KeyEvent.ACTION_DOWN:
+                if (System.currentTimeMillis() - moveTime > 200) {
+                    moveTime = System.currentTimeMillis();
+                } else {
+                    return true;
+                }
+        }
+        return super.dispatchKeyEvent(event);
+
+    }
+
+    @Override
+    protected void onHomeKeyDown() {
+        mPresenter.release();
+        finish();
     }
 }

@@ -30,7 +30,7 @@ import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
-import cn.can.tvlib.utils.ToastUtils;
+import cn.can.tvlib.utils.PromptUtils;
 
 
 /**
@@ -169,12 +169,6 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                 public void onCompleted(final DownloadTask downloadTask) {
                     Log.i(TAG, "onCompleted");
                     refreshStatus(downloadTask, updateHolder.downloading, updateHolder.progressbar, updateHolder.updatedIcon);
-                    updateHolder.updatedIcon.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            getInstallStatus(downloadTask, updateHolder);
-                        }
-                    }, 1000);
                 }
 
                 @Override
@@ -190,20 +184,16 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                     });
                     switch (errorCode) {
                         case DOWNLOAD_ERROR_FILE_NOT_FOUND:
-                            ToastUtils.showMessage(MyApp.getContext(), "未找到下载文件");
-                            Log.i(TAG, "未找到下载文件: ");
+                            PromptUtils.toast(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.downlaod_error));
                             break;
                         case DOWNLOAD_ERROR_IO_ERROR:
-                            ToastUtils.showMessage(MyApp.getContext(), "IO异常");
-                            Log.i(TAG, "IO异常: ");
+                            PromptUtils.toast(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.downlaod_error));
                             break;
                         case DOWNLOAD_ERROR_NETWORK_ERROR:
-                            ToastUtils.showMessage(MyApp.getContext(), "网络异常，请重试！");
-                            Log.i(TAG, "网络异常，请重试！");
+                            PromptUtils.toast(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.network_connection_error));
                             break;
                         case DOWNLOAD_ERROR_UNKONW_ERROR:
-                            ToastUtils.showMessage(MyApp.getContext(), "未知错误");
-                            Log.i(TAG, "未知错误: ");
+                            PromptUtils.toast(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.unkonw_error));
                             break;
                         default:
                             break;
@@ -211,12 +201,71 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                     mDownloadManager.cancel(downloadTask);
                 }
             });
-        } else {
-            updateHolder.downloading.setVisibility(View.INVISIBLE);
-            updateHolder.progressbar.setVisibility(View.INVISIBLE);
-            updateHolder.updatedIcon.setVisibility(View.INVISIBLE);
+            mDownloadManager.setAppInstallListener(new AppInstallListener() {
+                @Override
+                public void onInstalling(DownloadTask downloadTask) {
+                    final int itemPosition = getItemPosition(downloadTask.getUrl());
+                    updateHolder.downloading.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (position == itemPosition) {
+                                updateHolder.downloading.setVisibility(View.VISIBLE);
+                                updateHolder.downloading.setText(MyApp.getContext().getResources().getString(R.string.update_download_installing));
+                                updateHolder.progressbar.setVisibility(View.INVISIBLE);
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public void onInstallSucess(String id) {
+                    final int itemPosition = getItemPosition(id);
+                    updateHolder.downloading.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (position == itemPosition) {
+                                updateHolder.downloading.setVisibility(View.INVISIBLE);
+                                updateHolder.updatedIcon.setVisibility(View.VISIBLE);
+                                Log.i(TAG, "run: " + "安装成功");
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public void onInstallFail(String id) {
+                    final int itemPosition = getItemPosition(id);
+                    updateHolder.downloading.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (position == itemPosition) {
+                                updateHolder.downloading.setVisibility(View.VISIBLE);
+                                updateHolder.downloading.setText(MyApp.getContext().getResources().getString(R.string.update_download_installfalse));
+                                updateHolder.updatedIcon.setVisibility(View.INVISIBLE);
+                                Log.i(TAG, "run: " + "安装失败");
+
+                            }
+                        }
+                    });
+                }
+                    @Override
+                    public void onUninstallSucess (String id){
+
+                    }
+
+                    @Override
+                    public void onUninstallFail (String id){
+
+                    }
+                }
+
+                );
+            }else{
+                updateHolder.downloading.setVisibility(View.INVISIBLE);
+                updateHolder.progressbar.setVisibility(View.INVISIBLE);
+                updateHolder.updatedIcon.setVisibility(View.INVISIBLE);
+            }
         }
-    }
 
     private void getInstallStatus(DownloadTask downloadTask, UpdateViewHolder updateHolder) {
         int result = InstallPkgUtils.installApp(downloadTask.getSaveDirPath());
@@ -283,6 +332,27 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                 status.setVisibility(View.INVISIBLE);
                 break;
         }
+    }
+
+    /**
+     * 获取指定item位置
+     *
+     * @param url
+     * @return
+     */
+    public int getItemPosition(String url) {
+
+        for (int i = 0; i < mDatas.size(); i++) {
+            String downloadUrl = mDatas.get(i).getDownloadUrl();
+            if (downloadUrl.equals(url)) {
+                return i;
+            } else if (MD5.MD5(downloadUrl).equals(url)) {
+                return i;
+            }
+        }
+
+        return 0;
+
     }
 
     class UpdateViewHolder extends RecyclerView.ViewHolder {

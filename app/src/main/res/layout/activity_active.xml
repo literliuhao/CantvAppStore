@@ -8,6 +8,7 @@
         android:id="@+id/active_webview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/color_2D313A"
         android:visibility="gone"/>
 
     <RelativeLayout
@@ -27,6 +28,7 @@
             android:layout_width="@dimen/px352"
             android:layout_height="@dimen/px142"
             android:background="@mipmap/active_participate"
+            android:visibility="gone"
             android:padding="@dimen/dimen_26px"
             android:layout_marginStart="@dimen/px340"
             android:layout_marginTop="@dimen/px815">
@@ -43,7 +45,4 @@
 
     </RelativeLayout>
 
-    <include
-        layout="@layout/network_retry"
-        android:visibility="gone"/>
 </RelativeLayout>

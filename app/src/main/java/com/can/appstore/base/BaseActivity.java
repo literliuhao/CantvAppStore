@@ -48,7 +48,7 @@ public abstract class BaseActivity extends FragmentActivity {
     }
 
     public void showToast(String msg) {
-        PromptUtils.toastShort(this, msg);
+        PromptUtils.toast(this, msg);
     }
 
     public void showToast(int resId) {

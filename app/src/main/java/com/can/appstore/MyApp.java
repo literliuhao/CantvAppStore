@@ -34,24 +34,12 @@ import cn.can.tvlib.utils.PackageUtil.AppInfo;
 public class MyApp extends Application {
     private static final String TAG = "MyApp";
     private static MyApp INSTANCE;
-    //内存维护的全局应用List
-    public static List<AppInfo> myAppList = new ArrayList<AppInfo>(){};
-
 
     @Override
     public void onCreate() {
         super.onCreate();
-<<<<<<< HEAD
-        HttpManager.init(this);
-
-        WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-        Width = wm.getDefaultDisplay().getWidth();
-        Height = wm.getDefaultDisplay().getHeight();
-=======
->>>>>>> 81af4f93af24dedeeed856fb7b537a7992582248
         INSTANCE = this;
-        //所有的第三方应用
-        myAppList = PackageUtil.findAllThirdPartyAppsNoDelay(this, myAppList);
+
         initBuly(true);
         //恢复下载任务。2016-11-29 11:47:23 xzl
         DownloadManager.getInstance(this).resumeAllTasks();

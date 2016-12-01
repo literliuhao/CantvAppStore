@@ -22,7 +22,7 @@ public interface MyAppsFramentContract {
     }
 
     interface View {
-        void loadAppInfoSuccess(List<AppInfo> infoList);
+        void loadAppInfoSuccess(List<AppInfo> infoList,int myapplistsize);
 
         void loadCustomDataSuccess( List<Drawable> mDrawbleList);
 

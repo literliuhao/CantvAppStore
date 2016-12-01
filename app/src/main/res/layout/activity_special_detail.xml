@@ -8,10 +8,6 @@
                 android:clipToPadding="false"
                 tools:context="com.can.appstore.specialdetail.SpecialDetailActivity">
 
-    <include
-        layout="@layout/network_retry"
-        android:visibility="gone"/>
-
     <ImageView
         android:id="@+id/special_detail_img"
         android:layout_width="match_parent"

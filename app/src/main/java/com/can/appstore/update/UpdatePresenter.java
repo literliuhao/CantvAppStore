@@ -12,7 +12,10 @@ import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
 import com.can.appstore.update.model.AppInfoBean;
+import com.can.appstore.update.model.UpdateApkModel;
 import com.can.appstore.update.utils.UpdateUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +26,7 @@ import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PreferencesUtils;
+import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.SystemUtil;
 import cn.can.tvlib.utils.ToastUtils;
@@ -35,11 +39,11 @@ import retrofit2.Response;
 public class UpdatePresenter implements UpdateContract.Presenter {
 
     private static final String TAG = "updatePresenter";
-    private static UpdateContract.View mView;
+    private UpdateContract.View mView;
     private Context mContext;
     private List<AppInfoBean> mDatas;//更新应用集合
     private List<AppInfoBean> mAppInfoBeanList;
-    private static List<AppInfoBean> mUpdateNumDatas;//未更新应用集合
+    private List<AppInfoBean> mUpdateNumDatas;//未更新应用集合
 
     public UpdatePresenter(UpdateContract.View mView, Context mContext) {
         this.mView = mView;
@@ -61,7 +65,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         }
         if (!NetworkUtils.isNetworkConnected(mContext)) {
             mView.showInternetError();
-            ToastUtils.showMessage(mContext, "网络连接异常，请检查网络。");
+            PromptUtils.toast(mContext, MyApp.getContext().getResources().getString(R.string.no_network));
             return;
         }
         mView.showLoading();
@@ -95,10 +99,8 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                     mView.showInstallPkgList(mDatas);
                     setNum(0);
                 }
-                if (mOnUpdateAppNumListener != null) {
-                    mOnUpdateAppNumListener.updateAppNum(mUpdateNumDatas.size());
-                }
-                //ToastUtil.toastShort("getUpdateApkNum: " + mUpdateNumDatas.size());
+                //发送数量
+                EventBus.getDefault().post(new UpdateApkModel(data.size()));
             }
 
             @Override
@@ -110,19 +112,18 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         });
 
         /*if (mAppInfoBeanList.size() < 1 || mAppInfoBeanList == null) {
-            mView.hideLoadingDialog();
+            mView.hideLoading();
             mView.showNoData();
         } else {
-            mView.hideLoadingDialog();
+            mView.hideLoading();
             mView.hideNoData();
             mDatas.addAll(mAppInfoBeanList);
             mUpdateNumDatas.addAll(mAppInfoBeanList);
             mView.showInstallPkgList(mDatas);
             setNum(0);
         }
-        if (mOnUpdateAppNumListener != null) {
-            mOnUpdateAppNumListener.updateAppNum(mUpdateNumDatas.size());
-        }
+        //发送数量
+        EventBus.getDefault().post(new UpdateApkModel(mAppInfoBeanList.size()));
         Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());*/
 
     }
@@ -199,11 +200,11 @@ public class UpdatePresenter implements UpdateContract.Presenter {
      *
      * @param context
      */
-    public static void autoUpdate(Context context) {
+    public void autoUpdate(Context context) {
 
         //检测网络获取更新包数据
         if (!NetworkUtils.isNetworkConnected(context)) {
-            ToastUtils.showMessage(context, "网络连接异常，请检查网络。");
+            PromptUtils.toast(mContext, MyApp.getContext().getResources().getString(R.string.no_network));
             return;
         }
 
@@ -225,14 +226,10 @@ public class UpdatePresenter implements UpdateContract.Presenter {
             public void onResponse(CanCall<ListResult<AppInfo>> call, Response<ListResult<AppInfo>> response) throws Exception {
                 List<AppInfo> data = response.body().getData();
 
-                if (mOnUpdateAppNumListener != null) {
-                    mOnUpdateAppNumListener.updateAppNum(data.size());
-                    Log.i(TAG, "getUpdateApkNum: " + data.size());
-                }
+                //发送数量
+                EventBus.getDefault().post(new UpdateApkModel(data.size()));
                 Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
-                //ToastUtil.toastShort("getUpdateApkNum: " + mUpdateNumDatas.size());
                 //判断是否开启自动更新
-                Log.i(TAG, "autoUpdate: " + 111111);
                 boolean isAutoUpdate = PreferencesUtils.getBoolean(MyApp.getContext(), "AUTO_UPDATE", false);
                 if (isAutoUpdate == false) {
                     return;
@@ -241,7 +238,6 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                 addAutoUpdateTask(mDownloadManager, data);
                 Log.i(TAG, "autoUpdate: " + data.size());
                 mView.refreshAll();
-                Log.i(TAG, "autoUpdate: " + 444444);
             }
 
             @Override
@@ -249,21 +245,17 @@ public class UpdatePresenter implements UpdateContract.Presenter {
 
             }
         });
-        /*List<AppInfoBean> appInfoBeanList = UpdateUtils.getAppInfoBeanList();
-        List<AppInfo> appInfoList = AppInfoBean.getAppInfoList(appInfoBeanList);
-        addAutoUpdateTask(mDownloadManager, appInfoList);*/
     }
 
     //添加自动更新队列
-    private static void addAutoUpdateTask(DownloadManager mDownloadManager, List<AppInfo> data) {
+    private void addAutoUpdateTask(DownloadManager mDownloadManager, List<AppInfo> data) {
         for (int i = 0; i < data.size(); i++) {
             String downloadUrl = data.get(i).getUrl();
             DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(downloadUrl));
-            Log.i(TAG, "autoUpdate: " + 222222);
             if (downloadTask == null) {
                 downloadTask = new DownloadTask();
                 String md5 = MD5.MD5(downloadUrl);
-                downloadTask.setFileName(md5 + ".apk");
+                downloadTask.setFileName(md5);
                 downloadTask.setId(md5);
                 downloadTask.setUrl(downloadUrl);
                 mDownloadManager.addDownloadTask(downloadTask, new DownloadTaskListener() {
@@ -302,7 +294,6 @@ public class UpdatePresenter implements UpdateContract.Presenter {
 
                     }
                 });
-                Log.i(TAG, "autoUpdate: " + 333333);
             }
         }
     }
@@ -315,10 +306,8 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     public void getUpdateApkNum(int position) {
         try {
             mUpdateNumDatas.remove(0);
-            if (mOnUpdateAppNumListener != null) {
-                mOnUpdateAppNumListener.updateAppNum(mUpdateNumDatas.size());
-                Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
-            }
+            //发送数量
+            EventBus.getDefault().post(new UpdateApkModel(mUpdateNumDatas.size()));
             Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
         } catch (Exception e) {
             e.printStackTrace();
@@ -326,17 +315,24 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
     }
 
-    //未更新app数量监听
-    public interface OnUpdateAppNumListener {
+    /**
+     * 获取指定item位置
+     * @param url
+     * @return
+     */
+    public int getItemPosition(String url) {
 
-        void updateAppNum(int number);
+        for (int i=0;i<mDatas.size();i++){
+            String downloadUrl = mDatas.get(i).getDownloadUrl();
+            if(downloadUrl.equals(url)){
+                return i;
+            }else if(MD5.MD5(downloadUrl).equals(url)){
+                return i;
+            }
+        }
+
+        return 0;
+
     }
-
-    private static OnUpdateAppNumListener mOnUpdateAppNumListener;
-
-    public static void setOnUpdateAppNumListener(OnUpdateAppNumListener listener) {
-        mOnUpdateAppNumListener = listener;
-    }
-
 
 }

@@ -35,6 +35,9 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
     List<AppInfo> systemApp;
     //系统应用的icon
     private List<Drawable> mDrawables = new ArrayList<Drawable>();
+    //内存维护的全局应用List
+    public  List<AppInfo> myAppList = new ArrayList<AppInfo>() {
+    };
 
 
     public MyAppsFragPresenter(MyAppsFramentContract.View view, Context context) {
@@ -55,6 +58,8 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
             protected Void doInBackground(Void... params) {
                 //初始化数据
                 mMyAppsListDataUtil = new MyAppsListDataUtil(mContext);
+                //所有的第三方应用
+                myAppList = PackageUtil.findAllThirdPartyAppsNoDelay(mContext, myAppList);
                 mShowList = mMyAppsListDataUtil.getShowList(mShowList);
                 systemApp = mMyAppsListDataUtil.getSystemApp(null);
                 mDrawables = sysAppInfo2Drawble(systemApp, mDrawables);
@@ -64,7 +69,7 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                mView.loadAppInfoSuccess(mShowList);
+                mView.loadAppInfoSuccess(mShowList,myAppList.size());
                 mView.loadCustomDataSuccess(mDrawables);
                 removeHideApps();
             }
@@ -84,11 +89,11 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
         if (mDrawablelist.size() != 0) {
             mDrawablelist.clear();
         }
-        if(list.size()<7){
+        if (list.size() < 7) {
             for (int i = 0; i < list.size(); i++) {
                 mDrawablelist.add(list.get(i).appIcon);
             }
-        }else{
+        } else {
             for (int i = 0; i < 6; i++) {
                 mDrawablelist.add(list.get(i).appIcon);
             }
@@ -160,14 +165,14 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
         AppInfo appInfo = mShowList.get(position);
         mShowList.remove(position);
         mShowList.add(2, appInfo);
-        mView.loadAppInfoSuccess(mShowList);
+        mView.loadAppInfoSuccess(mShowList,myAppList.size());
         mMyAppsListDataUtil.saveShowList(mShowList);
     }
 
     public void removeApp(int position) {
         mShowList.remove(position);
         mMyAppsListDataUtil.saveShowList(mShowList);
-        mView.loadAppInfoSuccess(mShowList);
+        mView.loadAppInfoSuccess(mShowList,myAppList.size());
     }
 
     public void unRegiestr() {

@@ -2,7 +2,6 @@ package com.can.appstore.active;
 
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.can.appstore.R;
@@ -27,12 +26,8 @@ import cn.can.tvlib.utils.StringUtils;
 import retrofit2.Response;
 
 /**
- * Created by Atangs on 2016/11/2.
- * <p>
- * 未对数据接口
- * 缺少应用安装，以及安装是否成功状态未设置
+ * Created by Fuwen on 2016/11/2.
  */
-
 public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTaskListener, AppInstallListener {
     private final static String TAG = "ActivePresenter";
     private DownloadTask mDownloadTask;
@@ -51,7 +46,7 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
     }
 
     private void initDownloadTask(String downloadUrl) {
-        mDownloadManger = DownloadManager.getInstance(mContext);
+        mDownloadManger = DownloadManager.getInstance(mContext.getApplicationContext());
         DownloadTask downloadTask = mDownloadManger.getCurrentTaskById(MD5.MD5(downloadUrl));
         mDownloadTask = downloadTask;
         if (downloadTask != null) {
@@ -83,26 +78,28 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
     //---------------------------- ActiveContract.TaskPresenter ----------------------------------
     @Override
     public void requestActiveData(String activeId) {
+        if (!NetworkUtils.isNetworkConnected(mContext)) {
+            mOperationView.loadDataFail(R.string.no_network);
+        }
         mActiveData = HttpManager.getApiService().getActivityInfo(activeId);
         mActiveData.enqueue(new CanCallback<Result<Activity>>() {
             @Override
             public void onResponse(CanCall<Result<Activity>> call, Response<Result<Activity>> response) throws Exception {
                 Result<Activity> info = response.body();
-                if (info == null) {
-                    mOperationView.showNetworkRetryView(true, false);
-                    return;
-                }
                 if (info.getData() == null) {
+                    mOperationView.loadDataFail(R.string.load_data_faild);
                     return;
                 }
                 Activity active = info.getData();
                 boolean isWebView = StringUtils.isEmpty(active.getUrl());
-                mOperationView.showNetworkRetryView(false, isWebView);
                 if (isWebView) {
+                    mOperationView.showBackground(active.getBackground());
                     mAppInfo = active.getRecommend();
-                    mDownloadUrl = mAppInfo.getUrl();
-                    mOperationView.setNativeLayout(active.getBackground());
-                    initDownloadTask(mDownloadUrl);
+                    if(mAppInfo != null){
+                        mDownloadUrl = mAppInfo.getUrl();
+                        mOperationView.showProgreessbar();
+                        initDownloadTask(mDownloadUrl);
+                    }
                 } else {
                     mOperationView.loadwebview(active.getUrl());
                 }
@@ -110,9 +107,7 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
 
             @Override
             public void onFailure(CanCall<Result<Activity>> call, CanErrorWrapper errorWrapper) {
-                if (!NetworkUtils.isNetworkConnected(mContext.getApplicationContext())) {
-                    mOperationView.showNetworkRetryView(true, false);
-                }
+                mOperationView.loadDataFail(R.string.load_data_faild);
             }
         });
     }
@@ -120,9 +115,9 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
     @Override
     public void clickBtnDownload() {
         String downloadUrl = mDownloadUrl;
-        if (TextUtils.isEmpty(downloadUrl)) {
-//            mOperationView.showToast("下载地址异常");
-        }
+//        if (TextUtils.isEmpty(downloadUrl)) {
+////            mOperationView.showToast("下载地址异常");
+//        }
         //需做按钮连续点击限制
         if (isFastContinueClickView()) {
             return;
@@ -141,13 +136,13 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
                 return;
             }
             if (status == AppInstallListener.APP_INSTALLING) {
-                mOperationView.showToast(R.string.installing);
+                mOperationView.showActiveToast(R.string.installing);
                 return;
             }
 
             if (status == DownloadStatus.DOWNLOAD_STATUS_ERROR) {
-                if (!NetworkUtils.isNetworkConnected(mContext.getApplicationContext())) {
-                    mOperationView.showToast(R.string.network_connection_disconnect);
+                if (!NetworkUtils.isNetworkConnected(mContext)) {
+                    mOperationView.showActiveToast(R.string.no_network);
                 } else {
                     downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
                     mDownloadManger.addDownloadTask(downloadTask, ActivePresenter.this);
@@ -156,25 +151,23 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
             }
 
             if (status == DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING || status == DownloadStatus.DOWNLOAD_STATUS_PREPARE) {
-                mOperationView.showToast(R.string.download_pause);
+                mOperationView.showActiveToast(R.string.download_pause);
                 mDownloadManger.pause(downloadTask);
                 return;
             }
             if (status == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
                 mDownloadManger.resume(downloadTask.getId());
-                mOperationView.showToast(R.string.download_continue);
+                mOperationView.showActiveToast(R.string.download_continue);
             }
         } else {
-            if (!NetworkUtils.isNetworkConnected(mContext.getApplicationContext())) {
-                mOperationView.showToast(R.string.network_connection_disconnect);
+            if (!NetworkUtils.isNetworkConnected(mContext)) {
+                mOperationView.showActiveToast(R.string.no_network);
                 return;
             }
             downloadTask = new DownloadTask();
             String md5 = MD5.MD5(downloadUrl);
             downloadTask.setFileName(mAppInfo.getName());
             downloadTask.setId(md5);
-            downloadTask.setSaveDirPath(mContext.getExternalCacheDir() != null ? mContext.getExternalCacheDir().getPath()
-                    + "/" : "");
             downloadTask.setUrl(downloadUrl);
             mDownloadManger.addDownloadTask(downloadTask, ActivePresenter.this);
             mDownloadManger.setAppInstallListener(ActivePresenter.this);
@@ -247,16 +240,16 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
         if (downloadTask.getId().equalsIgnoreCase(MD5.MD5(mDownloadUrl))) {
             switch (errorCode) {
                 case DOWNLOAD_ERROR_FILE_NOT_FOUND:
-                    mOperationView.showToast(R.string.downlaod_error);
+                    mOperationView.showActiveToast(R.string.downlaod_error);
                     break;
                 case DOWNLOAD_ERROR_IO_ERROR:
-                    mOperationView.showToast(R.string.downlaod_error);
+                    mOperationView.showActiveToast(R.string.downlaod_error);
                     break;
                 case DOWNLOAD_ERROR_NETWORK_ERROR:
-                    mOperationView.showToast(R.string.network_connection_error);
+                    mOperationView.showActiveToast(R.string.network_connection_error);
                     break;
                 case DOWNLOAD_ERROR_UNKONW_ERROR:
-                    mOperationView.showToast(R.string.unkonw_error);
+                    mOperationView.showActiveToast(R.string.unkonw_error);
                     break;
             }
             if (errorCode != DOWNLOAD_ERROR_NETWORK_ERROR) {
@@ -280,7 +273,7 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
         Log.d(TAG, "onInstallSucess(id " + id + ")");
         if (id.equalsIgnoreCase(MD5.MD5(mDownloadUrl))) {
             mOperationView.refreshTextProgressbarTextStatus(R.string.active_click_participate);
-            mOperationView.showToast(R.string.install_success);
+            mOperationView.showActiveToast(R.string.install_success);
         }
     }
 
@@ -289,7 +282,7 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
         Log.d(TAG, "onInstallFail(id " + id + ")");
         if (id.equalsIgnoreCase(MD5.MD5(mDownloadUrl))) {
             mOperationView.refreshTextProgressbarTextStatus(R.string.downlaod_restart);
-            mOperationView.showToast(R.string.install_fail);
+            mOperationView.showActiveToast(R.string.install_fail);
         }
     }
 

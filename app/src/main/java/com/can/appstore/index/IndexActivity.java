@@ -41,9 +41,14 @@ import com.can.appstore.message.MessageActivity;
 import com.can.appstore.message.manager.MessageManager;
 import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
-import com.can.appstore.update.UpdatePresenter;
+import com.can.appstore.update.AutoUpdate;
+import com.can.appstore.update.model.UpdateApkModel;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -52,6 +57,7 @@ import java.util.List;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.utils.NetworkUtils;
+import cn.can.tvlib.utils.PromptUtils;
 import retrofit2.Response;
 
 import static com.can.appstore.index.ui.FragmentEnum.INDEX;
@@ -76,6 +82,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private final float SCALE = 1.1f;
     private final int SCREEN_PAGE_LIMIT = 5;
     private final int PAGER_CURRENT = 0;
+    private final int DELAYED = 200;
     //滚动中
     private final int SCROLLING = 2;
     //滚动完成
@@ -115,6 +122,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      */
     private void initView() {
         mContext = IndexActivity.this;
+        EventBus.getDefault().register(mContext);
         //导航
         mTitleBar = (TitleBar) findViewById(R.id.id_indicator);
         mTitleBar.initTitle(this);
@@ -148,29 +156,34 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             mNavigationCall.enqueue(new CanCallback<ListResult<Navigation>>() {
                 @Override
                 public void onResponse(CanCall<ListResult<Navigation>> call, Response<ListResult<Navigation>> response) throws Exception {
-                    ListResult<Navigation> listResult = response.body();
-                    parseData(listResult);
-//                    DataUtils.getInstance(mContext).setCache(new Gson().toJson(listResult));
+                    ProxyCache(response);
                 }
 
                 @Override
                 public void onFailure(CanCall<ListResult<Navigation>> call, CanErrorWrapper errorWrapper) {
                     Log.i("DataUtils", errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
-                    ProxyCache();
+                    ProxyCache(null);
                 }
             });
         } else {
-            ProxyCache();
+            ProxyCache(null);
         }
     }
 
-    private void ProxyCache() {
-        //JSON不完整或错误会出现异常
+    private void ProxyCache(Response<ListResult<Navigation>> response) {
         try {
-            ListResult<Navigation> listResult = new Gson().fromJson(DataUtils.getInstance(mContext).getCache(), new TypeToken<ListResult<Navigation>>() {
-            }.getType());
+            //JSON不完整或错误会出现异常
+            ListResult<Navigation> listResult;
+            if (null != response) {
+                listResult = response.body();
+            } else {
+                listResult = new Gson().fromJson(DataUtils.getInstance(mContext).getCache(), new TypeToken<ListResult<Navigation>>() {
+                }.getType());
+            }
             parseData(listResult);
         } catch (Exception e) {
+            PromptUtils.toast(mContext, getResources().getString(R.string.index_data_error));
+            DataUtils.getInstance(mContext).clearData();
             e.printStackTrace();
         }
     }
@@ -299,7 +312,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mViewPager.setPageMargin((int) getResources().getDimension(R.dimen.px165));
         mViewPager.setOnKeyListener(this);
         mTitleBar.setViewPager(mViewPager, PAGER_CURRENT);
-        mHandler.sendEmptyMessageDelayed(INIT_FOCUS, 200);
+        mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED);
         fixedScroll();
         loadMore();
     }
@@ -324,14 +337,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void initUpdateListener() {
-        UpdatePresenter.autoUpdate(IndexActivity.this);
-        UpdatePresenter.setOnUpdateAppNumListener(new UpdatePresenter.OnUpdateAppNumListener() {
-            @Override
-            public void updateAppNum(int number) {
-                updateNum = number;
-                refreshUpdate(updateNum);
-            }
-        });
+        AutoUpdate.getInstance().autoUpdate(IndexActivity.this);
     }
 
     private void refreshUpdate(int number) {
@@ -446,6 +452,15 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         }
     }
 
+    /**
+     * 使用eventbus
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventMainThread(UpdateApkModel model) {
+        updateNum = model.getNumber();
+        refreshUpdate(updateNum);
+    }
+
     public static void actionStart(Context context, String topicId) {
         Intent intent = new Intent(context, IndexActivity.class);
         context.startActivity(intent);
@@ -460,5 +475,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
         addFocusListener(view, hasFocus, INDEX);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(mContext);
     }
 }
