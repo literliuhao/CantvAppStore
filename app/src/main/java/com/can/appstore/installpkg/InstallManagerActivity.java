@@ -542,4 +542,10 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
         return super.dispatchKeyEvent(event);
 
     }
+
+    @Override
+    protected void onHomeKeyDown() {
+        mPresenter.release();
+        finish();
+    }
 }

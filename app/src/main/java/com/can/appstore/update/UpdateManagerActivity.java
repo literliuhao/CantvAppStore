@@ -727,4 +727,10 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         return super.dispatchKeyEvent(event);
 
     }
+
+    @Override
+    protected void onHomeKeyDown() {
+        mPresenter.release();
+        finish();
+    }
 }
