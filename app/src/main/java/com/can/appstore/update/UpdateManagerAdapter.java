@@ -184,20 +184,16 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                     });
                     switch (errorCode) {
                         case DOWNLOAD_ERROR_FILE_NOT_FOUND:
-                            ToastUtils.showMessage(MyApp.getContext(), "未找到下载文件");
-                            Log.i(TAG, "未找到下载文件: ");
+                            ToastUtils.showMessage(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.downlaod_error));
                             break;
                         case DOWNLOAD_ERROR_IO_ERROR:
-                            ToastUtils.showMessage(MyApp.getContext(), "IO异常");
-                            Log.i(TAG, "IO异常: ");
+                            ToastUtils.showMessage(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.downlaod_error));
                             break;
                         case DOWNLOAD_ERROR_NETWORK_ERROR:
-                            ToastUtils.showMessage(MyApp.getContext(), "网络异常，请重试！");
-                            Log.i(TAG, "网络异常，请重试！");
+                            ToastUtils.showMessage(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.network_connection_error));
                             break;
                         case DOWNLOAD_ERROR_UNKONW_ERROR:
-                            ToastUtils.showMessage(MyApp.getContext(), "未知错误");
-                            Log.i(TAG, "未知错误: ");
+                            ToastUtils.showMessage(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.unkonw_error));
                             break;
                         default:
                             break;
