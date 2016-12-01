@@ -28,7 +28,6 @@ import cn.can.downloadlib.DownloadTask;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.SystemUtil;
-import cn.can.tvlib.utils.ToastUtils;
 
 /**
  * Created by JasonF on 2016/10/17.
@@ -196,13 +195,13 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     @Override
     public void onUninstallSucess(String id) {
         Log.d(TAG, "onUninstallSucess: " + mCurUninstallApkName);
-        ToastUtils.showMessage(mContext, mCurUninstallApkName + mContext.getResources().getString(R.string.uninstall_success));
+        mView.showToast(mCurUninstallApkName + mContext.getResources().getString(R.string.uninstall_success));
     }
 
     @Override
     public void onUninstallFail(String id) {
         Log.d(TAG, "onUninstallFail: " + mCurUninstallApkName);
-        ToastUtils.showMessage(mContext, mCurUninstallApkName + mContext.getResources().getString(R.string.uninstall_fail));
+        mView.showToast(mCurUninstallApkName + mContext.getResources().getString(R.string.uninstall_fail));
     }
 
     class AppInstallReceiver extends BroadcastReceiver {
