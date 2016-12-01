@@ -8,6 +8,7 @@
         android:id="@+id/active_webview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/color_2D313A"
         android:visibility="gone"/>
 
     <RelativeLayout
@@ -44,7 +45,4 @@
 
     </RelativeLayout>
 
-    <include
-        layout="@layout/network_retry"
-        android:visibility="gone"/>
 </RelativeLayout>

@@ -2,8 +2,6 @@ package com.can.appstore.widgets;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -17,8 +15,6 @@ import com.can.appstore.R;
 
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
-import cn.can.tvlib.utils.BitmapUtils;
-import cn.can.tvlib.utils.FastBlurUtil;
 
 /**
  * Created by Atangs on 2016/10/30.
@@ -183,9 +179,8 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
         return this;
     }
 
-    public CanDialog setOnCanBtnClickListener(OnClickListener listener) {
+    public void setOnCanBtnClickListener(OnClickListener listener) {
         this.mOnClickListener = listener;
-        return this;
     }
 
     @Override
