@@ -11,6 +11,8 @@ import com.can.appstore.specialdetail.SpecialDetailActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,6 +21,28 @@ import java.util.regex.Pattern;
  */
 
 public class ActionUtils {
+
+    /**
+     * 内置图片
+     */
+    private ActionUtils() {
+        photoMap.put("recommend_photo1", R.drawable.homerank_bottom_bg1);
+        photoMap.put("recommend_photo2", R.drawable.homerank_bottom_bg2);
+        photoMap.put("recommend_photo3", R.drawable.homerank_bottom_bg3);
+        photoMap.put("recommend_photo4", R.drawable.homerank_bottom_bg4);
+        photoMap.put("recommend_photo5", R.drawable.homerank_bottom_bg5);
+    }
+
+    private static ActionUtils actionUtils;
+
+    public static ActionUtils getInstance() {
+        if (null == actionUtils) {
+            actionUtils = new ActionUtils();
+        }
+        return actionUtils;
+    }
+
+    private Map<String, Integer> photoMap = new HashMap();
 
     /**
      * 应用详情 ok
@@ -39,12 +63,13 @@ public class ActionUtils {
      * 活动详情⻚ ok
      * com.can.appstore.ACTION_ACTIVITY_DETAIL
      * activeId(String)
-     *  @param mContext
+     *
+     * @param mContext
      * @param id
      * @param actionStr
      * @param actionData
      */
-    public static void convertAction(Context mContext, String id, String actionStr, String actionData) {
+    public void convertAction(Context mContext, String id, String actionStr, String actionData) {
         switch (actionStr) {
             //应用详情
             case "action_app_detail":
@@ -76,23 +101,18 @@ public class ActionUtils {
         }
     }
 
-    public static Boolean checkURL(String mURL) {
+    public Boolean checkURL(String mURL) {
         String regex = "(http|https):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?";
         Pattern p = Pattern.compile(regex);
         Matcher matcher = p.matcher(mURL);
         return matcher.matches();
     }
 
-    public static int getResourceId(String iconName){
-        switch (iconName){
-            case "resource_photo1":
-                return R.drawable.homerank_bottom_bg1;
-            case "resource_photo2":
-                return R.drawable.homerank_bottom_bg2;
-            case "resource_photo3":
-                return R.drawable.homerank_bottom_bg3;
-            default:
-                return R.drawable.homerank_bottom_bg4;
+    public int getResourceId(String iconName) {
+        if (photoMap.containsKey(iconName)) {
+            return photoMap.get(iconName);
+        }else{
+            return R.drawable.homerank_bottom_bg1;
         }
     }
 }

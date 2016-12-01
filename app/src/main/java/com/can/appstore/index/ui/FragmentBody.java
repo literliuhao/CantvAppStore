@@ -117,14 +117,14 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
                 public void onClick(View view) {
                     try {
                         //StartActivity
-                        ActionUtils.convertAction(context, childBean.getId(), childBean.getAction(), childBean.getActionData());
+                        ActionUtils.getInstance().convertAction(context, childBean.getId(), childBean.getAction(), childBean.getActionData());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             });
 
-            if (ActionUtils.checkURL(childBean.getIcon())) {
+            if (ActionUtils.getInstance().checkURL(childBean.getIcon())) {
                 ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, getResources().getDimension(R.dimen.px8))).size(childBean.getWidth(), childBean.getHeight()).placeholder(R.mipmap.icon_load_default).errorHolder(R.mipmap.icon_loading_fail).successCallback(new GlideLoadTask.SuccessCallback() {
                     @Override
                     public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
@@ -133,7 +133,7 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
                     }
                 }).build().start(context);
             } else {
-                Glide.with(context).load(ActionUtils.getResourceId(childBean.getIcon())).into(myImageView);
+                Glide.with(context).load(ActionUtils.getInstance().getResourceId(childBean.getIcon())).into(myImageView);
             }
 
             FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
