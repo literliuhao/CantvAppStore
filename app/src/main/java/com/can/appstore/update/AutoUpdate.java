@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.can.appstore.MyApp;
+import com.can.appstore.R;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.ListResult;
 import com.can.appstore.http.CanCall;
@@ -24,6 +25,7 @@ import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PreferencesUtils;
+import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.ToastUtils;
 import retrofit2.Response;
 
@@ -59,7 +61,7 @@ public class AutoUpdate {
 
         //检测网络获取更新包数据
         if (!NetworkUtils.isNetworkConnected(context)) {
-            ToastUtils.showMessage(context, "网络连接异常，请检查网络。");
+            PromptUtils.toast(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.update_internet_error));
             EventBus.getDefault().post(new UpdateApkModel(0));
             return;
         }

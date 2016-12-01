@@ -454,7 +454,7 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
         canDialog = new CanDialog(InstallManagerActivity.this);
         AppInfoBean bean = mPresenter.getItem(position);
         if (bean != null && bean.getIsInstalling() && !bean.getInstalledFalse()) {
-            ToastUtils.showMessageLong(InstallManagerActivity.this, "安装包正在安装中，请稍后");
+            showToast(getResources().getString(R.string.install_dialog_installing));
             return;
         }
         if (bean != null) {
@@ -469,7 +469,7 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
                     canDialog.dismiss();
                     int versonCode = mPresenter.getVersonCode(InstallManagerActivity.this, position);
                     if (versonCode == 0) {
-                        ToastUtils.showMessageLong(InstallManagerActivity.this, "安装包版本低于已安装版本,请先卸载原应用");
+                        showToast(getResources().getString(R.string.install_dialog_error));
                     } else {
                         new Handler().postDelayed(new Runnable() {
                             @Override

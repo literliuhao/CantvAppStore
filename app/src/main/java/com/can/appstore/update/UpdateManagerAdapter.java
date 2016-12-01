@@ -30,7 +30,7 @@ import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
-import cn.can.tvlib.utils.ToastUtils;
+import cn.can.tvlib.utils.PromptUtils;
 
 
 /**
@@ -184,16 +184,16 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                     });
                     switch (errorCode) {
                         case DOWNLOAD_ERROR_FILE_NOT_FOUND:
-                            ToastUtils.showMessage(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.downlaod_error));
+                            PromptUtils.toast(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.downlaod_error));
                             break;
                         case DOWNLOAD_ERROR_IO_ERROR:
-                            ToastUtils.showMessage(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.downlaod_error));
+                            PromptUtils.toast(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.downlaod_error));
                             break;
                         case DOWNLOAD_ERROR_NETWORK_ERROR:
-                            ToastUtils.showMessage(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.network_connection_error));
+                            PromptUtils.toast(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.network_connection_error));
                             break;
                         case DOWNLOAD_ERROR_UNKONW_ERROR:
-                            ToastUtils.showMessage(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.unkonw_error));
+                            PromptUtils.toast(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.unkonw_error));
                             break;
                         default:
                             break;

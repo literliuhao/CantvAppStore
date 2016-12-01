@@ -267,7 +267,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
             @Override
             public void onClick(View view, final int position, Object data) {
                 if (!NetworkUtils.isNetworkConnected(UpdateManagerActivity.this)) {
-                    ToastUtils.showMessage(UpdateManagerActivity.this, "网络连接异常，请检查网络。");
+                    showToast(getResources().getString(R.string.update_internet_error));
                     return;
                 }
                 mCurrentPositon = position;
@@ -352,16 +352,16 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                             });
                             switch (errorCode) {
                                 case DOWNLOAD_ERROR_FILE_NOT_FOUND:
-                                    ToastUtils.showMessage(mContext, getResources().getString(R.string.downlaod_error));
+                                    showToast(getResources().getString(R.string.downlaod_error));
                                     break;
                                 case DOWNLOAD_ERROR_IO_ERROR:
-                                    ToastUtils.showMessage(mContext, getResources().getString(R.string.downlaod_error));
+                                    showToast(getResources().getString(R.string.downlaod_error));
                                     break;
                                 case DOWNLOAD_ERROR_NETWORK_ERROR:
-                                    ToastUtils.showMessage(mContext, getResources().getString(R.string.network_connection_error));
+                                    showToast(getResources().getString(R.string.network_connection_error));
                                     break;
                                 case DOWNLOAD_ERROR_UNKONW_ERROR:
-                                    ToastUtils.showMessage(mContext, getResources().getString(R.string.unkonw_error));
+                                    showToast(getResources().getString(R.string.unkonw_error));
                                     break;
                                 default:
                                     break;

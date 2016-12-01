@@ -26,6 +26,7 @@ import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PreferencesUtils;
+import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.SystemUtil;
 import cn.can.tvlib.utils.ToastUtils;
@@ -64,7 +65,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         }
         if (!NetworkUtils.isNetworkConnected(mContext)) {
             mView.showInternetError();
-            ToastUtils.showMessage(mContext, "网络连接异常，请检查网络。");
+            PromptUtils.toast(mContext, MyApp.getContext().getResources().getString(R.string.update_internet_error));
             return;
         }
         mView.showLoading();
@@ -203,7 +204,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
 
         //检测网络获取更新包数据
         if (!NetworkUtils.isNetworkConnected(context)) {
-            ToastUtils.showMessage(context, "网络连接异常，请检查网络。");
+            PromptUtils.toast(mContext, MyApp.getContext().getResources().getString(R.string.update_internet_error));
             return;
         }
 

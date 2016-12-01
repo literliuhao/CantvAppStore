@@ -59,6 +59,7 @@
     <string name="update_setting_content">应用需要更新时，自动开始下载安装</string>
     <string name="update_setting_btstart">关闭</string>
     <string name="update_setting_btstop">开启</string>
+    <string name="update_internet_error">网络连接异常，请检查网络。</string>
     <!-- 安装包管理 -->
     <string name="install_start_autoupdate">已开启自动更新</string>
     <string name="install_end_autoupdate">关闭自动更新</string>
@@ -82,6 +83,8 @@
     <string name="data_error">数据异常</string>
     <string name="install_dialog_install">安装</string>
     <string name="install_dialog_delete">删除</string>
+    <string name="install_dialog_installing">安装包正在安装中，请稍后</string>
+    <string name="install_dialog_error">安装包版本低于已安装版本,请先卸载原应用</string>
     <!--专题-->
     <string name="special">"专题"</string>
     <!--下载页-->
