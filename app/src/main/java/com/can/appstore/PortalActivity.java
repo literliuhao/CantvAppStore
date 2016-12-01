@@ -1,8 +1,10 @@
 package com.can.appstore;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,7 +20,13 @@ import com.can.appstore.download.DownloadLeadAcitivity;
 import com.can.appstore.message.MessageActivity;
 import com.can.appstore.specialdetail.SpecialDetailActivity;
 import com.can.appstore.uninstallmanager.UninstallManagerActivity;
+import com.can.appstore.upgrade.InstallApkListener;
+import com.can.appstore.upgrade.UpgradeUtil;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +41,7 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
  */
 
 public class PortalActivity extends Activity {
+    private static final String TAG = "PortalActivity";
 
     private RecyclerView mRecyclerView;
     private HomeAdapter adapter;
@@ -73,6 +82,8 @@ public class PortalActivity extends Activity {
                 list.add("专题详情页");
             } else if (i == 10) {
                 list.add("活动详情页");
+            } else if (i == 11) {
+                list.add("install");
             } else {
                 list.add(i + "");
             }
@@ -133,6 +144,8 @@ public class PortalActivity extends Activity {
                     SpecialDetailActivity.actionStart(PortalActivity.this, "");
                 } else if (position == 10) {
                     ActiveActivity.actionStart(PortalActivity.this, "");
+                } else if (position == 11) {
+                    initService();
                 }
             }
         });
@@ -170,6 +183,62 @@ public class PortalActivity extends Activity {
             }
         });
     }
+
+    private void initService() {
+        String path1 = Environment.getExternalStorageDirectory() + File.separator
+                +"install";
+        String path = Environment.getExternalStorageDirectory() + File.separator
+                +"install/service.apk";
+        if (!UpgradeUtil.isFileExist(path1)) {
+            UpgradeUtil.creatDir(path1);
+        }
+        UpgradeUtil.delAllDateFile(path1);
+        //写入apk到sd卡
+        boolean a = copyApkFromAssets(this, "service.apk", path);
+        Log.d(TAG, "initService: "+a);
+        //启动activity
+        Intent intent = new Intent("com.zby.uphelp.MService");
+        startService(intent);
+        //安装apk
+        UpgradeUtil.installApk(this,path,0, new InstallApkListener() {
+            @Override
+            public void onInstallSuccess() {
+                Log.d(TAG, "onInstallSuccess: ");
+            }
+
+            @Override
+            public void onInstallFail(String reason) {
+                Log.d(TAG, "onInstallFail: "+reason);
+            }
+        });
+
+    }
+
+
+    public boolean copyApkFromAssets(Context context, String fileName, String path) {
+        boolean copyIsFinish = false;
+        try {
+            Log.d(TAG, "initService: path="+path);
+
+            InputStream is = context.getAssets().open(fileName);
+            File file = new File(path);
+            file.createNewFile();
+            FileOutputStream fos = new FileOutputStream(file);
+            byte[] temp = new byte[1024];
+            int i = 0;
+            while ((i = is.read(temp)) > 0) {
+                fos.write(temp, 0, i);
+            }
+            fos.close();
+            is.close();
+            copyIsFinish = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return copyIsFinish;
+    }
+
+
 
     //        class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> {
     //
