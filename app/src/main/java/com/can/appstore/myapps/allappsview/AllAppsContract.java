@@ -1,6 +1,9 @@
 package com.can.appstore.myapps.allappsview;
 
 
+import com.can.appstore.base.BasePresenter;
+import com.can.appstore.base.BaseView;
+
 import java.util.List;
 
 import cn.can.tvlib.utils.PackageUtil;
@@ -9,8 +12,8 @@ import cn.can.tvlib.utils.PackageUtil;
  * Created by wei on 2016/11/8.
  */
 
-public interface AllAppsContract{
-    interface Presenter {
+public interface AllAppsContract {
+    interface Presenter extends BasePresenter {
         void startLoad();
 
         void addListener();
@@ -18,10 +21,7 @@ public interface AllAppsContract{
         void release();
     }
 
-    interface View {
-        void showLoading();
-
-        void hideLoading();
+    interface View extends BaseView {
 
         void showUninstallDialog(PackageUtil.AppInfo app);
 

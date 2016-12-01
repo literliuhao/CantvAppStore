@@ -23,8 +23,6 @@ import com.can.appstore.index.ui.FragmentEnum;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.can.tvlib.utils.ToastUtils;
-
 public class HomeRankFragment extends BaseFragment implements HomeRankContract.View {
 
     // TODO: Rename parameter arguments, choose names that match
@@ -100,7 +98,7 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
 
     @Override
     public void startLoading() {
-        ToastUtils.showMessageLong(getActivity().getApplicationContext(), "开始加载数据...");
+//        ToastUtils.showMessageLong(getActivity().getApplicationContext(), "开始加载数据...");
     }
 
     @Override

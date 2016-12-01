@@ -607,4 +607,8 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         }, 3000);
     }
 
+    @Override
+    protected void onHomeKeyDown() {
+        finish();
+    }
 }

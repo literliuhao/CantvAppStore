@@ -275,15 +275,12 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
         mAllAppsPresenter.silentUninstall(name, packname);
     }
 
-    @Override
-    public void showLoading() {
-        mAllAppsPresenter.showLoading("");
-    }
 
     @Override
-    public void hideLoading() {
-        mAllAppsPresenter.hideLoading();
+    public void setPresenter(Object presenter) {
+
     }
+
 
     @Override
     protected void onHomeKeyDown() {
@@ -368,5 +365,4 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
             return false;
         }
     }
-
 }

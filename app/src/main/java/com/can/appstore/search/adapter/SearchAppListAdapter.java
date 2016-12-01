@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.Target;
-import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.entity.AppInfo;
@@ -116,7 +115,7 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
             });
 
             //标签
-            if (app.getMarker() != null && !app.getMarker().equals("")) {
+            if (null != app.getMarker() && !app.getMarker().equals("")) {
                 ((SearchViewHolder) holder).mAppLabelImg.setVisibility(View.VISIBLE);
                 ImageLoader.getInstance().load(mActivity, ((SearchViewHolder) holder).mAppLabelImg, app.getMarker());
             } else {

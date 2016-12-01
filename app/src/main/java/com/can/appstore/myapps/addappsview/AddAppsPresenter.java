@@ -48,7 +48,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
             //加载数据之前
             @Override
             protected void onPreExecute() {
-                mView.showLoading();
+                mView.showLoadingDialog();
             }
 
             //加载数据
@@ -81,7 +81,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
             protected void onPostExecute(Void aVoid) {
                 Log.d(TAG, "onPostExecute");
                 mView.loadAddAppInfoSuccess(addShowList);
-                mView.hideLoading();
+                mView.hideLoadingDialog();
             }
         }.execute();
 

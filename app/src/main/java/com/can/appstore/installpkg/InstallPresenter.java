@@ -204,7 +204,6 @@ public class InstallPresenter implements InstallContract.Presenter {
             if (bean.getPackageName().equals(packageName) && bean.getVersionCode().equals(String.valueOf(versionCode))) {
                 if (bean.getInstall()) {
                     mView.refreshAll();
-                    //Toast.makeText(MyApp.mContext, packageName + "111111", Toast.LENGTH_LONG).show();
                 }
             }
         }
