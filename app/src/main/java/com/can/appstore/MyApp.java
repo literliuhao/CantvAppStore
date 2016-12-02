@@ -108,7 +108,9 @@ public class MyApp extends Application {
                     }
                 }
             };
-            //Bugly.init(getApplicationContext(), "900059606", true);//测试使用
+            //测试使用key
+            //Bugly.init(getApplicationContext(), "900059606", true);
+            //正式版本发布使用key
             Bugly.init(getApplicationContext(), "e3c3b1806e", false);
             Beta.checkUpgrade();
         } catch (Exception e) {

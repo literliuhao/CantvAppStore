@@ -133,7 +133,7 @@ public class AppListPresenter implements AppListContract.Presenter {
     public void startLoadData() {
 
         if (!NetworkUtils.isNetworkConnected(mContext)) {
-            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.no_network));
+            mView.showToast(mContext.getResources().getString(R.string.no_network));
             mView.finish();
             return;
         }
@@ -185,7 +185,7 @@ public class AppListPresenter implements AppListContract.Presenter {
                     return;
                 }
                 mView.hideLoadingDialog();
-                ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.load_data_faild));
+                mView.showToast(mContext.getResources().getString(R.string.load_data_faild));
                 mView.finish();
                 Log.d(TAG, "onFailure:" + errorWrapper.getReason() + "-----" + errorWrapper.getThrowable());
             }
@@ -213,7 +213,7 @@ public class AppListPresenter implements AppListContract.Presenter {
         mAppInfos.clear();
         mView.refreshAppList(mAppInfos, REFRESH_APP);
         if (!NetworkUtils.isNetworkConnected(mContext)) {
-            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.no_network));
+            mView.showToast(mContext.getResources().getString(R.string.no_network));
             isLoadFail = true;
             long delayTime = calculateDelayTime();
             mHandler.sendEmptyMessageDelayed(HIDE_LOADING, delayTime);
@@ -287,7 +287,7 @@ public class AppListPresenter implements AppListContract.Presenter {
             return;
         }
         if (!NetworkUtils.isNetworkConnected(mContext)) {
-            ToastUtils.showMessage(mContext, mContext.getResources().getString(R.string.no_network));
+            mView.showToast(mContext.getResources().getString(R.string.no_network));
             return;
         }
         mView.showToast(mContext.getResources().getString(R.string.load_more_content));
