@@ -21,7 +21,7 @@ android {
 
     buildTypes {
         release {
-            debuggable true
+            debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug // 默认签名
@@ -53,6 +53,9 @@ android {
         }
     }
 
+    lintOptions {
+        abortOnError false
+    }
 
 }
 
