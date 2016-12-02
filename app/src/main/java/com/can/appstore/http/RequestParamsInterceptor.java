@@ -3,6 +3,9 @@ package com.can.appstore.http;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.can.appstore.AppConstants;
+import com.can.appstore.MyApp;
+
 import java.io.IOException;
 
 import cn.can.tvlib.utils.NetworkUtils;
@@ -19,25 +22,30 @@ public class RequestParamsInterceptor implements Interceptor {
     static String CHANNEL_ID;
     static String INTERNAL_MODEL;
     static String COMMERCIAL_MODEL;
+
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
-        // TODO 完善参数
-//        HttpUrl url = request.url()
-//                .newBuilder()
-//                .addQueryParameter("channelId", "12")
-//                .addQueryParameter("internalModel", "neibu")
-//                .addQueryParameter("commercialModel", "rrrr")
-//                .addQueryParameter("mac", "1:2:3")
-//                .addQueryParameter("versionId", "1.0")
-//                .build();
-//        request = request.newBuilder().url(url)
-//                .build();
+        String urlStr = request.url().toString();
+        // 在请求之前先获取机型信息参数
+        if (urlStr.startsWith(AppConstants.BASE_URL)) {
+            if (!alreadyInit() || !initWithSharedPreferences(MyApp.getContext())) {
+                retrofit2.Response<TvInfoHolderWrapper> response = HttpManager.getApiService().getTvInfo().execute();
+                if (response.isSuccessful()) {
+                    TvInfoHolderWrapper body = response.body();
+                    if (body.getStatus() == 200) {
+                        TvInfoHolderWrapper.TvInfoHolder data = body.getData();
+                        RequestParamsInterceptor.initWithTvInfoHolder(MyApp.getContext(), data);
+                    }
+                }
+            }
+        }
+
         HttpUrl url = request.url()
                 .newBuilder()
                 .addQueryParameter("channelId", CHANNEL_ID)
                 .addQueryParameter("internalModel", INTERNAL_MODEL)
-                .addQueryParameter("commercialModel",COMMERCIAL_MODEL)
+                .addQueryParameter("commercialModel", COMMERCIAL_MODEL)
                 .addQueryParameter("mac", NetworkUtils.getMac())
                 .addQueryParameter("versionId", "1")
                 .build();
@@ -45,6 +53,7 @@ public class RequestParamsInterceptor implements Interceptor {
                 .build();
         return chain.proceed(request);
     }
+
     static boolean alreadyInit() {
         return CHANNEL_ID != null && INTERNAL_MODEL != null && COMMERCIAL_MODEL != null;
     }
@@ -54,6 +63,8 @@ public class RequestParamsInterceptor implements Interceptor {
             return true;
         }
 
+        if (context == null) return false;
+
         SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
         RequestParamsInterceptor.CHANNEL_ID = sharedPreferences.getString(RequestParamsInterceptor.KEY_CHANNEL_ID, null);
         RequestParamsInterceptor.COMMERCIAL_MODEL = sharedPreferences.getString(RequestParamsInterceptor.KEY_COMMERCIAL_MODEL, null);
@@ -62,6 +73,8 @@ public class RequestParamsInterceptor implements Interceptor {
     }
 
     static void initWithTvInfoHolder(Context context, TvInfoHolderWrapper.TvInfoHolder tvInfoHolder) {
+        if (context == null) return;
+
         RequestParamsInterceptor.CHANNEL_ID = tvInfoHolder.getChannelId();
         RequestParamsInterceptor.COMMERCIAL_MODEL = tvInfoHolder.getModelId();
         RequestParamsInterceptor.INTERNAL_MODEL = tvInfoHolder.getInternalmodelId();
