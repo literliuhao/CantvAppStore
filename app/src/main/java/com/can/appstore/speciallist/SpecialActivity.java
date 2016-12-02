@@ -161,7 +161,7 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
             @Override
             public void onClick(View v) {
                 if (!NetworkUtils.isNetworkConnected(getContext().getApplicationContext())) {
-                    showToast(R.string.network_connection_disconnect);
+                    showToast(R.string.no_network);
                     return;
                 }
                 mFocusMoveUtils.hideFocus();
@@ -224,14 +224,12 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
             public void onClick(View view, int position, Object data) {
                 if (!NetworkUtils.isNetworkConnected(getContext())) {
                     // TODO: 2016/11/22
-                    showToast(R.string.network_connection_disconnect);
+                    showToast(R.string.no_network);
                     return;
                 }
                 SpecialTopic topic = (SpecialTopic) data;
                 if (topic != null && topic.getId() != null) {
-                    Intent intent = new Intent(SpecialActivity.this, SpecialDetailActivity.class);
-                    intent.putExtra(SpecialDetailActivity.EXTRA_TOPIC_ID, topic.getId());
-                    startActivity(intent);
+                   SpecialDetailActivity.actionStart(SpecialActivity.this,topic.getId());
                 } else {
                     showToast(R.string.data_error);
                 }
