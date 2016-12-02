@@ -36,6 +36,7 @@ android {
         if (variant.buildType.name == 'update') {
             def newVersionCode = variant.versionCode + 1
             variant.mergedFlavor.versionCode = newVersionCode
+            variant.mergedFlavor.versionName = "${getDate()}_v${newVersionCode.toString().getChars().join('.')}"
         }
         //修改生成的apk名字
         variant.outputs.each { output ->
