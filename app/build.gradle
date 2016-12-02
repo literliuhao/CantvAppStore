@@ -43,7 +43,7 @@ android {
             if (variant.buildType.name in ['release', 'update']) {
                 def releaseApkName = "AppStore_V${variant.versionCode}_${getDateTime()}.apk";
                 if (project.hasProperty("appReleaseDir")) {
-                    File releasePath = new File(project.property("appReleaseDir"), getDateTime());
+                    File releasePath = new File(project.property("appReleaseDir"), getDate());
                     output.outputFile = new File(releasePath, releaseApkName);
                 } else {
                     output.outputFile = new File(oldFile.parent, releaseApkName)
@@ -53,6 +53,10 @@ android {
     }
 
 
+}
+
+def getDate(){
+    return new SimpleDateFormat("yyyyMMdd").format(new Date());
 }
 
 def getDateTime(){
