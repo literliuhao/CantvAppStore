@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.util.Log;
 
+import com.can.appstore.http.HttpManager;
 import com.can.appstore.receiver.NetWorkReceiver;
 import com.can.appstore.upgrade.service.BuglyUpgradeService;
 import com.can.appstore.upgrade.service.UpgradeService;
@@ -42,6 +43,7 @@ public class MyApp extends Application {
 
         // 用于监听网络变化，初始化机型信息，陈建，后面优化，暂时没有较好的办法
         if (ProcessUtil.isMainProcess(this)) {
+            HttpManager.init(this);
             this.registerReceiver(new NetWorkReceiver(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         }
     }
