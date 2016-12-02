@@ -10,8 +10,8 @@ android {
         applicationId "com.can.appstore"
         minSdkVersion 19
         targetSdkVersion 24
-        versionCode 1
-        versionName "1.0"
+        versionCode 100
+        versionName "20161201_v1.0.0"
     }
 
     signingConfigs {
@@ -43,7 +43,7 @@ android {
             if (variant.buildType.name in ['release', 'update']) {
                 def releaseApkName = "AppStore_V${variant.versionCode}_${getDateTime()}.apk";
                 if (project.hasProperty("appReleaseDir")) {
-                    File releasePath = new File(project.property("appReleaseDir"), getDate());
+                    File releasePath = new File(project.property("appReleaseDir"), getDateTime());
                     output.outputFile = new File(releasePath, releaseApkName);
                 } else {
                     output.outputFile = new File(oldFile.parent, releaseApkName)

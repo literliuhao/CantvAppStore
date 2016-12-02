@@ -24,7 +24,7 @@ import cn.can.tvlib.utils.StringUtils;
 
 public class UninstallManagerAdapter extends CanRecyclerViewAdapter<PackageUtil.AppInfo> {
     private static final String TAG = "UninstallManagerAdapter";
-    private List<PackageUtil.AppInfo> mInfos = new ArrayList<PackageUtil.AppInfo>();
+    private List<PackageUtil.AppInfo> mInfos = new ArrayList<>();
     private Context mContext;
     private LayoutInflater mInflater;
 
@@ -38,8 +38,7 @@ public class UninstallManagerAdapter extends CanRecyclerViewAdapter<PackageUtil.
     @Override
     protected RecyclerView.ViewHolder generateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.adapter_uninstall_manager_item, parent, false);
-        UninstallViewHolder viewHolder = new UninstallViewHolder(view);
-        return viewHolder;
+        return new UninstallViewHolder(view);
     }
 
     @Override
@@ -53,13 +52,13 @@ public class UninstallManagerAdapter extends CanRecyclerViewAdapter<PackageUtil.
         uninstallViewHolder.tvVersion.setText(appInfo.versionName);
     }
 
-    class UninstallViewHolder extends TagViewHolder {
+    private class UninstallViewHolder extends TagViewHolder {
         RoundCornerImageView imgIcon;
         TextView tvName;
         TextView tvSize;
         TextView tvVersion;
 
-        public UninstallViewHolder(View itemView) {
+        UninstallViewHolder(View itemView) {
             super(itemView);
             imgIcon = (RoundCornerImageView) itemView.findViewById(R.id.iv_icon);
             tvName = (TextView) itemView.findViewById(R.id.tv_name);

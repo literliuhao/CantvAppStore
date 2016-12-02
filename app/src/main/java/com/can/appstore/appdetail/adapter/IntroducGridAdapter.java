@@ -5,16 +5,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.target.Target;
 import com.can.appstore.R;
 
 import java.util.List;
 
-import cn.can.tvlib.imageloader.GlideLoadTask;
-import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.view.GlideRoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
@@ -39,8 +34,7 @@ public class IntroducGridAdapter extends CanRecyclerViewAdapter {
     @Override
     protected RecyclerView.ViewHolder generateViewHolder(ViewGroup parent, int viewType) {
         View introducItem = mInflater.inflate(R.layout.adapter_app_detail_introduc_item, parent, false);
-        IntroducGridViewHolder introducGridViewHolder = new IntroducGridViewHolder(introducItem);
-        return introducGridViewHolder;
+        return new IntroducGridViewHolder(introducItem);
     }
 
     @Override
@@ -54,10 +48,10 @@ public class IntroducGridAdapter extends CanRecyclerViewAdapter {
         mIntroduceList = thumbs;
     }
 
-    class IntroducGridViewHolder extends CanRecyclerView.ViewHolder {
+    private class IntroducGridViewHolder extends CanRecyclerView.ViewHolder {
         GlideRoundCornerImageView introducItem;
 
-        public IntroducGridViewHolder(View itemView) {
+        IntroducGridViewHolder(View itemView) {
             super(itemView);
             introducItem = (GlideRoundCornerImageView) itemView.findViewById(R.id.iv_introduc_item);
         }

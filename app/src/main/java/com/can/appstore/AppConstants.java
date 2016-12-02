@@ -13,8 +13,7 @@ import java.util.List;
  * ================================================
  */
 public class AppConstants {
-    public static final String BASE_URL = "http://172.16.11.32:8011/api/";
-    //    public static final String BASE_URL = "http://192.168.0.2:8088/CanAppStoreServer/";  //本地测试地址
+    public static final String BASE_URL = BuildConfig.DEBUG ? "http://172.16.11.32:8011/api/" : "http://appstore.can.cibntv.net/api/";
     public final static List<String> PRE_APPS = new ArrayList<String>(){
         {
             add("com.cantv.wechatphoto");

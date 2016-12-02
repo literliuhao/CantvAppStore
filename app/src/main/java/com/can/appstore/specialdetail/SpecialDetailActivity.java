@@ -8,9 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import com.can.appstore.R;
 import com.can.appstore.appdetail.AppDetailActivity;
@@ -40,7 +38,7 @@ import retrofit2.Response;
  */
 public class SpecialDetailActivity extends BaseActivity {
     public static final String EXTRA_TOPIC_ID = "topicId";
-    public static final int FOCUS_IMAGE = R.mipmap.image_focus;
+    private static final int FOCUS_IMAGE = R.mipmap.image_focus;
     private CanRecyclerView mCanRecyclerView;
     private CanCall<Result<SpecialTopic>> mSpecialTopic;
     private ImageView mDetailImgBg;
@@ -48,8 +46,6 @@ public class SpecialDetailActivity extends BaseActivity {
     private FocusMoveUtil mFocusMoveUtil;
     private Handler mHandler = new Handler();
     private List<AppInfo> mRecommdList;
-    private RelativeLayout mNetworkLayout;
-    private Button mRetryBtn;
     private String mTopicId;
 
     private Runnable mfocusMoveRunnable = new Runnable() {
@@ -78,7 +74,7 @@ public class SpecialDetailActivity extends BaseActivity {
         //焦点工具初始化
         mFocusMoveUtil = new FocusMoveUtil(SpecialDetailActivity.this, getWindow().getDecorView(), FOCUS_IMAGE);
 
-        loadData();
+        requestData();
     }
 
     private void getTopicId() {
@@ -90,19 +86,20 @@ public class SpecialDetailActivity extends BaseActivity {
     }
 
     private void initView() {
-        mNetworkLayout = (RelativeLayout) findViewById(R.id.network_retry_layout);
         mDetailImgBg = (ImageView) findViewById(R.id.special_detail_img);
         mCanRecyclerView = (CanRecyclerView) findViewById(R.id.special_detail_crview);
         mCanRecyclerView.addItemDecoration(new CanRecyclerViewDivider(32));
         CanRecyclerView.CanLinearLayoutManager layoutManager = new CanRecyclerView.CanLinearLayoutManager(SpecialDetailActivity.this, CanRecyclerView.HORIZONTAL, false);
         mCanRecyclerView.setLayoutManager(layoutManager);
-        mRetryBtn = (Button) findViewById(R.id.network_retry_btn);
 
         addViewListener();
     }
 
-    private void loadData() {
-        showNetworkRetryView(false);
+    private void requestData() {
+        if (!NetworkUtils.isNetworkConnected(SpecialDetailActivity.this)) {
+            loadDataFail(R.string.no_network);
+            return;
+        }
         mSpecialTopic = HttpManager.getApiService().getSpecialTopic(mTopicId);
         mSpecialTopic.enqueue(new CanCallback<Result<SpecialTopic>>() {
             @Override
@@ -110,7 +107,7 @@ public class SpecialDetailActivity extends BaseActivity {
                 Result<SpecialTopic> info = response.body();
                 Log.d("SpecialDetailActivity", info.toString());
                 if (info.getData() == null) {
-                    showToast(R.string.no_data);
+                    loadDataFail(R.string.load_data_faild);
                     return;
                 }
                 ImageLoader.getInstance().load(SpecialDetailActivity.this, mDetailImgBg, info.getData().getBackground());
@@ -120,24 +117,24 @@ public class SpecialDetailActivity extends BaseActivity {
 
             @Override
             public void onFailure(CanCall<Result<SpecialTopic>> call, CanErrorWrapper errorWrapper) {
-                Log.d("SpecialDetailActivity", errorWrapper.getReason());
-                if (!NetworkUtils.isNetworkConnected(SpecialDetailActivity.this)) {
-                    showToast(R.string.network_connection_disconnect);
-                    showNetworkRetryView(true);
-                }
+                loadDataFail(R.string.load_data_faild);
             }
         });
     }
 
-    private void showNetworkRetryView(boolean isRetry) {
-        mCanRecyclerView.setVisibility(isRetry ? View.GONE : View.VISIBLE);
-        mDetailImgBg.setVisibility(isRetry ? View.GONE : View.VISIBLE);
-        mNetworkLayout.setVisibility(isRetry ? View.VISIBLE : View.GONE);
-        if (isRetry) {
-            mRetryBtn.requestFocus();
-            mFocusMoveUtil.hideFocus();
-            mHandler.removeCallbacks(mfocusMoveRunnable);
+    private void loadDataFail(int toastId) {
+        if(toastId != R.string.no_network){
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    SpecialDetailActivity.this.finish();
+                }
+            },500);
+        }else{
+            SpecialDetailActivity.this.finish();
         }
+        showToast(toastId);
+
     }
 
     private void showRecycleView() {
@@ -158,10 +155,6 @@ public class SpecialDetailActivity extends BaseActivity {
         adapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, int position, Object data) {
-                if (!NetworkUtils.isNetworkConnected(SpecialDetailActivity.this)) {
-                    showToast(R.string.network_connection_disconnect);
-                    return;
-                }
                 AppInfo appInfo = (AppInfo) data;
                 if (appInfo != null && appInfo.getId() != null) {
                     AppDetailActivity.actionStart(SpecialDetailActivity.this, appInfo.getId());
@@ -197,16 +190,6 @@ public class SpecialDetailActivity extends BaseActivity {
                 mHandler.postDelayed(mfocusMoveRunnable, 50);
             }
         });
-        mRetryBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!NetworkUtils.isNetworkConnected(SpecialDetailActivity.this)) {
-                    showToast(R.string.network_connection_disconnect);
-                    return;
-                }
-                loadData();
-            }
-        });
     }
 
     @Override
@@ -226,5 +209,11 @@ public class SpecialDetailActivity extends BaseActivity {
             mFocusMoveUtil.release();
             mFocusMoveUtil = null;
         }
+    }
+
+    @Override
+    protected void onHomeKeyDown() {
+        finish();
+        super.onHomeKeyDown();
     }
 }

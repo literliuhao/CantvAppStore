@@ -20,6 +20,8 @@ public class AppInfoContainer {
 
     @SerializedName("typeName")
     private String typeName;
+    @SerializedName("typeId")
+    private String typeId;
     @SerializedName("total")
     private int total;
     @SerializedName("topics")
@@ -59,14 +61,22 @@ public class AppInfoContainer {
         this.data = data;
     }
 
+    public String getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(String typeId) {
+        this.typeId = typeId;
+    }
+
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("AppInfoContainer{");
-        sb.append("typeName='").append(typeName).append('\'');
-        sb.append(", total=").append(total);
-        sb.append(", topics=").append(topics);
-        sb.append(", data=").append(data);
-        sb.append('}');
-        return sb.toString();
+        return "AppInfoContainer{" +
+                "typeName='" + typeName + '\'' +
+                ", typeId='" + typeId + '\'' +
+                ", total=" + total +
+                ", topics=" + topics +
+                ", data=" + data +
+                '}';
     }
 }

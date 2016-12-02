@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.WindowManager;
 
+import com.can.appstore.http.HttpManager;
 import com.can.appstore.upgrade.service.BuglyUpgradeService;
+import com.can.appstore.upgrade.service.SingleProcessService;
 import com.can.appstore.upgrade.service.UpgradeService;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
@@ -32,18 +34,10 @@ import cn.can.tvlib.utils.PackageUtil.AppInfo;
 public class MyApp extends Application {
     private static final String TAG = "MyApp";
     private static MyApp INSTANCE;
-    public static int Width;
-    public static int Height;
-
-
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-        WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-        Width = wm.getDefaultDisplay().getWidth();
-        Height = wm.getDefaultDisplay().getHeight();
         INSTANCE = this;
 
         initBuly(true);

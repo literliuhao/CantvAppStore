@@ -39,8 +39,7 @@ public class RecommedGridAdapter extends CanRecyclerViewAdapter {
     @Override
     protected RecyclerView.ViewHolder generateViewHolder(ViewGroup parent, int viewType) {
         View recommendItem = mInflater.inflate(R.layout.adapter_app_detail_recommend_item, parent, false);
-        RecommendGridViewHolder viewHolder = new RecommendGridViewHolder(recommendItem);
-        return viewHolder;
+        return new RecommendGridViewHolder(recommendItem);
     }
 
     @Override
@@ -58,12 +57,12 @@ public class RecommedGridAdapter extends CanRecyclerViewAdapter {
         mRecommedApps = recommend;
     }
 
-    class RecommendGridViewHolder extends CanRecyclerView.ViewHolder {
+    private class RecommendGridViewHolder extends CanRecyclerView.ViewHolder {
         TextView itemSize;
         TextView itemName;
         GlideRoundCornerImageView itemIcon;
 
-        public RecommendGridViewHolder(View itemView) {
+        RecommendGridViewHolder(View itemView) {
             super(itemView);
             itemSize = (TextView) itemView.findViewById(R.id.tv_recommend_item_size);
             itemName = (TextView) itemView.findViewById(R.id.tv_recommend_item_name);

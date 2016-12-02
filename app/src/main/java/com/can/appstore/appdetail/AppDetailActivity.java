@@ -681,7 +681,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             @Override
             public void onClick(View view, int position, Object data) {
                 String appId = mAppinfo.getRecommend().get(position).getId();
-                if (appId != mAppinfo.getId()) {
+                if (!appId.equals(mAppinfo.getId())) {
                     mFocusMoveUtil.hideFocus();
                     backInitPosition();
                     mLayoutAppDetail.setVisibility(View.INVISIBLE);
@@ -765,10 +765,6 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     /**
      * 打开应用详情页面
-     *
-     * @param context 上下文
-     * @param appID   应用id
-     * @param topicID
      */
     public static void actionStart(Context context, String appID, String topicID) {
         Intent intent = new Intent(context, AppDetailActivity.class);
@@ -779,9 +775,6 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     /**
      * 打开应用详情页面
-     *
-     * @param context
-     * @param appID   应用id
      */
     public static void actionStart(Context context, String appID) {
         actionStart(context, appID, null);

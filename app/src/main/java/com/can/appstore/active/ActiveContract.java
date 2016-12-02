@@ -19,7 +19,7 @@ public class ActiveContract {
 
         void refreshTextProgressbarTextStatus(int status);
 
-        void showToast(int toastStrId);
+        void showActiveToast(int toastStrId);
 
         void loadwebview(String url);
 
@@ -27,7 +27,7 @@ public class ActiveContract {
 
         void showProgreessbar();
 
-        void showNetworkRetryView(boolean isRetry, boolean isWebView);
+        void loadDataFail(int toastId);
 
     }
 }

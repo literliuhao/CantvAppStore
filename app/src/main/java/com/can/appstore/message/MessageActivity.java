@@ -26,7 +26,6 @@ import java.util.List;
 
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.utils.NetworkUtils;
-import cn.can.tvlib.utils.ToastUtils;
 
 /**
  * 消息主页面
@@ -77,7 +76,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     private void initData() {
         dbManager = new GreenDaoManager(this);
         //查询数据库消息数据
-        msgList = dbManager.queryMsg(System.currentTimeMillis() / 1000);
+        msgList = dbManager.queryMsg();
         hideLoadingDialog();
         if (msgList != null && !msgList.isEmpty()) {
             mHandler = new Handler();
@@ -121,7 +120,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                     return;
                 }
                 if (!isNetConnected && !msg.getAction().equals(ActionConstants.ACTION_NOTHIN)) {
-                    ToastUtils.showMessageLong(MessageActivity.this.getApplicationContext(), R.string.connect_net_fail);
+                    showToast(R.string.connect_net_fail);
                     return;
                 }
                 switch (msg.getAction()) {
@@ -312,6 +311,11 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     public static void actionStart(Context context) {
         Intent intent = new Intent(context, MessageActivity.class);
         context.startActivity(intent);
+    }
+
+    @Override
+    public void showToast(int resId) {
+        super.showToast(resId);
     }
 
     @Override

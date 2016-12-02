@@ -8,10 +8,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -20,27 +20,25 @@ import com.can.appstore.R;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.widgets.TextProgressBar;
 
-import cn.can.downloadlib.NetworkUtils;
 import cn.can.tvlib.imageloader.ImageLoader;
 
 /**
- * Created by Atangs on 2016/11/1.
+ * Created by Fuwen on 2016/11/1.
  * 活动页
  */
 
 public class ActiveActivity extends BaseActivity implements ActiveContract.OperationView, View.OnClickListener {
-    public static final String EXTRA_ACTIVE_ID = "activeId";
     private final static int ACTIVE_PARTICIPATE = R.mipmap.active_participate;
     private final static int ACTIVE_NORMAL = R.mipmap.active_normal;
     private final static int REFRESH_PROGRESSBAR_TEXT = 0x10;
     private final static int REFRESH_PROGRESSBAR_PROGRESS = 0x11;
     private final static int SHOW_TOAST = 0x12;
+    private final static int LOAD_DATA_FAIL = 0x13;
+    private final static int SHOW_WEBVIEW = 0x14;
 
     private WebView mActiveWebview;
     private TextProgressBar mActiveTextProgressBar;
     private RelativeLayout mActiveLayout;
-    private RelativeLayout mNetworkLayout;
-    private Button mRetryBtn;
     private ImageView mImgBg;
     private ActivePresenter mActivePresenter;
     private String mActiveId;
@@ -49,7 +47,7 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
 
     public static void actionStart(Context context, String activeId) {
         Intent intent = new Intent(context, ActiveActivity.class);
-        intent.putExtra(EXTRA_ACTIVE_ID, activeId);
+        intent.putExtra("activeId", activeId);
         context.startActivity(intent);
     }
 
@@ -59,7 +57,7 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
         setContentView(R.layout.activity_active);
         Intent intent = getIntent();
         if (intent != null) {
-            mActiveId = intent.getStringExtra(EXTRA_ACTIVE_ID);
+            mActiveId = intent.getStringExtra("activeId");
         }
         mActiveId = TextUtils.isEmpty(mActiveId) ? "52" : mActiveId;
         initUI();
@@ -72,14 +70,11 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
         mFocusLayout = (LinearLayout) findViewById(R.id.active_focus_layout);
         mImgBg = (ImageView) findViewById(R.id.active_native_imgbg);
         mActiveLayout = (RelativeLayout) findViewById(R.id.active_native_layout);
-        mRetryBtn = (Button) findViewById(R.id.network_retry_btn);
-        mNetworkLayout = (RelativeLayout) findViewById(R.id.network_retry_layout);
         mActiveTextProgressBar = (TextProgressBar) findViewById(R.id.active_textprogressbar);
         mActiveTextProgressBar.setTextSize(R.dimen.px40);
         mActiveTextProgressBar.setTextFakeBoldText(true);
         mActiveTextProgressBar.setTextColor(Color.WHITE);
         mActiveTextProgressBar.setOnClickListener(this);
-        mRetryBtn.setOnClickListener(this);
     }
 
     @Override
@@ -101,7 +96,7 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
     }
 
     @Override
-    public void showToast(int toastStrId) {
+    public void showActiveToast(int toastStrId) {
         mHandler.removeMessages(SHOW_TOAST);
         Message msg = mHandler.obtainMessage();
         msg.what = SHOW_TOAST;
@@ -111,16 +106,18 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
 
     @Override
     public void loadwebview(String url) {
+//        showLoadingDialog();
+//        mHandler.removeMessages(SHOW_WEBVIEW);
+//        Message msg = mHandler.obtainMessage();
+//        msg.what = SHOW_WEBVIEW;
+//        msg.obj = url;
+////        mHandler.sendMessageDelayed(msg,1000);
+//        mHandler.sendMessage(msg);
         mActiveWebview.setWebViewClient(new CanWebViewClient());
         mActiveWebview.setVisibility(View.VISIBLE);
         mActiveWebview.loadUrl(url);
     }
 
-    /**
-     * 需要考虑背景图片位加载成功的情况
-     *
-     * @param url
-     */
     @Override
     public void showBackground(String url) {
         mActiveLayout.setVisibility(View.VISIBLE);
@@ -134,12 +131,15 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
     }
 
     @Override
-    public void showNetworkRetryView(boolean isRetry, boolean isWebView) {
-        mActiveWebview.setVisibility(!isRetry && isWebView ? View.VISIBLE : View.GONE);
-        mActiveLayout.setVisibility(!isRetry && !isWebView ? View.VISIBLE : View.GONE);
-        mNetworkLayout.setVisibility(isRetry ? View.VISIBLE : View.GONE);
-        if (isRetry) {
-            mRetryBtn.requestFocus();
+    public void loadDataFail(int toastId) {
+        mHandler.removeMessages(LOAD_DATA_FAIL);
+        Message msg = mHandler.obtainMessage();
+        msg.what = LOAD_DATA_FAIL;
+        msg.arg1 = toastId;
+        if(toastId == R.string.no_network){
+            mHandler.sendMessage(msg);
+        }else{
+            mHandler.sendMessageDelayed(msg,500);
         }
     }
 
@@ -151,7 +151,7 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
                     int status = msg.arg1;
                     int showtype = status == R.string.active_click_participate ? ACTIVE_PARTICIPATE : ACTIVE_NORMAL;
                     if(showtype != mShowType){
-                        mFocusLayout.setBackgroundResource(mShowType);
+                        mFocusLayout.setBackgroundResource(showtype);
                         mShowType = showtype;
                     }
                     mActiveTextProgressBar.setText(getString(status));
@@ -161,6 +161,15 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
                     break;
                 case SHOW_TOAST:
                     showToast(msg.arg1);
+                    break;
+                case LOAD_DATA_FAIL:
+                    showToast(msg.arg1);
+                    ActiveActivity.this.finish();
+                    break;
+                case SHOW_WEBVIEW:
+                    mActiveWebview.setWebViewClient(new CanWebViewClient());
+                    mActiveWebview.setVisibility(View.VISIBLE);
+                    mActiveWebview.loadUrl((String) msg.obj);
                     break;
             }
         }
@@ -172,13 +181,6 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
             case R.id.active_textprogressbar:
                 mActivePresenter.clickBtnDownload();
                 break;
-            case R.id.network_retry_btn:
-                if (!NetworkUtils.isNetworkConnected(ActiveActivity.this)) {
-                    showToast(R.string.network_connection_disconnect);
-                    return;
-                }
-                mActivePresenter.requestActiveData(mActiveId);
-                break;
         }
     }
 
@@ -187,20 +189,25 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
+            Log.d("ActiveAcitivity","onPageStarted ...");
             showLoadingDialog();
-        }
-
-        @Override
-        public void onPageFinished(WebView view, String url) {
-            super.onPageFinished(view, url);
         }
 
         @Override
         public void onLoadResource(WebView view, String url) {
             super.onLoadResource(view, url);
-            hideLoadingDialog();
+            Log.d("ActiveAcitivity","onLoadResource ...");
+
         }
 
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            Log.d("ActiveAcitivity","onPageFinished ...");
+            if(isLoadingDialogShowing()){
+                hideLoadingDialog();
+            }
+        }
     }
 
     @Override
@@ -211,5 +218,11 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
         }
         mHandler.removeCallbacksAndMessages(null);
         super.onStop();
+    }
+
+    @Override
+    protected void onHomeKeyDown() {
+        finish();
+        super.onHomeKeyDown();
     }
 }

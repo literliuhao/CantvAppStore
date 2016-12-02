@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -62,6 +63,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     // menu相关
     public static final int MENU_DIVIDER_SIZE = 20; //menu列表行距
     public static float MENU_FOCUS_SCALE = 1.0f;  //菜单焦点放大倍数
+    public static final int MENU_SHOW_SHADOW_DELAY = 1000;//延时显示箭头阴影的时间
     // 右侧应用列表相关
     public static final int APP_LIST_DIVIDER_SIZE = 32; //应用列表行距
     public static final int APP_LIST_SPAN_COUNT = 3;     //应用列表每行app个数
@@ -69,7 +71,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     public static int CHANGE_FOCUSED_VIEW_BG_DELAY = 150;//右侧应用列表焦点移动时，修改背景为透明延迟的时间
     // 全局配置参数
     public static final int MIN_LOADING_SHOW_TIME = 1000; //loading消失延迟时间
-    public static final int MIN_APPLIST_REFRES_TIME = 500; //loading消失延迟时间
+    public static final int MIN_APPLIST_REFRES_TIME = 500; //loading最小留给刷新app的时间
     // 限制焦点框移动范围
     public static int NO_LIMIT_REGION = 1; //限制焦点移动范围的类型   （不限制）
 
@@ -105,12 +107,13 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     private AppListContract.Presenter mPresenter;
     private FocusMoveUtil mFocusMoveUtil;
     private Handler mHandler;
-    private Runnable mSelectRunable;
     private Runnable mChangeAppBgRunnable;
     private int mPageType;
     private String mTypeId;
     private String mTopicId;
     private int mLoadOffset;//应用列表显示的偏移量
+    private int mWidth;
+    private int mHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,6 +146,9 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
         mTypeId = getIntent().getStringExtra(ENTRY_KEY_TYPE_ID);
         mTopicId = getIntent().getStringExtra(ENTRY_KEY_TOPIC_ID);
         mLoadOffset = getResources().getDimensionPixelSize(R.dimen.px132);
+        WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+        mWidth = wm.getDefaultDisplay().getWidth();
+        mHeight = wm.getDefaultDisplay().getHeight();
     }
 
     private void setupContentView() {
@@ -153,37 +159,10 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
         if (mPageType == PAGE_TYPE_APP_LIST) {
             // 应用列表页，显示搜索按钮
             mSearchBtn = (TextView) findViewById(R.id.tv_app_list_search);
-            mSearchBtn.setVisibility(View.INVISIBLE);
+            mSearchBtn.setVisibility(View.INVISIBLE);//不能删除，测量位置大小的时候起占位功能
             mSearchBtn.setOnClickListener(this);
             mSearchBtn.setOnFocusChangeListener(this);
-            mSearchBtn.setOnKeyListener(new View.OnKeyListener() {
-                @Override
-                public boolean onKey(View v, int keyCode, KeyEvent event) {
-                    if (event.getAction() != KeyEvent.ACTION_DOWN) {
-                        return false;
-                    }
-                    if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                        final View firstMenuChild = mMenuLM.getChildAt(0);
-                        if (firstMenuChild != null) {
-                            firstMenuChild.requestFocus();
-                            refreshMenuPaddingWithFocusRegion();
-                            mMenu.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    firstMenuChild.setBackgroundResource(android.R.color.transparent);
-                                }
-                            }, CHANGE_FOCUSED_VIEW_BG_DELAY);
-                            return true;
-                        }
-                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                        menuFocusMoveToRight();
-                        return true;
-                    }else if(keyCode == KeyEvent.KEYCODE_DPAD_UP){
-                        return true;
-                    }
-                    return false;
-                }
-            });
+            mSearchBtn.setOnKeyListener(this);
         }
         mLoadFailView = (LinearLayout) findViewById(R.id.ll_app_list_load_fail);
         mRetryBtn = (TextView) findViewById(R.id.tv_load_retry);
@@ -285,6 +264,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                     if (mPageType != PAGE_TYPE_APP_LIST) {
                         return;
                     }
+                    //判断应用列表是否滑到了低端
                     int lastPosition = mAppListLM.findLastVisibleItemPosition();
                     int totalItemCount = mAppListLM.getItemCount();
                     if (lastPosition == totalItemCount - 1) {
@@ -425,7 +405,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                     mFocusMoveUtil.startMoveFocus(view, MENU_FOCUS_SCALE);
                     //焦点从搜索下来时，不重新加载数据，记录view
                     //刚进入页面的时候，不重新加载数据，记录view
-                    if (mSearchBtn == mSelectedMenuChild) {
+                    if (mSearchBtn == mSelectedMenuChild || mSelectedMenuChild == null) {
                         mSelectedMenuChild = view;
                         return;
                     }
@@ -491,9 +471,8 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 return false;
             }
         });
-
-
-        mSelectRunable = new Runnable() {
+        //请求焦点到对应item
+        mMenu.postDelayed(new Runnable() {
             @Override
             public void run() {
                 // showFocusView
@@ -506,10 +485,9 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 mFocusMoveUtil.showFocus();
                 child.requestFocus();
             }
-        };
+        }, 100);
 
-        mMenu.postDelayed(mSelectRunable, 100);
-
+        //判断是否显示阴影箭头
         mMenu.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -530,7 +508,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                     refreshMenuPaddingWithFocusRegion();
                 }
             }
-        }, 1000);
+        }, MENU_SHOW_SHADOW_DELAY);
     }
 
     private void hideMenuTopArrow() {
@@ -646,7 +624,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
      */
     public void refreshFocusActiveRegion(int type) {
         if (type == NO_LIMIT_REGION) {
-            mFocusMoveUtil.setFocusActiveRegion(0, 0, MyApp.Width, MyApp.Height);
+            mFocusMoveUtil.setFocusActiveRegion(0, 0, mWidth, mHeight);
         }
     }
 
@@ -744,7 +722,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 showLoadingDialog(mLoadOffset);
                 mPresenter.loadAppListData();
                 if (mSelectedMenuChild != null) {
-                    if(mSearchBtn == mSelectedMenuChild){
+                    if (mSearchBtn == mSelectedMenuChild) {
                         mSearchBtn.setFocusable(true);
                         refreshFocusActiveRegion(NO_LIMIT_REGION);
                     }
@@ -757,12 +735,50 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
 
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
-        if (v.getId() == R.id.tv_load_retry) {
-            if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT &&
-                    mSelectedMenuChild != null) {
-                mSelectedMenuChild.requestFocus();
-                return true;
-            }
+        switch (v.getId()) {
+            case R.id.tv_load_retry:
+                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT &&
+                        mSelectedMenuChild != null) {
+                    if (mSelectedMenuChild == mSearchBtn) {
+                        mSearchBtn.setFocusable(true);
+                    }
+                    mSelectedMenuChild.requestFocus();
+                    return true;
+                }
+                //拦截上下右移动key事件
+                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode ==
+                        KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                    return true;
+                }
+                break;
+            case R.id.tv_app_list_search:
+
+                if (event.getAction() != KeyEvent.ACTION_DOWN) {
+                    return false;
+                }
+                if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                    final View firstMenuChild = mMenuLM.getChildAt(0);
+                    if (firstMenuChild != null) {
+                        firstMenuChild.requestFocus();
+                        refreshMenuPaddingWithFocusRegion();
+                        mMenu.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                firstMenuChild.setBackgroundResource(android.R.color.transparent);
+                            }
+                        }, CHANGE_FOCUSED_VIEW_BG_DELAY);
+                        return true;
+                    }
+                } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                    menuFocusMoveToRight();
+                    return true;
+                } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                    return true;
+                }
+                break;
+            default:
+                break;
+
         }
         return false;
     }
@@ -794,9 +810,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
             mPresenter.release();
         }
 
-        if (mMenu != null) {
-            mMenu.removeCallbacks(mSelectRunable);
-        }
         super.onDestroy();
     }
 
