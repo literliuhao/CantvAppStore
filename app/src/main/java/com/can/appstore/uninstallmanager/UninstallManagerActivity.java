@@ -76,6 +76,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             public void run() {
                 int[] location = new int[2];
                 mCanRecyclerView.getLocationInWindow(location);
+                //noinspection deprecation
                 mFocusMoveUtil.setFocusActiveRegion(0, location[1] + mCanRecyclerView.getPaddingTop(), getWindowManager().
                         getDefaultDisplay().getWidth(), location[1] + mCanRecyclerView.getMeasuredHeight()
                         - getResources().getDimensionPixelSize(R.dimen.dimen_32px));
