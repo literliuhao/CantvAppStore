@@ -1,10 +1,8 @@
 package com.can.appstore.upgrade.service;
 
 import android.app.IntentService;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -18,11 +16,6 @@ import com.can.appstore.upgrade.view.UpgradeProgressBarDialog;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadTask;
@@ -35,14 +28,19 @@ import cn.can.downloadlib.DownloadTaskListener;
 
 public class UpgradeService extends IntentService {
     public static final String TAG = "UpgradeService";
+    //message.what
     public static final int SHOW_UPGRADE_INFO_DIALOG = 1;
     public static final int SHOW_UPGRADE_FAIL_DIALOG = 2;
     public static final int SHOW_PROGRESS_DIALOG = 3;
     public static final int INIT_SERVICE = 4;
+    //常量
+    public static final int INSTALL_DELAY = 3000;
+    //全局变量
     private int mLocalVersion;
     private String mUpdatePath;
     private String mFileName;
     private UpgradeInfo mUpgradeInfo;
+    //dialog
     private UpgradeProgressBarDialog mProgressDialog;
 
     private Handler mHandler = new Handler() {
@@ -54,8 +52,7 @@ public class UpgradeService extends IntentService {
                     UpgradeInFoDialog.OnUpgradeClickListener listener = new UpgradeInFoDialog.OnUpgradeClickListener() {
                         @Override
                         public void onClick() {
-                            installApk();
-
+                            clickInstall();
                         }
                     };
                     UpgradeInFoDialog dialog = new UpgradeInFoDialog(UpgradeService.this, getResources().getString(R
@@ -75,7 +72,7 @@ public class UpgradeService extends IntentService {
                     mProgressDialog.show();
                     break;
                 case INIT_SERVICE:
-                    initService();
+                    install();
                     break;
             }
 
@@ -104,8 +101,6 @@ public class UpgradeService extends IntentService {
      * 检测更新信息并作出逻辑判断
      */
     private void checkUpgradeInfo() {
-        //mUpdatePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/updateapk";
-        //mUpdatePath = "/storage/emulated/0/Android/data/com.can.appstore/cache";
         mUpdatePath = getExternalCacheDir().getAbsolutePath();
         if (!UpgradeUtil.isFileExist(mUpdatePath)) {
             UpgradeUtil.creatDir(mUpdatePath);
@@ -222,25 +217,20 @@ public class UpgradeService extends IntentService {
             @Override
             public void onError(DownloadTask downloadTask, int errorCode) {
                 Log.d(TAG, "DownloadManager=onError===" + errorCode);
-                onLoadingError();
             }
         });
     }
 
 
-    private void installApk() {
+    private void clickInstall() {
         //显示正在安装对话框
         mHandler.sendEmptyMessage(SHOW_PROGRESS_DIALOG);
-        //启动service
-        mHandler.sendEmptyMessageDelayed(INIT_SERVICE,2500);
-
-        //        Intent intent = new Intent(this,SingleProcessService.class);
-        //        intent.putExtra("1",mFileName);
-        //        intent.putExtra("2",mUpgradeInfo.fileSize);
-        //        startService(intent);
+        //安装应用
+        mHandler.sendEmptyMessageDelayed(INIT_SERVICE,INSTALL_DELAY);
     }
 
     private void onLoadingCompleted() {
+        //校验MD5
         String localMD5 = UpgradeUtil.getFileMD5(mFileName);
         if (!mUpgradeInfo.apkMd5.equalsIgnoreCase(localMD5)) {
             Log.d(TAG, "onLoadingCompleted: MD5error");
@@ -254,57 +244,8 @@ public class UpgradeService extends IntentService {
         }
     }
 
-    // TODO: 2016/11/29 下载失败暂时不处理
-    private void onLoadingError() {
-        //        Message msg = Message.obtain();
-        //        msg.what = SHOW_UPGRADE_FAIL_DIALOG;
-        //        msg.obj = getResources().getString(R.string.load_error);
-        //        mHandler.sendMessage(msg);
-    }
 
-    private void onInstallError(String reason) {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
-        }
-        Message msg = Message.obtain();
-        msg.what = SHOW_UPGRADE_FAIL_DIALOG;
-        msg.obj = reason;
-        mHandler.sendMessage(msg);
-        //安装失败，清空文件夹
-        UpgradeUtil.delAllDateFile(mUpdatePath);
-    }
-
-
-    private void initService() {
-        final String path = Environment.getExternalStorageDirectory() + File.separator
-                + "install";
-        String filePath = path + "service.apk";
-        if (!UpgradeUtil.isFileExist(path)) {
-            UpgradeUtil.creatDir(path);
-        }
-        UpgradeUtil.delAllDateFile(path);
-        boolean a = copyApkFromAssets(this, "service.apk", filePath);
-        Log.d(TAG, "initService: " + a);
-        //启动activity
-        Intent intent = new Intent("com.help.appstore.MService");
-        startService(intent);
-        //安装apk
-        UpgradeUtil.installApk(this, filePath, 0, new InstallApkListener() {
-            @Override
-            public void onInstallSuccess() {
-                Log.d(TAG, "onInstallSuccess: ");
-                UpgradeUtil.delAllDateFile(path);
-            }
-
-            @Override
-            public void onInstallFail(String reason) {
-                Log.d(TAG, "onInstallFail: " + reason);
-                UpgradeUtil.delAllDateFile(path);
-            }
-        });
-
-
-
+    private void install() {
         UpgradeUtil.installApk(this, mFileName, mUpgradeInfo.fileSize, new InstallApkListener() {
             @Override
             public void onInstallSuccess() {
@@ -319,27 +260,16 @@ public class UpgradeService extends IntentService {
         });
     }
 
-
-    public boolean copyApkFromAssets(Context context, String fileName, String path) {
-        boolean copyIsFinish = false;
-        try {
-            Log.d(TAG, "initService: path=" + path);
-
-            InputStream is = context.getAssets().open(fileName);
-            File file = new File(path);
-            file.createNewFile();
-            FileOutputStream fos = new FileOutputStream(file);
-            byte[] temp = new byte[1024];
-            int i = 0;
-            while ((i = is.read(temp)) > 0) {
-                fos.write(temp, 0, i);
-            }
-            fos.close();
-            is.close();
-            copyIsFinish = true;
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void onInstallError(String reason) {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
         }
-        return copyIsFinish;
+        Message msg = Message.obtain();
+        msg.what = SHOW_UPGRADE_FAIL_DIALOG;
+        msg.obj = reason;
+        mHandler.sendMessage(msg);
+        //安装失败，清空文件夹
+        UpgradeUtil.delAllDateFile(mUpdatePath);
     }
+
 }

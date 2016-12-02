@@ -177,6 +177,13 @@
                 android:resource="@xml/provider_paths"/>
         </provider>
 
+        <receiver android:name=".upgrade.UpgradeReceiver"
+                  android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"></action>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

@@ -21,7 +21,7 @@ android {
 
     buildTypes {
         release {
-            debuggable true
+            debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug // 默认签名
@@ -36,6 +36,7 @@ android {
         if (variant.buildType.name == 'update') {
             def newVersionCode = variant.versionCode + 1
             variant.mergedFlavor.versionCode = newVersionCode
+            variant.mergedFlavor.versionName = "${getDate()}_v${newVersionCode.toString().getChars().join('.')}"
         }
         //修改生成的apk名字
         variant.outputs.each { output ->
@@ -43,7 +44,7 @@ android {
             if (variant.buildType.name in ['release', 'update']) {
                 def releaseApkName = "AppStore_V${variant.versionCode}_${getDateTime()}.apk";
                 if (project.hasProperty("appReleaseDir")) {
-                    File releasePath = new File(project.property("appReleaseDir"), getDateTime());
+                    File releasePath = new File(project.property("appReleaseDir"), getDate());
                     output.outputFile = new File(releasePath, releaseApkName);
                 } else {
                     output.outputFile = new File(oldFile.parent, releaseApkName)
@@ -52,7 +53,14 @@ android {
         }
     }
 
+    lintOptions {
+        abortOnError false
+    }
 
+}
+
+def getDate(){
+    return new SimpleDateFormat("yyyyMMdd").format(new Date());
 }
 
 def getDateTime(){

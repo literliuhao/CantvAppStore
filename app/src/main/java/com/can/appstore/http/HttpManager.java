@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -68,7 +69,8 @@ public class HttpManager {
     }
 
     public static void init(Context context) {
-        final Context applicationContext = context.getApplicationContext();
+        Context applicationContext = context.getApplicationContext();
+        final WeakReference<Context> contextWeakReference = new WeakReference<>(applicationContext);
         if (!RequestParamsInterceptor.initWithSharedPreferences(context)) {
             HttpManager.getApiService().getTvInfo().enqueue(new CanCallback<TvInfoHolderWrapper>() {
                 @Override
@@ -76,7 +78,7 @@ public class HttpManager {
                     TvInfoHolderWrapper body = response.body();
                     if (body.getStatus() == 200) {
                         TvInfoHolderWrapper.TvInfoHolder data = body.getData();
-                        RequestParamsInterceptor.initWithTvInfoHolder(applicationContext, data);
+                        RequestParamsInterceptor.initWithTvInfoHolder(contextWeakReference.get(), data);
                     }
                 }
 

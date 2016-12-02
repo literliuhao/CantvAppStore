@@ -3,24 +3,21 @@ package com.can.appstore;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.util.Log;
-import android.view.WindowManager;
 
 import com.can.appstore.http.HttpManager;
+import com.can.appstore.receiver.NetWorkReceiver;
 import com.can.appstore.upgrade.service.BuglyUpgradeService;
-import com.can.appstore.upgrade.service.SingleProcessService;
 import com.can.appstore.upgrade.service.UpgradeService;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
 import com.tencent.bugly.beta.upgrade.UpgradeListener;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import cn.can.downloadlib.DownloadManager;
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.PackageUtil.AppInfo;
+import cn.can.tvlib.utils.ProcessUtil;
 
 /**
  * ================================================
@@ -91,7 +88,7 @@ public class MyApp extends Application {
      *                     Bugly下载：可控制下载，安装Bugly自行调用
      */
     private void initBuly(final boolean downloadSelf) {
-        try{
+        try {
             Beta.autoCheckUpgrade = false;
             Beta.showInterruptedStrategy = false;
             Beta.upgradeListener = new UpgradeListener() {
@@ -111,10 +108,12 @@ public class MyApp extends Application {
                     }
                 }
             };
-            //Bugly.init(getApplicationContext(), "900059606", true);//测试使用
+            //测试使用key
+            //Bugly.init(getApplicationContext(), "900059606", true);
+            //正式版本发布使用key
             Bugly.init(getApplicationContext(), "e3c3b1806e", false);
             Beta.checkUpgrade();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
