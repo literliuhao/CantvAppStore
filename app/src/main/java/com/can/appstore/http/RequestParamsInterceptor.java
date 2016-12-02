@@ -19,6 +19,7 @@ public class RequestParamsInterceptor implements Interceptor {
     static String CHANNEL_ID;
     static String INTERNAL_MODEL;
     static String COMMERCIAL_MODEL;
+
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
@@ -37,7 +38,7 @@ public class RequestParamsInterceptor implements Interceptor {
                 .newBuilder()
                 .addQueryParameter("channelId", CHANNEL_ID)
                 .addQueryParameter("internalModel", INTERNAL_MODEL)
-                .addQueryParameter("commercialModel",COMMERCIAL_MODEL)
+                .addQueryParameter("commercialModel", COMMERCIAL_MODEL)
                 .addQueryParameter("mac", NetworkUtils.getMac())
                 .addQueryParameter("versionId", "1")
                 .build();
@@ -45,6 +46,7 @@ public class RequestParamsInterceptor implements Interceptor {
                 .build();
         return chain.proceed(request);
     }
+
     static boolean alreadyInit() {
         return CHANNEL_ID != null && INTERNAL_MODEL != null && COMMERCIAL_MODEL != null;
     }
@@ -54,6 +56,8 @@ public class RequestParamsInterceptor implements Interceptor {
             return true;
         }
 
+        if (context == null) return false;
+
         SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
         RequestParamsInterceptor.CHANNEL_ID = sharedPreferences.getString(RequestParamsInterceptor.KEY_CHANNEL_ID, null);
         RequestParamsInterceptor.COMMERCIAL_MODEL = sharedPreferences.getString(RequestParamsInterceptor.KEY_COMMERCIAL_MODEL, null);
@@ -62,6 +66,8 @@ public class RequestParamsInterceptor implements Interceptor {
     }
 
     static void initWithTvInfoHolder(Context context, TvInfoHolderWrapper.TvInfoHolder tvInfoHolder) {
+        if (context == null) return;
+        
         RequestParamsInterceptor.CHANNEL_ID = tvInfoHolder.getChannelId();
         RequestParamsInterceptor.COMMERCIAL_MODEL = tvInfoHolder.getModelId();
         RequestParamsInterceptor.INTERNAL_MODEL = tvInfoHolder.getInternalmodelId();
