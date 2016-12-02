@@ -65,4 +65,9 @@ public final class ActionConstants {
      * 「弹出对话框」：
      */
     public static final String ACTION_DIALOG = "action_dialog";
+
+    /**
+     * 「特定应用分类」：
+     */
+    public static final String ACTION_APP_LIST_WITH_TYPE = "action_app_list_with_type";
 }

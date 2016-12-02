@@ -2,6 +2,7 @@ package com.can.appstore.index.model;
 
 import android.content.Context;
 
+import com.can.appstore.ActionConstants;
 import com.can.appstore.R;
 import com.can.appstore.active.ActiveActivity;
 import com.can.appstore.appdetail.AppDetailActivity;
@@ -72,27 +73,27 @@ public class ActionUtils {
     public void convertAction(Context mContext, String id, String actionStr, String actionData) {
         switch (actionStr) {
             //应用详情
-            case "action_app_detail":
+            case ActionConstants.ACTION_APP_DETAIL:
                 AppDetailActivity.actionStart(mContext, actionData);
                 break;
             //专题详情
-            case "action_topic_detail":
+            case ActionConstants.ACTION_TOPIC_DETAIL:
                 SpecialDetailActivity.actionStart(mContext, actionData);
                 break;
             //应用列表
-            case "action_app_list":
+            case ActionConstants.ACTION_APP_LIST:
                 AppListActivity.actionStart(mContext, AppListActivity.MSG_HIDE_MENU_TOP_SHADOW, "", actionData);
                 break;
             //活动详情
-            case "action_app_activity_detail":
+            case ActionConstants.ACTION_ACTIVITY_DETAIL:
                 ActiveActivity.actionStart(mContext, actionData);
                 break;
             //特定应用分类
-            case "action_app_list_with_type":
+            case ActionConstants.ACTION_APP_LIST_WITH_TYPE:
                 try {
                     JSONObject jsonObject = new JSONObject(actionData);
-                    String typeId = jsonObject.getString("typeId");
-                    String topicId = jsonObject.getString("topicId");
+                    String typeId = jsonObject.optString("typeId","");
+                    String topicId = jsonObject.optString("topicId","");
                     AppListActivity.actionStart(mContext, AppListActivity.MSG_HIDE_MENU_TOP_SHADOW, typeId, topicId);
                 } catch (JSONException e) {
                     e.printStackTrace();
