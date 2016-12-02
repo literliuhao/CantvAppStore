@@ -111,8 +111,10 @@ public class SpecialDetailActivity extends BaseActivity {
                     return;
                 }
                 ImageLoader.getInstance().load(SpecialDetailActivity.this, mDetailImgBg, info.getData().getBackground());
-                mRecommdList.addAll(info.getData().getRecommend());
-                showRecycleView();
+                if(!info.getData().getRecommend().isEmpty()){
+                    mRecommdList.addAll(info.getData().getRecommend());
+                    showRecycleView();
+                }
             }
 
             @Override
