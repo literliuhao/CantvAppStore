@@ -3,6 +3,9 @@ package com.can.appstore.http;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.can.appstore.AppConstants;
+import com.can.appstore.MyApp;
+
 import java.io.IOException;
 
 import cn.can.tvlib.utils.NetworkUtils;
@@ -23,17 +26,21 @@ public class RequestParamsInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
-        // TODO 完善参数
-//        HttpUrl url = request.url()
-//                .newBuilder()
-//                .addQueryParameter("channelId", "12")
-//                .addQueryParameter("internalModel", "neibu")
-//                .addQueryParameter("commercialModel", "rrrr")
-//                .addQueryParameter("mac", "1:2:3")
-//                .addQueryParameter("versionId", "1.0")
-//                .build();
-//        request = request.newBuilder().url(url)
-//                .build();
+        String urlStr = request.url().toString();
+        // 在请求之前先获取机型信息参数
+        if (urlStr.startsWith(AppConstants.BASE_URL)) {
+            if (!alreadyInit() || !initWithSharedPreferences(MyApp.getContext())) {
+                retrofit2.Response<TvInfoHolderWrapper> response = HttpManager.getApiService().getTvInfo().execute();
+                if (response.isSuccessful()) {
+                    TvInfoHolderWrapper body = response.body();
+                    if (body.getStatus() == 200) {
+                        TvInfoHolderWrapper.TvInfoHolder data = body.getData();
+                        RequestParamsInterceptor.initWithTvInfoHolder(MyApp.getContext(), data);
+                    }
+                }
+            }
+        }
+
         HttpUrl url = request.url()
                 .newBuilder()
                 .addQueryParameter("channelId", CHANNEL_ID)
@@ -67,7 +74,7 @@ public class RequestParamsInterceptor implements Interceptor {
 
     static void initWithTvInfoHolder(Context context, TvInfoHolderWrapper.TvInfoHolder tvInfoHolder) {
         if (context == null) return;
-        
+
         RequestParamsInterceptor.CHANNEL_ID = tvInfoHolder.getChannelId();
         RequestParamsInterceptor.COMMERCIAL_MODEL = tvInfoHolder.getModelId();
         RequestParamsInterceptor.INTERNAL_MODEL = tvInfoHolder.getInternalmodelId();

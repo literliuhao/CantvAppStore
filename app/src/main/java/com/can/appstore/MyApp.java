@@ -40,12 +40,6 @@ public class MyApp extends Application {
         initBuly(true);
         //恢复下载任务。2016-11-29 11:47:23 xzl
         DownloadManager.getInstance(this).resumeAllTasks();
-
-        // 用于监听网络变化，初始化机型信息，陈建，后面优化，暂时没有较好的办法
-        if (ProcessUtil.isMainProcess(this)) {
-            HttpManager.init(this);
-            this.registerReceiver(new NetWorkReceiver(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-        }
     }
 
     public static Context getContext() {
