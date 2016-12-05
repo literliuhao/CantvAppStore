@@ -102,7 +102,7 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
             ((SearchViewHolder) holder).mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    AppDetailActivity.actionStart(mActivity, app.getId(), AppConstants.RESEARCH_PAGE, mActivity.mSearchKeyStr);
+                    AppDetailActivity.actionStart(mActivity, app.getId(), mActivity.mSearchKeyStr);
                 }
             });
 
