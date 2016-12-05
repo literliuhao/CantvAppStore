@@ -10,12 +10,12 @@ public class GridManager extends GridView {
 
     public GridManager(Context context) {
         super(context);
-        init(context, null);
+        init();
     }
 
     public GridManager(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context, attrs);
+        init();
     }
 
     @Override
@@ -29,7 +29,7 @@ public class GridManager extends GridView {
 
     WidgetTvViewBring mWidgetTvViewBring;
 
-    private void init(Context context, AttributeSet attrs) {
+    private void init() {
         this.setChildrenDrawingOrderEnabled(true);
         mWidgetTvViewBring = new WidgetTvViewBring(this);
     }

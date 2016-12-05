@@ -2,7 +2,6 @@ package com.can.appstore.myapps.ui;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -158,9 +157,12 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
                         i.putExtra("add", add);
                         startActivityForResult(i, 2);
                     } else {
-                        PackageManager pm = getActivity().getPackageManager();
-                        Intent intent = pm.getLaunchIntentForPackage(mShowList.get(position).packageName);//获取启动的包名
-                        startActivity(intent);
+                        Log.d(TAG,"OPENAPP__PACKAGENAME:"+ mShowList.get(position).packageName);
+                        try {
+                            PackageUtil.openApp(getActivity(),mShowList.get(position).packageName);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }

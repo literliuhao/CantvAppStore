@@ -97,7 +97,7 @@ public class PackageUtil {
      *
      * @param packageName
      */
-    public static void openApp(Context context, String packageName) {
+    public static void openApp(Context context, String packageName) throws Exception {
         openApp(context, packageName, null);
     }
 
@@ -106,7 +106,7 @@ public class PackageUtil {
      *
      * @param packageName
      */
-    public static void openApp(Context context, String packageName, Bundle params) {
+    public static void openApp(Context context, String packageName, Bundle params) throws Exception{
         PackageInfo pi;
         try {
             pi = context.getPackageManager().getPackageInfo(packageName, 0);
@@ -415,7 +415,7 @@ public class PackageUtil {
         }
         return appList;
     } /**
-     * 获取已安装的第三方应用信息 - 黑名单
+     * 获取已安装的第三方应用信息
      *
      * @param context
      * @return
@@ -433,7 +433,7 @@ public class PackageUtil {
             ApplicationInfo applicationInfo = info.applicationInfo;
             // 是否是系统权限
             boolean isSystemApp = (applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM;
-            if (isSystemApp) {
+            if (isSystemApp || context.getPackageName().equals(info.packageName)) {
                 continue;
             }
             index.incrementAndGet();
@@ -467,9 +467,8 @@ public class PackageUtil {
     }
 
     /**
-     * 获取处于白名单中的系统应用 + 第三方应用 - 黑名单
+     * 获取处于白名单中的系统应用 + 第三方应用
      *
-     * //逻辑有问题
      *
      * @param context
      * @return
@@ -489,6 +488,9 @@ public class PackageUtil {
             // 排除不在白名单中的系统应用
             if (isSystemApp && !appWhiteList.contains(info.packageName)) {
                 continue;
+            }
+            if(context.getPackageName().equals(info.packageName)){
+               continue;
             }
             index.incrementAndGet();
             final AppInfo app = new AppInfo();

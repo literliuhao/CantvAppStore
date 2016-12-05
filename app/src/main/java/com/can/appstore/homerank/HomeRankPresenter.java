@@ -48,7 +48,6 @@ public class HomeRankPresenter implements HomeRankContract.Presenter {
 
             @Override
             public void onFailure(CanCall<ListResult<Ranking>> call, CanErrorWrapper errorWrapper) {
-//                ToastUtils.showMessage(MyApp.getContext().getApplicationContext(), "加载数据失败,请稍后再试!");
                 mView.getData(getDefaultList());
             }
         });

@@ -124,7 +124,11 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
         }
         String pkgName = mAppInfo.getPackageName();
         if (ApkUtils.isAvailable(mContext, pkgName)) {
-            PackageUtil.openApp(mContext, pkgName);
+            try {
+                PackageUtil.openApp(mContext, pkgName);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return;
         }
 

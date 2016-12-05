@@ -1,7 +1,6 @@
 package com.can.appstore.download.adapter;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -487,7 +486,11 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                                 holder.downloadTask.getFilePath());
                         boolean isAvailable = ApkUtils.isAvailable(v.getContext(), pacageName);
                         if (isAvailable) {
-                            PackageUtil.openApp(v.getContext(), pacageName);
+                            try {
+                                PackageUtil.openApp(v.getContext(), pacageName);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         } else {
                             PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string
                                     .download_open_app_error));
