@@ -84,9 +84,6 @@ public class MessageManager {
             mMessageContainer.enqueue(new CanCallback<Result<MessageContainer>>() {
                 @Override
                 public void onResponse(CanCall<Result<MessageContainer>> call, final Response<Result<MessageContainer>> response) throws Exception {
-                    new Thread() {
-                        @Override
-                        public void run() {
                             Result<MessageContainer> body = response.body();
                             MessageContainer msgContainer = body.getData();
                             if (msgContainer == null) {
@@ -117,12 +114,10 @@ public class MessageManager {
                                     msgInfo.setUserId(NetworkUtils.getMac());
                                     msgList.add(msgInfo);
                                 }
-                                MessageManager.insert(context, msgList); // 插入数据库
+                                insert(context, msgList); // 插入数据库
                             } else {
                                 Log.i(TAG, "no new message");
                             }
-                        }
-                    }.start();
                 }
 
                 @Override
