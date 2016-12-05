@@ -234,7 +234,11 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
     }
 
     public void startApp(int position) {
-        PackageUtil.openApp(mContext, allAppsList.get(position).packageName);
+        try {
+            PackageUtil.openApp(mContext, allAppsList.get(position).packageName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void unRegiestr() {
