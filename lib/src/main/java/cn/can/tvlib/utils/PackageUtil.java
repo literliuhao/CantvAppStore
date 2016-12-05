@@ -97,7 +97,7 @@ public class PackageUtil {
      *
      * @param packageName
      */
-    public static void openApp(Context context, String packageName) {
+    public static void openApp(Context context, String packageName) throws Exception {
         openApp(context, packageName, null);
     }
 
@@ -106,7 +106,7 @@ public class PackageUtil {
      *
      * @param packageName
      */
-    public static void openApp(Context context, String packageName, Bundle params) {
+    public static void openApp(Context context, String packageName, Bundle params) throws Exception{
         PackageInfo pi;
         try {
             pi = context.getPackageManager().getPackageInfo(packageName, 0);
