@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.tvlib.utils.NetworkUtils;
-import cn.can.tvlib.utils.PromptUtils;
 import retrofit2.Response;
 
 /**
@@ -40,12 +39,16 @@ public class HomeRankPresenter implements HomeRankContract.Presenter {
             public void onResponse(CanCall<ListResult<Ranking>> call, Response<ListResult<Ranking>> response) throws Exception {
                 ListResult<Ranking> body = response.body();
                 List<Ranking> data = body.getData();
-                mView.getData(data);
+                if (data != null && data.size() > 0) {
+                    mView.getData(data);
+                } else {
+                    mView.getData(getDefaultList());
+                }
             }
 
             @Override
             public void onFailure(CanCall<ListResult<Ranking>> call, CanErrorWrapper errorWrapper) {
-                PromptUtils.toast(MyApp.getContext().getApplicationContext(), "加载数据失败,请稍后再试!");
+                mView.getData(getDefaultList());
             }
         });
     }

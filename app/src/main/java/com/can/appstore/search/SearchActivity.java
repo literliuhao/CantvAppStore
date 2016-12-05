@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
-import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.utils.PromptUtils;
 
 public class SearchActivity extends BaseActivity implements SearchContract.View, View.OnClickListener {
@@ -72,7 +71,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
     private View mSearch_null;
     private HotRecommendAdapter mHotRecommendAdapter;
     private FocusMoveUtil mFocusMoveUtil;
-    private FocusScaleUtil mFocusScaleUtil;
+    //    private FocusScaleUtil mFocusScaleUtil;
     private MyFocusRunnable myFocusRunnable;
     private View mFocusedListChild;
     private ScaleFocusChangeListener mScaleFocusChangeListener;
@@ -196,7 +195,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
 
         //焦点缩放相关
         mFocusMoveUtil = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.search_btn_focus1);
-        mFocusScaleUtil = new FocusScaleUtil();
+//        mFocusScaleUtil = new FocusScaleUtil();
         myFocusRunnable = new MyFocusRunnable();
         mContent_cl_view.setOnFocusChangeListener(mScaleFocusChangeListener);
         mContent_del_view.setOnFocusChangeListener(mScaleFocusChangeListener);
@@ -354,7 +353,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                     view.postDelayed(myFocusRunnable, 50);
                 } else {
                     mright_top.setVisibility(View.GONE);
-                    mFocusScaleUtil.scaleToNormal();
+//                    mFocusScaleUtil.scaleToNormal();
                 }
                 view.setSelected(hasFocus);
             }
@@ -399,7 +398,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
             if (mFocusedListChild != null) {
                 mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f);
                 //1f,1f不缩放
-                mFocusScaleUtil.scaleToLarge(mFocusedListChild, 1f, 1f);
+//                mFocusScaleUtil.scaleToLarge(mFocusedListChild, 1f, 1f);
             }
         }
     }
@@ -414,7 +413,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                 mFocusedListChild = view;
                 view.postDelayed(myFocusRunnable, 50);
             } else {
-                mFocusScaleUtil.scaleToNormal();
+//                mFocusScaleUtil.scaleToNormal();
             }
             view.setSelected(hasFocus);
         }
@@ -611,5 +610,13 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
     @Override
     protected void onHomeKeyDown() {
         finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mHandler.removeCallbacksAndMessages(null);
+        mHandler = null;
+        mFocusMoveUtil.release();
     }
 }

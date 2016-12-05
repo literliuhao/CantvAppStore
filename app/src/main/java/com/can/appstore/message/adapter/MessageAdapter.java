@@ -3,6 +3,7 @@ package com.can.appstore.message.adapter;
 import android.content.Context;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -172,10 +173,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
             }
             if (msgDelete.hasFocus() || msgFocusLayout.hasFocus()) {
                 msgFocusLayout.setSelected(true);
+                msgTitle.setEllipsize(TextUtils.TruncateAt.MARQUEE);  //获取焦点是跑马灯格式
                 mFocusedDeleteBtn = msgDelete;
                 mHandler.removeCallbacks(showMsgDelete);
                 mHandler.postDelayed(showMsgDelete, 200);
             } else {
+                msgTitle.setEllipsize(TextUtils.TruncateAt.END);  //焦点移除为省略号样式
                 msgDelete.setVisibility(View.INVISIBLE);
                 msgFocusLayout.setSelected(false);
             }

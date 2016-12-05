@@ -26,16 +26,19 @@
             android:visibility="invisible"
             />
 
-        <!--textView文本跑马灯效果，在4.x版本上必须加上android:singleLine="true"-->
+        <!--textView文本跑马灯效果，
+            在4.x版本上必须加上android:singleLine="true"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:ellipsize="marquee"
+        -->
         <TextView
             android:id="@+id/item_tv_msg_title"
             android:layout_width="@dimen/px860"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/px120"
-            android:ellipsize="marquee"
             android:focusable="true"
+            android:ellipsize="end"
             android:includeFontPadding="false"
-            android:marqueeRepeatLimit="marquee_forever"
             android:maxLines="1"
             android:singleLine="true"
             android:textColor="@color/msg_white_80"
