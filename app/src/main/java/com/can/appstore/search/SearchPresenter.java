@@ -58,14 +58,14 @@ public class SearchPresenter implements SearchContract.Presenter {
                     PromptUtils.toast(MyApp.getContext(), "没有更多数据!", Toast.LENGTH_LONG);
                 } else {
                     mAppInfoList.addAll(data);
-                    mView.getAppList(mAppInfoList, body.getTotal() + "", pageIndex == 1 ? true : false);
+                    mView.getAppList(mAppInfoList, body.getTotal(), pageIndex == 1 ? true : false);
                 }
             }
 
             @Override
             public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
 //                String reason = errorWrapper.getReason();
-                mView.getAppList(null, "");
+                mView.getAppList(null, 0);
             }
         });
 
