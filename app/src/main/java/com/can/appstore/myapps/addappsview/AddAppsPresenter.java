@@ -59,7 +59,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
                     addShowList.clear();
                 }
                 isShown = mMyAppListData.getShowList(isShown);
-                mAllAppList = PackageUtil.findAllThirdPartyApps(mContext, mAllAppList);
+                mAllAppList = PackageUtil.findAllThirdPartyAppsNoDelay(mContext, mAllAppList);
                 for (AppInfo app : mAllAppList) {
                     boolean inShown = false;
                     for (AppInfo appInfo : isShown) {

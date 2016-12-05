@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.tvlib.utils.NetworkUtils;
-import cn.can.tvlib.utils.ToastUtils;
+import cn.can.tvlib.utils.PromptUtils;
 import retrofit2.Response;
 
 /**
@@ -45,7 +45,7 @@ public class HomeRankPresenter implements HomeRankContract.Presenter {
 
             @Override
             public void onFailure(CanCall<ListResult<Ranking>> call, CanErrorWrapper errorWrapper) {
-                ToastUtils.showMessage(MyApp.getContext().getApplicationContext(), "加载数据失败,请稍后再试!");
+                PromptUtils.toast(MyApp.getContext().getApplicationContext(), "加载数据失败,请稍后再试!");
             }
         });
     }

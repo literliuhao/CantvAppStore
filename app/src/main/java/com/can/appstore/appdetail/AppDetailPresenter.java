@@ -261,7 +261,11 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         if (Utils.isFastDoubleClick()) {//防止连续点击
             return;
         } else if (ApkUtils.isAvailable(mContext, mPackageName) && !isClickUpdateButton) {//应用已经安装
-            PackageUtil.openApp(mContext, mPackageName);
+            try {
+                PackageUtil.openApp(mContext, mPackageName);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return;
         } else if (isInstalling) { //任务不存在，但安装包还存在，任务正在安装
             return;
