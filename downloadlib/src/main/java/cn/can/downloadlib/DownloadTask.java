@@ -225,7 +225,7 @@ public class DownloadTask implements Runnable {
                 }
             }
         }
-        if (mTotalSize == mDownloadedSize) {
+        if (mTotalSize == mDownloadedSize&&mTotalSize!=0) {
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_COMPLETED;
         }
         mDbEntity.setDownloadStatus(mDownloadStatus);
