@@ -38,6 +38,8 @@ public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapte
     public class HotViewHolder extends RecyclerView.ViewHolder {
         TextView mAppName;
         ImageView mAppIcon;
+        TextView mAppSize;  //app大小
+        TextView mAppDownloadCount; //下载量
         ImageView mAppLabelImg; //标签(左上角展示)
         View mView;
 
@@ -47,6 +49,8 @@ public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapte
             mAppName = (TextView) itemView.findViewById(R.id.app_name_view);
             mAppIcon = (ImageView) itemView.findViewById(R.id.app_icon);
             mAppLabelImg = (ImageView) itemView.findViewById(R.id.label_img);
+            mAppSize = (TextView) itemView.findViewById(R.id.app_size_view);
+            mAppDownloadCount = (TextView) itemView.findViewById(R.id.app_dwoncount_view);
         }
 
         /**
@@ -57,6 +61,8 @@ public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapte
         public void setContent(final int position) {
             final AppInfo app = (AppInfo) mDataList.get(position);
             mAppName.setText(app.getName());
+            mAppSize.setText(app.getSizeStr());
+            mAppDownloadCount.setText(app.getDownloadCount());
             ImageLoader.getInstance().load(MyApp.getContext(), mAppIcon, app.getIcon());
             //+100是为了防止在搜索页出现相同的id
             mView.setId(position + 100);

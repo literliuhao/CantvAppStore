@@ -484,17 +484,15 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     case AppInstallListener.APP_INSTALL_SUCESS:
                         String pacageName = ApkUtils.getPkgNameFromApkFile(v.getContext().getApplicationContext(),
                                 holder.downloadTask.getFilePath());
-                        boolean isAvailable = ApkUtils.isAvailable(v.getContext(), pacageName);
-                        if (isAvailable) {
-                            try {
-                                PackageUtil.openApp(v.getContext(), pacageName);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        } else {
+
+                        try {
+                            PackageUtil.openApp(v.getContext(), pacageName);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                             PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string
                                     .download_open_app_error));
                         }
+
                         break;
                     case AppInstallListener.APP_INSTALL_FAIL:
                     case DownloadStatus.DOWNLOAD_STATUS_COMPLETED:

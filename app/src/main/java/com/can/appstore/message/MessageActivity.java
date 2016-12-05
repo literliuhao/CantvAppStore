@@ -64,7 +64,6 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         btnClear = (Button) findViewById(R.id.btn_clear);
         btnTag.setOnClickListener(this);
         btnClear.setOnClickListener(this);
-        //btnTag.setOnFocusChangeListener(this);
         btnClear.setOnFocusChangeListener(this);
         itemPos = (TextView) findViewById(R.id.tv_item_pos);
         itemTotal = (TextView) findViewById(R.id.tv_item_total);
@@ -98,7 +97,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
             initRecyclerView();
             refreshTotalText(msgList.size());
         } else {
-            //注意：在onCreate方法中并没有真正的创建出btnTag，直接使用btnTag.requestFocus();是设不上焦点框的。
+            //注意：在onCreate方法中并没有真正的创建出btnTag
             btnTag.post(new Runnable() {
                 @Override
                 public void run() {
@@ -166,7 +165,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                     mRecyclerView.setVisibility(View.INVISIBLE);
                     btnClear.setVisibility(View.INVISIBLE);
                     empty.setVisibility(View.VISIBLE);
-                    focusMoveUtil.setFocusView(btnTag);  // 直接设置焦点，无动画
+                    focusMoveUtil.setFocusView(btnTag);  // 直接设置焦点，无焦点移动动画
                     return;
                 }
                 refreshTotalText(msgCount);
@@ -221,7 +220,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                 //开始焦点在第一个item上
                 mRecyclerView.getChildAt(0).requestFocus();
                 focusMoveUtil.setFocusView(mRecyclerView.getChildAt(0));
-                focusMoveUtil.hideFocusForShowDelay(400);
+                focusMoveUtil.hideFocusForShowDelay(500);
             }
         });
         llManager = new LinearLayoutManager(this);
@@ -279,13 +278,8 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
 
 
     private void changeListStatus() {
-        int size = msgList.size();
-        for (int i = 0; i < size; i++) {
-            MessageInfo msg = msgList.get(i);
-            if (msg.getStatus()) {
-                msg.setStatus(false);
-                msgList.set(i, msg);
-            }
+        for (MessageInfo msg: msgList) {
+            msg.setStatus(false);
         }
     }
 
@@ -331,7 +325,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_tag:
-                if (msgList == null || msgList.isEmpty() || !MessageManager.existUnreadMsg(this)) {
+                if (!MessageManager.existUnreadMsg(this) || msgList == null || msgList.isEmpty() ) {
                     return;
                 }
                 new Thread() {

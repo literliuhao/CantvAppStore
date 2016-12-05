@@ -70,7 +70,8 @@ public class GreenDaoManager {
 
     /**
      * 删除单条数据
-     *通过msgId来进行删除
+     * 通过msgId来进行删除
+     *
      * @param msgId
      */
     public void deleteMsg(String msgId) {
@@ -105,8 +106,8 @@ public class GreenDaoManager {
 
     /**
      * 查询数据库数据
-     * @param mCurrentTime  // 当前系统时间
      *
+     * @param mCurrentTime // 当前系统时间
      */
     @SuppressWarnings("unchecked")
     public List<MessageInfo> queryMsg(long mCurrentTime) {
@@ -145,7 +146,7 @@ public class GreenDaoManager {
         List<MessageInfo> msgList = qb.list();
         if (msgList != null && !msgList.isEmpty()) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -165,18 +166,5 @@ public class GreenDaoManager {
         });
     }
 
-    /**
-     * 插入数据
-     * */
-    public void insert(final MessageInfo msgInfo){
-        if (msgInfo != null){
-            msgDao.getSession().runInTx(new Runnable() {
-                @Override
-                public void run() {
-                    msgDao.insertInTx(msgInfo);
-                }
-            });
-        }
-    }
 
 }
