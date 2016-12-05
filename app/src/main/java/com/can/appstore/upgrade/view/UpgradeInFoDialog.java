@@ -11,8 +11,6 @@ import com.can.appstore.R;
 import com.can.appstore.upgrade.widgets.UpgradeInfoNoticeCursor;
 import com.can.appstore.upgrade.widgets.UpgradeInfoScrollView;
 
-import cn.can.tvlib.utils.ToastUtils;
-
 
 /**
  * Created by syl on 2016/10/31.

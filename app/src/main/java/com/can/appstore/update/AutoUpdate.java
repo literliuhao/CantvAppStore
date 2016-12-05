@@ -11,7 +11,6 @@ import com.can.appstore.http.CanCall;
 import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
-import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.update.model.UpdateApkModel;
 import com.can.appstore.update.utils.UpdateUtils;
 
@@ -26,7 +25,6 @@ import cn.can.downloadlib.MD5;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PreferencesUtils;
 import cn.can.tvlib.utils.PromptUtils;
-import cn.can.tvlib.utils.ToastUtils;
 import retrofit2.Response;
 
 /**

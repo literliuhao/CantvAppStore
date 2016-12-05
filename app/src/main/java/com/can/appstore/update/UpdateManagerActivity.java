@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
@@ -38,7 +37,6 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PreferencesUtils;
-import cn.can.tvlib.utils.ToastUtils;
 
 /**
  * 更新管理
