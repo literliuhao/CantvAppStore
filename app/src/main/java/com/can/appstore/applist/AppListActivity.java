@@ -21,7 +21,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.can.appstore.MyApp;
+import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.applist.adpter.AppListMenuAdapter;
@@ -29,6 +29,8 @@ import com.can.appstore.base.BaseActivity;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.Topic;
 import com.can.appstore.search.SearchActivity;
+import com.dataeye.sdk.api.app.DCEvent;
+import com.dataeye.sdk.api.app.channel.DCPage;
 
 import java.util.HashMap;
 import java.util.List;
@@ -798,6 +800,30 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
         }
 
         return super.dispatchKeyEvent(event);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mPageType == PAGE_TYPE_APP_LIST) {
+            DCPage.onEntry(AppConstants.APP_LIST);
+            DCEvent.onEvent(AppConstants.APP_LIST);
+        } else if (mPageType == PAGE_TYPE_RANKING) {
+            DCPage.onEntry(AppConstants.CHARTS);
+            DCEvent.onEvent(AppConstants.CHARTS);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mPageType == PAGE_TYPE_APP_LIST) {
+            DCPage.onExit(AppConstants.APP_LIST);
+            DCEvent.onEventDuration(AppConstants.APP_LIST, mDuration);
+        } else if (mPageType == PAGE_TYPE_RANKING) {
+            DCPage.onExit(AppConstants.CHARTS);
+            DCEvent.onEventDuration(AppConstants.CHARTS, mDuration);
+        }
     }
 
     @Override

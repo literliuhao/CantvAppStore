@@ -3,11 +3,9 @@
           package="com.can.appstore">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.GET_PACKAGE_SIZE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -19,6 +17,10 @@
     <uses-permission android:name="android.permission.CHAND_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.READ_LOGS"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
 
     <application
         android:name=".MyApp"
@@ -49,14 +51,14 @@
             </intent-filter>
         </activity>
         <!--<activity-->
-            <!--android:name=".PortalActivity"-->
-            <!--android:hardwareAccelerated="false"-->
-            <!--android:theme="@style/AppTheme.Translucent.FadeIn">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN"/>-->
+        <!--android:name=".PortalActivity"-->
+        <!--android:hardwareAccelerated="false"-->
+        <!--android:theme="@style/AppTheme.Translucent.FadeIn">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.MAIN"/>-->
 
-                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
-            <!--</intent-filter>-->
+        <!--<category android:name="android.intent.category.LAUNCHER"/>-->
+        <!--</intent-filter>-->
         <!--</activity>-->
         <activity android:name=".MainActivity"/>
         <activity
@@ -69,9 +71,9 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
             <intent-filter>
-            <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN"/>
 
-            <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity android:name=".myapps.addappsview.AddAppsActivity">
@@ -177,12 +179,27 @@
                 android:resource="@xml/provider_paths"/>
         </provider>
 
-        <receiver android:name=".upgrade.UpgradeReceiver"
-                  android:exported="false">
+        <receiver
+            android:name=".upgrade.UpgradeReceiver"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"></action>
             </intent-filter>
         </receiver>
+
+        <!-- 添加DataEye需要配置的DCAppService start -->
+        <service
+            android:name="com.dataeye.channel.DCAppService"
+            android:exported="true"
+            android:label="AppService"
+            android:persistent="true"
+            android:process=":de_service">
+            <intent-filter android:priority="1000">
+                <action android:name="com.dataeye.channel.action.INVOKE_SERVICE"/>
+                <category android:name="com.dataeye.channel.category.DcService"/>
+            </intent-filter>
+        </service>
+        <!-- 添加DataEye需要配置的DCAppService end -->
 
     </application>
 

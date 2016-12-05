@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 
 import com.can.appstore.R;
+import com.dataeye.sdk.api.app.DCAgent;
 
 import cn.can.tvlib.utils.PromptUtils;
 
@@ -22,6 +23,8 @@ public abstract class BaseActivity extends FragmentActivity {
     private int mMsgTextSize = 35;
     private int mMsgTextColor = 0xccffffff;
     private int spaceInPixels = 40;
+    public long mDuration = 0;
+    private long mEnter = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,12 +36,16 @@ public abstract class BaseActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
         startHomeKeyListener();
+        DCAgent.resume(this);
+        mEnter = System.currentTimeMillis();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mHomeKeyReceiver);
+        DCAgent.pause(this);
+        mDuration = (System.currentTimeMillis() - mEnter) / 1000;
     }
 
     @Override

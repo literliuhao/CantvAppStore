@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.entity.ListResult;
 import com.can.appstore.entity.Navigation;
@@ -43,6 +44,9 @@ import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.update.AutoUpdate;
 import com.can.appstore.update.model.UpdateApkModel;
+import com.dataeye.sdk.api.app.DCAgent;
+import com.dataeye.sdk.api.app.DCEvent;
+import com.dataeye.sdk.api.app.channel.DCPage;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -93,6 +97,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private CanCall<ListResult<Navigation>> mNavigationCall;
     private int updateNum;
     private Context mContext;
+    private long mEnter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +111,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     @Override
     protected void onResume() {
         super.onResume();
+        mEnter = System.currentTimeMillis();
+        DCAgent.resume(this);
+        DCPage.onEntry(AppConstants.HOME_PAGE);//统计页面开始
+        DCEvent.onEvent(AppConstants.HOME_PAGE);
         refreshMsg();
     }
 
@@ -200,7 +209,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      */
     private void initData(ListResult<Navigation> navigationListResult) {
         mFragmentLists = new ArrayList<>();
-        if (null == navigationListResult.getData()) return;
+        if (null == navigationListResult.getData())
+            return;
         //根据服务器配置文件生成不同样式加入Fragment列表中
         FragmentBody fragment;
         for (int i = 0; i < navigationListResult.getData().size(); i++) {
@@ -392,13 +402,14 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     @Override
     public void addFocusListener(View v, boolean hasFocus, FragmentEnum sourceEnum) {
         if (hasFocus) {
-            if (null == v) return;
+            if (null == v)
+                return;
             switch (sourceEnum) {
                 case INDEX:
                     v.bringToFront();
                     mFocusUtils.setFocusRes(mContext, R.drawable.btn_circle_focus);
                     mFocusUtils.startMoveFocus(v);
-//                    mFocusScaleUtils.scaleToLarge(v);
+                    //                    mFocusScaleUtils.scaleToLarge(v);
                     break;
                 case TITLE:
                     if (v instanceof LiteText) {
@@ -430,15 +441,15 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         }
     }
 
-//    @Override
-//    public boolean onKeyUp(int keyCode, KeyEvent event) {
-//        Log.i("IndexActivity", "scrollStatus " + scrollStatus);
-//        if (scrollStatus == SCROLLED) {
-//            return super.onKeyUp(keyCode, event);
-//        } else {
-//            return true;
-//        }
-//    }
+    //    @Override
+    //    public boolean onKeyUp(int keyCode, KeyEvent event) {
+    //        Log.i("IndexActivity", "scrollStatus " + scrollStatus);
+    //        if (scrollStatus == SCROLLED) {
+    //            return super.onKeyUp(keyCode, event);
+    //        } else {
+    //            return true;
+    //        }
+    //    }
 
     @Override
     public void onClick(View view) {
@@ -475,6 +486,14 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
         addFocusListener(view, hasFocus, INDEX);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DCAgent.pause(this);
+        DCPage.onExit(AppConstants.HOME_PAGE);//统计页面结束
+        DCEvent.onEventDuration(AppConstants.HOME_PAGE, (System.currentTimeMillis() - mEnter) / 1000);
     }
 
     @Override

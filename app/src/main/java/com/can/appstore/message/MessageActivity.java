@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.can.appstore.ActionConstants;
+import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.active.ActiveActivity;
 import com.can.appstore.appdetail.AppDetailActivity;
@@ -21,6 +22,8 @@ import com.can.appstore.message.db.entity.MessageInfo;
 import com.can.appstore.message.manager.GreenDaoManager;
 import com.can.appstore.message.manager.MessageManager;
 import com.can.appstore.specialdetail.SpecialDetailActivity;
+import com.dataeye.sdk.api.app.DCEvent;
+import com.dataeye.sdk.api.app.channel.DCPage;
 
 import java.util.List;
 
@@ -372,6 +375,20 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                 mHandler.postDelayed(mFocusMoveRunnable, 50);
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        DCPage.onEntry(AppConstants.NEWS_LIST);
+        DCEvent.onEvent(AppConstants.NEWS_LIST);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DCPage.onExit(AppConstants.NEWS_LIST);
+        DCEvent.onEventDuration(AppConstants.NEWS_LIST, mDuration);
     }
 
     @Override

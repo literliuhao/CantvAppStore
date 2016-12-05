@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
@@ -27,6 +28,8 @@ import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.update.model.UpdateApkModel;
 import com.can.appstore.update.utils.UpdateUtils;
 import com.can.appstore.widgets.CanDialog;
+import com.dataeye.sdk.api.app.DCEvent;
+import com.dataeye.sdk.api.app.channel.DCPage;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -136,11 +139,15 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
         super.onResume();
 //        registerReceiver();
 //        initData();
+        DCPage.onEntry(AppConstants.PACKAGE_MANAGE);
+        DCEvent.onEvent(AppConstants.PACKAGE_MANAGE);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        DCPage.onExit(AppConstants.PACKAGE_MANAGE);
+        DCEvent.onEventDuration(AppConstants.PACKAGE_MANAGE, mDuration);
     }
 
     @Override

@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.can.appstore.AppConstants;
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.TextProgressBar;
@@ -23,6 +24,8 @@ import com.can.appstore.base.BaseActivity;
 import com.can.appstore.installpkg.utils.InstallPkgUtils;
 import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.widgets.CanDialog;
+import com.dataeye.sdk.api.app.DCEvent;
+import com.dataeye.sdk.api.app.channel.DCPage;
 
 import java.util.List;
 
@@ -100,11 +103,15 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
     @Override
     protected void onResume() {
         super.onResume();
+        DCPage.onEntry(AppConstants.UPDATE_MANAGE);
+        DCEvent.onEvent(AppConstants.UPDATE_MANAGE);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        DCPage.onExit(AppConstants.UPDATE_MANAGE);
+        DCEvent.onEventDuration(AppConstants.UPDATE_MANAGE, mDuration);
     }
 
     @Override

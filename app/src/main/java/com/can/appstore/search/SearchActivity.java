@@ -19,11 +19,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.search.adapter.HotRecommendAdapter;
 import com.can.appstore.search.adapter.KeyboardAdapter;
 import com.can.appstore.search.adapter.SearchAppListAdapter;
+import com.dataeye.sdk.api.app.DCEvent;
+import com.dataeye.sdk.api.app.channel.DCPage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -310,6 +313,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         if (!setRightNextFocus) {
             setRNextFocus();
         }
+        mSearchPresenter.statisticsExposure();
     }
 
     /**
@@ -388,6 +392,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         } else {
             mSearchPresenter.getDefaultList();
         }
+        mSearchPresenter.statisticsExposure();
     }
 
     /**
@@ -606,6 +611,20 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                 setDefaultNextFocus();
             }
         }, 3000);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        DCPage.onEntry(AppConstants.RESEARCH_PAGE);
+        DCEvent.onEvent(AppConstants.RESEARCH_PAGE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DCPage.onExit(AppConstants.RESEARCH_PAGE);
+        DCEvent.onEventDuration(AppConstants.RESEARCH_PAGE, mDuration);
     }
 
     @Override

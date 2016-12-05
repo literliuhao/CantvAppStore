@@ -12,6 +12,9 @@ import com.can.appstore.http.CanCall;
 import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
+import com.dataeye.sdk.api.app.channel.DCResource;
+import com.dataeye.sdk.api.app.channel.DCResourceLocation;
+import com.dataeye.sdk.api.app.channel.DCResourcePair;
 
 import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
@@ -38,11 +41,12 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
     private String mDownloadUrl;
     private CanCall<Result<Activity>> mActiveData;
     private AppInfo mAppInfo;
+    private String mActiveDetail;
 
     public ActivePresenter(ActiveContract.OperationView operationView, Context context) {
         this.mOperationView = operationView;
         this.mContext = context.getApplicationContext();
-
+        mActiveDetail = mContext.getString(R.string.active_detail);
     }
 
     private void initDownloadTask(String downloadUrl) {
@@ -103,6 +107,9 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
                 } else {
                     mOperationView.loadwebview(active.getUrl());
                 }
+                //统计活动详情页按钮曝光量
+                DCResourcePair pair = DCResourcePair.newBuilder().setResourceLocationId(mActiveDetail).setResourceId(mAppInfo.getName()).build();
+                DCResourceLocation.onShow(pair);
             }
 
             @Override
@@ -171,6 +178,9 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
             downloadTask.setUrl(downloadUrl);
             mDownloadManger.addDownloadTask(downloadTask, ActivePresenter.this);
             mDownloadManger.setAppInstallListener(ActivePresenter.this);
+
+            //统计活动详情页下载量
+            DCResource.onDownloadFromResourceLocation(mAppInfo.getName(), mActiveDetail);
         }
         mDownloadTask = downloadTask;
     }

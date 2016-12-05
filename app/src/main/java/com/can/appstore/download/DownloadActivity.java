@@ -11,10 +11,13 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.download.adapter.DownloadAdapter;
+import com.dataeye.sdk.api.app.DCEvent;
+import com.dataeye.sdk.api.app.channel.DCPage;
 
 import java.util.List;
 
@@ -296,6 +299,20 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
             hanlder.removeCallbacks(mFocusMoveRunnable);
             hanlder.postDelayed(mFocusMoveRunnable, delayMillis);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        DCPage.onEntry(AppConstants.DOWNLOAD_MANAGE);
+        DCEvent.onEvent(AppConstants.DOWNLOAD_MANAGE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DCPage.onExit(AppConstants.DOWNLOAD_MANAGE);
+        DCEvent.onEventDuration(AppConstants.DOWNLOAD_MANAGE, mDuration);
     }
 
     @Override

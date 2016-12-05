@@ -1,6 +1,9 @@
 package com.can.appstore.search;
 
+import android.content.Context;
+
 import com.can.appstore.MyApp;
+import com.can.appstore.R;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.ListResult;
 import com.can.appstore.entity.PopularWord;
@@ -8,6 +11,9 @@ import com.can.appstore.http.CanCall;
 import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
+import com.dataeye.sdk.api.app.channel.DCResource;
+import com.dataeye.sdk.api.app.channel.DCResourceLocation;
+import com.dataeye.sdk.api.app.channel.DCResourcePair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +29,15 @@ import retrofit2.Response;
 public class SearchPresenter implements SearchContract.Presenter {
     private SearchContract.View mView;
     private List<AppInfo> mAppInfoList;
+    private List<AppInfo> mHotRecommendList;
+    private ArrayList<DCResourcePair> mPairs = new ArrayList<>();
+    private Context mContext;
+    private String mSearchRecommend;
 
     public SearchPresenter(SearchContract.View view) {
         mView = view;
+        mContext = (Context) view;
+        mSearchRecommend = mContext.getString(R.string.search_recommend);
         mAppInfoList = new ArrayList<>();
     }
 
@@ -53,18 +65,23 @@ public class SearchPresenter implements SearchContract.Presenter {
                     mAppInfoList.clear();
                 }
                 if (!(data.size() > 0) && pageIndex != 1) {
-//                    ToastUtil.toastShortTimeLimit("没有更多数据!", 5000);
+                    //                    ToastUtil.toastShortTimeLimit("没有更多数据!", 5000);
                     ToastUtils.showMessageLong(MyApp.getContext(), "没有更多数据!");
                 } else {
                     mAppInfoList.addAll(data);
                     mView.getAppList(mAppInfoList, pageIndex == 1 ? true : false);
                 }
+
+                if (pageIndex == 1) {
+                    //统计资源搜索
+                    DCResource.onSearch(searCon);
+                }
             }
 
             @Override
             public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
-//                String reason = errorWrapper.getReason();
-//                ToastUtil.toastShort("加载数据失败,请稍后再试!");
+                //                String reason = errorWrapper.getReason();
+                //                ToastUtil.toastShort("加载数据失败,请稍后再试!");
                 mView.getAppList(null);
             }
         });
@@ -85,15 +102,15 @@ public class SearchPresenter implements SearchContract.Presenter {
             @Override
             public void onResponse(CanCall<ListResult<AppInfo>> call, Response<ListResult<AppInfo>> response) throws Exception {
                 ListResult<AppInfo> body = response.body();
-                List<AppInfo> appInfoList = body.getData();
-                mView.getHotRecomAppList(appInfoList);
-//                ToastUtil.toastShort("加载数据成功!" + body.getMessage());
+                mHotRecommendList = body.getData();
+                mView.getHotRecomAppList(mHotRecommendList);
+                //                ToastUtil.toastShort("加载数据成功!" + body.getMessage());
                 mView.hideLoading();
             }
 
             @Override
             public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
-//                ToastUtil.toastShort("加载数据失败,请稍后再试!");
+                //                ToastUtil.toastShort("加载数据失败,请稍后再试!");
                 ToastUtils.showMessageLong(MyApp.getContext(), "加载数据失败,请稍后再试!");
                 mView.hideLoading();
             }
@@ -111,12 +128,26 @@ public class SearchPresenter implements SearchContract.Presenter {
 
             @Override
             public void onFailure(CanCall<ListResult<PopularWord>> call, CanErrorWrapper errorWrapper) {
-//                ToastUtil.toastShort("加载数据失败,请稍后再试!");
+                //                ToastUtil.toastShort("加载数据失败,请稍后再试!");
                 ToastUtils.showMessageLong(MyApp.getContext(), "加载数据失败,请稍后再试!");
                 mView.hideLoading();
             }
         });
 
+    }
+
+    /**
+     * 统计搜索热门推荐的曝光次数
+     */
+    public void statisticsExposure() {
+        if (mPairs.size() == 0 && mHotRecommendList != null) {
+            for (int i = 0; i < mHotRecommendList.size(); i++) {
+                DCResourcePair pair = DCResourcePair.newBuilder().setResourceLocationId(mSearchRecommend + (i + 1)).
+                        setResourceId(mHotRecommendList.get(i).getName()).build();
+                mPairs.add(pair);
+            }
+        }
+        DCResourceLocation.onBatchShow(mPairs);
     }
 
 }
