@@ -613,7 +613,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     /**
      * 统计详情推荐的曝光次数
      */
-    public void statisticsExposure() {
+    public void resourcesPositionExposure() {
         if (mPairs.size() == 0 && mAppInfo.getRecommend() != null) {
             for (int i = 0; i < mAppInfo.getRecommend().size(); i++) {
                 DCResourcePair pair = DCResourcePair.newBuilder().setResourceLocationId(mDetailRecommend + (i + 1))

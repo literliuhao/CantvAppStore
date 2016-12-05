@@ -329,7 +329,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             mViewFlipper.setInAnimation(AppDetailActivity.this, R.anim.push_right_in);
             mViewFlipper.setOutAnimation(AppDetailActivity.this, R.anim.push_left_out);
             mViewFlipper.showNext();
-            mAppDetailPresenter.statisticsExposure();
+            mAppDetailPresenter.resourcesPositionExposure();
         } else if (moveDirection == TO_MOVE_LEFT) {
             mViewFlipper.setInAnimation(AppDetailActivity.this, R.anim.push_left_in);
             mViewFlipper.setOutAnimation(AppDetailActivity.this, R.anim.push_right_out);

@@ -18,7 +18,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.can.appstore.AppConstants;
+import com.can.appstore.MyApp;
 import com.can.appstore.R;
+import com.can.appstore.entity.Layout;
 import com.can.appstore.entity.ListResult;
 import com.can.appstore.entity.Navigation;
 import com.can.appstore.homerank.HomeRankFragment;
@@ -30,6 +32,7 @@ import com.can.appstore.index.adapter.IndexPagerAdapter;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.interfaces.IOnPagerListener;
 import com.can.appstore.index.model.DataUtils;
+import com.can.appstore.index.model.HomeDataEyeUtils;
 import com.can.appstore.index.model.ShareData;
 import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.index.ui.FixedScroller;
@@ -47,6 +50,8 @@ import com.can.appstore.update.model.UpdateApkModel;
 import com.dataeye.sdk.api.app.DCAgent;
 import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
+import com.dataeye.sdk.api.app.channel.DCResourceLocation;
+import com.dataeye.sdk.api.app.channel.DCResourcePair;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -98,6 +103,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private int updateNum;
     private Context mContext;
     private long mEnter = 0;
+    private HomeDataEyeUtils mDataEyeUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -272,6 +278,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             public void onExtraPageSelected(int position) {
                 currentPage = position;
                 mFocusUtils.showFocus();
+                //统计首页资源位曝光量
+                mDataEyeUtils.resourcesPositionExposure(position);
             }
 
             @Override
@@ -345,6 +353,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         ShareData.getInstance().execute();
         initUpdateListener();
         initMsgListener();
+        //统计首页资源位曝光量
+        mDataEyeUtils = new HomeDataEyeUtils(MyApp.getContext());
+        mDataEyeUtils.resourcesPositionExposure(0);
     }
 
     private void initUpdateListener() {
@@ -501,5 +512,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(mContext);
+        mDataEyeUtils.release();
     }
 }

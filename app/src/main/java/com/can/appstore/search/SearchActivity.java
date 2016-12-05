@@ -313,7 +313,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         if (!setRightNextFocus) {
             setRNextFocus();
         }
-        mSearchPresenter.statisticsExposure();
+        mSearchPresenter.resourcesPositionExposure();
     }
 
     /**
@@ -392,7 +392,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         } else {
             mSearchPresenter.getDefaultList();
         }
-        mSearchPresenter.statisticsExposure();
+        mSearchPresenter.resourcesPositionExposure();
     }
 
     /**

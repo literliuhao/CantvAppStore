@@ -140,7 +140,7 @@ public class SearchPresenter implements SearchContract.Presenter {
     /**
      * 统计搜索热门推荐的曝光次数
      */
-    public void statisticsExposure() {
+    public void resourcesPositionExposure() {
         if (mPairs.size() == 0 && mHotRecommendList != null) {
             for (int i = 0; i < mHotRecommendList.size(); i++) {
                 DCResourcePair pair = DCResourcePair.newBuilder().setResourceLocationId(mSearchRecommend + (i + 1)).
