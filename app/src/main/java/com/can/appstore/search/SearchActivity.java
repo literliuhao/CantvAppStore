@@ -47,7 +47,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
     private final int TAG_S_NULLAPP_G_TOP_APPLIST = 1;    //没有搜到内容
     private final int TAG_S_TOP_APPLIST_G_BOTTOM = 2;    //搜到内容
     private int mCurrPageIndex = 1; //搜索到的第几页的数据,默认第一页
-
+    public String mSearchKeyStr;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -55,7 +55,8 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
             switch (msg.what) {
                 case START_SEARCH:
                     mCurrPageIndex = 1;
-                    mSearchPresenter.getSearchList(mSearch_con_view.getText().toString().trim(), mCurrPageIndex);
+                    mSearchKeyStr = mSearch_con_view.getText().toString().trim();
+                    mSearchPresenter.getSearchList(mSearchKeyStr, mCurrPageIndex);
                     break;
             }
         }
