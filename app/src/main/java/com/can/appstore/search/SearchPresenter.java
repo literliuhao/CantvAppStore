@@ -45,7 +45,7 @@ public class SearchPresenter implements SearchContract.Presenter {
             mView.startSearch();
         }
 
-        HttpManager.getApiService().search(searCon, pageIndex, 18).enqueue(new CanCallback<ListResult<AppInfo>>() {
+        HttpManager.getApiService().search(searCon, pageIndex, 20).enqueue(new CanCallback<ListResult<AppInfo>>() {
             @Override
             public void onResponse(CanCall<ListResult<AppInfo>> call, Response<ListResult<AppInfo>> response) throws Exception {
                 ListResult<AppInfo> body = response.body();
@@ -55,19 +55,17 @@ public class SearchPresenter implements SearchContract.Presenter {
                     mAppInfoList.clear();
                 }
                 if (!(data.size() > 0) && pageIndex != 1) {
-//                    ToastUtil.toastShortTimeLimit("没有更多数据!", 5000);
                     PromptUtils.toast(MyApp.getContext(), "没有更多数据!", Toast.LENGTH_LONG);
                 } else {
                     mAppInfoList.addAll(data);
-                    mView.getAppList(mAppInfoList, pageIndex == 1 ? true : false);
+                    mView.getAppList(mAppInfoList, body.getTotal() + "", pageIndex == 1 ? true : false);
                 }
             }
 
             @Override
             public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
 //                String reason = errorWrapper.getReason();
-//                ToastUtil.toastShort("加载数据失败,请稍后再试!");
-                mView.getAppList(null);
+                mView.getAppList(null, "");
             }
         });
 
@@ -88,14 +86,21 @@ public class SearchPresenter implements SearchContract.Presenter {
             public void onResponse(CanCall<ListResult<AppInfo>> call, Response<ListResult<AppInfo>> response) throws Exception {
                 ListResult<AppInfo> body = response.body();
                 List<AppInfo> appInfoList = body.getData();
-                mView.getHotRecomAppList(appInfoList);
-//                ToastUtil.toastShort("加载数据成功!" + body.getMessage());
+                //限制数量最大是8
+                if (appInfoList.size() > 8) {
+                    ArrayList<AppInfo> appInfos = new ArrayList<>();
+                    for (int i = 0; i < 8; i++) {
+                        appInfos.add(appInfoList.get(i));
+                    }
+                    mView.getHotRecomAppList(appInfos);
+                } else {
+                    mView.getHotRecomAppList(appInfoList);
+                }
                 mView.hideLoading();
             }
 
             @Override
             public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
-//                ToastUtil.toastShort("加载数据失败,请稍后再试!");
                 PromptUtils.toast(MyApp.getContext(), "加载数据失败,请稍后再试!");
                 mView.hideLoading();
             }
@@ -107,14 +112,23 @@ public class SearchPresenter implements SearchContract.Presenter {
             public void onResponse(CanCall<ListResult<PopularWord>> call, Response<ListResult<PopularWord>> response) throws Exception {
                 ListResult<PopularWord> body = response.body();
                 List<PopularWord> popularWordList = body.getData();
-                mView.getHotKeyList(popularWordList);
+                //限制数量最大是8
+                if (popularWordList.size() > 8) {
+                    ArrayList<PopularWord> words = new ArrayList<>();
+                    for (int i = 0; i < 8; i++) {
+                        words.add(popularWordList.get(i));
+                    }
+                    mView.getHotKeyList(words);
+                } else {
+                    mView.getHotKeyList(popularWordList);
+                }
                 mView.hideLoading();
             }
 
             @Override
             public void onFailure(CanCall<ListResult<PopularWord>> call, CanErrorWrapper errorWrapper) {
-//                ToastUtil.toastShort("加载数据失败,请稍后再试!");
                 PromptUtils.toast(MyApp.getContext(), "加载数据失败,请稍后再试!");
+                mView.getHotKeyList(null);
                 mView.hideLoading();
             }
         });
