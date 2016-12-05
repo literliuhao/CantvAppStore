@@ -52,8 +52,14 @@ import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
 import com.dataeye.sdk.api.app.channel.DCResourceLocation;
 import com.dataeye.sdk.api.app.channel.DCResourcePair;
+import com.can.appstore.upgrade.service.BuglyUpgradeService;
+import com.can.appstore.upgrade.service.UpgradeService;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.tencent.bugly.Bugly;
+import com.tencent.bugly.beta.Beta;
+import com.tencent.bugly.beta.UpgradeInfo;
+import com.tencent.bugly.beta.upgrade.UpgradeListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -75,6 +81,7 @@ import static com.can.appstore.index.ui.FragmentEnum.INDEX;
  * Created by liuhao on 2016/10/15.
  */
 public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener, View.OnKeyListener, View.OnFocusChangeListener {
+    private static final String TAG = "IndexActivity";
     private List<BaseFragment> mFragmentLists;
     private IndexPagerAdapter mAdapter;
     private ViewPager mViewPager;
@@ -356,6 +363,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         //统计首页资源位曝光量
         mDataEyeUtils = new HomeDataEyeUtils(MyApp.getContext());
         mDataEyeUtils.resourcesPositionExposure(0);
+        //初始化bugly
+        initBugly(true);
     }
 
     private void initUpdateListener() {
@@ -494,6 +503,44 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
         addFocusListener(view, hasFocus, INDEX);
+    }
+
+    /**
+     * Bugly实现自更新
+     *
+     * @param downloadSelf 是否自己下载apk
+     * 自下载：可控制下载、安装
+     * Bugly下载：可控制下载，安装Bugly自行调用
+     */
+    private void initBugly(final boolean downloadSelf) {
+        try {
+            Beta.autoCheckUpgrade = false;
+            Beta.showInterruptedStrategy = false;
+            Beta.upgradeListener = new UpgradeListener() {
+                @Override
+                public void onUpgrade(int ret, UpgradeInfo strategy, boolean isManual, boolean isSilence) {
+                    if (strategy != null) {
+                        Log.d(TAG, "onUpgrade: 更新");
+                        Intent intent;
+                        if (downloadSelf) {
+                            intent = new Intent(IndexActivity.this, UpgradeService.class);
+                        } else {
+                            intent = new Intent(IndexActivity.this, BuglyUpgradeService.class);
+                        }
+                        IndexActivity.this.startService(intent);
+                    } else {
+                        Log.d(TAG, "onUpgrade: 没有更新");
+                    }
+                }
+            };
+            //测试使用key
+            //Bugly.init(getApplicationContext(), "900059606", true);
+            //正式版本发布使用key
+            Bugly.init(getApplicationContext(), "e3c3b1806e", false);
+            Beta.checkUpgrade();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
