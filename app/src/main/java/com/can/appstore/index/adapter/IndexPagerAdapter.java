@@ -65,7 +65,7 @@ public class IndexPagerAdapter extends PagerAdapter implements ViewPager.OnPageC
             mFragmentManager.executePendingTransactions();
         }
 
-        if (fragment.getView().getParent() == null) {
+        if (null == fragment.getView().getParent()) {
             container.addView(fragment.getView()); // 为viewpager增加布局
         }
 

@@ -354,7 +354,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         MessageManager.setCallMsgDataUpdate(new MessageManager.CallMsgDataUpdate() {
             @Override
             public void onUpdate() {
-                Log.i("IndexActivity", "有新的消息数据了");
                 imageRed.setVisibility(View.VISIBLE);
             }
         });
@@ -453,9 +452,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         }
     }
 
-    /**
-     * 使用eventbus
-     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(UpdateApkModel model) {
         updateNum = model.getNumber();

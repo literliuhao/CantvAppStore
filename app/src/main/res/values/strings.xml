@@ -26,6 +26,7 @@
     <string name="index_myapp">我的应用</string>
     <string name="index_app_update">个应用可更新</string>
     <string name="index_data_error">数据格式异常请重启应用商店</string>
+    <string name="index_nofind">未找到相关应用</string>
     <!--首页管理-->
     <string name="index_manager_text1">一键加速</string>
     <string name="index_manager_text2">更新管理</string>
