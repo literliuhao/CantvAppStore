@@ -1,4 +1,4 @@
-package com.can.appstore.upgrade;
+package com.can.appstore.upgrade.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

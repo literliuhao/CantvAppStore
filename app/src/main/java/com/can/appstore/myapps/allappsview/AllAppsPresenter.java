@@ -17,7 +17,7 @@ import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.tvlib.ui.widgets.LoadingDialog;
 import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.ToastUtils;
+import cn.can.tvlib.utils.PromptUtils;
 
 
 /**
@@ -130,13 +130,13 @@ public class AllAppsPresenter implements AllAppsContract.Presenter, AppInstallLi
     @Override
     public void onUninstallSucess(String id) {
         Log.d(TAG, "onUninstallSucess: " + mUninstallApkName);
-        ToastUtils.showMessage(mContext, mUninstallApkName + mContext.getResources().getString(R.string.uninstall_success));
+        PromptUtils.toast(mContext, mUninstallApkName + mContext.getResources().getString(R.string.uninstall_success));
     }
 
     @Override
     public void onUninstallFail(String id) {
         Log.d(TAG, "onUninstallFail: " + mUninstallApkName);
-        ToastUtils.showMessage(mContext, mUninstallApkName + mContext.getResources().getString(R.string.uninstall_fail));
+        PromptUtils.toast(mContext, mUninstallApkName + mContext.getResources().getString(R.string.uninstall_fail));
     }
 
 
