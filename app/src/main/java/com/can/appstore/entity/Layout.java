@@ -34,6 +34,8 @@ public class Layout {
     private String icon;
     @SerializedName("actionData")
     private String actionData;
+    @SerializedName("location")
+    private String location;
 
     public String getId() {
         return id;
@@ -107,6 +109,14 @@ public class Layout {
         this.actionData = actionData;
     }
 
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("Layout{");
@@ -119,6 +129,7 @@ public class Layout {
         sb.append(", y=").append(y);
         sb.append(", icon='").append(icon).append('\'');
         sb.append(", actionData='").append(actionData).append('\'');
+        sb.append(", location='").append(location).append('\'');
         sb.append('}');
         return sb.toString();
     }

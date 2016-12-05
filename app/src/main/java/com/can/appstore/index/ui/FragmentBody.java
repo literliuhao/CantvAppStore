@@ -81,7 +81,7 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
      * @param mNavigation
      * @return
      */
-    private View drawView(final Context context, Navigation mNavigation) {
+    private View drawView(final Context context, final Navigation mNavigation) {
         FrameLayout mainLayout = new FrameLayout(context);
         ViewGroup.LayoutParams mainParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         mainLayout.setLayoutParams(mainParams);
@@ -117,7 +117,7 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
                 public void onClick(View view) {
                     try {
                         //StartActivity
-                        ActionUtils.getInstance().convertAction(context, childBean.getId(), childBean.getAction(), childBean.getActionData());
+                        ActionUtils.getInstance().convertAction(context, mNavigation.getTitle() + "-" + childBean.getLocation(), childBean.getAction(), childBean.getActionData());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

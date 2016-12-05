@@ -8,7 +8,6 @@ import com.can.appstore.MyApp;
 
 import java.io.IOException;
 
-import cn.can.tvlib.utils.NetworkUtils;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -43,10 +42,15 @@ public class RequestParamsInterceptor implements Interceptor {
 
         HttpUrl url = request.url()
                 .newBuilder()
-                .addQueryParameter("channelId", CHANNEL_ID)
-                .addQueryParameter("internalModel", INTERNAL_MODEL)
-                .addQueryParameter("commercialModel", COMMERCIAL_MODEL)
-                .addQueryParameter("mac", NetworkUtils.getMac())
+//                .addQueryParameter("channelId", CHANNEL_ID)
+//                .addQueryParameter("internalModel", INTERNAL_MODEL)
+//                .addQueryParameter("commercialModel", COMMERCIAL_MODEL)
+//                .addQueryParameter("mac", NetworkUtils.getMac())
+//                .addQueryParameter("versionId", "1")
+                .addQueryParameter("channelId", "12")
+                .addQueryParameter("internalModel", "1")
+                .addQueryParameter("commercialModel", "f55")
+                .addQueryParameter("mac", "1")
                 .addQueryParameter("versionId", "1")
                 .build();
         request = request.newBuilder().url(url)
