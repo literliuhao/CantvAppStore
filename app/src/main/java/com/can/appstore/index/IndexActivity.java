@@ -120,12 +120,12 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         initView();
         initFocus();
         getNavigation();
+        messageManager = new MessageManager(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        messageManager = new MessageManager(this);
         mEnter = System.currentTimeMillis();
         DCAgent.resume(this);
         DCPage.onEntry(AppConstants.HOME_PAGE);//统计页面开始

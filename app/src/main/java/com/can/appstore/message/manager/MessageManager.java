@@ -113,7 +113,7 @@ public class MessageManager {
      * 请求服务器消息数据
      */
     public void requestMsg(Context context) {
-        //假数据
+/*        //假数据
         deleteOverdueMsg(System.currentTimeMillis());
         List<MessageInfo> list = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -127,7 +127,7 @@ public class MessageManager {
             msgInfo.setMsgDate("2016-11-28");
             list.add(msgInfo);
         }
-        insert(list);
+        insert(list);*/
 
         if (NetworkUtils.isNetworkConnected(context)) {
             CanCall<Result<MessageContainer>> mMessageContainer = HttpManager.getApiService().getMessages();
