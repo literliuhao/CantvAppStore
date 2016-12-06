@@ -10,17 +10,7 @@ package cn.can.downloadlib;
  * ================================================
  */
 public interface DownloadTaskCountListener {
-    void onPrepare(DownloadTask downloadTask);
-    void onStart(DownloadTask downloadTask);
-    void onDownloading(DownloadTask downloadTask);
-    void onPause(DownloadTask downloadTask);
-    void onCancel(DownloadTask downloadTask);
-    void onCompleted(DownloadTask downloadTask);
-    void onError(DownloadTask downloadTask, int errorCode);
+    void getTaskCount(int count);
 
-    int DOWNLOAD_ERROR_FILE_NOT_FOUND = -1;
-    int DOWNLOAD_ERROR_IO_ERROR = -2;
-    int DOWNLOAD_ERROR_NETWORK_ERROR = -3;
-    int DOWNLOAD_ERROR_UNKONW_ERROR = -4;
 
 }
