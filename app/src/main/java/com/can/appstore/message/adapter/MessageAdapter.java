@@ -1,6 +1,5 @@
 package com.can.appstore.message.adapter;
 
-import android.content.Context;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -29,7 +28,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
     private View.OnFocusChangeListener mFocusListener;
     private OnItemRemoveListener mRemoveListener;
     private View mFocusedDeleteBtn;
-    private final Context context;
     private LayoutInflater mLayoutInflater;
     private final Handler mHandler = new Handler();
     private final Runnable showMsgDelete = new Runnable() {
@@ -69,8 +67,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
         this.mFocusListener = focusListener;
     }
 
-    public MessageAdapter(Context context , List<MessageInfo> msgList) {
-        this.context = context;
+    public MessageAdapter(List<MessageInfo> msgList) {
         this.msgList = msgList;
     }
 

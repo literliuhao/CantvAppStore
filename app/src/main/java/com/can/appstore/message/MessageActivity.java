@@ -109,7 +109,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
 
 
     private void initAdapter() {
-        mAdapter = new MessageAdapter(this , msgList);
+        mAdapter = new MessageAdapter(msgList);
         mAdapter.setFocusListener(this);
         mAdapter.setOnMsgFocusLayoutClickListener(new MessageAdapter.OnMsgFocusLayoutClickListener() {
             @Override
@@ -327,7 +327,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                 if (!messageManager.existUnreadMsg() || msgList == null || msgList.isEmpty() ) {
                     return;
                 }
-                messageManager.updataAllMsgStatus();
+                messageManager.updateAllMsgStatus();
                 changeListStatus();
                 mAdapter.notifyDataSetChanged();
                 break;

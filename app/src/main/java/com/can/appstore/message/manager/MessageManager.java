@@ -49,7 +49,7 @@ public class MessageManager {
      * 删除数据库过期消息数据
      * 参数：从服务器解析拿到的时间戳
      */
-    public  void deleteExceedMsg(long timestamp) {
+    private  void deleteExceedMsg(long timestamp) {
         if (daoManager != null){
             daoManager.deleteExceedMsg(timestamp);
         }
@@ -59,7 +59,7 @@ public class MessageManager {
      * 插入数据
      * 参数：插入的数据集合
      */
-    public  void insert(List<MessageInfo> msgList) {
+    private   void insert(List<MessageInfo> msgList) {
         if (daoManager != null){
             daoManager.insert(msgList);
         }
@@ -90,7 +90,7 @@ public class MessageManager {
         }
     }
 
-    public void updataAllMsgStatus(){
+    public void updateAllMsgStatus(){
         if(daoManager != null){
             daoManager.updateAllMsgStatus();
         }
