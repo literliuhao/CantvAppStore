@@ -87,6 +87,7 @@ public class ImageScaleActivity extends BaseActivity {
 
             @Override
             public void onPageScrollStateChanged(int state) {
+                Log.d(TAG, "onPageScrollStateChanged: state : " + state);
             }
         });
 
@@ -127,5 +128,10 @@ public class ImageScaleActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (mImageUrls != null) {
+            mImageUrls.clear();
+            mImageUrls = null;
+        }
+        mScaleAdapter.release();
     }
 }

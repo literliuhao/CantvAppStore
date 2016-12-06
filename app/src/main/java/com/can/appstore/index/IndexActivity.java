@@ -474,9 +474,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         }
     }
 
-    /**
-     * 使用eventbus
-     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(UpdateApkModel model) {
         updateNum = model.getNumber();

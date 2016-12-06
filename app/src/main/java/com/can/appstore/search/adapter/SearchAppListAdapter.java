@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.Target;
-import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.entity.AppInfo;
@@ -233,11 +232,13 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
      */
     public void setDefaultApplist(List list) {
         isDefault = true;
-        if (mDataList.size() > 0) {
-            mDataList.clear();
+        if (null != list) {
+            if (mDataList.size() > 0) {
+                mDataList.clear();
+            }
+            mDefaultList = list;
+            mDataList.addAll(list);
         }
-        mDefaultList = list;
-        mDataList.addAll(list);
         notifyDataSetChanged();
     }
 

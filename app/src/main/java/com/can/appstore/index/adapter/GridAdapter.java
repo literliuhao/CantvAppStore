@@ -23,6 +23,7 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
     private int[] mColors;
     private IAddFocusListener mFocusListener;
     private View.OnClickListener mClickListener;
+    private View[] mView;
 
     public GridAdapter(Context context) {
         this.mContext = context;
@@ -62,6 +63,14 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
             ImageView imageColor = (ImageView) view.findViewById(R.id.iv_manage_color);
             imageColor.setImageResource(mColors[position]);
 
+//            switch (mNames[position]) {
+//                case R.string.index_manager_text2:
+//                    mUpdateView = view;
+//                    break;
+//                case R.string.index_manager_text8:
+//                    mDownloadView = view;
+//                    break;
+//            }
         } else {
             view = convertView;
         }
@@ -70,8 +79,38 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
         view.setFocusable(true);
         view.setOnFocusChangeListener(this);
         view.setOnClickListener(this);
+        mView[position] = view;
         return view;
     }
+
+    public void refreshUI(int position,int number) {
+        if (null == mView) return;
+        View v = mView[position];
+        ImageView imageSize = (ImageView) v.findViewById(R.id.iv_manage_size);
+        TextView textSize = (TextView) v.findViewById(R.id.tv_manage_text);
+        if (number > 0) {
+            imageSize.setVisibility(View.VISIBLE);
+            textSize.setVisibility(View.VISIBLE);
+            textSize.setText(String.valueOf(number));
+        } else {
+            imageSize.setVisibility(View.GONE);
+            textSize.setVisibility(View.GONE);
+        }
+    }
+
+//    public void refreshDown(int number) {
+//        if (null == mUpdateView) return;
+//        ImageView imageSize = (ImageView) mUpdateView.findViewById(R.id.iv_manage_size);
+//        TextView textSize = (TextView) mUpdateView.findViewById(R.id.tv_manage_text);
+//        if (number > 0) {
+//            imageSize.setVisibility(View.VISIBLE);
+//            textSize.setVisibility(View.VISIBLE);
+//            textSize.setText(String.valueOf(number));
+//        } else {
+//            imageSize.setVisibility(View.GONE);
+//            textSize.setVisibility(View.GONE);
+//        }
+//    }
 
     public void setFocusListener(IAddFocusListener focusListener) {
         this.mFocusListener = focusListener;
@@ -83,6 +122,7 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
 
     public void setNames(int[] names) {
         this.mNames = names;
+        this.mView = new View[mNames.length];
     }
 
     public void setIcons(int[] icons) {

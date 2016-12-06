@@ -1,7 +1,8 @@
 package com.can.appstore.index.ui;
 
+import android.content.ComponentName;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,13 @@ import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.installpkg.InstallManagerActivity;
 import com.can.appstore.uninstallmanager.UninstallManagerActivity;
 import com.can.appstore.update.UpdateManagerActivity;
+import com.can.appstore.update.model.UpdateApkModel;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import cn.can.tvlib.utils.PromptUtils;
 
 /**
  * Created by liuhao on 2016/10/21.
@@ -26,6 +34,8 @@ public class ManagerFragment extends BaseFragment {
     private GridView gridView;
     private GridAdapter gridAdapter;
     private IAddFocusListener mFocusListener;
+    private int UPDATE_INDEX = 1;
+    private int updateNum;
 
     public ManagerFragment(IAddFocusListener focusListener) {
         mFocusListener = focusListener;
@@ -34,8 +44,10 @@ public class ManagerFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.from(inflater.getContext()).inflate(R.layout.index_manage_grid, container, false);
+        EventBus.getDefault().register(ManagerFragment.this);
         gridView = (GridView) view.findViewById(R.id.manage_grid);
         gridView.setFocusable(false);
+        gridView.findViewById(R.id.iv_manage_size);
 //        gridView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
 //        gridView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 //            @Override
@@ -52,11 +64,10 @@ public class ManagerFragment extends BaseFragment {
         gridAdapter.setColors(COLORS);
         gridAdapter.setFocusListener(new IAddFocusListener() {
             @Override
-            public void addFocusListener(View v, boolean hasFocus,FragmentEnum sourceEnum) {
-                mFocusListener.addFocusListener(v, hasFocus,sourceEnum);
+            public void addFocusListener(View v, boolean hasFocus, FragmentEnum sourceEnum) {
+                mFocusListener.addFocusListener(v, hasFocus, sourceEnum);
             }
         });
-
 
         gridAdapter.setClickListener(new View.OnClickListener() {
             @Override
@@ -65,6 +76,7 @@ public class ManagerFragment extends BaseFragment {
                 switch (view.getId()) {
                     //一键加速
                     case 0:
+                        startAc("com.cantv.action.CLEAN_MASTER");
                         break;
                     //更新管理
                     case 1:
@@ -72,12 +84,14 @@ public class ManagerFragment extends BaseFragment {
                         break;
                     //文件管理
                     case 2:
+                        startAc("com.cantv.media", "com.cantv.media.center.activity.HomeActivity");
                         break;
                     //电视助手
                     case 3:
                         break;
                     //网络测速
                     case 4:
+                        startAc("com.os.setting.NETWORK_SPEED_TEST");
                         break;
                     //卸载管理
                     case 5:
@@ -97,9 +111,30 @@ public class ManagerFragment extends BaseFragment {
             }
         });
 
-
         gridView.setAdapter(gridAdapter);
         return view;
+    }
+
+    public void startAc(String action) {
+        Intent intent = new Intent();
+        intent.setAction(action);
+        try {
+            startActivity(intent);
+        } catch (Exception e) {
+            PromptUtils.toast(ManagerFragment.this.getContext(),getResources().getString(R.string.index_nofind));
+            e.printStackTrace();
+        }
+    }
+
+    public void startAc(String packageName, String className) {
+        Intent intent = new Intent();
+        intent.setComponent(new ComponentName(packageName, className));
+        intent.setAction(Intent.ACTION_VIEW);
+        try {
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -108,27 +143,16 @@ public class ManagerFragment extends BaseFragment {
 
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.i("ManagerFragment", "onStart");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.i("ManagerFragment", "onStop");
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.i("ManagerFragment", "onResume");
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventMainThread(UpdateApkModel model) {
+        updateNum = model.getNumber();
+        gridAdapter.refreshUI(UPDATE_INDEX, updateNum);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(ManagerFragment.this);
     }
 
     @Override
@@ -145,10 +169,5 @@ public class ManagerFragment extends BaseFragment {
     public void removeFocus() {
 
     }
-
-//    @Override
-//    public void onItemClick(AdapterView<?> adapterView, View view, int postion, long l) {
-//        Log.i("ManagerFragment", view.getId() + " " + postion);
-//    }
 
 }

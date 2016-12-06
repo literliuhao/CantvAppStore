@@ -97,4 +97,11 @@ public class ImageScaleAdapter extends PagerAdapter {
             mRecycledViews.addLast((ImageView) object);
         }
     }
+
+    public void release() {
+        if (mRecycledViews != null) {
+            mRecycledViews.clear();
+            mRecycledViews = null;
+        }
+    }
 }
