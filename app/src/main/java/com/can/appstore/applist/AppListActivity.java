@@ -20,11 +20,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-<<<<<<< HEAD
 import com.can.appstore.AppConstants;
-=======
->>>>>>> 优化代码逻辑
 import com.can.appstore.R;
 import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.applist.adpter.AppListMenuAdapter;
