@@ -22,7 +22,6 @@ import java.util.List;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PromptUtils;
 import retrofit2.Response;
-import retrofit2.http.HEAD;
 
 /**
  * Created by yibh on 2016/10/12 14:39 .
@@ -70,7 +69,7 @@ public class SearchPresenter implements SearchContract.Presenter {
                     PromptUtils.toast(MyApp.getContext(), "没有更多数据!", Toast.LENGTH_LONG);
                 } else {
                     mAppInfoList.addAll(data);
-                    mView.getAppList(mAppInfoList, body.getTotal(), pageIndex == 1 ? true : false);
+                    mView.getAppList(mAppInfoList, body.getTotal(), pageIndex == 1);
                 }
 
                 if (pageIndex == 1) {
