@@ -34,7 +34,7 @@ public class MessageManager {
     private  CallMsgDataUpdate mCallMsgDataUpdate;
 
     public MessageManager(Context context){
-        this.daoManager = new GreenDaoManager(context);
+        daoManager = GreenDaoManager.getInstance(context);
     }
 
     public interface CallMsgDataUpdate {
@@ -49,9 +49,9 @@ public class MessageManager {
      * 删除数据库过期消息数据
      * 参数：从服务器解析拿到的时间戳
      */
-    private  void deleteExceedMsg(long timestamp) {
+    private  void deleteOverdueMsg(long timestamp) {
         if (daoManager != null){
-            daoManager.deleteExceedMsg(timestamp);
+            daoManager.deleteOverdueMsg(timestamp);
         }
     }
 
@@ -113,6 +113,22 @@ public class MessageManager {
      * 请求服务器消息数据
      */
     public void requestMsg(Context context) {
+        //假数据
+        deleteOverdueMsg(System.currentTimeMillis());
+        List<MessageInfo> list = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            MessageInfo msgInfo = new MessageInfo();
+            msgInfo.setMsgId(System.currentTimeMillis() + i + "");
+            msgInfo.setMsgExpires(System.currentTimeMillis());
+            msgInfo.setMsgTitle("【活动专区】下载有礼");
+            msgInfo.setStatus(true);
+            msgInfo.setAction("action_nothing");
+            msgInfo.setActionData("0");
+            msgInfo.setMsgDate("2016-11-28");
+            list.add(msgInfo);
+        }
+        insert(list);
+
         if (NetworkUtils.isNetworkConnected(context)) {
             CanCall<Result<MessageContainer>> mMessageContainer = HttpManager.getApiService().getMessages();
             mMessageContainer.enqueue(new CanCallback<Result<MessageContainer>>() {
@@ -125,7 +141,7 @@ public class MessageManager {
                         return;
                     }
                     long timestamp = msgContainer.getTimestamp();
-                    deleteExceedMsg(timestamp); //删除过期数据
+                    deleteOverdueMsg(timestamp); //删除过期数据
                     List<Message> list = msgContainer.getMessages();
                     if (list != null && !list.isEmpty()) {
                         List<MessageInfo> msgList = new ArrayList<>();

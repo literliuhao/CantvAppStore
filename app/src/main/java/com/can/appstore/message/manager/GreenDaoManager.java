@@ -18,17 +18,34 @@ public class GreenDaoManager {
 
     private MessageInfoDao msgDao;
     private final String DB_NAME = "AppStore.db";   // 数据库名称
+    private static GreenDaoManager mInstance;
+    private DaoMaster.DevOpenHelper openHelper;
 
-    public GreenDaoManager(Context context) {
-        /*
-        * 初始化数据库
-        * 数据库名称：AppStrore.db
-        * 版本：1（gradle配置）
-        * 表名：MESSAGE_INFO（消息数据存储表，见MessageInfoDao）
-        * */
-        DaoMaster.DevOpenHelper devOpenHelper = new DaoMaster.DevOpenHelper(context, DB_NAME, null);
-        msgDao = new DaoMaster(devOpenHelper.getWritableDatabase()).newSession().getMessageInfoDao();
+//    数据库名称：AppStrore.db
+//    版本：1（gradle配置）
+//    表名：MESSAGE_INFO（消息数据存储表，见MessageInfoDao）
+
+    private GreenDaoManager(Context context) {
+        openHelper = new DaoMaster.DevOpenHelper(context, DB_NAME, null);
+        msgDao = new DaoMaster(openHelper.getWritableDatabase()).newSession().getMessageInfoDao();
     }
+
+    /**
+     * 获取单例引用
+     * @param context
+     * @return
+     */
+    public static GreenDaoManager getInstance(Context context) {
+        if (mInstance == null) {
+            synchronized (GreenDaoManager.class) {
+                if (mInstance == null) {
+                    mInstance = new GreenDaoManager(context.getApplicationContext());
+                }
+            }
+        }
+        return mInstance;
+    }
+
 
     /**
      * 根据msgId更新对应的status
@@ -86,10 +103,15 @@ public class GreenDaoManager {
      *
      * @param timestamp
      */
-    public void deleteExceedMsg(long timestamp) {
-        QueryBuilder qb = msgDao.queryBuilder();
-        qb.where(MessageInfoDao.Properties.MsgExpires.le(timestamp));
-        qb.buildDelete();
+    public void deleteOverdueMsg(final long timestamp) {
+        msgDao.getSession().runInTx(new Runnable() {
+            @Override
+            public void run() {
+                QueryBuilder qb = msgDao.queryBuilder();
+                qb.where(MessageInfoDao.Properties.MsgExpires.le(timestamp));
+                qb.buildDelete();
+            }
+        });
     }
 
     /**
@@ -104,25 +126,9 @@ public class GreenDaoManager {
         });
     }
 
-    /**
-     * 查询数据库数据
-     *
-     * @param mCurrentTime // 当前系统时间
-     */
-    @SuppressWarnings("unchecked")
-    public List<MessageInfo> queryMsg(long mCurrentTime) {
-        QueryBuilder qb = msgDao.queryBuilder();
-        qb.where(MessageInfoDao.Properties.MsgExpires.ge(mCurrentTime));
-        qb.orderDesc(MessageInfoDao.Properties.MsgDate);
-        List<MessageInfo> msgList = qb.list();
-        if (msgList == null || msgList.isEmpty()) {
-            return Collections.EMPTY_LIST;  // 返回一个空集合
-        }
-        return msgList;
-    }
 
     /**
-     * 查询数据库数据（无参数）
+     * 查询数据库数据
      */
     @SuppressWarnings("unchecked")
     public List<MessageInfo> queryMsg() {
