@@ -8,6 +8,7 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyManagementException;
@@ -246,7 +247,7 @@ public class DownloadManager implements AppInstallListener {
      */
     private void init(InputStream in, OkHttpClient okHttpClient) {
         if (TextUtils.isEmpty(mDownloadPath)) {
-            mDownloadPath = mContext.getExternalCacheDir().getAbsolutePath();
+            mDownloadPath = mContext.getCacheDir().getParent()+ File.separator+"download";
         }
 
         mHandlerThread = new HandlerThread("queue");

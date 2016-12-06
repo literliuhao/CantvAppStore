@@ -2,7 +2,7 @@ package com.can.appstore.entity;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Result<T> {
+public class Result<T> implements ResultWrapper<T> {
 
     /**
      * status : 0
@@ -15,6 +15,11 @@ public class Result<T> {
     private String message;
     @SerializedName("data")
     private T data;
+
+    @Override
+    public boolean isSuccessful() {
+        return status == 0;
+    }
 
     public int getStatus() {
         return status;

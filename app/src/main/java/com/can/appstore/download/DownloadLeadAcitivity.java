@@ -2,7 +2,6 @@ package com.can.appstore.download;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -10,12 +9,12 @@ import android.view.View;
 import com.can.appstore.R;
 import com.can.appstore.speciallist.SpecialActivity;
 
-import java.io.File;
 import java.util.Map;
 
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
+import cn.can.tvlib.ui.focus.FocusMoveUtil;
 
 /**
  * ================================================
@@ -31,6 +30,7 @@ public class DownloadLeadAcitivity extends AppCompatActivity {
     private static final String TAG = "DownloadLeadAcitivity";
     private DownloadTaskListener mListener;
     private DownloadManager mDownLoadManager;
+    private FocusMoveUtil mFocusMoveUtils;
     String url1 = "http://ams.ott.cibntv.net/can/20160627/BevaErgeTV_V2_3.2.5_20160615_CANTV.apk";
     String url2 = "https://zndscdn.b0.upaiyun.com/apk/dangbeimarket_3.9.4_1026_znds.apk";
     String url3 = "http://172.16.11.65:8080/download/20161018/F2_Launcher_V532_20161018192912.apk";
@@ -63,8 +63,10 @@ public class DownloadLeadAcitivity extends AppCompatActivity {
     }
 
     private void initTest() {
+        mFocusMoveUtils = new FocusMoveUtil(this, getWindow().getDecorView().findViewById(android.R.id.content),
+                R.mipmap.btn_focus);
         mDownLoadManager = DownloadManager.getInstance(this.getApplicationContext());
-       // mDownLoadManager.resumeAllTasks();
+        mDownLoadManager.resumeAllTasks();
        // mDownLoadManager.setPoolSize(3);
 
         this.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
@@ -112,26 +114,6 @@ public class DownloadLeadAcitivity extends AppCompatActivity {
                 downloadTask18 = new DownloadTask(url18);
                 downloadTask18.setFileName("Test18.apk");
 
-                downloadTask1.setSaveDirPath(Environment.getExternalStorageDirectory()+ File.separator+"candownload");
-                downloadTask2.setSaveDirPath(Environment.getExternalStorageDirectory()+ File.separator+"candownload");
-                downloadTask3.setSaveDirPath(Environment.getExternalStorageDirectory()+ File.separator+"candownload");
-                downloadTask4.setSaveDirPath(Environment.getExternalStorageDirectory()+ File.separator+"candownload");
-                downloadTask5.setSaveDirPath(Environment.getExternalStorageDirectory()+ File.separator+"candownload");
-                downloadTask6.setSaveDirPath(Environment.getExternalStorageDirectory()+ File.separator+"candownload");
-                downloadTask7.setSaveDirPath(Environment.getExternalStorageDirectory()+ File.separator+"candownload");
-                downloadTask8.setSaveDirPath(Environment.getExternalStorageDirectory()+ File.separator+"candownload");
-                downloadTask9.setSaveDirPath(Environment.getExternalStorageDirectory()+ File.separator+"candownload");
-                downloadTask10.setSaveDirPath(Environment.getExternalStorageDirectory()+ File.separator+"candownload");
-                downloadTask11.setSaveDirPath(Environment.getExternalStorageDirectory()+ File.separator+"candownload");
-                downloadTask12.setSaveDirPath(Environment.getExternalStorageDirectory()+ File.separator+"candownload");
-                downloadTask13.setSaveDirPath(Environment.getExternalStorageDirectory()+ File.separator+"candownload");
-                downloadTask14.setSaveDirPath(Environment.getExternalStorageDirectory()+ File.separator+"candownload");
-                downloadTask15.setSaveDirPath(Environment.getExternalStorageDirectory()+ File.separator+"candownload");
-                downloadTask16.setSaveDirPath(Environment.getExternalStorageDirectory()+ File.separator+"candownload");
-                downloadTask17.setSaveDirPath(Environment.getExternalStorageDirectory()+ File.separator+"candownload");
-                downloadTask18.setSaveDirPath(Environment.getExternalStorageDirectory()+ File.separator+"candownload");
-
-
                 mDownLoadManager.addDownloadTask(downloadTask1, mListener);
                 mDownLoadManager.addDownloadTask(downloadTask2, mListener);
                 mDownLoadManager.addDownloadTask(downloadTask3, mListener);
@@ -159,6 +141,31 @@ public class DownloadLeadAcitivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(DownloadLeadAcitivity.this, DownloadActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        this.findViewById(R.id.button5).setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    mFocusMoveUtils.startMoveFocus(v);
+                }
+            }
+        });
+        this.findViewById(R.id.button).setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    mFocusMoveUtils.startMoveFocus(v);
+                }
+            }
+        });
+        this.findViewById(R.id.button7).setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    mFocusMoveUtils.startMoveFocus(v);
+                }
             }
         });
         this.findViewById(R.id.button7).setOnClickListener(new View.OnClickListener() {
@@ -213,6 +220,7 @@ public class DownloadLeadAcitivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mFocusMoveUtils.release();
         Map<String, DownloadTask> taskMap = mDownLoadManager.getCurrentTaskList();
         for (String taskid : taskMap.keySet()) {
             taskMap.get(taskid).removeAllDownloadListener();
