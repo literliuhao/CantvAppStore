@@ -228,7 +228,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         //根据服务器配置文件生成不同样式加入Fragment列表中
         FragmentBody fragment;
         for (int i = 0; i < navigationListResult.getData().size(); i++) {
-            fragment = new FragmentBody(this, navigationListResult.getData().get(i));
+            fragment = FragmentBody.newInstance(this, navigationListResult.getData().get(i));
+            if(i == 0){
+                fragment.markOnKeyListener(false);
+            }
             mFragmentLists.add(fragment);
         }
 
@@ -469,8 +472,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                             intent = new Intent(IndexActivity.this, BuglyUpgradeService.class);
                         }
                         IndexActivity.this.startService(intent);
-                    } else {
-                        Log.d(TAG, "onUpgrade: 没有更新");
                     }
                 }
             };
