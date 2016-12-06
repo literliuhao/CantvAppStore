@@ -23,9 +23,9 @@ public class AppConstants {
             add("com.cantv.market");
         }
     };
-
-    public static final String DATAEYE_APPID = "C79A5CBE3FDFBDA429B11ED6E79FDD19A";
-    public static final String DATAEYE_CHANNELID = "Can_W55";
+    //正式发包的appid : C6D2811D3790106B15A89CE9B5C477B2B
+    public static final String DATAEYE_APPID = "C79A5CBE3FDFBDA429B11ED6E79FDD19A";//测试appid
+    public static final String DATAEYE_CHANNELID = "Can_W55";//需要从canos上获取渠道id , 现在暂时写死
     //页面埋点的事件ID
     public static final String RESOURCES_POSITION = "resources_position"; //资源位
     public static final String HOME_PAGE = "homepage"; //首页

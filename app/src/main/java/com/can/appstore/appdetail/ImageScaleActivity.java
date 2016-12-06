@@ -24,9 +24,11 @@ import cn.can.tvlib.imageloader.ImageLoader;
  */
 
 public class ImageScaleActivity extends BaseActivity {
-    public static final int KEYCODE_EFFECT_INTERVAL_UNLIMIT = 0;
-    private static final int KEYCODE_EFFECT_INTERVAL_NORMAL = 150;
     private static final String TAG = "ImageScaleActivity";
+    private static final int KEYCODE_EFFECT_INTERVAL_UNLIMIT = 0;
+    private static final int KEYCODE_EFFECT_INTERVAL_NORMAL = 150;
+    public static final String CURRENT_INDEX = "currentIndex";
+    public static final String IMAGE_URL = "imageUrl";
     private ViewPager mViewPager;
     private ImageScaleAdapter mScaleAdapter;
     private int mCurSelectPositon;
@@ -47,8 +49,8 @@ public class ImageScaleActivity extends BaseActivity {
 
     public void getData() {
         Intent intent = getIntent();
-        mCurSelectPositon = intent.getIntExtra("currentIndex", 0);
-        mImageUrls = (List<String>) intent.getSerializableExtra("imageUrl");
+        mCurSelectPositon = intent.getIntExtra(CURRENT_INDEX, 0);
+        mImageUrls = (List<String>) intent.getSerializableExtra(IMAGE_URL);
     }
 
     @Override
