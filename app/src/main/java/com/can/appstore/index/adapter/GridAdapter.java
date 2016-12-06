@@ -98,20 +98,6 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
         }
     }
 
-//    public void refreshDown(int number) {
-//        if (null == mUpdateView) return;
-//        ImageView imageSize = (ImageView) mUpdateView.findViewById(R.id.iv_manage_size);
-//        TextView textSize = (TextView) mUpdateView.findViewById(R.id.tv_manage_text);
-//        if (number > 0) {
-//            imageSize.setVisibility(View.VISIBLE);
-//            textSize.setVisibility(View.VISIBLE);
-//            textSize.setText(String.valueOf(number));
-//        } else {
-//            imageSize.setVisibility(View.GONE);
-//            textSize.setVisibility(View.GONE);
-//        }
-//    }
-
     public void setFocusListener(IAddFocusListener focusListener) {
         this.mFocusListener = focusListener;
     }
@@ -149,10 +135,8 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
 
     @Override
     public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
-        if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-            if (keyCode == 21) {
-                mPagerKeyListener.onKeyEvent(view, keyCode, keyEvent);
-            }
+        if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            mPagerKeyListener.onKeyEvent(view, keyCode, keyEvent);
         }
         return false;
     }

@@ -43,9 +43,13 @@ public class HttpManager {
                     @Override
                     protected void cache(byte[] data) throws IOException {
                         Log.i("HttpManager","data " + new String(data));
-                        ListResult<Navigation> listResult = new Gson().fromJson(new String(data), new TypeToken<ListResult<Navigation>>() {}.getType());
-                        if(listResult.getStatus() == 0 && !listResult.getData().isEmpty()){
-                            DataUtils.getInstance(MyApp.getContext()).setCache(new String(data));
+                        try{
+                            ListResult<Navigation> listResult = new Gson().fromJson(new String(data), new TypeToken<ListResult<Navigation>>() {}.getType());
+                            if(listResult.getStatus() == 0 && !listResult.getData().isEmpty()){
+                                DataUtils.getInstance(MyApp.getContext()).setCache(new String(data));
+                            }
+                        }catch (Exception e){
+                            e.printStackTrace();
                         }
                     }
                 })

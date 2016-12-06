@@ -243,10 +243,8 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
     @Override
     public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
         Log.i("FragmentBody", "keyCode " + keyCode);
-        if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-            if (keyCode == 21) {
-                mPagerKeyListener.onKeyEvent(view, keyCode, keyEvent);
-            }
+        if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            mPagerKeyListener.onKeyEvent(view, keyCode, keyEvent);
         }
         return false;
     }

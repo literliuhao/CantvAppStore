@@ -3,6 +3,7 @@ package com.can.appstore.index.ui;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,13 +25,14 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import cn.can.downloadlib.DownloadTaskCountListener;
 import cn.can.tvlib.utils.PromptUtils;
 
 /**
  * Created by liuhao on 2016/10/21.
  */
 
-public class ManagerFragment extends BaseFragment {
+public class ManagerFragment extends BaseFragment implements DownloadTaskCountListener {
     private final int[] NAMES = {R.string.index_manager_text1, R.string.index_manager_text2, R.string.index_manager_text3, R.string.index_manager_text4, R.string.index_manager_text5, R.string.index_manager_text6, R.string.index_manager_text7, R.string.index_manager_text8};
     private final int[] ICONS = {R.drawable.index_manager_icon1, R.drawable.index_manager_icon2, R.drawable.index_manager_icon3, R.drawable.index_manager_icon4, R.drawable.index_manager_icon5, R.drawable.index_manager_icon6, R.drawable.index_manager_icon7, R.drawable.index_manager_icon8};
     private final int[] COLORS = {R.drawable.index_item1_shape, R.drawable.index_item2_shape, R.drawable.index_item3_shape, R.drawable.index_item4_shape, R.drawable.index_item5_shape, R.drawable.index_item6_shape, R.drawable.index_item7_shape, R.drawable.index_item8_shape};
@@ -83,7 +85,6 @@ public class ManagerFragment extends BaseFragment {
         gridAdapter.setClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Log.i("ManagerFragment", view.getId() + "");
                 switch (view.getId()) {
                     //一键加速
                     case 0:
@@ -181,4 +182,8 @@ public class ManagerFragment extends BaseFragment {
 
     }
 
+    @Override
+    public void getTaskCount(int count) {
+        Log.i("ManagerFragment", "count " + count);
+    }
 }

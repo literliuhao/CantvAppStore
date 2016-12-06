@@ -44,6 +44,7 @@ import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.update.AutoUpdate;
 import com.can.appstore.update.model.UpdateApkModel;
+import com.can.appstore.widgets.CanDialog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -96,6 +97,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private int updateNum;
     private Context mContext;
     private Boolean isIntercept = false;
+    private CanDialog canDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,7 +166,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
                 @Override
                 public void onFailure(CanCall<ListResult<Navigation>> call, CanErrorWrapper errorWrapper) {
-                    Log.i("DataUtils", errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
+                    Log.i("IndexActivity", errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
                     ProxyCache(null);
                 }
             });
@@ -439,16 +441,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         }
     }
 
-//    @Override
-//    public boolean onKeyUp(int keyCode, KeyEvent event) {
-//        Log.i("IndexActivity", "scrollStatus " + scrollStatus);
-//        if (scrollStatus == SCROLLED) {
-//            return super.onKeyUp(keyCode, event);
-//        } else {
-//            return true;
-//        }
-//    }
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -482,6 +474,34 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         super.onDestroy();
         EventBus.getDefault().unregister(mContext);
     }
+
+    @Override
+    public void onBackPressed() {
+        canDialog = new CanDialog(IndexActivity.this);
+        canDialog.setTitle(getResources().getString(R.string.index_exit_titile));
+        canDialog.setRlCOntent(false);
+        canDialog.setPositiveButton(getResources().getString(R.string.index_exit)).setNegativeButton(getResources().getString(R.string.index_cancel)).setOnCanBtnClickListener(new CanDialog.OnClickListener() {
+            @Override
+            public void onClickPositive() {
+                canDialog.dismiss();
+                IndexActivity.this.finish();
+            }
+            @Override
+            public void onClickNegative() {
+                canDialog.dismiss();
+            }
+        });
+        canDialog.show();
+    }
+
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        Log.i("IndexActivity", "keyCode " + keyCode);
+//        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
 
     @Override
     public void onKeyEvent(View view, int i, KeyEvent keyEvent) {
