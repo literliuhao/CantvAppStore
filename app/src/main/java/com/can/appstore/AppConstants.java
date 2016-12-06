@@ -13,8 +13,19 @@ import java.util.List;
  * ================================================
  */
 public class AppConstants {
+
     public static final String BASE_URL = BuildConfig.DEBUG ? "http://172.16.11.32:8011/api/" : "http://appstore.can.cibntv.net/api/";
-    public final static List<String> PRE_APPS = new ArrayList<String>(){
+    public static final String AMS_BASE_URL = "http://ams.can.cibntv.net/api/ad/addadreport";
+    public static final String AD_REPORT_URL_PATH = "/api/ad/addadreport";
+    public static final String AD_COMMON_GET_URL_PATH = "/api/ad/getad";
+    public static final String TMS_GET_MAC_URL = "http://tms.can.cibntv.net/api/sync/getInfoByMac";
+
+
+    public static final String SYSTEM_PROVIDER_KEY_CHANNELID = "setting_channelid_key";
+    public static final String SYSTEM_PROVIDER_KEY_INTERNAL_MODEL = "setting_hardware_internal_model";
+    public static final String SYSTEM_PROVIDER_KEY_MODEL = "setting_model";
+
+    public final static List<String> PRE_APPS = new ArrayList<String>() {
         {
             add("com.cantv.wechatphoto");
             add("com.cantv.media");

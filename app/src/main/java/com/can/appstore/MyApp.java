@@ -16,6 +16,7 @@ import com.dataeye.sdk.api.app.DCAgent;
  */
 public class MyApp extends Application {
     private static MyApp INSTANCE;
+
     @Override
     public void onCreate() {
         super.onCreate();

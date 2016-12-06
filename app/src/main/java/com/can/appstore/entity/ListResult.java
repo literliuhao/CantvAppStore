@@ -6,7 +6,7 @@ import java.util.List;
 
 import cn.can.tvlib.utils.CollectionUtil;
 
-public class ListResult<T> {
+public class ListResult<T> implements ResultWrapper<List<T>> {
 
     /**
      * status : 0
@@ -23,6 +23,11 @@ public class ListResult<T> {
     private int total;
     @SerializedName("data")
     private List<T> data;
+
+    @Override
+    public boolean isSuccessful() {
+        return status == 0;
+    }
 
     public int getStatus() {
         return status;

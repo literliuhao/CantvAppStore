@@ -1,9 +1,10 @@
 package com.can.appstore.http;
 
-import com.can.appstore.entity.ListResult;
-import com.can.appstore.entity.Result;
+import com.can.appstore.entity.ResultWrapper;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
+
+import java.net.UnknownHostException;
 
 public class CanErrorWrapper {
     private static boolean DEBUG_MODE = false;
@@ -32,6 +33,8 @@ public class CanErrorWrapper {
             if (throwable instanceof JsonSyntaxException
                     || throwable instanceof JsonParseException) {
                 reason = "Gson解析错误";
+            } else if (throwable instanceof UnknownHostException) {
+                reason = "域名解析错误";
             } else {
                 reason = "未知错误";
             }
@@ -61,22 +64,14 @@ public class CanErrorWrapper {
 
     static CanErrorWrapper errorCheck(Object o) {
         if (o != null) {
-            if (o instanceof Result) {
-                Result result = (Result) o;
-                return checkStatus(result.getStatus(), result.getMessage());
-            } else if (o instanceof ListResult) {
-                ListResult listResult = (ListResult) o;
-                return checkStatus(listResult.getStatus(), listResult.getMessage());
+            if (o instanceof ResultWrapper) {
+                ResultWrapper result = (ResultWrapper) o;
+                if (!result.isSuccessful()) {
+                    CanErrorWrapper canErrorWrapper = new CanErrorWrapper();
+                    canErrorWrapper.reason = result.getMessage();
+                    return canErrorWrapper;
+                }
             }
-        }
-        return null;
-    }
-
-    static CanErrorWrapper checkStatus(int status, String message) {
-        if (status != 0) {
-            CanErrorWrapper canErrorWrapper = new CanErrorWrapper();
-            canErrorWrapper.reason = message;
-            return canErrorWrapper;
         }
         return null;
     }

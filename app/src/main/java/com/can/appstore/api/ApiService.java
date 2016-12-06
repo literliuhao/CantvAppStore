@@ -102,12 +102,6 @@ public interface ApiService {
     CanCall<ListResult<AppInfo>> checkUpdate(@Body List<AppInfo> apps);
 
     /**
-     * 自升级检查
-     */
-    @GET("application/checkUpdateSelf")
-    CanCall<Result<AppInfo>> checkUpdateSelf();
-
-    /**
      * 首页导航
      */
     @GET("homepage/homepage")
@@ -118,11 +112,4 @@ public interface ApiService {
      */
     @GET("application/getmessage")
     CanCall<Result<MessageContainer>> getMessages();
-
-    /**
-     * 获取机型信息
-     * @return
-     */
-    @GET("http://tms.can.cibntv.net/api/sync/getInfoByMac")
-    CanCall<TvInfoHolderWrapper> getTvInfo();
 }
