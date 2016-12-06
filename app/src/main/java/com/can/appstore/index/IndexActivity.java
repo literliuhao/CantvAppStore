@@ -20,7 +20,6 @@ import android.widget.TextView;
 import com.can.appstore.AppConstants;
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
-import com.can.appstore.entity.Layout;
 import com.can.appstore.entity.ListResult;
 import com.can.appstore.entity.Navigation;
 import com.can.appstore.homerank.HomeRankFragment;
@@ -47,13 +46,11 @@ import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.update.AutoUpdate;
 import com.can.appstore.update.model.UpdateApkModel;
+import com.can.appstore.upgrade.service.BuglyUpgradeService;
+import com.can.appstore.upgrade.service.UpgradeService;
 import com.dataeye.sdk.api.app.DCAgent;
 import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
-import com.dataeye.sdk.api.app.channel.DCResourceLocation;
-import com.dataeye.sdk.api.app.channel.DCResourcePair;
-import com.can.appstore.upgrade.service.BuglyUpgradeService;
-import com.can.appstore.upgrade.service.UpgradeService;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tencent.bugly.Bugly;
@@ -109,12 +106,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private CanCall<ListResult<Navigation>> mNavigationCall;
     private int updateNum;
     private Context mContext;
-<<<<<<< HEAD
     private MessageManager messageManager;
-=======
     private long mEnter = 0;
     private HomeDataEyeUtils mDataEyeUtils;
->>>>>>> 67890fe0ebb93b61a71d55ee2067c59e02854ce6
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,14 +122,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     @Override
     protected void onResume() {
         super.onResume();
-<<<<<<< HEAD
         messageManager = new MessageManager(this);
-=======
         mEnter = System.currentTimeMillis();
         DCAgent.resume(this);
         DCPage.onEntry(AppConstants.HOME_PAGE);//统计页面开始
         DCEvent.onEvent(AppConstants.HOME_PAGE);
->>>>>>> 67890fe0ebb93b61a71d55ee2067c59e02854ce6
         refreshMsg();
     }
 
