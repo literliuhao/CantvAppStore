@@ -16,9 +16,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.widgets.TextProgressBar;
+import com.dataeye.sdk.api.app.DCEvent;
+import com.dataeye.sdk.api.app.channel.DCPage;
 
 import cn.can.tvlib.imageloader.ImageLoader;
 
@@ -63,6 +66,20 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
         initUI();
         mActivePresenter = new ActivePresenter(this, ActiveActivity.this);
         mActivePresenter.requestActiveData(mActiveId);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        DCPage.onEntry(AppConstants.ACTIVITY_DETAIL);
+        DCEvent.onEvent(AppConstants.ACTIVITY_DETAIL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DCPage.onExit(AppConstants.ACTIVITY_DETAIL);
+        DCEvent.onEventDuration(AppConstants.ACTIVITY_DETAIL, mDuration);
     }
 
     private void initUI() {

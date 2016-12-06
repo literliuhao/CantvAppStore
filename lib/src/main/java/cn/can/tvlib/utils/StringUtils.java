@@ -378,11 +378,11 @@ public class StringUtils {
 		if (size < 1024 && size > 0) {
 			fileSizeString = df.format((double) size) + "B";
 		} else if (size < 1024 * 1024) {
-			fileSizeString = df.format((double) size / 1024) + "K";
+			fileSizeString = df.format((double) size / 1024) + "KB";
 		} else if (size < 1024 * 1024 * 1024) {
-			fileSizeString = df.format((double) size / (1024 * 1024)) + "M";
+			fileSizeString = df.format((double) size / (1024 * 1024)) + "MB";
 		} else {
-			fileSizeString = df.format((double) size / (1024 * 1024 * 1024)) + "G";
+			fileSizeString = df.format((double) size / (1024 * 1024 * 1024)) + "GB";
 		}
 		return fileSizeString;
 	}

@@ -1,6 +1,5 @@
 package com.can.appstore.message.adapter;
 
-import android.content.Context;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -14,7 +13,6 @@ import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.message.db.entity.MessageInfo;
-import com.can.appstore.message.manager.MessageManager;
 
 import java.util.List;
 
@@ -30,7 +28,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
     private View.OnFocusChangeListener mFocusListener;
     private OnItemRemoveListener mRemoveListener;
     private View mFocusedDeleteBtn;
-    private final Context context;
     private LayoutInflater mLayoutInflater;
     private final Handler mHandler = new Handler();
     private final Runnable showMsgDelete = new Runnable() {
@@ -43,7 +40,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
     };
 
     public interface OnItemRemoveListener {
-        void onRemoveItem(int position);
+        void onRemoveItem(int position , String msgId);
     }
 
     public void setOnItemRemoveListener(OnItemRemoveListener removeListener) {
@@ -70,8 +67,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
         this.mFocusListener = focusListener;
     }
 
-    public MessageAdapter(Context context , List<MessageInfo> msgList) {
-        this.context = context;
+    public MessageAdapter(List<MessageInfo> msgList) {
         this.msgList = msgList;
     }
 
@@ -138,11 +134,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.item_iv_btn_delete:
-                    MessageManager.deleteMsg(context , msgList.get(getLayoutPosition()).getMsgId());
+                    String msgId = msgList.get(getLayoutPosition()).getMsgId();
                     msgList.remove(getLayoutPosition());
                     notifyItemRemoved(getLayoutPosition());
                     if (mRemoveListener != null) {
-                        mRemoveListener.onRemoveItem(getLayoutPosition());
+                        mRemoveListener.onRemoveItem(getLayoutPosition() , msgId);
                     }
                     break;
                 case R.id.item_ll_focus_msg:

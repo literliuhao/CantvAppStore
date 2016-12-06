@@ -3,11 +3,14 @@ package com.can.appstore.index.model;
 import android.content.Context;
 
 import com.can.appstore.ActionConstants;
+import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.active.ActiveActivity;
 import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.applist.AppListActivity;
 import com.can.appstore.specialdetail.SpecialDetailActivity;
+import com.dataeye.sdk.api.app.channel.DCResourceLocation;
+import com.dataeye.sdk.api.app.channel.DCResourcePair;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -71,10 +74,12 @@ public class ActionUtils {
      * @param actionData
      */
     public void convertAction(Context mContext, String id, String actionStr, String actionData) {
+        DCResourcePair pair = DCResourcePair.newBuilder().setResourceLocationId(id).build();
+        DCResourceLocation.onClick(pair);
         switch (actionStr) {
             //应用详情
             case ActionConstants.ACTION_APP_DETAIL:
-                AppDetailActivity.actionStart(mContext, actionData);
+                AppDetailActivity.actionStart(mContext, actionData, AppConstants.RESOURCES_POSITION, id);
                 break;
             //专题详情
             case ActionConstants.ACTION_TOPIC_DETAIL:

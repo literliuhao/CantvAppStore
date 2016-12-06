@@ -24,7 +24,7 @@ public class GreenDaoManager {
         * 初始化数据库
         * 数据库名称：AppStrore.db
         * 版本：1（gradle配置）
-        * 表名：MESSAGE_INFO（消息数据存储表）
+        * 表名：MESSAGE_INFO（消息数据存储表，见MessageInfoDao）
         * */
         DaoMaster.DevOpenHelper devOpenHelper = new DaoMaster.DevOpenHelper(context, DB_NAME, null);
         msgDao = new DaoMaster(devOpenHelper.getWritableDatabase()).newSession().getMessageInfoDao();

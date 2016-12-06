@@ -34,9 +34,8 @@ public class AppListPresenter implements AppListContract.Presenter {
     private static final String TAG = "AppListPresenter";
     //常量
     public static final int PAGE_SIZE = 18;   //每次加载请求的总App数
-    public static final int REFRESH_APP = 0;  //整个刷新adpter
     public static final int REQUEST_DELAY = 500;  //请求延迟时间
-    public static final int HIDE_LOADING_DELAY = 200;//加载更多失败延时小时loading
+    public static final int HIDE_LOADING_DELAY = 200;//加载更多失败延时消失loading
     //handler msg.what  request
     public static final int REQUEST_DATA = 1;
     public static final int REFRESH_APP_LIST = 2;
@@ -101,7 +100,7 @@ public class AppListPresenter implements AppListContract.Presenter {
                         }
                         break;
                     case REFRESH_APP_LIST:
-                        mView.refreshAppList(mAppInfos, REFRESH_APP);
+                        mView.refreshAppList(mAppInfos);
                         break;
                     case HIDE_LOADING:
                         mView.hideLoadingDialog();
@@ -156,19 +155,13 @@ public class AppListPresenter implements AppListContract.Presenter {
                 List<AppInfo> appInfos = data.getData();
                 mTopics.addAll(topics);
                 mMenuDataPosition = findMenuFocusPosition();//第一次加载完数据，找到需要获取焦点的位置
-//                for (int i = 0; i < 6; i++) {
-//                    Topic topic = new Topic();
-//                    topic.setName(i + "");
-//                    mTopics.add(topic);
-//                }
                 mAppInfos.addAll(appInfos);
                 if (mPageType == AppListActivity.PAGE_TYPE_APP_LIST) {
                     mView.showSearchView();
                 }
                 mView.refreshTypeName(typeName);
                 mView.refreshMenuList(mTopics, mMenuDataPosition);
-                // TODO: 2016/11/11 重载
-                mView.refreshAppList(mAppInfos, REFRESH_APP);
+                mView.refreshAppList(mAppInfos);
                 //计算总行数
                 mTotalLine = calculateRowNumber(mTotalSize);
                 refreshLineInformation();
@@ -205,12 +198,11 @@ public class AppListPresenter implements AppListContract.Presenter {
     /**
      * menu 位置改变请求数据
      */
-    @Override
     public void loadAppListData(final String topicId) {
         mPage = 1;
         mCurrentLine = 1;
         mAppInfos.clear();
-        mView.refreshAppList(mAppInfos, REFRESH_APP);
+        mView.refreshAppList(mAppInfos);
         if (!NetworkUtils.isNetworkConnected(mContext)) {
             mView.showToast(mContext.getResources().getString(R.string.no_network));
             isLoadFail = true;
@@ -342,7 +334,7 @@ public class AppListPresenter implements AppListContract.Presenter {
     }
 
     /**
-     * 根据topic找到焦点需要定在的位置
+     * 根据topic找到焦点需要定位的位置
      *
      * @return 焦点位置
      */
@@ -435,7 +427,6 @@ public class AppListPresenter implements AppListContract.Presenter {
         } else {
             delayTime = AppListActivity.MIN_APPLIST_REFRES_TIME;
         }
-        Log.d(TAG, "calculateDelayTime: " + delayTime);
         return delayTime;
     }
 

@@ -19,11 +19,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.search.adapter.HotRecommendAdapter;
 import com.can.appstore.search.adapter.KeyboardAdapter;
 import com.can.appstore.search.adapter.SearchAppListAdapter;
+import com.dataeye.sdk.api.app.DCEvent;
+import com.dataeye.sdk.api.app.channel.DCPage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,6 +90,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
     private View mSerch_icon;
     private int mCurrLineNumber;
     private int mTotalLineCount;
+    private int mSearchTotal;
 
     public static void startAc(Context context) {
         Intent intent = new Intent(context, SearchActivity.class);
@@ -187,8 +191,10 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
 
         //搜索内容
         mAppListAdapter = new SearchAppListAdapter(mSearchList, this);
+        mSearAppList_recycle.setAdapter(mAppListAdapter);
         //"热门推荐"数据
         mHotRecommendAdapter = new HotRecommendAdapter(mHotRomList, this);
+        mBottom_re_recycle.setAdapter(mHotRecommendAdapter);
 
         mContent_del_view.setOnClickListener(this);
         mContent_cl_view.setOnClickListener(this);
@@ -275,7 +281,8 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
      * @param list
      */
     @Override
-    public void getAppList(List list, boolean... isFirstSearch) {
+    public void getAppList(List list, int total, boolean... isFirstSearch) {
+        mSearchTotal = total;
         mleft_top.setText(R.string.search_left_top_prompt2);
         if (null != list && list.size() > 0) {
             showGoneView(TAG_S_TOP_APPLIST_G_BOTTOM);
@@ -303,12 +310,12 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
     @Override
     public void getHotRecomAppList(List list) {
         mHotRecommendAdapter.setDataList(list);
-        mBottom_re_recycle.setAdapter(mHotRecommendAdapter);
         mHotRecommendAdapter.setMyOnFocusChangeListener(mScaleFocusChangeListener);
         showGoneView(TAG_SHOW_TOP_BOTTOM);
         if (!setRightNextFocus) {
             setRNextFocus();
         }
+        mSearchPresenter.resourcesPositionExposure();
     }
 
     /**
@@ -320,7 +327,6 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
     public void getHotKeyList(List list) {
         //"大家都在搜"数据
         mAppListAdapter.setDefaultApplist(list);
-        mSearAppList_recycle.setAdapter(mAppListAdapter);
         mAppListAdapter.setOnInitialsListener(new SearchAppListAdapter.OnInitialsListener() {
             @Override
             public void onInitials(String con) {
@@ -341,13 +347,13 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                         mright_top.setVisibility(View.VISIBLE);
                         //行数
                         mCurrLineNumber = position / SEARCH_APP_SPANCOUNT + 1;
-                        int totalItemCount = mSearAppList_recycle.getLayoutManager().getItemCount();
+//                        int totalItemCount = mSearAppList_recycle.getLayoutManager().getItemCount();
                         //计算总行数
-                        mTotalLineCount = totalItemCount / SEARCH_APP_SPANCOUNT + (totalItemCount % SEARCH_APP_SPANCOUNT > 0 ? 1 : 0);
+                        mTotalLineCount = mSearchTotal / SEARCH_APP_SPANCOUNT + (mSearchTotal % SEARCH_APP_SPANCOUNT > 0 ? 1 : 0);
                         //列数
 //                        int colNumber = (position + 1) % SEARCH_APP_SPANCOUNT == 0 ? SEARCH_APP_SPANCOUNT : (position + 1) % SEARCH_APP_SPANCOUNT;
 //                        mright_top.setText(colNumber + "/" + lineNumber + "行");
-                        mright_top.setText(mCurrLineNumber + "/" + mTotalLineCount + "行");
+                        mright_top.setText(mCurrLineNumber + "/" + mSearchTotal + "行");
                     }
                     mFocusedListChild = view;
                     view.postDelayed(myFocusRunnable, 50);
@@ -387,6 +393,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         } else {
             mSearchPresenter.getDefaultList();
         }
+        mSearchPresenter.resourcesPositionExposure();
     }
 
     /**
@@ -605,6 +612,20 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                 setDefaultNextFocus();
             }
         }, 3000);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        DCPage.onEntry(AppConstants.RESEARCH_PAGE);
+        DCEvent.onEvent(AppConstants.RESEARCH_PAGE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DCPage.onExit(AppConstants.RESEARCH_PAGE);
+        DCEvent.onEventDuration(AppConstants.RESEARCH_PAGE, mDuration);
     }
 
     @Override

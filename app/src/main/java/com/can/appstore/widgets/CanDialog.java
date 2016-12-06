@@ -188,6 +188,7 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
         super.dismiss();
         if (mFocusMoveUtil != null) {
             mFocusMoveUtil.release();
+            mFocusMoveUtil = null;
         }
     }
 }
