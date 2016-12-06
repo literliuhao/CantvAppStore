@@ -480,8 +480,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
      */
     public void enterImageScaleActivity(int currentIndex) {
         Intent intent = new Intent(mContext, ImageScaleActivity.class);
-        intent.putExtra("imageUrl", (Serializable) mAppInfo.getThumbs());
-        intent.putExtra("currentIndex", currentIndex);
+        intent.putExtra(ImageScaleActivity.IMAGE_URL, (Serializable) mAppInfo.getThumbs());
+        intent.putExtra(ImageScaleActivity.CURRENT_INDEX, currentIndex);
         mContext.startActivity(intent);
     }
 
