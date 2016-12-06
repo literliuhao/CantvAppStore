@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.base.BaseActivity;
@@ -20,6 +21,8 @@ import com.can.appstore.http.CanCall;
 import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
+import com.dataeye.sdk.api.app.DCEvent;
+import com.dataeye.sdk.api.app.channel.DCPage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +78,20 @@ public class SpecialDetailActivity extends BaseActivity {
         mFocusMoveUtil = new FocusMoveUtil(SpecialDetailActivity.this, getWindow().getDecorView(), FOCUS_IMAGE);
 
         requestData();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        DCPage.onEntry(AppConstants.TOPIC_DETAIL);
+        DCEvent.onEvent(AppConstants.TOPIC_DETAIL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DCPage.onExit(AppConstants.TOPIC_DETAIL);
+        DCEvent.onEventDuration(AppConstants.TOPIC_DETAIL, mDuration);
     }
 
     private void getTopicId() {

@@ -12,11 +12,14 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.AppDetailContract;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.uninstallmanager.adapter.UninstallManagerAdapter;
+import com.dataeye.sdk.api.app.DCEvent;
+import com.dataeye.sdk.api.app.channel.DCPage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +91,15 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     protected void onResume() {
         Log.d(TAG, "===onResume===");
         super.onResume();
+        DCPage.onEntry(AppConstants.UNINSTALL_MANAGE);
+        DCEvent.onEvent(AppConstants.UNINSTALL_MANAGE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DCPage.onExit(AppConstants.UNINSTALL_MANAGE);
+        DCEvent.onEventDuration(AppConstants.UNINSTALL_MANAGE, mDuration);
     }
 
     private void initView() {

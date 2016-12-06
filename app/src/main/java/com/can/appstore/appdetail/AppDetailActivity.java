@@ -24,12 +24,15 @@ import android.widget.ViewFlipper;
 
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.Target;
+import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.adapter.IntroducGridAdapter;
 import com.can.appstore.appdetail.adapter.RecommedGridAdapter;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.entity.AppInfo;
+import com.dataeye.sdk.api.app.DCEvent;
+import com.dataeye.sdk.api.app.channel.DCPage;
 
 import java.util.List;
 
@@ -56,6 +59,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     private static final int MESSAGE_TYPE_DOWNLAOD = 2;
     private static final int MESSAGE_TYPE_UPDATE = 3;
     private static final int RECOMMEND_LINE_COUNT = 4;
+    private static final int FOCUS_DELAYE = 500;
     private View mFocusedListChild;
     private AppDetailActivity.ListFocusMoveRunnable mListFocusMoveRunnable;
     private FocusMoveUtil mFocusMoveUtil;
@@ -105,6 +109,15 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     protected void onResume() {
         mAppDetailPresenter.addBroadcastReceiverListener();
         super.onResume();
+        DCPage.onEntry(AppConstants.APP_DETAIL);
+        DCEvent.onEvent(AppConstants.APP_DETAIL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DCPage.onExit(AppConstants.APP_DETAIL);
+        DCEvent.onEventDuration(AppConstants.APP_DETAIL, mDuration);
     }
 
     public void initFocusUtil() {
@@ -275,7 +288,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                     return true;
                 } else if (mLayoutIntroduceText.isFocused()) {
                     startMoveAnmi(TO_MOVE_RIGHT);
-                    recommendGridPositionRequestFocus(500, 0);
+                    recommendGridPositionRequestFocus(FOCUS_DELAYE, 0);
                     mScaleUtil.scaleToNormal();
                     return true;
                 }
@@ -316,6 +329,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
             mViewFlipper.setInAnimation(AppDetailActivity.this, R.anim.push_right_in);
             mViewFlipper.setOutAnimation(AppDetailActivity.this, R.anim.push_left_out);
             mViewFlipper.showNext();
+            mAppDetailPresenter.resourcesPositionExposure();
         } else if (moveDirection == TO_MOVE_LEFT) {
             mViewFlipper.setInAnimation(AppDetailActivity.this, R.anim.push_left_in);
             mViewFlipper.setOutAnimation(AppDetailActivity.this, R.anim.push_right_out);
@@ -519,7 +533,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
 
     @Override
     public void loadAppInfoOnSuccess(AppInfo appInfo) {
-        mFocusMoveUtil.hideFocusForShowDelay(500);
+        mFocusMoveUtil.hideFocusForShowDelay(FOCUS_DELAYE);
         requestFocus(mButtonDownload);
         mAppinfo = appInfo;
         setData();
@@ -577,7 +591,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && event.getAction() == KeyEvent.ACTION_DOWN) {
                     if (position == mAppinfo.getThumbs().size() - 1) {
                         startMoveAnmi(TO_MOVE_RIGHT);
-                        recommendGridPositionRequestFocus(500, 0);
+                        recommendGridPositionRequestFocus(FOCUS_DELAYE, 0);
                         return true;
                     }
                 } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -661,7 +675,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                     if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && event.getAction() == KeyEvent.ACTION_DOWN) {
                         if (position % RECOMMEND_LINE_COUNT == 0) {
                             startMoveAnmi(TO_MOVE_LEFT);
-                            introduceGridRequestFocus(500, mAppinfo.getThumbs().size() - 1);
+                            introduceGridRequestFocus(FOCUS_DELAYE, mAppinfo.getThumbs().size() - 1);
                             mScaleUtil.scaleToNormal(v);
                             return true;
                         }
@@ -687,6 +701,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                     mLayoutAppDetail.setVisibility(View.INVISIBLE);
                     mAppDetailPresenter.mAppId = appId;
                     mAppDetailPresenter.startLoad();
+                    mAppDetailPresenter.statisticsDownloadAndOnclick(position);
                 }
             }
         });
@@ -763,20 +778,38 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         }
     }
 
-    /**
-     * 打开应用详情页面
-     */
-    public static void actionStart(Context context, String appID, String topicID) {
+    public static void actionStart(Context context, String appID, String topicID, String fromPage, String value) {
         Intent intent = new Intent(context, AppDetailActivity.class);
         intent.putExtra(AppDetailPresenter.ARGUMENT_APPID, appID);
         intent.putExtra(AppDetailPresenter.ARGUMENT_TOPICID, topicID);
+        intent.putExtra(AppDetailPresenter.ARGUMENT_FROMPAGE, fromPage);
+        intent.putExtra(AppDetailPresenter.ARGUMENT_FROMPAGE_SEND_VALUE, value);
         context.startActivity(intent);
     }
 
     /**
      * 打开应用详情页面
+     *
+     * @param context
+     * @param appID   应用id
      */
     public static void actionStart(Context context, String appID) {
-        actionStart(context, appID, null);
+        actionStart(context, appID, null, "", "");
+    }
+
+    public static void actionStart(Context context, String appID, String topicID) {
+        actionStart(context, appID, topicID, "", "");
+    }
+
+    /**
+     * 搜索页面和首页资源位打开应用详情页面
+     *
+     * @param context
+     * @param appID
+     * @param fromPage 从哪个页面进入详情
+     * @param value    详情页需要传keyWord    资源位进来需要传资源位id
+     */
+    public static void actionStart(Context context, String appID, String fromPage, String value) {
+        actionStart(context, appID, null, fromPage, value);
     }
 }

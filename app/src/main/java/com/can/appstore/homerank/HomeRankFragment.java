@@ -13,12 +13,15 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.applist.AppListActivity;
 import com.can.appstore.entity.Ranking;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.index.ui.FragmentEnum;
+import com.dataeye.sdk.api.app.DCEvent;
+import com.dataeye.sdk.api.app.channel.DCPage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,28 +42,29 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
     private LinearLayout mLinearLayout;
     private IAddFocusListener mFocusListener;
     private View mNoNetWorkView;
+    private long mEnter = 0;
 
     public HomeRankFragment(IAddFocusListener focusListener) {
         this.mFocusListener = focusListener;
     }
 
-//    /**
-//     * Use this factory method to create a new instance of
-//     * this fragment using the provided parameters.
-//     *
-//     * @param param1 Parameter 1.
-//     * @param param2 Parameter 2.
-//     * @return A new instance of fragment HomeRankFragment.
-//     */
-//    // TODO: Rename and change types and number of parameters
-//    public static HomeRankFragment newInstance(String param1, String param2) {
-//        HomeRankFragment fragment = new HomeRankFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
+    //    /**
+    //     * Use this factory method to create a new instance of
+    //     * this fragment using the provided parameters.
+    //     *
+    //     * @param param1 Parameter 1.
+    //     * @param param2 Parameter 2.
+    //     * @return A new instance of fragment HomeRankFragment.
+    //     */
+    //    // TODO: Rename and change types and number of parameters
+    //    public static HomeRankFragment newInstance(String param1, String param2) {
+    //        HomeRankFragment fragment = new HomeRankFragment();
+    //        Bundle args = new Bundle();
+    //        args.putString(ARG_PARAM1, param1);
+    //        args.putString(ARG_PARAM2, param2);
+    //        fragment.setArguments(args);
+    //        return fragment;
+    //    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -98,7 +102,7 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
 
     @Override
     public void startLoading() {
-//        ToastUtils.showMessageLong(getActivity().getApplicationContext(), "开始加载数据...");
+        //        ToastUtils.showMessageLong(getActivity().getApplicationContext(), "开始加载数据...");
     }
 
     @Override
@@ -230,12 +234,17 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
 
     public void onResume() {
         super.onResume();
-        Log.w("HomeRank_onResume","");
+        mEnter = System.currentTimeMillis();
+        DCPage.onEntry(AppConstants.HOME_CHARTS);
+        DCEvent.onEvent(AppConstants.HOME_CHARTS);
+        Log.w("HomeRank_onResume", "");
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.w("HomeRank_onPause","");
+        DCPage.onExit(AppConstants.HOME_CHARTS);
+        DCEvent.onEventDuration(AppConstants.HOME_CHARTS, (System.currentTimeMillis() - mEnter) / 1000);
+        Log.w("HomeRank_onPause", "");
     }
 }
