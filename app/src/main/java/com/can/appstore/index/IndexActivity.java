@@ -27,6 +27,7 @@ import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
 import com.can.appstore.index.adapter.IndexPagerAdapter;
 import com.can.appstore.index.interfaces.IAddFocusListener;
+import com.can.appstore.index.interfaces.IOnPagerKeyListener;
 import com.can.appstore.index.interfaces.IOnPagerListener;
 import com.can.appstore.index.model.DataUtils;
 import com.can.appstore.index.model.ShareData;
@@ -65,7 +66,7 @@ import static com.can.appstore.index.ui.FragmentEnum.INDEX;
 /**
  * Created by liuhao on 2016/10/15.
  */
-public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener, View.OnKeyListener, View.OnFocusChangeListener {
+public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener, View.OnFocusChangeListener, IOnPagerKeyListener {
     private List<BaseFragment> mFragmentLists;
     private IndexPagerAdapter mAdapter;
     private ViewPager mViewPager;
@@ -89,10 +90,12 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private final int SCROLLED = 0;
     private int scrollStatus;
     private final int INIT_FOCUS = 0X000001;
+    private final int HIDE_FOCUS = 0X000002;
     private int currentPage;
     private CanCall<ListResult<Navigation>> mNavigationCall;
     private int updateNum;
     private Context mContext;
+    private Boolean isIntercept = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -311,7 +314,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mViewPager.setOffscreenPageLimit(SCREEN_PAGE_LIMIT);
         mViewPager.setCurrentItem(PAGER_CURRENT);
         mViewPager.setPageMargin((int) getResources().getDimension(R.dimen.px165));
-        mViewPager.setOnKeyListener(this);
         mTitleBar.setViewPager(mViewPager, PAGER_CURRENT);
         mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED);
         fixedScroll();
@@ -379,6 +381,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                     rlSearch.setFocusable(true);
                     rlMessage.setFocusable(true);
                     break;
+                case HIDE_FOCUS:
+                    mFocusUtils.hideFocus();
+                    break;
             }
         }
     };
@@ -392,6 +397,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     @Override
     public void addFocusListener(View v, boolean hasFocus, FragmentEnum sourceEnum) {
         if (hasFocus) {
+            if (isIntercept) {
+                isIntercept = false;
+                return;
+            }
             if (null == v) return;
             switch (sourceEnum) {
                 case INDEX:
@@ -464,12 +473,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     @Override
-    public boolean onKey(View view, int i, KeyEvent keyEvent) {
-        Log.i("IndexActivity", "scrollStatus " + scrollStatus);
-        return false;
-    }
-
-    @Override
     public void onFocusChange(View view, boolean hasFocus) {
         addFocusListener(view, hasFocus, INDEX);
     }
@@ -478,5 +481,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(mContext);
+    }
+
+    @Override
+    public void onKeyEvent(View view, int i, KeyEvent keyEvent) {
+        isIntercept = true;
+        mHandler.sendEmptyMessage(HIDE_FOCUS);
     }
 }

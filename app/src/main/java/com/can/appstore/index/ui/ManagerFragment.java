@@ -3,6 +3,7 @@ package com.can.appstore.index.ui;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +11,10 @@ import android.widget.GridView;
 
 import com.can.appstore.R;
 import com.can.appstore.download.DownloadActivity;
+import com.can.appstore.index.IndexActivity;
 import com.can.appstore.index.adapter.GridAdapter;
 import com.can.appstore.index.interfaces.IAddFocusListener;
+import com.can.appstore.index.interfaces.IOnPagerKeyListener;
 import com.can.appstore.installpkg.InstallManagerActivity;
 import com.can.appstore.uninstallmanager.UninstallManagerActivity;
 import com.can.appstore.update.UpdateManagerActivity;
@@ -34,11 +37,13 @@ public class ManagerFragment extends BaseFragment {
     private GridView gridView;
     private GridAdapter gridAdapter;
     private IAddFocusListener mFocusListener;
+    private IOnPagerKeyListener mPagerKeyListener;
     private int UPDATE_INDEX = 1;
     private int updateNum;
 
-    public ManagerFragment(IAddFocusListener focusListener) {
-        mFocusListener = focusListener;
+    public ManagerFragment(IndexActivity indexActivity) {
+        mFocusListener = indexActivity;
+        mPagerKeyListener = indexActivity;
     }
 
     @Override
@@ -66,6 +71,12 @@ public class ManagerFragment extends BaseFragment {
             @Override
             public void addFocusListener(View v, boolean hasFocus, FragmentEnum sourceEnum) {
                 mFocusListener.addFocusListener(v, hasFocus, sourceEnum);
+            }
+        });
+        gridAdapter.setKeyListener(new IOnPagerKeyListener() {
+            @Override
+            public void onKeyEvent(View view, int i, KeyEvent keyEvent) {
+                mPagerKeyListener.onKeyEvent(view, i, keyEvent);
             }
         });
 
@@ -121,7 +132,7 @@ public class ManagerFragment extends BaseFragment {
         try {
             startActivity(intent);
         } catch (Exception e) {
-            PromptUtils.toast(ManagerFragment.this.getContext(),getResources().getString(R.string.index_nofind));
+            PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
             e.printStackTrace();
         }
     }
