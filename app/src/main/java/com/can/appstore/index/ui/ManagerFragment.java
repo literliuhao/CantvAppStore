@@ -43,6 +43,9 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
     private int UPDATE_INDEX = 1;
     private int updateNum;
 
+    public ManagerFragment() {
+    }
+
     public ManagerFragment(IndexActivity indexActivity) {
         mFocusListener = indexActivity;
         mPagerKeyListener = indexActivity;

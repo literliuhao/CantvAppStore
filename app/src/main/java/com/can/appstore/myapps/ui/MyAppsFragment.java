@@ -61,6 +61,8 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
     //显示的list数据
     private List<PackageUtil.AppInfo> mShowList;
 
+    public MyAppsFragment(){}
+
     public MyAppsFragment(IndexActivity indexActivity) {
         this.mFocusListener = indexActivity;
         this.mOnPagerKeyListener = indexActivity;

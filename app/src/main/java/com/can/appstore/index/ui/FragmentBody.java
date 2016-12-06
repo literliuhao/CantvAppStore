@@ -40,6 +40,9 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
     private FrameLayout frameLayout;
     private IOnPagerKeyListener mPagerKeyListener;
 
+    public FragmentBody() {
+    }
+
     public FragmentBody(IndexActivity indexActivity, Navigation navigation) {
         mFocusListener = indexActivity;
         mPagerKeyListener = indexActivity;
@@ -163,8 +166,9 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
 
     private Navigation converPosition(Navigation mNavigation, float scale) {
         Navigation converNavigation = mNavigation;
+        if (null == converNavigation ) return null;
         for (int i = 0; i < converNavigation.getLayout().size(); i++) {
-            Layout layoutBean = mNavigation.getLayout().get(i);
+            Layout layoutBean = converNavigation.getLayout().get(i);
             layoutBean.setX((int) ((converNavigation.getBaseWidth() * layoutBean.getX() * scale) + (converNavigation.getLineSpace() * scale) * layoutBean.getX()));
             Log.i("FragmentBody", "childBean X " + layoutBean.getX());
             layoutBean.setY((int) ((converNavigation.getBaseHeight() * layoutBean.getY() * scale) + (converNavigation.getLineSpace() * scale) * layoutBean.getY()));
