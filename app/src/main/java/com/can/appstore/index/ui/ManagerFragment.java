@@ -173,16 +173,6 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
     }
 
     @Override
-    public void registerFocus() {
-
-    }
-
-    @Override
-    public void removeFocus() {
-
-    }
-
-    @Override
     public void getTaskCount(int count) {
         Log.i("ManagerFragment", "count " + count);
     }

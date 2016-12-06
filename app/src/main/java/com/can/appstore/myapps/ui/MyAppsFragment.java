@@ -279,17 +279,6 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
     }
 
     @Override
-    public void registerFocus() {
-
-    }
-
-    @Override
-    public void removeFocus() {
-
-    }
-
-
-    @Override
     public View getLastView() {
         return null;
     }

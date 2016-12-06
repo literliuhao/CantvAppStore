@@ -242,16 +242,6 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
         return mLastView;
     }
 
-    @Override
-    public void registerFocus() {
-
-    }
-
-    @Override
-    public void removeFocus() {
-
-    }
-
     public void onResume() {
         super.onResume();
         mEnter = System.currentTimeMillis();
