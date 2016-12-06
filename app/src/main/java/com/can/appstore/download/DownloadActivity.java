@@ -23,6 +23,7 @@ import java.util.List;
 
 import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
+import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
@@ -184,7 +185,11 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
         mCanRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-
+                if (RecyclerView.SCROLL_STATE_IDLE == newState) {
+                    ImageLoader.getInstance().resumeTask(DownloadActivity.this);
+                } else {
+                    ImageLoader.getInstance().pauseTask(DownloadActivity.this);
+                }
             }
 
             @Override
@@ -231,7 +236,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
             @Override
             public void onItemContentClick(View view, int pos, DownloadTask downloadTask) {
                 // TODO: 2016/11/25  进入详情页
-                Log.i(TAG, "onItemContentClick: downloadTAsk="+downloadTask.toString());
+                Log.i(TAG, "onItemContentClick: downloadTAsk=" + downloadTask.toString());
             }
 
             @Override

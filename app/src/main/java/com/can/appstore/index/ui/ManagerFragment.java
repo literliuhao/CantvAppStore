@@ -3,6 +3,8 @@ package com.can.appstore.index.ui;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +12,10 @@ import android.widget.GridView;
 
 import com.can.appstore.R;
 import com.can.appstore.download.DownloadActivity;
+import com.can.appstore.index.IndexActivity;
 import com.can.appstore.index.adapter.GridAdapter;
 import com.can.appstore.index.interfaces.IAddFocusListener;
+import com.can.appstore.index.interfaces.IOnPagerKeyListener;
 import com.can.appstore.installpkg.InstallManagerActivity;
 import com.can.appstore.uninstallmanager.UninstallManagerActivity;
 import com.can.appstore.update.UpdateManagerActivity;
@@ -21,24 +25,27 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import cn.can.downloadlib.DownloadTaskCountListener;
 import cn.can.tvlib.utils.PromptUtils;
 
 /**
  * Created by liuhao on 2016/10/21.
  */
 
-public class ManagerFragment extends BaseFragment {
+public class ManagerFragment extends BaseFragment implements DownloadTaskCountListener {
     private final int[] NAMES = {R.string.index_manager_text1, R.string.index_manager_text2, R.string.index_manager_text3, R.string.index_manager_text4, R.string.index_manager_text5, R.string.index_manager_text6, R.string.index_manager_text7, R.string.index_manager_text8};
     private final int[] ICONS = {R.drawable.index_manager_icon1, R.drawable.index_manager_icon2, R.drawable.index_manager_icon3, R.drawable.index_manager_icon4, R.drawable.index_manager_icon5, R.drawable.index_manager_icon6, R.drawable.index_manager_icon7, R.drawable.index_manager_icon8};
     private final int[] COLORS = {R.drawable.index_item1_shape, R.drawable.index_item2_shape, R.drawable.index_item3_shape, R.drawable.index_item4_shape, R.drawable.index_item5_shape, R.drawable.index_item6_shape, R.drawable.index_item7_shape, R.drawable.index_item8_shape};
     private GridView gridView;
     private GridAdapter gridAdapter;
     private IAddFocusListener mFocusListener;
+    private IOnPagerKeyListener mPagerKeyListener;
     private int UPDATE_INDEX = 1;
     private int updateNum;
 
-    public ManagerFragment(IAddFocusListener focusListener) {
-        mFocusListener = focusListener;
+    public ManagerFragment(IndexActivity indexActivity) {
+        mFocusListener = indexActivity;
+        mPagerKeyListener = indexActivity;
     }
 
     @Override
@@ -68,11 +75,16 @@ public class ManagerFragment extends BaseFragment {
                 mFocusListener.addFocusListener(v, hasFocus, sourceEnum);
             }
         });
+        gridAdapter.setKeyListener(new IOnPagerKeyListener() {
+            @Override
+            public void onKeyEvent(View view, int i, KeyEvent keyEvent) {
+                mPagerKeyListener.onKeyEvent(view, i, keyEvent);
+            }
+        });
 
         gridAdapter.setClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Log.i("ManagerFragment", view.getId() + "");
                 switch (view.getId()) {
                     //一键加速
                     case 0:
@@ -121,7 +133,7 @@ public class ManagerFragment extends BaseFragment {
         try {
             startActivity(intent);
         } catch (Exception e) {
-            PromptUtils.toast(ManagerFragment.this.getContext(),getResources().getString(R.string.index_nofind));
+            PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
             e.printStackTrace();
         }
     }
@@ -161,13 +173,7 @@ public class ManagerFragment extends BaseFragment {
     }
 
     @Override
-    public void registerFocus() {
-
+    public void getTaskCount(int count) {
+        Log.i("ManagerFragment", "count " + count);
     }
-
-    @Override
-    public void removeFocus() {
-
-    }
-
 }

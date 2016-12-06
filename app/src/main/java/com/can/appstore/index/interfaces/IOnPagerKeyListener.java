@@ -7,6 +7,6 @@ import android.view.View;
  * Created by liuhao on 2016/09/09.
  */
 public interface IOnPagerKeyListener {
-    Boolean onKey(View view, int i, KeyEvent keyEvent);
+    void onKeyEvent(View view, int i, KeyEvent keyEvent);
 
 }

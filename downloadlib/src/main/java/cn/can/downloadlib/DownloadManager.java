@@ -69,6 +69,8 @@ public class DownloadManager implements AppInstallListener {
 
     private TaskManager mTaskManager = new TaskManager();
 
+    private DownloadTaskCountListener mTaskCntListener;
+
     private HandlerThread mHandlerThread;
     private Handler mHander;
     private Handler.Callback mCallback = new Handler.Callback() {
@@ -787,6 +789,8 @@ public class DownloadManager implements AppInstallListener {
         if (mSingleTaskMap!=null&&mSingleTaskMap.containsKey(downloadTask.getId())) {
             return;
         }
+        mTaskCntListener.getTaskCount(getCurrentTaskList().size());
+
         downloadTask.setDownloadStatus(AppInstallListener.APP_INSTALLING);
         Message msg = Message.obtain();
         msg.what = MSG_APP_INSTALL;
@@ -808,5 +812,9 @@ public class DownloadManager implements AppInstallListener {
         bundle.putString("pkgname", pkg);
         msg.setData(bundle);
         mHander.sendMessage(msg);
+    }
+
+    public void setmTaskCntListener(DownloadTaskCountListener listener) {
+        mTaskCntListener = listener;
     }
 }

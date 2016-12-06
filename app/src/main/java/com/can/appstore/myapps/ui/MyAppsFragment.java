@@ -17,7 +17,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 
 import com.can.appstore.R;
+import com.can.appstore.index.IndexActivity;
 import com.can.appstore.index.interfaces.IAddFocusListener;
+import com.can.appstore.index.interfaces.IOnPagerKeyListener;
 import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.index.ui.FragmentEnum;
 import com.can.appstore.myapps.adapter.MyAppsRvAdapter;
@@ -50,6 +52,7 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
 
     //焦点的监听和主Activity处理焦点框的回调
     private OnFocusChangeListener mFocusChangeListener;
+    private IOnPagerKeyListener mOnPagerKeyListener;
     private IAddFocusListener mFocusListener;
     //浮层对话框/浮层对话框的按钮
     private Dialog dialog;
@@ -58,8 +61,9 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
     //显示的list数据
     private List<PackageUtil.AppInfo> mShowList;
 
-    public MyAppsFragment(IAddFocusListener focusListener) {
-        this.mFocusListener = focusListener;
+    public MyAppsFragment(IndexActivity indexActivity) {
+        this.mFocusListener = indexActivity;
+        this.mOnPagerKeyListener = indexActivity;
     }
 
     @Override
@@ -84,7 +88,7 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
     }
 
     @Override
-    public void loadAppInfoSuccess(List<AppInfo> infoList,int myapplistsize) {
+    public void loadAppInfoSuccess(List<AppInfo> infoList, int myapplistsize) {
         mShowList = infoList;
         if (infoList.size() - 2 < myapplistsize && infoList.size() < 18 && !infoList.get(infoList.size() - 1).packageName.isEmpty()) {
             infoList.add(new AppInfo(getResources().getString(R.string.add_app), getActivity().getResources().getDrawable(R.drawable.addapp_icon)));
@@ -125,7 +129,9 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         mMyAppsRvAdapter.setItemKeyEventListener(new CanRecyclerViewAdapter.OnItemKeyEventListener() {
             @Override
             public boolean onItemKeyEvent(int position, View item, int keyCode, KeyEvent event) {
-
+                if (position % 6 == 0 && event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+                    mOnPagerKeyListener.onKeyEvent(item, keyCode, event);
+                }
                 if (keyCode == KeyEvent.KEYCODE_MENU && !"".equals(mShowList.get(position).packageName) && event.getAction() == KeyEvent.ACTION_DOWN) {
                     showEditView(position, item);
                     return true;
@@ -157,9 +163,9 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
                         i.putExtra("add", add);
                         startActivityForResult(i, 2);
                     } else {
-                        Log.d(TAG,"OPENAPP__PACKAGENAME:"+ mShowList.get(position).packageName);
+                        Log.d(TAG, "OPENAPP__PACKAGENAME:" + mShowList.get(position).packageName);
                         try {
-                            PackageUtil.openApp(getActivity(),mShowList.get(position).packageName);
+                            PackageUtil.openApp(getActivity(), mShowList.get(position).packageName);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -271,17 +277,6 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         Log.d(TAG, "----onPause()");
         super.onPause();
     }
-
-    @Override
-    public void registerFocus() {
-
-    }
-
-    @Override
-    public void removeFocus() {
-
-    }
-
 
     @Override
     public View getLastView() {

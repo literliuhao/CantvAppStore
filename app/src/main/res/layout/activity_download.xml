@@ -57,7 +57,6 @@
         android:textSize="@dimen/px34"
         android:layout_marginTop="@dimen/px150"
         android:layout_marginStart="@dimen/px160"
-        android:layout_below="@+id/special_title_tv"
         android:layout_alignParentStart="true" />
 
     <TextView

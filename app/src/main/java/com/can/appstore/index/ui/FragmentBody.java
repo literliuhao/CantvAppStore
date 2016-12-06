@@ -3,6 +3,7 @@ package com.can.appstore.index.ui;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,9 @@ import com.bumptech.glide.request.target.Target;
 import com.can.appstore.R;
 import com.can.appstore.entity.Layout;
 import com.can.appstore.entity.Navigation;
+import com.can.appstore.index.IndexActivity;
 import com.can.appstore.index.interfaces.IAddFocusListener;
+import com.can.appstore.index.interfaces.IOnPagerKeyListener;
 import com.can.appstore.index.model.ActionUtils;
 
 import cn.can.tvlib.imageloader.GlideLoadTask;
@@ -27,7 +30,7 @@ import cn.can.tvlib.utils.DisplayUtil;
 /**
  * Created by liuhao on 2016/10/17.
  */
-public class FragmentBody extends BaseFragment implements View.OnFocusChangeListener {
+public class FragmentBody extends BaseFragment implements View.OnFocusChangeListener, View.OnKeyListener {
     public static final String BUNDLE_TITLE = "title";
     private String mTitle = "DefaultValue";
     private Navigation mNavigation;
@@ -35,9 +38,11 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
     private int bodeColor = 0x782A2B2B;
     private View lastView = null;
     private FrameLayout frameLayout;
+    private IOnPagerKeyListener mPagerKeyListener;
 
-    public FragmentBody(IAddFocusListener focusListener, Navigation navigation) {
-        mFocusListener = focusListener;
+    public FragmentBody(IndexActivity indexActivity, Navigation navigation) {
+        mFocusListener = indexActivity;
+        mPagerKeyListener = indexActivity;
         mNavigation = navigation;
     }
 
@@ -123,6 +128,9 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
                     }
                 }
             });
+            if (childBean.getX() == 0) {
+                imageFrame.setOnKeyListener(this);
+            }
 
             if (ActionUtils.getInstance().checkURL(childBean.getIcon())) {
                 ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, getResources().getDimension(R.dimen.px8))).size(childBean.getWidth(), childBean.getHeight()).placeholder(R.mipmap.icon_load_default).errorHolder(R.mipmap.icon_loading_fail).successCallback(new GlideLoadTask.SuccessCallback() {
@@ -152,15 +160,6 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
         mainLayout.addView(horizontalScrollView);
         return mainLayout;
     }
-
-//    private String getResourceId(String str) {
-//        switch (str) {
-//            case "1":
-//                return R.drawable.app_introduce_bg;
-//            default:
-//                return R.drawable.icon_02;
-//        }
-//    }
 
     private Navigation converPosition(Navigation mNavigation, float scale) {
         Navigation converNavigation = mNavigation;
@@ -200,20 +199,6 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
     }
 
     @Override
-    public void registerFocus() {
-        for (int i = 0; i < frameLayout.getChildCount(); i++) {
-            frameLayout.getChildAt(i).setFocusable(true);
-        }
-    }
-
-    @Override
-    public void removeFocus() {
-        for (int i = 0; i < frameLayout.getChildCount(); i++) {
-            frameLayout.getChildAt(i).setFocusable(false);
-        }
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
     }
@@ -231,7 +216,7 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
      */
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-        Log.i("FragmentBody", v.getId() + "");
+//        Log.i("FragmentBody", v.getId() + "");
 //        v.bringToFront();
         mFocusListener.addFocusListener(v, hasFocus, FragmentEnum.NORMAL);
     }
@@ -239,5 +224,14 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
     @Override
     public View getLastView() {
         return lastView;
+    }
+
+    @Override
+    public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
+        Log.i("FragmentBody", "keyCode " + keyCode);
+        if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            mPagerKeyListener.onKeyEvent(view, keyCode, keyEvent);
+        }
+        return false;
     }
 }

@@ -5,8 +5,6 @@ import android.content.Context;
 
 import com.dataeye.sdk.api.app.DCAgent;
 
-import cn.can.downloadlib.DownloadManager;
-
 /**
  * ================================================
  * 作    者：
@@ -22,9 +20,6 @@ public class MyApp extends Application {
     public void onCreate() {
         super.onCreate();
         INSTANCE = this;
-        //恢复下载任务。2016-11-29 11:47:23 xzl
-        DownloadManager.getInstance(this).resumeAllTasks();
-
         initDataEye();
     }
 

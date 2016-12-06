@@ -27,7 +27,7 @@ public interface ApiService {
      * 专题列表
      */
     @GET("special/speciallist")
-    CanCall<ListResult<SpecialTopic>> getSpecialTopics(@Query("pageNumber") int page, @Query("pageSize") int pageSize);
+    CanCall<ListResult<SpecialTopic>> getSpecialTopics(@Query("pageIndex") int page, @Query("pageSize") int pageSize);
 
     /**
      * 专题详情
@@ -57,7 +57,7 @@ public interface ApiService {
      * 应用列表
      */
     @GET("topic/topiclist")
-    CanCall<Result<AppInfoContainer>> getAppinfos(@Query("topicId") String topicId, @Query("typeId") String typeId, @Query("pageNumber") int page, @Query("pageSize") int pageSize);
+    CanCall<Result<AppInfoContainer>> getAppinfos(@Query("topicId") String topicId, @Query("typeId") String typeId, @Query("pageIndex") int page, @Query("pageSize") int pageSize);
 
     /**
      * 获取应用详情
@@ -65,7 +65,7 @@ public interface ApiService {
      * @param appId 应用的id
      */
     @GET("application/appdetail")
-    CanCall<Result<AppInfo>> getAppInfo(@Query("appId") String appId, @Query("topicId") String topicId);
+    CanCall<Result<AppInfo>> getAppInfo(@Query("id") String appId, @Query("topicId") String topicId);
 
     /**
      * 获取搜索页推荐
@@ -85,7 +85,7 @@ public interface ApiService {
      * @param key 搜索关键字
      */
     @GET("start/search")
-    CanCall<ListResult<AppInfo>> search(@Query("key") String key,@Query("pageNumber") int pageNumber,@Query("pageSize") int pageSize);
+    CanCall<ListResult<AppInfo>> search(@Query("keyword") String key,@Query("pageIndex") int pageIndex,@Query("pageSize") int pageSize);
 
     /**
      * 获取隐藏应用列表

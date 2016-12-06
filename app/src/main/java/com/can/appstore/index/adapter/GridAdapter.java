@@ -1,6 +1,7 @@
 package com.can.appstore.index.adapter;
 
 import android.content.Context;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,19 +11,21 @@ import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.index.interfaces.IAddFocusListener;
+import com.can.appstore.index.interfaces.IOnPagerKeyListener;
 import com.can.appstore.index.ui.FragmentEnum;
 
 /**
  * Created by liuhao on 2016/11/15.
  */
 
-public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListener, View.OnClickListener {
+public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListener, View.OnClickListener, View.OnKeyListener {
     private Context mContext;
     private int[] mNames;
     private int[] mIcons;
     private int[] mColors;
     private IAddFocusListener mFocusListener;
     private View.OnClickListener mClickListener;
+    private IOnPagerKeyListener mPagerKeyListener;
     private View[] mView;
 
     public GridAdapter(Context context) {
@@ -62,15 +65,6 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
 
             ImageView imageColor = (ImageView) view.findViewById(R.id.iv_manage_color);
             imageColor.setImageResource(mColors[position]);
-
-//            switch (mNames[position]) {
-//                case R.string.index_manager_text2:
-//                    mUpdateView = view;
-//                    break;
-//                case R.string.index_manager_text8:
-//                    mDownloadView = view;
-//                    break;
-//            }
         } else {
             view = convertView;
         }
@@ -79,11 +73,17 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
         view.setFocusable(true);
         view.setOnFocusChangeListener(this);
         view.setOnClickListener(this);
+        switch (position) {
+            case 0:
+            case 4:
+                view.setOnKeyListener(this);
+                break;
+        }
         mView[position] = view;
         return view;
     }
 
-    public void refreshUI(int position,int number) {
+    public void refreshUI(int position, int number) {
         if (null == mView) return;
         View v = mView[position];
         ImageView imageSize = (ImageView) v.findViewById(R.id.iv_manage_size);
@@ -98,22 +98,12 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
         }
     }
 
-//    public void refreshDown(int number) {
-//        if (null == mUpdateView) return;
-//        ImageView imageSize = (ImageView) mUpdateView.findViewById(R.id.iv_manage_size);
-//        TextView textSize = (TextView) mUpdateView.findViewById(R.id.tv_manage_text);
-//        if (number > 0) {
-//            imageSize.setVisibility(View.VISIBLE);
-//            textSize.setVisibility(View.VISIBLE);
-//            textSize.setText(String.valueOf(number));
-//        } else {
-//            imageSize.setVisibility(View.GONE);
-//            textSize.setVisibility(View.GONE);
-//        }
-//    }
-
     public void setFocusListener(IAddFocusListener focusListener) {
         this.mFocusListener = focusListener;
+    }
+
+    public void setKeyListener(IOnPagerKeyListener onPagerKeyListener) {
+        this.mPagerKeyListener = onPagerKeyListener;
     }
 
     public void setClickListener(View.OnClickListener clickListener) {
@@ -141,5 +131,13 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
     @Override
     public void onClick(View view) {
         mClickListener.onClick(view);
+    }
+
+    @Override
+    public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
+        if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            mPagerKeyListener.onKeyEvent(view, keyCode, keyEvent);
+        }
+        return false;
     }
 }

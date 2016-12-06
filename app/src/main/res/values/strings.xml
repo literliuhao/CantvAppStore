@@ -27,6 +27,9 @@
     <string name="index_app_update">个应用可更新</string>
     <string name="index_data_error">数据格式异常请重启应用商店</string>
     <string name="index_nofind">未找到相关应用</string>
+    <string name="index_exit_titile">确定要退出应用商城吗</string>
+    <string name="index_exit">退出</string>
+    <string name="index_cancel">取消</string>
     <!--首页管理-->
     <string name="index_manager_text1">一键加速</string>
     <string name="index_manager_text2">更新管理</string>
