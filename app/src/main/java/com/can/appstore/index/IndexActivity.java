@@ -93,6 +93,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private CanCall<ListResult<Navigation>> mNavigationCall;
     private int updateNum;
     private Context mContext;
+    private MessageManager messageManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +107,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     @Override
     protected void onResume() {
         super.onResume();
+        messageManager = new MessageManager(this);
         refreshMsg();
     }
 
@@ -351,17 +353,17 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void initMsgListener() {
-        MessageManager.setCallMsgDataUpdate(new MessageManager.CallMsgDataUpdate() {
+        messageManager.setCallMsgDataUpdate(new MessageManager.CallMsgDataUpdate() {
             @Override
             public void onUpdate() {
                 imageRed.setVisibility(View.VISIBLE);
             }
         });
-        MessageManager.requestMsg(mContext);
+        messageManager.requestMsg(mContext);
     }
 
     private void refreshMsg() {
-        if (MessageManager.existUnreadMsg(this)) {
+        if (messageManager.existUnreadMsg()) {
             imageRed.setVisibility(View.VISIBLE);
         } else {
             imageRed.setVisibility(View.GONE);

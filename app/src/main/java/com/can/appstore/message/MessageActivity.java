@@ -18,7 +18,6 @@ import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.message.adapter.MessageAdapter;
 import com.can.appstore.message.db.entity.MessageInfo;
-import com.can.appstore.message.manager.GreenDaoManager;
 import com.can.appstore.message.manager.MessageManager;
 import com.can.appstore.specialdetail.SpecialDetailActivity;
 
@@ -34,7 +33,7 @@ import cn.can.tvlib.utils.NetworkUtils;
 public class MessageActivity extends BaseActivity implements View.OnClickListener, View.OnFocusChangeListener {
 
     private List<MessageInfo> msgList;
-    private GreenDaoManager dbManager;
+    private MessageManager messageManager;
     private FocusMoveUtil focusMoveUtil;
     private LinearLayoutManager llManager;
     private Handler mHandler;
@@ -73,9 +72,9 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void initData() {
-        dbManager = new GreenDaoManager(this);
+        messageManager = new MessageManager(this);
         //查询数据库消息数据
-        msgList = dbManager.queryMsg();
+        msgList = messageManager.queryMsgData();
         hideLoadingDialog();
         if (msgList != null && !msgList.isEmpty()) {
             mHandler = new Handler();
@@ -94,7 +93,6 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
             initRecyclerView();
             refreshTotalText(msgList.size());
         } else {
-            //注意：在onCreate方法中并没有真正的创建出btnTag
             btnTag.post(new Runnable() {
                 @Override
                 public void run() {
@@ -154,7 +152,8 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         });
         mAdapter.setOnItemRemoveListener(new MessageAdapter.OnItemRemoveListener() {
             @Override
-            public void onRemoveItem(int position) {
+            public void onRemoveItem(int position , String msgId) {
+                messageManager.deleteMsg(msgId);
                 int msgCount = msgList.size();
                 if (msgCount == 0) {
                     itemTotal.setVisibility(View.INVISIBLE);
@@ -196,7 +195,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
      */
     private void refreshRecyclerItem(MessageInfo msg, int position) {
         if (msg.getStatus()) {
-            MessageManager.updateStatus(this , msg.getMsgId());
+            messageManager.updateStatus(msg.getMsgId());
             msg.setStatus(false);
             msgList.set(position, msg);
             mAdapter.setMsgList(msgList);
@@ -322,15 +321,10 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_tag:
-                if (!MessageManager.existUnreadMsg(this) || msgList == null || msgList.isEmpty() ) {
+                if (!messageManager.existUnreadMsg() || msgList == null || msgList.isEmpty() ) {
                     return;
                 }
-                new Thread() {
-                    @Override
-                    public void run() {
-                        dbManager.updateAllMsgStatus();
-                    }
-                }.start();
+                messageManager.updataAllMsgStatus();
                 changeListStatus();
                 mAdapter.notifyDataSetChanged();
                 break;
@@ -338,12 +332,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                 if (msgList == null || msgList.isEmpty()) {
                     return;
                 }
-                new Thread() {
-                    @Override
-                    public void run() {
-                        dbManager.clear();
-                    }
-                }.start();
+                messageManager.clearAllMsg();
                 mRecyclerView.setVisibility(View.GONE);
                 itemPos.setVisibility(View.GONE);
                 itemTotal.setVisibility(View.GONE);
@@ -374,8 +363,8 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
             focusMoveUtil.release();
             focusMoveUtil = null;
         }
-        if (dbManager != null) {
-            dbManager = null;
+        if (messageManager != null) {
+            messageManager = null;
         }
         if (msgList != null) {
             msgList.clear();
