@@ -227,6 +227,7 @@ public class DownloadTask implements Runnable {
                 }
             }
         }
+        /** 添加mTotalSize！=0 处理 xzl 2016-12-6 17:38:12*/
         if (mTotalSize == mDownloadedSize&&mTotalSize!=0) {
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_COMPLETED;
         }
