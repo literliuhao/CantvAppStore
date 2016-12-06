@@ -47,6 +47,8 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
     private IOnPagerKeyListener mPagerKeyListener;
     private long mEnter = 0;
 
+    public HomeRankFragment(){}
+
     public HomeRankFragment(IndexActivity indexActivity) {
         this.mFocusListener = indexActivity;
         this.mPagerKeyListener = indexActivity;

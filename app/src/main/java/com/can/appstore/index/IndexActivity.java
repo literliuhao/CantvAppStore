@@ -120,7 +120,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         initView();
         initFocus();
         getNavigation();
-        messageManager = new MessageManager(this);
+
     }
 
     @Override
@@ -128,7 +128,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         super.onResume();
         mEnter = System.currentTimeMillis();
         DCAgent.resume(this);
-        DCPage.onEntry(AppConstants.HOME_PAGE);//统计页面开始
+        DCPage.onEntry(AppConstants.HOME_PAGE);
         DCEvent.onEvent(AppConstants.HOME_PAGE);
         refreshMsg();
     }
@@ -146,7 +146,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      */
     private void initView() {
         mContext = IndexActivity.this;
-        EventBus.getDefault().register(mContext);
         //导航
         mTitleBar = (TitleBar) findViewById(R.id.id_indicator);
         mTitleBar.initTitle(this);
@@ -317,6 +316,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     //------------注册首页监听---------------
     private void initUpdateListener() {
+        EventBus.getDefault().register(mContext);
         AutoUpdate.getInstance().autoUpdate(IndexActivity.this);
     }
 
@@ -330,6 +330,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void initMsgListener() {
+        messageManager = new MessageManager(this);
         messageManager.setCallMsgDataUpdate(new MessageManager.CallMsgDataUpdate() {
             @Override
             public void onUpdate() {
@@ -340,6 +341,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void refreshMsg() {
+        if (null == messageManager) return;
         if (messageManager.existUnreadMsg()) {
             imageRed.setVisibility(View.VISIBLE);
         } else {
@@ -385,7 +387,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                     v.bringToFront();
                     mFocusUtils.setFocusRes(mContext, R.drawable.btn_circle_focus);
                     mFocusUtils.startMoveFocus(v);
-                    //                    mFocusScaleUtils.scaleToLarge(v);
                     break;
                 case TITLE:
                     if (v instanceof LiteText) {
