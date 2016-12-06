@@ -18,11 +18,9 @@ public interface AppListContract {
 
     interface Presenter extends BasePresenter {
         void startLoadData();
-        void onMenuItemSelect(int position);
         void loadMoreData();
-        // TODO: 2016/11/11
         void loadAppListData();
-        void loadAppListData(String topicId);
+        void onMenuItemSelect(int position);
         void onAppListItemSelectChanged(int position);
         HashMap getIds(int position);
     }
@@ -34,7 +32,8 @@ public interface AppListContract {
         void hideAppList();
         void hideFailUI();
         void refreshMenuList(List<Topic> menuData, int focusPosition);
-        void refreshAppList(List<AppInfo> rightData, int InsertPosition);
+        void refreshAppList(List<AppInfo> appListData);
+        void refreshAppList(List<AppInfo> appListData, int InsertPosition);
         void refreshRowNumber(SpannableStringBuilder spannable);
         void refreshTypeName(String typeName);
         void finish();

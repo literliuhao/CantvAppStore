@@ -20,7 +20,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.AppDetailActivity;
@@ -194,7 +193,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                Log.d(TAG, "onScrolled: " + recyclerView.getScrollState());
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     refreshMenuPaddingWithFocusRegion();
                 }
@@ -394,6 +392,110 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     public void refreshMenuList(final List<Topic> menuData, final int focusPosition) {
         mMenuAdapter = new AppListMenuAdapter(menuData);
         mMenu.setAdapter(mMenuAdapter);
+        setMenuListListener();
+        initFocusPositionShadow(focusPosition);
+    }
+
+    private void initFocusPositionShadow(final int focusPosition) {
+        //请求焦点到对应item
+        mMenu.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // showFocusView
+                if (isDestroyed()) {
+                    return;
+                }
+                View child = mMenu.getChildAt(focusPosition);
+                mFocusMoveUtil.setFocusView(child);
+                mFocusMoveUtil.showFocus();
+                child.requestFocus();
+            }
+        }, 100);
+
+        //判断是否显示阴影箭头
+        mMenu.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                View child = mMenu.getChildAt(focusPosition);
+                // measure menu child view height
+                int menuItemHeight = child != null ? child.getMeasuredHeight() : 0;
+                mMenuPaddingTopTmp = menuItemHeight + MENU_DIVIDER_SIZE;
+                mMenuPaddingBottomTmp = mMenuPaddingTopTmp;
+
+                // judge if show menu bottom shadow
+                int lastVisibleMenuPos = mMenuLM.findLastCompletelyVisibleItemPosition();
+                int childCount = mMenuAdapter.getItemCount();
+                if (lastVisibleMenuPos != childCount - 1) {
+                    menuCanScroll = true;
+                    showMenuBottomArrow();
+                    mCurrMenuPaddingBottom = mMenuPaddingBottomTmp;
+                    refreshMenuPaddingWithFocusRegion();
+                }
+            }
+        }, MENU_SHOW_SHADOW_DELAY);
+    }
+
+    private void hideMenuTopArrow() {
+        if (menuTopArrowShowing) {
+            menuTopArrowShowing = false;
+            mMenuArrowUp.setVisibility(View.INVISIBLE);
+            mMenuTopShadow.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void hideMenuBottomArrow() {
+        if (menuBottomArrowShowing) {
+            menuBottomArrowShowing = false;
+            mMenuArrowDown.setVisibility(View.INVISIBLE);
+            mMenuBottomShadow.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private boolean menuFocusMoveToRight() {
+        if (mAppList.getVisibility() == View.VISIBLE && mAppListAdapter.getItemCount() > 0) {
+            mFocusMoveUtil.setFocusActiveRegion(listRect.left, listRect.top, listRect.right, listRect.bottom);
+            if (mSelectedAppListChild == null) {
+                mAppList.getChildAt(0).requestFocus();
+            } else {
+                mSelectedAppListChild.requestFocus();
+            }
+            return true;
+
+        } else if (mRetryBtn.getVisibility() == View.VISIBLE) {
+            refreshFocusActiveRegion(NO_LIMIT_REGION);
+            mRetryBtn.requestFocus();
+            return true;
+        }
+        return false;
+    }
+
+    private void refreshMenuPaddingWithFocusRegion() {
+        mMenu.setPadding(0, mCurrMenuPaddingTop, 0, mCurrMenuPaddingBottom);
+        mFocusMoveUtil.setFocusActiveRegion(mMenuFocusRegion.left, mMenuFocusRegion.top + mCurrMenuPaddingTop,
+                mMenuFocusRegion.right, mMenuFocusRegion.bottom - mCurrMenuPaddingBottom);
+    }
+
+    @Override
+    public void refreshAppList(List<AppInfo> appListData) {
+        if (mAppListAdapter == null) {
+            mAppListAdapter = new com.can.appstore.applist.adpter.AppListInfoAdapter(appListData);
+            mAppList.setAdapter(mAppListAdapter);
+            setAppListListener();
+        } else {
+            mSelectedAppListChild = null;//刷新整个列表的时候应用列表记录的item删除
+            mAppListAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void refreshAppList(List<AppInfo> appListData, int insertPosition) {
+        mAppListAdapter.notifyItemInserted(insertPosition);
+    }
+
+    /**
+     * 设置menu列表的监听(焦点改变和key事件)
+     */
+    private void setMenuListListener() {
         mMenuAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
             @Override
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
@@ -473,152 +575,61 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 return false;
             }
         });
-        //请求焦点到对应item
-        mMenu.postDelayed(new Runnable() {
+    }
+
+
+    /**
+     * 设置应用列表的监听(焦点改变和点击)
+     */
+    private void setAppListListener() {
+        mAppListAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
             @Override
-            public void run() {
-                // showFocusView
-                if (isDestroyed()) {
-                    Log.d(TAG, "refreshAppList: isDestroyed1");
-                    return;
+            public void onItemFocusChanged(View view, int position, boolean hasFocus) {
+                if (hasFocus) {
+                    mSelectedAppListChild = view;
+                    mPresenter.onAppListItemSelectChanged(position);
+                    mFocusMoveUtil.startMoveFocus(mSelectedAppListChild, APP_LIST_FOCUS_SCALE);
+                    mHandler.postDelayed(mChangeAppBgRunnable, CHANGE_FOCUSED_VIEW_BG_DELAY);
+                } else {
+                    mHandler.removeCallbacks(mChangeAppBgRunnable);
+                    view.setBackgroundResource(R.drawable.shap_app_list);
                 }
-                View child = mMenu.getChildAt(focusPosition);
-                mFocusMoveUtil.setFocusView(child);
-                mFocusMoveUtil.showFocus();
-                child.requestFocus();
             }
-        }, 100);
 
-        //判断是否显示阴影箭头
-        mMenu.postDelayed(new Runnable() {
             @Override
-            public void run() {
-                View child = mMenu.getChildAt(focusPosition);
-                // measure menu child view height
-                int menuItemHeight = child != null ? child.getMeasuredHeight() : 0;
-                mMenuPaddingTopTmp = menuItemHeight + MENU_DIVIDER_SIZE;
-                mMenuPaddingBottomTmp = mMenuPaddingTopTmp;
-
-                // judge if show menu bottom shadow
-                int lastVisibleMenuPos = mMenuLM.findLastCompletelyVisibleItemPosition();
-                int childCount = mMenuAdapter.getItemCount();
-                Log.d(TAG, "run: " + lastVisibleMenuPos + "---" + childCount);
-                if (lastVisibleMenuPos != childCount - 1) {
-                    menuCanScroll = true;
-                    showMenuBottomArrow();
-                    mCurrMenuPaddingBottom = mMenuPaddingBottomTmp;
-                    refreshMenuPaddingWithFocusRegion();
-                }
-            }
-        }, MENU_SHOW_SHADOW_DELAY);
-    }
-
-    private void hideMenuTopArrow() {
-        if (menuTopArrowShowing) {
-            menuTopArrowShowing = false;
-            mMenuArrowUp.setVisibility(View.INVISIBLE);
-            mMenuTopShadow.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    private void hideMenuBottomArrow() {
-        if (menuBottomArrowShowing) {
-            menuBottomArrowShowing = false;
-            mMenuArrowDown.setVisibility(View.INVISIBLE);
-            mMenuBottomShadow.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    private boolean menuFocusMoveToRight() {
-        if (mAppList.getVisibility() == View.VISIBLE && mAppListAdapter.getItemCount() > 0) {
-            mFocusMoveUtil.setFocusActiveRegion(listRect.left, listRect.top, listRect.right, listRect.bottom);
-            if (mSelectedAppListChild == null) {
-                mAppList.getChildAt(0).requestFocus();
-            } else {
-                mSelectedAppListChild.requestFocus();
-            }
-            return true;
-
-        } else if (mRetryBtn.getVisibility() == View.VISIBLE) {
-            refreshFocusActiveRegion(NO_LIMIT_REGION);
-            mRetryBtn.requestFocus();
-            return true;
-        }
-        return false;
-    }
-
-    private void refreshMenuPaddingWithFocusRegion() {
-        mMenu.setPadding(0, mCurrMenuPaddingTop, 0, mCurrMenuPaddingBottom);
-        mFocusMoveUtil.setFocusActiveRegion(mMenuFocusRegion.left, mMenuFocusRegion.top + mCurrMenuPaddingTop,
-                mMenuFocusRegion.right, mMenuFocusRegion.bottom - mCurrMenuPaddingBottom);
-    }
-
-    @Override
-    public void refreshAppList(List<AppInfo> appListData, int insertPosition) {
-        if (mAppListAdapter == null) {
-            mAppListAdapter = new com.can.appstore.applist.adpter.AppListInfoAdapter(appListData);
-            mAppList.setAdapter(mAppListAdapter);
-            mAppListAdapter.setOnFocusChangeListener(new CanRecyclerViewAdapter.OnFocusChangeListener() {
-                @Override
-                public void onItemFocusChanged(View view, int position, boolean hasFocus) {
-                    if (hasFocus) {
-                        mSelectedAppListChild = view;
-                        mPresenter.onAppListItemSelectChanged(position);
-                        mFocusMoveUtil.startMoveFocus(mSelectedAppListChild, APP_LIST_FOCUS_SCALE);
-                        mHandler.postDelayed(mChangeAppBgRunnable, CHANGE_FOCUSED_VIEW_BG_DELAY);
-                    } else {
-                        mHandler.removeCallbacks(mChangeAppBgRunnable);
-                        view.setBackgroundResource(R.drawable.shap_app_list);
-                    }
-                }
-
-                @Override
-                public boolean onFocusMoveOutside(int currFocus, int direction) {
-                    if (direction == View.FOCUS_LEFT) {
-                        if (mSearchBtn == mSelectedMenuChild) {
-                            refreshFocusActiveRegion(NO_LIMIT_REGION);
-                            mSearchBtn.setFocusable(true);
-                            mSearchBtn.requestFocus();
-                            mSearchBtn.setBackgroundColor(Color.TRANSPARENT);
-                            return true;
-                        }
-                        if (mSelectedMenuChild != null) {
-                            refreshMenuPaddingWithFocusRegion();
-                            //解决偶现menu焦点背景不消失问题
-                            final View view = mSelectedMenuChild;
-                            view.requestFocus();
-                            mHandler.sendMessageDelayed(Message.obtain(mHandler, HIDE_MENU_ITEM_BG, view),
-                                    CHANGE_FOCUSED_VIEW_BG_DELAY);
-                            return true;
-                        }
-                    }
-                    if (mAppList.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
+            public boolean onFocusMoveOutside(int currFocus, int direction) {
+                if (direction == View.FOCUS_LEFT) {
+                    if (mSearchBtn == mSelectedMenuChild) {
+                        refreshFocusActiveRegion(NO_LIMIT_REGION);
+                        mSearchBtn.setFocusable(true);
+                        mSearchBtn.requestFocus();
+                        mSearchBtn.setBackgroundColor(Color.TRANSPARENT);
                         return true;
                     }
-                    return false;
+                    if (mSelectedMenuChild != null) {
+                        refreshMenuPaddingWithFocusRegion();
+                        //解决偶现menu焦点背景不消失问题
+                        final View view = mSelectedMenuChild;
+                        view.requestFocus();
+                        mHandler.sendMessageDelayed(Message.obtain(mHandler, HIDE_MENU_ITEM_BG, view),
+                                CHANGE_FOCUSED_VIEW_BG_DELAY);
+                        return true;
+                    }
                 }
-            });
-            mAppListAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
-                @Override
-                public void onClick(View view, int position, Object data) {
-                    HashMap map = mPresenter.getIds(position);
-                    AppDetailActivity.actionStart(AppListActivity.this, (String) map.get(ENTRY_KEY_APP_ID), (String)
-                            map.get(ENTRY_KEY_TOPIC_ID));
+                if (mAppList.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
+                    return true;
                 }
-            });
-
-        } else if (insertPosition == AppListPresenter.REFRESH_APP) {
-            mSelectedAppListChild = null;//刷新整个列表的时候应用列表记录的item删除
-            mAppListAdapter.notifyDataSetChanged();
-        } else {
-            mAppListAdapter.notifyItemInserted(insertPosition);
-        }
-
-        if (mLoadFailView.getVisibility() == View.VISIBLE && mSelectedMenuChild != null) {
-            refreshMenuPaddingWithFocusRegion();
-            mSelectedMenuChild.requestFocus();
-            mSelectedMenuChild.setBackgroundColor(Color.TRANSPARENT);
-        }
+                return false;
+            }
+        });
+        mAppListAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(View view, int position, Object data) {
+                HashMap map = mPresenter.getIds(position);
+                AppDetailActivity.actionStart(AppListActivity.this, (String) map.get(ENTRY_KEY_APP_ID), (String)
+                        map.get(ENTRY_KEY_TOPIC_ID));
+            }
+        });
     }
 
     /**
@@ -754,7 +765,6 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 }
                 break;
             case R.id.tv_app_list_search:
-
                 if (event.getAction() != KeyEvent.ACTION_DOWN) {
                     return false;
                 }
