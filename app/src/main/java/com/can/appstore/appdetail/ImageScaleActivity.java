@@ -17,12 +17,15 @@ import com.can.appstore.base.BaseActivity;
 
 import java.util.List;
 
+import cn.can.tvlib.imageloader.ImageLoader;
+
 /**
  * Created by JasonF on 2016/10/20.
  */
 
 public class ImageScaleActivity extends BaseActivity {
-
+    public static final int KEYCODE_EFFECT_INTERVAL_UNLIMIT = 0;
+    private static final int KEYCODE_EFFECT_INTERVAL_NORMAL = 150;
     private static final String TAG = "ImageScaleActivity";
     private ViewPager mViewPager;
     private ImageScaleAdapter mScaleAdapter;
@@ -30,6 +33,8 @@ public class ImageScaleActivity extends BaseActivity {
     private int mBeforePosition;
     private List<String> mImageUrls;
     private PointView mPointView;
+    private long mLastKeyCodeTimePoint;
+    private int keyCodeEffectInterval = KEYCODE_EFFECT_INTERVAL_NORMAL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +63,7 @@ public class ImageScaleActivity extends BaseActivity {
         mPointView.setSelectPosition(mCurSelectPositon);
 
         mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.dimen_210px));
-        Utils.controlViewPagerSpeed(ImageScaleActivity.this, mViewPager, 500);
+        Utils.controlViewPagerSpeed(ImageScaleActivity.this, mViewPager, 400);
         mViewPager.setOffscreenPageLimit(3);
         mScaleAdapter = new ImageScaleAdapter(ImageScaleActivity.this, mImageUrls);
         mViewPager.setAdapter(mScaleAdapter);
@@ -74,6 +79,7 @@ public class ImageScaleActivity extends BaseActivity {
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
             }
 
             @Override
@@ -88,6 +94,11 @@ public class ImageScaleActivity extends BaseActivity {
             @Override
             public void onPageScrollStateChanged(int state) {
                 Log.d(TAG, "onPageScrollStateChanged: state : " + state);
+                if (state == ViewPager.SCROLL_STATE_IDLE) {
+                    ImageLoader.getInstance().resumeAllTask(ImageScaleActivity.this);
+                } else {
+                    ImageLoader.getInstance().pauseAllTask(ImageScaleActivity.this);
+                }
             }
         });
 
@@ -118,6 +129,22 @@ public class ImageScaleActivity extends BaseActivity {
                 break;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN && keyCodeEffectInterval != KEYCODE_EFFECT_INTERVAL_UNLIMIT) {
+            long time = System.currentTimeMillis();
+            if (mLastKeyCodeTimePoint == 0) {
+                mLastKeyCodeTimePoint = System.currentTimeMillis();
+                return super.dispatchKeyEvent(event);
+            } else if (time - mLastKeyCodeTimePoint < keyCodeEffectInterval) {
+                return true;
+            } else {
+                mLastKeyCodeTimePoint = System.currentTimeMillis();
+            }
+        }
+        return super.dispatchKeyEvent(event);
     }
 
     @Override
