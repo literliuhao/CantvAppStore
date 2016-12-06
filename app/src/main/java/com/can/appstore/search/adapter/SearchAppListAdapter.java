@@ -102,7 +102,7 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
             ((SearchViewHolder) holder).mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    AppDetailActivity.actionStart(mActivity, app.getId(), mActivity.mSearchKeyStr);
+                    AppDetailActivity.actionStart(mActivity, app.getId(), AppConstants.RESEARCH_PAGE, mActivity.mSearchKeyStr);
                 }
             });
 
@@ -233,11 +233,13 @@ public class SearchAppListAdapter extends RecyclerView.Adapter {
      */
     public void setDefaultApplist(List list) {
         isDefault = true;
-        if (mDataList.size() > 0) {
-            mDataList.clear();
+        if (null != list) {
+            if (mDataList.size() > 0) {
+                mDataList.clear();
+            }
+            mDefaultList = list;
+            mDataList.addAll(list);
         }
-        mDefaultList = list;
-        mDataList.addAll(list);
         notifyDataSetChanged();
     }
 

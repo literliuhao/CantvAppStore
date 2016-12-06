@@ -4,6 +4,8 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.dataeye.sdk.api.app.channel.DCResource;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -371,6 +373,7 @@ public class DownloadTask implements Runnable {
 
     private void onCompleted() {
         for (DownloadTaskListener listener : mDownloadlisteners) {
+            DCResource.onDownloadSuccess(this.getFileName());
             listener.onCompleted(this);
         }
         mAppListener.onInstalling(this);

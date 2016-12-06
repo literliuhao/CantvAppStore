@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.CustomDialog;
 import com.can.appstore.entity.AppInfo;
@@ -18,9 +19,13 @@ import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
 import com.can.appstore.widgets.CanDialog;
+import com.dataeye.sdk.api.app.channel.DCResource;
+import com.dataeye.sdk.api.app.channel.DCResourceLocation;
+import com.dataeye.sdk.api.app.channel.DCResourcePair;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
@@ -53,6 +58,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public final static float DOWNLOAD_FINISH_PROGRESS = 100f;//完成时进度
     public final static String ARGUMENT_APPID = "appID";
     public final static String ARGUMENT_TOPICID = "topicid";
+    public final static String ARGUMENT_FROMPAGE = "fromPage";
+    public final static String ARGUMENT_FROMPAGE_SEND_VALUE = "value";
     public int downlaodErrorCode = 0;//下载错误
     private Activity mContext;
     private AppDetailContract.View mView;
@@ -64,6 +71,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public String mTaskId = "";
     private String mTopicId = "";
     private CanCall<Result<AppInfo>> mAppDetailCall;
+    private ArrayList<DCResourcePair> mPairs = new ArrayList<>();
     private AppInfo mAppInfo;
     private String downloadPath = "";
     private String mPackageName = "";
@@ -73,10 +81,14 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     private String mInstallApkPath = "";
     private boolean isInstalling = false;
     private CanDialog mCanDialog;
+    private String mFromPage;
+    private String mValue;
+    private String mDetailRecommend;
 
     public AppDetailPresenter(AppDetailContract.View view, Context context, Intent intent) {
         this.mView = view;
         this.mContext = (Activity) context;
+        mDetailRecommend = mContext.getString(R.string.app_detail_recommend);
         getData(intent);
         initDownloadManager();
     }
@@ -85,6 +97,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         if (intent != null) {
             mAppId = intent.getStringExtra(ARGUMENT_APPID);
             mTopicId = intent.getStringExtra(ARGUMENT_TOPICID);
+            mFromPage = intent.getStringExtra(ARGUMENT_FROMPAGE);
+            mValue = intent.getStringExtra(ARGUMENT_FROMPAGE_SEND_VALUE);
         }
     }
 
@@ -287,6 +301,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             Task.setIcon(mAppInfo.getIcon());
             mDownloadManager.addDownloadTask(Task, AppDetailPresenter.this);
             clickRefreshButtonStatus(isClickUpdateButton, per);
+            downloadCount();
         } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING) {
             mDownloadManager.pause(downloadTask);
         } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
@@ -523,6 +538,10 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         if (mAppDetailCall != null) {
             mAppDetailCall.cancel();
         }
+        if (mPairs != null) {
+            mPairs.clear();
+            mPairs = null;
+        }
         dismissIntroduceDialog();
         dismissInsufficientStorageSpaceDialog();
         unRegiestr();
@@ -566,4 +585,43 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             mCanDialog.dismiss();
         }
     }
+
+    /**
+     * 统计详情页资源位的点击量
+     *
+     * @param position
+     */
+    public void statisticsDownloadAndOnclick(int position) {
+        mPairs.clear();
+        mFromPage = AppConstants.RESOURCES_POSITION;
+        mValue = mDetailRecommend + (position + 1);
+        DCResourcePair pair = DCResourcePair.newBuilder().setResourceLocationId(mValue).build();
+        DCResourceLocation.onClick(pair);
+    }
+
+    /**
+     * 统计下载量
+     */
+    public void downloadCount() {
+        if (mFromPage.equals(AppConstants.RESEARCH_PAGE)) {
+            DCResource.onDownloadFromSearch(mAppInfo.getName(), mValue);
+        } else if (mFromPage.equals(AppConstants.RESOURCES_POSITION)) {
+            DCResource.onDownloadFromResourceLocation(mAppInfo.getName(), mValue);
+        }
+    }
+
+    /**
+     * 统计详情推荐的曝光次数
+     */
+    public void resourcesPositionExposure() {
+        if (mPairs.size() == 0 && mAppInfo.getRecommend() != null) {
+            for (int i = 0; i < mAppInfo.getRecommend().size(); i++) {
+                DCResourcePair pair = DCResourcePair.newBuilder().setResourceLocationId(mDetailRecommend + (i + 1))
+                        .setResourceId(mAppInfo.getRecommend().get(i).getName()).build();
+                mPairs.add(pair);
+            }
+        }
+        DCResourceLocation.onBatchShow(mPairs);
+    }
+
 }

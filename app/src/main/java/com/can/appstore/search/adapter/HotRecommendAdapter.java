@@ -8,10 +8,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.can.appstore.AppConstants;
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.entity.AppInfo;
+import com.dataeye.sdk.api.app.channel.DCResourceLocation;
+import com.dataeye.sdk.api.app.channel.DCResourcePair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +58,7 @@ public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapte
          *
          * @param position
          */
-        public void setContent(int position) {
+        public void setContent(final int position) {
             final AppInfo app = (AppInfo) mDataList.get(position);
             mAppName.setText(app.getName());
             mAppSize.setText(app.getSizeStr());
@@ -66,7 +69,10 @@ public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapte
             mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    AppDetailActivity.actionStart(mContext, app.getId());
+                    //统计搜索热门推荐的点击量
+                    AppDetailActivity.actionStart(mContext, app.getId(), AppConstants.RESOURCES_POSITION, mContext.getString(R.string.search_recommend) + (position + 1));
+                    DCResourcePair pair = DCResourcePair.newBuilder().setResourceLocationId(mContext.getString(R.string.search_recommend) + (position + 1)).build();
+                    DCResourceLocation.onClick(pair);
                 }
             });
 

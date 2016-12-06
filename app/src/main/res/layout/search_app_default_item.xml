@@ -7,6 +7,7 @@
               android:layout_marginTop="@dimen/px10"
               android:background="@drawable/selector_shap_applist_bg"
               android:clickable="true"
+              android:descendantFocusability="blocksDescendants"
               android:focusable="true"
               android:orientation="vertical">
     <!--android:background="@drawable/search_keyboard_shape"-->
@@ -15,7 +16,10 @@
         android:id="@+id/default_name_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:ellipsize="end"
         android:gravity="center"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
         android:text="分类app"
         android:textColor="@color/tr_20_white_color"
         android:textSize="@dimen/px32"/>

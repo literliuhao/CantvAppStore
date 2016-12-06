@@ -13,11 +13,14 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.entity.SpecialTopic;
 import com.can.appstore.specialdetail.SpecialDetailActivity;
 import com.can.appstore.speciallist.adapter.SpecialAdapter;
+import com.dataeye.sdk.api.app.DCEvent;
+import com.dataeye.sdk.api.app.channel.DCPage;
 
 import java.util.List;
 
@@ -241,6 +244,20 @@ public class SpecialActivity extends BaseActivity implements SpecialContract.Sub
     @Override
     public void refreshRowNum(CharSequence row) {
         mRowTv.setText(row);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        DCPage.onEntry(AppConstants.TOPIC_LIST);
+        DCEvent.onEvent(AppConstants.TOPIC_LIST);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DCPage.onExit(AppConstants.TOPIC_LIST);
+        DCEvent.onEventDuration(AppConstants.TOPIC_LIST, mDuration);
     }
 
     @Override

@@ -17,7 +17,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.can.appstore.AppConstants;
+import com.can.appstore.MyApp;
 import com.can.appstore.R;
+import com.can.appstore.entity.Layout;
 import com.can.appstore.entity.ListResult;
 import com.can.appstore.entity.Navigation;
 import com.can.appstore.homerank.HomeRankFragment;
@@ -29,6 +32,7 @@ import com.can.appstore.index.adapter.IndexPagerAdapter;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.interfaces.IOnPagerListener;
 import com.can.appstore.index.model.DataUtils;
+import com.can.appstore.index.model.HomeDataEyeUtils;
 import com.can.appstore.index.model.ShareData;
 import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.index.ui.FixedScroller;
@@ -43,8 +47,19 @@ import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.update.AutoUpdate;
 import com.can.appstore.update.model.UpdateApkModel;
+import com.dataeye.sdk.api.app.DCAgent;
+import com.dataeye.sdk.api.app.DCEvent;
+import com.dataeye.sdk.api.app.channel.DCPage;
+import com.dataeye.sdk.api.app.channel.DCResourceLocation;
+import com.dataeye.sdk.api.app.channel.DCResourcePair;
+import com.can.appstore.upgrade.service.BuglyUpgradeService;
+import com.can.appstore.upgrade.service.UpgradeService;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.tencent.bugly.Bugly;
+import com.tencent.bugly.beta.Beta;
+import com.tencent.bugly.beta.UpgradeInfo;
+import com.tencent.bugly.beta.upgrade.UpgradeListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -66,6 +81,7 @@ import static com.can.appstore.index.ui.FragmentEnum.INDEX;
  * Created by liuhao on 2016/10/15.
  */
 public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener, View.OnKeyListener, View.OnFocusChangeListener {
+    private static final String TAG = "IndexActivity";
     private List<BaseFragment> mFragmentLists;
     private IndexPagerAdapter mAdapter;
     private ViewPager mViewPager;
@@ -93,7 +109,12 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private CanCall<ListResult<Navigation>> mNavigationCall;
     private int updateNum;
     private Context mContext;
+<<<<<<< HEAD
     private MessageManager messageManager;
+=======
+    private long mEnter = 0;
+    private HomeDataEyeUtils mDataEyeUtils;
+>>>>>>> 67890fe0ebb93b61a71d55ee2067c59e02854ce6
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +128,14 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     @Override
     protected void onResume() {
         super.onResume();
+<<<<<<< HEAD
         messageManager = new MessageManager(this);
+=======
+        mEnter = System.currentTimeMillis();
+        DCAgent.resume(this);
+        DCPage.onEntry(AppConstants.HOME_PAGE);//统计页面开始
+        DCEvent.onEvent(AppConstants.HOME_PAGE);
+>>>>>>> 67890fe0ebb93b61a71d55ee2067c59e02854ce6
         refreshMsg();
     }
 
@@ -203,7 +231,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      */
     private void initData(ListResult<Navigation> navigationListResult) {
         mFragmentLists = new ArrayList<>();
-        if (null == navigationListResult.getData()) return;
+        if (null == navigationListResult.getData())
+            return;
         //根据服务器配置文件生成不同样式加入Fragment列表中
         FragmentBody fragment;
         for (int i = 0; i < navigationListResult.getData().size(); i++) {
@@ -264,6 +293,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             public void onExtraPageSelected(int position) {
                 currentPage = position;
                 mFocusUtils.showFocus();
+                //统计首页资源位曝光量
+                mDataEyeUtils.resourcesPositionExposure(position);
             }
 
             @Override
@@ -337,6 +368,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         ShareData.getInstance().execute();
         initUpdateListener();
         initMsgListener();
+        //统计首页资源位曝光量
+        mDataEyeUtils = new HomeDataEyeUtils(MyApp.getContext());
+        mDataEyeUtils.resourcesPositionExposure(0);
+        //初始化bugly
+        initBugly(true);
     }
 
     private void initUpdateListener() {
@@ -394,13 +430,14 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     @Override
     public void addFocusListener(View v, boolean hasFocus, FragmentEnum sourceEnum) {
         if (hasFocus) {
-            if (null == v) return;
+            if (null == v)
+                return;
             switch (sourceEnum) {
                 case INDEX:
                     v.bringToFront();
                     mFocusUtils.setFocusRes(mContext, R.drawable.btn_circle_focus);
                     mFocusUtils.startMoveFocus(v);
-//                    mFocusScaleUtils.scaleToLarge(v);
+                    //                    mFocusScaleUtils.scaleToLarge(v);
                     break;
                 case TITLE:
                     if (v instanceof LiteText) {
@@ -432,15 +469,15 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         }
     }
 
-//    @Override
-//    public boolean onKeyUp(int keyCode, KeyEvent event) {
-//        Log.i("IndexActivity", "scrollStatus " + scrollStatus);
-//        if (scrollStatus == SCROLLED) {
-//            return super.onKeyUp(keyCode, event);
-//        } else {
-//            return true;
-//        }
-//    }
+    //    @Override
+    //    public boolean onKeyUp(int keyCode, KeyEvent event) {
+    //        Log.i("IndexActivity", "scrollStatus " + scrollStatus);
+    //        if (scrollStatus == SCROLLED) {
+    //            return super.onKeyUp(keyCode, event);
+    //        } else {
+    //            return true;
+    //        }
+    //    }
 
     @Override
     public void onClick(View view) {
@@ -454,9 +491,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         }
     }
 
-    /**
-     * 使用eventbus
-     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(UpdateApkModel model) {
         updateNum = model.getNumber();
@@ -479,9 +513,56 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         addFocusListener(view, hasFocus, INDEX);
     }
 
+    /**
+     * Bugly实现自更新
+     *
+     * @param downloadSelf 是否自己下载apk
+     * 自下载：可控制下载、安装
+     * Bugly下载：可控制下载，安装Bugly自行调用
+     */
+    private void initBugly(final boolean downloadSelf) {
+        try {
+            Beta.autoCheckUpgrade = false;
+            Beta.showInterruptedStrategy = false;
+            Beta.upgradeListener = new UpgradeListener() {
+                @Override
+                public void onUpgrade(int ret, UpgradeInfo strategy, boolean isManual, boolean isSilence) {
+                    if (strategy != null) {
+                        Log.d(TAG, "onUpgrade: 更新");
+                        Intent intent;
+                        if (downloadSelf) {
+                            intent = new Intent(IndexActivity.this, UpgradeService.class);
+                        } else {
+                            intent = new Intent(IndexActivity.this, BuglyUpgradeService.class);
+                        }
+                        IndexActivity.this.startService(intent);
+                    } else {
+                        Log.d(TAG, "onUpgrade: 没有更新");
+                    }
+                }
+            };
+            //测试使用key
+            //Bugly.init(getApplicationContext(), "900059606", true);
+            //正式版本发布使用key
+            Bugly.init(getApplicationContext(), "e3c3b1806e", false);
+            Beta.checkUpgrade();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DCAgent.pause(this);
+        DCPage.onExit(AppConstants.HOME_PAGE);//统计页面结束
+        DCEvent.onEventDuration(AppConstants.HOME_PAGE, (System.currentTimeMillis() - mEnter) / 1000);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(mContext);
+        mDataEyeUtils.release();
     }
 }

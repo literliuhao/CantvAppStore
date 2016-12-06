@@ -15,12 +15,15 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.update.utils.UpdateUtils;
 import com.can.appstore.widgets.CanDialog;
+import com.dataeye.sdk.api.app.DCEvent;
+import com.dataeye.sdk.api.app.channel.DCPage;
 
 import java.util.List;
 
@@ -124,11 +127,15 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
         super.onResume();
 //        registerReceiver();
 //        initData();
+        DCPage.onEntry(AppConstants.PACKAGE_MANAGE);
+        DCEvent.onEvent(AppConstants.PACKAGE_MANAGE);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        DCPage.onExit(AppConstants.PACKAGE_MANAGE);
+        DCEvent.onEventDuration(AppConstants.PACKAGE_MANAGE, mDuration);
     }
 
     @Override
