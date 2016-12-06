@@ -51,8 +51,10 @@ public class HomeRankAdapter extends RecyclerView.Adapter<HomeRankAdapter.RankAp
         mViewList.add(holder.mView);
         final AppInfo mApp = (AppInfo) mList.get(position);
         holder.mAppName.setText(mApp.getName());
-        ImageLoader.getInstance().load(mContext, holder.mAppIcon, mApp.getIcon(), R.mipmap
-                .cibn_icon_mini, R.mipmap.cibn_icon_mini, new GlideLoadTask
+
+        //防止预设图片拉伸
+        holder.mAppIcon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        ImageLoader.getInstance().load(mContext, holder.mAppIcon, mApp.getIcon(), new GlideLoadTask
                 .SuccessCallback() {
             @Override
             public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean
@@ -65,13 +67,11 @@ public class HomeRankAdapter extends RecyclerView.Adapter<HomeRankAdapter.RankAp
         }, new GlideLoadTask.FailCallback() {
             @Override
             public boolean onFail(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                holder.mAppIcon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 holder.mAppIcon.setImageResource(R.mipmap.cibn_icon_mini);
                 holder.mAppIcon.setBackgroundResource(R.drawable.shap_app_list_icon_bg);
                 return true;
             }
         });
-
 
         if ((position + 1) % 2 == 0) {
             holder.mView.setBackgroundColor(mContext.getResources().getColor(R.color.h_rank_transulcent));
