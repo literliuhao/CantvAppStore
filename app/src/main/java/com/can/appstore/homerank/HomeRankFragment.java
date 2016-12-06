@@ -1,11 +1,11 @@
 package com.can.appstore.homerank;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +17,9 @@ import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.applist.AppListActivity;
 import com.can.appstore.entity.Ranking;
+import com.can.appstore.index.IndexActivity;
 import com.can.appstore.index.interfaces.IAddFocusListener;
+import com.can.appstore.index.interfaces.IOnPagerKeyListener;
 import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.index.ui.FragmentEnum;
 import com.dataeye.sdk.api.app.DCEvent;
@@ -26,7 +28,7 @@ import com.dataeye.sdk.api.app.channel.DCPage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeRankFragment extends BaseFragment implements HomeRankContract.View {
+public class HomeRankFragment extends BaseFragment implements HomeRankContract.View, View.OnKeyListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -42,10 +44,12 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
     private LinearLayout mLinearLayout;
     private IAddFocusListener mFocusListener;
     private View mNoNetWorkView;
+    private IOnPagerKeyListener mPagerKeyListener;
     private long mEnter = 0;
 
-    public HomeRankFragment(IAddFocusListener focusListener) {
-        this.mFocusListener = focusListener;
+    public HomeRankFragment(IndexActivity indexActivity) {
+        this.mFocusListener = indexActivity;
+        this.mPagerKeyListener = indexActivity;
     }
 
     //    /**
@@ -102,7 +106,6 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
 
     @Override
     public void startLoading() {
-        //        ToastUtils.showMessageLong(getActivity().getApplicationContext(), "开始加载数据...");
     }
 
     @Override
@@ -145,16 +148,33 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
                     }
                 });
 
+                if (i == 0) {
+                    ll_more_view.setOnKeyListener(this);
+                }
+
                 views.add(childView);
             }
         }
-        final LinearLayout view = (LinearLayout) views.get(views.size() - 1);
+
+        //最左侧添加监听,为了找到前一页的最后一个
+        final LinearLayout firstView = (LinearLayout) views.get(0);
+        firstView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                RecyclerView firRecy = (RecyclerView) firstView.getChildAt(0);
+                RecyclerView.LayoutManager layoutManager = firRecy.getLayoutManager();
+                for (int i = 0; i < layoutManager.getItemCount(); i++) {
+                    layoutManager.getChildAt(i).setOnKeyListener(HomeRankFragment.this);
+                }
+            }
+        }, 1500);
+
         //将最后一个分类的右侧边距去除
+        final LinearLayout view = (LinearLayout) views.get(views.size() - 1);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams((int) getResources().getDimension(R.dimen.px490), LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.rightMargin = 0;
         view.setLayoutParams(layoutParams);
-
-        new Handler().postDelayed(new Runnable() {
+        view.postDelayed(new Runnable() {
             @Override
             public void run() {
                 //得到最后一项分类的第一条数据
@@ -222,16 +242,6 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
         return mLastView;
     }
 
-    @Override
-    public void registerFocus() {
-
-    }
-
-    @Override
-    public void removeFocus() {
-
-    }
-
     public void onResume() {
         super.onResume();
         mEnter = System.currentTimeMillis();
@@ -247,4 +257,15 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
         DCEvent.onEventDuration(AppConstants.HOME_CHARTS, (System.currentTimeMillis() - mEnter) / 1000);
         Log.w("HomeRank_onPause", "");
     }
+
+    @Override
+    public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
+        if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+            if (keyCode == 21) {
+                mPagerKeyListener.onKeyEvent(view, keyCode, keyEvent);
+            }
+        }
+        return false;
+    }
+
 }

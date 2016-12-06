@@ -199,20 +199,6 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
     }
 
     @Override
-    public void registerFocus() {
-        for (int i = 0; i < frameLayout.getChildCount(); i++) {
-            frameLayout.getChildAt(i).setFocusable(true);
-        }
-    }
-
-    @Override
-    public void removeFocus() {
-        for (int i = 0; i < frameLayout.getChildCount(); i++) {
-            frameLayout.getChildAt(i).setFocusable(false);
-        }
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
     }

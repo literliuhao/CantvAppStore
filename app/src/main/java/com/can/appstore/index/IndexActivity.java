@@ -68,6 +68,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.downloadlib.DownloadManager;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.utils.NetworkUtils;
@@ -79,40 +80,37 @@ import static com.can.appstore.index.ui.FragmentEnum.INDEX;
 /**
  * Created by liuhao on 2016/10/15.
  */
-public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener, View.OnFocusChangeListener, IOnPagerKeyListener {
+public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener, View.OnFocusChangeListener, IOnPagerKeyListener, IOnPagerListener {
+    private CanCall<ListResult<Navigation>> mNavigationCall;
     private static final String TAG = "IndexActivity";
     private List<BaseFragment> mFragmentLists;
+    private FocusScaleUtil mFocusScaleUtils;
     private IndexPagerAdapter mAdapter;
+    private FocusMoveUtil mFocusUtils;
+    private RelativeLayout rlMessage;
+    private RelativeLayout rlSearch;
     private ViewPager mViewPager;
     private TitleBar mTitleBar;
-    private RelativeLayout rlSearch;
-    private RelativeLayout rlMessage;
     private ImageView imageRed;
     private TextView textUpdate;
-    private FocusMoveUtil mFocusUtils;
-    private FocusScaleUtil mFocusScaleUtils;
-    private final int TOP_INDEX = 1;
     private final int DURATION_LARGE = 300;
     private final int DURATION_SMALL = 300;
-    private final float SCALE = 1.1f;
-    private final int SCREEN_PAGE_LIMIT = 5;
-    private final int PAGER_CURRENT = 0;
-    private final int DELAYED = 200;
-    //滚动中
-    private final int SCROLLING = 2;
-    //滚动完成
-    private final int SCROLLED = 0;
-    private int scrollStatus;
     private final int INIT_FOCUS = 0X000001;
     private final int HIDE_FOCUS = 0X000002;
-    private int currentPage;
-    private CanCall<ListResult<Navigation>> mNavigationCall;
-    private int updateNum;
-    private Context mContext;
-    private Boolean isIntercept = false;
-    private CanDialog canDialog;
-    private MessageManager messageManager;
+    private final int SCREEN_PAGE_LIMIT = 5;
+    private final int PAGER_CURRENT = 0;
+    private final int TOP_INDEX = 1;
+    private final int DELAYED = 200;
+    private final int SCROLLING = 2;
+    private final float SCALE = 1.1f;
+    private final int SCROLLED = 0;
+    private int mCurrentPage;
+    private int mUpdateNum;
     private long mEnter = 0;
+    private Context mContext;
+    private CanDialog canDialog;
+    private Boolean isIntercept = false;
+    private MessageManager messageManager;
     private HomeDataEyeUtils mDataEyeUtils;
 
     @Override
@@ -227,8 +225,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      */
     private void initData(ListResult<Navigation> navigationListResult) {
         mFragmentLists = new ArrayList<>();
-        if (null == navigationListResult.getData())
-            return;
+        if (null == navigationListResult.getData()) return;
         //根据服务器配置文件生成不同样式加入Fragment列表中
         FragmentBody fragment;
         for (int i = 0; i < navigationListResult.getData().size(); i++) {
@@ -279,63 +276,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private void bindData(ListResult<Navigation> listResult) {
         bindTtile(listResult);
         mAdapter = new IndexPagerAdapter(this.getSupportFragmentManager(), mViewPager, mFragmentLists);
-        mAdapter.setOnExtraPageChangeListener(new IOnPagerListener() {
-            @Override
-            public void onExtraPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onExtraPageSelected(int position) {
-                currentPage = position;
-                mFocusUtils.showFocus();
-                //统计首页资源位曝光量
-                mDataEyeUtils.resourcesPositionExposure(position);
-            }
-
-            @Override
-            public void onExtraPageScrollStateChanged(int state, View view) {
-                scrollStatus = state;
-                switch (currentPage) {
-                    case 0:
-                        refreshUpdate(updateNum);
-                        break;
-                    default:
-                        textUpdate.setVisibility(View.GONE);
-                        break;
-                }
-                if (state == SCROLLING) {
-                    if (!(IndexActivity.this.getCurrentFocus() instanceof LiteText)) {
-                        mFocusUtils.hideFocus();
-                    }
-                } else if (state == SCROLLED) {
-                    if (null == view) {
-                        view = IndexActivity.this.getCurrentFocus();
-                        if (!(view instanceof LiteText) && currentPage == TOP_INDEX) {
-                            mFocusUtils.setFocusView(view);
-                            mFocusUtils.startMoveFocus(view);
-                        } else {
-                            mFocusUtils.setFocusView(view, SCALE);
-                            mFocusUtils.startMoveFocus(view, SCALE);
-                        }
-                        mFocusUtils.showFocus();
-                        return;
-                    }
-                    if (!(IndexActivity.this.getCurrentFocus() instanceof LiteText)) {
-                        view.requestFocus();
-                        if (currentPage == TOP_INDEX) {
-                            mFocusUtils.setFocusView(view);
-                            mFocusUtils.startMoveFocus(view);
-                        } else {
-                            mFocusUtils.setFocusView(view, SCALE);
-                            mFocusUtils.startMoveFocus(view, SCALE);
-                        }
-                    }
-                    mFocusUtils.showFocus();
-                }
-            }
-        });
-
+        mAdapter.setOnExtraPageChangeListener(this);
         mViewPager.setAdapter(mAdapter);
         mViewPager.setOffscreenPageLimit(SCREEN_PAGE_LIMIT);
         mViewPager.setCurrentItem(PAGER_CURRENT);
@@ -361,15 +302,20 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private void loadMore() {
         //开始获取第三方屏蔽列表
         ShareData.getInstance().execute();
+        //更新接口监听
         initUpdateListener();
+        //消息接口监听
         initMsgListener();
         //统计首页资源位曝光量
         mDataEyeUtils = new HomeDataEyeUtils(MyApp.getContext());
         mDataEyeUtils.resourcesPositionExposure(0);
-        //初始化bugly
+        //恢复下载任务。2016-11-29 11:47:23 xzl
+        DownloadManager.getInstance(this).resumeAllTasks();
+        //初始化Bugly
         initBugly(true);
     }
 
+    //------------注册首页监听---------------
     private void initUpdateListener() {
         AutoUpdate.getInstance().autoUpdate(IndexActivity.this);
     }
@@ -400,6 +346,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             imageRed.setVisibility(View.GONE);
         }
     }
+    //------------注册首页监听---------------END
 
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
@@ -484,8 +431,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(UpdateApkModel model) {
-        updateNum = model.getNumber();
-        refreshUpdate(updateNum);
+        mUpdateNum = model.getNumber();
+        refreshUpdate(mUpdateNum);
     }
 
     public static void actionStart(Context context, String topicId) {
@@ -502,8 +449,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      * Bugly实现自更新
      *
      * @param downloadSelf 是否自己下载apk
-     * 自下载：可控制下载、安装
-     * Bugly下载：可控制下载，安装Bugly自行调用
+     *                     自下载：可控制下载、安装
+     *                     Bugly下载：可控制下载，安装Bugly自行调用
      */
     private void initBugly(final boolean downloadSelf) {
         try {
@@ -562,6 +509,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 canDialog.dismiss();
                 IndexActivity.this.finish();
             }
+
             @Override
             public void onClickNegative() {
                 canDialog.dismiss();
@@ -570,18 +518,63 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         canDialog.show();
     }
 
-//    @Override
-//    public boolean onKeyDown(int keyCode, KeyEvent event) {
-//        Log.i("IndexActivity", "keyCode " + keyCode);
-//        if (keyCode == KeyEvent.KEYCODE_BACK) {
-//
-//        }
-//        return super.onKeyDown(keyCode, event);
-//    }
-
     @Override
     public void onKeyEvent(View view, int i, KeyEvent keyEvent) {
         isIntercept = true;
         mHandler.sendEmptyMessage(HIDE_FOCUS);
+    }
+
+    @Override
+    public void onExtraPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onExtraPageSelected(int position) {
+        mCurrentPage = position;
+        mFocusUtils.showFocus();
+        //统计首页资源位曝光量
+        mDataEyeUtils.resourcesPositionExposure(position);
+    }
+
+    @Override
+    public void onExtraPageScrollStateChanged(int state, View view) {
+        switch (mCurrentPage) {
+            case 0:
+                refreshUpdate(mUpdateNum);
+                break;
+            default:
+                textUpdate.setVisibility(View.GONE);
+                break;
+        }
+        if (state == SCROLLING) {
+            if (!(IndexActivity.this.getCurrentFocus() instanceof LiteText)) {
+                mFocusUtils.hideFocus();
+            }
+        } else if (state == SCROLLED) {
+            if (null == view) {
+                view = IndexActivity.this.getCurrentFocus();
+                if (!(view instanceof LiteText) && mCurrentPage == TOP_INDEX) {
+                    mFocusUtils.setFocusView(view);
+                    mFocusUtils.startMoveFocus(view);
+                } else {
+                    mFocusUtils.setFocusView(view, SCALE);
+                    mFocusUtils.startMoveFocus(view, SCALE);
+                }
+                mFocusUtils.showFocus();
+                return;
+            }
+            if (!(IndexActivity.this.getCurrentFocus() instanceof LiteText)) {
+                view.requestFocus();
+                if (mCurrentPage == TOP_INDEX) {
+                    mFocusUtils.setFocusView(view);
+                    mFocusUtils.startMoveFocus(view);
+                } else {
+                    mFocusUtils.setFocusView(view, SCALE);
+                    mFocusUtils.startMoveFocus(view, SCALE);
+                }
+            }
+            mFocusUtils.showFocus();
+        }
     }
 }

@@ -105,7 +105,7 @@ public class KeyboardAdapter extends YIBaseCompatFocusAdapter {
     public void setNextFocus() {
         for (int i = 0; i < mViewList.size(); i++) {
             //1
-            if (((i + 1) % 6 == 1) && (mViewList.size() == mKeyList.size())) {
+            if ((i % 6 == 0) && (mViewList.size() == mKeyList.size())) {
                 mViewList.get(i).setNextFocusLeftId(mViewList.get(i + 5).getId());
             }
             //2
