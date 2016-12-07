@@ -3,9 +3,9 @@ package com.can.appstore.index;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -51,11 +51,10 @@ import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.update.AutoUpdate;
 import com.can.appstore.update.model.UpdateApkModel;
-import com.can.appstore.widgets.CanDialog;
-import com.can.appstore.upgrade.service.BuglyUpgradeService;
-import com.can.appstore.upgrade.service.UpgradeService;
 import com.can.appstore.upgrade.MyUpgradeListener;
+import com.can.appstore.upgrade.service.UpgradeService;
 import com.can.appstore.upgrade.view.UpgradeInFoDialog;
+import com.can.appstore.widgets.CanDialog;
 import com.dataeye.sdk.api.app.DCAgent;
 import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
@@ -64,7 +63,6 @@ import com.google.gson.reflect.TypeToken;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
-import com.tencent.bugly.beta.upgrade.UpgradeListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -519,6 +517,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         super.onDestroy();
         EventBus.getDefault().unregister(mContext);
         mDataEyeUtils.release();
+        if (messageManager != null){
+            messageManager.removeCallMsgDataUpdate();
+            messageManager = null;
+        }
     }
 
     @Override
