@@ -41,7 +41,7 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
     private IAddFocusListener mFocusListener;
     private IOnPagerKeyListener mPagerKeyListener;
     private int UPDATE_INDEX = 1;
-    private int updateNum;
+    private int DOWNLOAD_INDEX = 7;
 
     public ManagerFragment() {
     }
@@ -160,8 +160,7 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(UpdateApkModel model) {
-        updateNum = model.getNumber();
-        gridAdapter.refreshUI(UPDATE_INDEX, updateNum);
+        gridAdapter.refreshUI(UPDATE_INDEX, model.getNumber());
     }
 
     @Override
@@ -178,5 +177,6 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
     @Override
     public void getTaskCount(int count) {
         Log.i("ManagerFragment", "count " + count);
+        gridAdapter.refreshUI(DOWNLOAD_INDEX, count);
     }
 }

@@ -228,6 +228,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         //根据服务器配置文件生成不同样式加入Fragment列表中
         FragmentBody fragment;
         for (int i = 0; i < navigationListResult.getData().size(); i++) {
+            if (i == 1) continue;
             fragment = FragmentBody.newInstance(this, navigationListResult.getData().get(i));
             if(i == 0){
                 fragment.markOnKeyListener(false);
@@ -261,11 +262,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             mDatas.add(navigation.getTitle());
         }
         //排行、管理、我的应用不受服务器后台配置，因此手动干预位置
-        if (mDatas.size() > 0) {
-            mDatas.add(TOP_INDEX, getResources().getString(R.string.index_top));
-        } else {
-            mDatas.add(getResources().getString(R.string.index_top));
-        }
+//        if (mDatas.size() > 0) {
+//            mDatas.add(TOP_INDEX, getResources().getString(R.string.index_top));
+//        } else {
+//            mDatas.add(getResources().getString(R.string.index_top));
+//        }
         mDatas.add(getResources().getString(R.string.index_manager));
         mDatas.add(getResources().getString(R.string.index_myapp));
         //设置导航栏Title
