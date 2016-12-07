@@ -9,6 +9,7 @@ import com.can.appstore.active.ActiveActivity;
 import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.applist.AppListActivity;
 import com.can.appstore.specialdetail.SpecialDetailActivity;
+import com.can.appstore.speciallist.SpecialActivity;
 import com.dataeye.sdk.api.app.channel.DCResourceLocation;
 import com.dataeye.sdk.api.app.channel.DCResourcePair;
 
@@ -67,7 +68,9 @@ public class ActionUtils {
      * 活动详情⻚ ok
      * com.can.appstore.ACTION_ACTIVITY_DETAIL
      * activeId(String)
-     *
+     * <p>
+     * 专题列表 ok
+     * com.can.appstore.
      * @param mContext
      * @param id
      * @param actionStr
@@ -84,6 +87,10 @@ public class ActionUtils {
             //专题详情
             case ActionConstants.ACTION_TOPIC_DETAIL:
                 SpecialDetailActivity.actionStart(mContext, actionData);
+                break;
+            //专题列表
+            case ActionConstants.ACTION_TOPIC_LIST:
+                SpecialActivity.actionStart(mContext);
                 break;
             //应用列表
             case ActionConstants.ACTION_APP_LIST:
