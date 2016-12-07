@@ -75,6 +75,7 @@ import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PromptUtils;
 import retrofit2.Response;
 
+import static com.can.appstore.MyApp.DATAEYE_CHANNELID;
 import static com.can.appstore.index.ui.FragmentEnum.INDEX;
 
 /**
@@ -117,10 +118,15 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle();
+        initDataEye();
         initView();
         initFocus();
         getNavigation();
+    }
 
+    private void initDataEye() {
+        DCAgent.openAdTracking();//是否跟踪推广分析，默认是False，调用即为True.该接口必须在SDK初始化之前调用.
+        DCAgent.initWithAppIdAndChannelId(this, AppConstants.DATAEYE_APPID, MyApp.DATAEYE_CHANNELID);
     }
 
     @Override
