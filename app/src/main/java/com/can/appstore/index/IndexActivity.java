@@ -2,6 +2,7 @@ package com.can.appstore.index;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -229,7 +230,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         FragmentBody fragment;
         for (int i = 0; i < navigationListResult.getData().size(); i++) {
             fragment = FragmentBody.newInstance(this, navigationListResult.getData().get(i));
-            if(i == 0){
+            if (i == 0) {
                 fragment.markOnKeyListener(false);
             }
             mFragmentLists.add(fragment);
@@ -503,8 +504,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     @Override
     public void onBackPressed() {
         canDialog = new CanDialog(IndexActivity.this);
-        canDialog.setTitle(getResources().getString(R.string.index_exit_titile));
-        canDialog.setRlCOntent(false);
+        canDialog.setTitleToBottom(getResources().getString(R.string.index_exit_titile), R.dimen.dimen_32px);
+        canDialog.setMessageBackground(Color.TRANSPARENT);
         canDialog.setPositiveButton(getResources().getString(R.string.index_exit)).setNegativeButton(getResources().getString(R.string.index_cancel)).setOnCanBtnClickListener(new CanDialog.OnClickListener() {
             @Override
             public void onClickPositive() {
