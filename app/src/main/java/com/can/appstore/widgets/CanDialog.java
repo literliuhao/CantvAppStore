@@ -2,12 +2,16 @@ package com.can.appstore.widgets;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -30,7 +34,7 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
     private Button mPositiveBtn;
     private Button mNegativeBtn;
     private ImageView mDialogIcon;
-    private RelativeLayout mRlContent;
+    private RelativeLayout mMessageLayout;
 
     private OnClickListener mOnClickListener;
     private FocusMoveUtil mFocusMoveUtil;
@@ -87,7 +91,7 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
         mDialogContentMsg = (TextView) dialogView.findViewById(R.id.tv_dialog_content_message);
         mPositiveBtn = (Button) dialogView.findViewById(R.id.btn_dialog_positive);
         mNegativeBtn = (Button) dialogView.findViewById(R.id.btn_dialog_negative);
-        mRlContent = (RelativeLayout) dialogView.findViewById(R.id.rl_content);
+        mMessageLayout = (RelativeLayout) dialogView.findViewById(R.id.rl_content);
 //        Drawable drawable = BitmapUtils.blurBitmap(mContext);
 //        dialogView.setBackground(drawable);
         dialogView.setBackgroundResource(R.color.black_opa90);
@@ -169,13 +173,22 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
     }
 
     /**
-     * 是否显示内容区背景图（默认显示）
-     *
-     * @param visible
-     * @return
+     * 修改内容区域背景颜色
+     * （默认为黑色）
      */
-    public CanDialog setRlCOntent(boolean visible) {
-        this.mRlContent.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+    public CanDialog setMessageBackground(int resId) {
+        this.mMessageLayout.setBackgroundResource(resId);
+        return this;
+    }
+
+    public CanDialog setTitleToBottom(String contentMSg, int textSize) {
+        LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        this.mDialogTitle.setTextSize(mContext.getResources().getDimensionPixelSize(textSize));
+        this.mDialogTitle.setGravity(Gravity.BOTTOM);
+        this.mDialogTitle.setVisibility(View.VISIBLE);
+        this.mDialogTitle.setText(contentMSg);
+        this.mDialogTitle.setLayoutParams(titleParams);
         return this;
     }
 
