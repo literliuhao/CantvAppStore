@@ -19,7 +19,7 @@ public class DataUtils {
     private ListResult<Navigation> mListResult;
 
     private DataUtils(Context context) {
-        mContext = context;
+        mContext = context.getApplicationContext();
     }
 
     private static DataUtils instance;

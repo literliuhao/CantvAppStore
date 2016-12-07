@@ -48,7 +48,7 @@ public class BuglyUpgradeService extends IntentService {
                             Log.d(TAG, "checkUpgradeInfo: " + downloadTask.getSaveFile());
                         }
                     };
-                    UpgradeInFoDialog dialog = new UpgradeInFoDialog(BuglyUpgradeService.this,getResources().getString(R.string.system_upgrade), mUpgradeInfo
+                    UpgradeInFoDialog dialog = new UpgradeInFoDialog(BuglyUpgradeService.this,getResources().getString(R.string.app_upgrade), mUpgradeInfo
                             .versionName, mUpgradeInfo.newFeature, getResources().getString(R.string.download), listener);
                     dialog.show();
                     break;

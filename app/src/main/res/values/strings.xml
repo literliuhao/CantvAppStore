@@ -201,7 +201,8 @@
     <string name="start_app">启动</string>
     <string name="uninstall_app">卸载</string>
     <!--自更新文本-->
-    <string name="system_upgrade">系统升级</string>
+    <string name="app_upgrade">应用升级</string>
+    <string name="last_version">已经是最新版本了</string>
     <string name="install">安装</string>
     <string name="run_apk">运行apk</string>
     <string name="load_error">下载异常，升级失败</string>

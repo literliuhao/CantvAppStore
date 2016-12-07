@@ -1,18 +1,26 @@
 package com.can.appstore.upgrade.service;
 
+import android.app.Activity;
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
 import com.can.appstore.R;
+import com.can.appstore.base.BaseActivity;
 import com.can.appstore.upgrade.InstallApkListener;
 import com.can.appstore.upgrade.UpgradeUtil;
 import com.can.appstore.upgrade.view.UpgradeFailDialog;
 import com.can.appstore.upgrade.view.UpgradeInFoDialog;
 import com.can.appstore.upgrade.view.UpgradeProgressBarDialog;
+import com.google.gson.Gson;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
 
@@ -35,13 +43,20 @@ public class UpgradeService extends IntentService {
     public static final int INIT_SERVICE = 4;
     //常量
     public static final int INSTALL_DELAY = 3000;
+    public static final String UPGRADE_INFO = "upgrade";
+    public static final String NO_UPGRADE_INFO = "no_upgrade";
     //全局变量
     private int mLocalVersion;
     private String mUpdatePath;
     private String mFileName;
     private UpgradeInfo mUpgradeInfo;
     //dialog
+    private UpgradeInFoDialog mUpgradeInFoDialog;
     private UpgradeProgressBarDialog mProgressDialog;
+    private UpgradeFailDialog mFailDialog;
+
+    private BroadcastReceiver mHomeKeyReceiver;
+    private DownloadManager mManager;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -49,22 +64,25 @@ public class UpgradeService extends IntentService {
             super.handleMessage(msg);
             switch (msg.what) {
                 case SHOW_UPGRADE_INFO_DIALOG:
-                    UpgradeInFoDialog.OnUpgradeClickListener listener = new UpgradeInFoDialog.OnUpgradeClickListener() {
+                    UpgradeInFoDialog.OnUpgradeClickListener listener = new UpgradeInFoDialog
+                            .OnUpgradeClickListener() {
                         @Override
                         public void onClick() {
                             clickInstall();
                         }
                     };
-                    UpgradeInFoDialog dialog = new UpgradeInFoDialog(UpgradeService.this, getResources().getString(R
-                            .string.system_upgrade), mUpgradeInfo
-                            .versionName, mUpgradeInfo.newFeature, getResources().getString(R.string.install),
-                            listener);
-                    dialog.show();
+
+                    mUpgradeInFoDialog = new UpgradeInFoDialog(UpgradeService.this, getResources().getString(R
+                        .string.app_upgrade), mUpgradeInfo
+                        .versionName, mUpgradeInfo.newFeature, getResources().getString(R.string.install),
+                        listener);
+                    mUpgradeInFoDialog.show();
+
                     break;
                 case SHOW_UPGRADE_FAIL_DIALOG:
                     String content = (String) msg.obj;
-                    UpgradeFailDialog failDialog = new UpgradeFailDialog(UpgradeService.this, content);
-                    failDialog.show();
+                    mFailDialog = new UpgradeFailDialog(UpgradeService.this, content);
+                    mFailDialog.show();
                     break;
 
                 case SHOW_PROGRESS_DIALOG:
@@ -101,7 +119,11 @@ public class UpgradeService extends IntentService {
      * 检测更新信息并作出逻辑判断
      */
     private void checkUpgradeInfo() {
-        mUpdatePath = getExternalCacheDir().getAbsolutePath();
+
+        mManager = DownloadManager.getInstance(this);
+        mManager.getDownloadPath();
+
+        mUpdatePath = mManager.getDownloadPath() + "/upgrade";
         if (!UpgradeUtil.isFileExist(mUpdatePath)) {
             UpgradeUtil.creatDir(mUpdatePath);
         }
@@ -114,16 +136,33 @@ public class UpgradeService extends IntentService {
             e.printStackTrace();
         }
         Log.d(TAG, "LocalVersionCode=" + mLocalVersion + ",UpGradeVersionCode=" + mUpgradeInfo.versionCode);
+
         if (mUpgradeInfo.versionCode <= mLocalVersion) {
             return;
         }
+
+        //注册home键广播
+        if (mHomeKeyReceiver == null) {
+            mHomeKeyReceiver = new HomeKeyReceiver();
+        }
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+        registerReceiver(mHomeKeyReceiver, intentFilter);
+
+        //储存版本信息到sp中
+        SharedPreferences sp = getSharedPreferences(UPGRADE_INFO, Activity.MODE_PRIVATE);
+        String info = new Gson().toJson(mUpgradeInfo);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString(UPGRADE_INFO, info);
+        editor.commit();
+
+
         if (checkIsExistApk()) {
             Message msg = Message.obtain();
             msg.what = SHOW_UPGRADE_INFO_DIALOG;
             mHandler.sendMessage(msg);
         } else {
             //先清空本地存放Apk的空间
-            // TODO: 2016/11/16 要不要清空
             UpgradeUtil.delAllDateFile(mUpdatePath);
             downLoadApk(mUpgradeInfo.apkUrl);
         }
@@ -150,39 +189,13 @@ public class UpgradeService extends IntentService {
      * @param url 下载地址
      */
     private void downLoadApk(String url) {
-        DownloadManager manager = DownloadManager.getInstance(this);
+        mManager = DownloadManager.getInstance(this);
+        mManager.getDownloadPath();
         DownloadTask task = new DownloadTask(url);
         task.setFileName(mUpgradeInfo.versionCode + ".apk");
         task.setSaveDirPath(mUpdatePath);
 
-        /**
-         * 调用监听，阻止下载完成自动静默安装，不可删除
-         */
-        task.setAppListener(new AppInstallListener() {
-            @Override
-            public void onInstalling(DownloadTask downloadTask) {
-            }
-
-            @Override
-            public void onInstallSucess(String id) {
-            }
-
-            @Override
-            public void onInstallFail(String id) {
-            }
-
-            @Override
-            public void onUninstallSucess(String id) {
-
-            }
-
-            @Override
-            public void onUninstallFail(String id) {
-
-            }
-        });
-
-        manager.singleTask(task, new DownloadTaskListener() {
+        mManager.singleTask(task, new DownloadTaskListener() {
             @Override
             public void onPrepare(DownloadTask downloadTask) {
                 Log.d(TAG, "DownloadManager=onPrepare");
@@ -218,7 +231,7 @@ public class UpgradeService extends IntentService {
             public void onError(DownloadTask downloadTask, int errorCode) {
                 Log.d(TAG, "DownloadManager=onError===" + errorCode);
             }
-        });
+        }, mUpdatePath);
     }
 
 
@@ -226,7 +239,7 @@ public class UpgradeService extends IntentService {
         //显示正在安装对话框
         mHandler.sendEmptyMessage(SHOW_PROGRESS_DIALOG);
         //安装应用
-        mHandler.sendEmptyMessageDelayed(INIT_SERVICE,INSTALL_DELAY);
+        mHandler.sendEmptyMessageDelayed(INIT_SERVICE, INSTALL_DELAY);
     }
 
     private void onLoadingCompleted() {
@@ -270,6 +283,36 @@ public class UpgradeService extends IntentService {
         mHandler.sendMessage(msg);
         //安装失败，清空文件夹
         UpgradeUtil.delAllDateFile(mUpdatePath);
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
+        super.onDestroy();
+    }
+
+    class HomeKeyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)) {
+                Log.d(TAG, "ACTION_CLOSE_SYSTEM_DIALOGS: ");
+                if (mUpgradeInFoDialog != null && mUpgradeInFoDialog.isShowing()) {
+                    mUpgradeInFoDialog.dismiss();
+                }
+                if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                }
+                if (mFailDialog != null && mFailDialog.isShowing()) {
+                    mFailDialog.dismiss();
+                }
+                if (mHomeKeyReceiver != null) {
+                    Log.d(TAG, "unregisterReceiver: ");
+                    unregisterReceiver(mHomeKeyReceiver);
+                }
+
+            }
+        }
     }
 
 }

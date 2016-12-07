@@ -1,8 +1,11 @@
 package com.can.appstore.index;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -51,6 +54,8 @@ import com.can.appstore.update.model.UpdateApkModel;
 import com.can.appstore.widgets.CanDialog;
 import com.can.appstore.upgrade.service.BuglyUpgradeService;
 import com.can.appstore.upgrade.service.UpgradeService;
+import com.can.appstore.upgrade.MyUpgradeListener;
+import com.can.appstore.upgrade.view.UpgradeInFoDialog;
 import com.dataeye.sdk.api.app.DCAgent;
 import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
@@ -316,6 +321,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         //恢复下载任务。2016-11-29 11:47:23 xzl
         DownloadManager.getInstance(this).resumeAllTasks();
         //初始化Bugly
+        checkVersion();
+        //初始化bugly
         initBugly(true);
     }
 
@@ -462,21 +469,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         try {
             Beta.autoCheckUpgrade = false;
             Beta.showInterruptedStrategy = false;
-            Beta.upgradeListener = new UpgradeListener() {
-                @Override
-                public void onUpgrade(int ret, UpgradeInfo strategy, boolean isManual, boolean isSilence) {
-                    if (strategy != null) {
-                        Log.d(TAG, "onUpgrade: 更新");
-                        Intent intent;
-                        if (downloadSelf) {
-                            intent = new Intent(IndexActivity.this, UpgradeService.class);
-                        } else {
-                            intent = new Intent(IndexActivity.this, BuglyUpgradeService.class);
-                        }
-                        IndexActivity.this.startService(intent);
-                    }
-                }
-            };
+            Beta.upgradeListener = new MyUpgradeListener(IndexActivity.this, downloadSelf);
             //测试使用key
             //Bugly.init(getApplicationContext(), "900059606", true);
             //正式版本发布使用key
@@ -484,6 +477,32 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             Beta.checkUpgrade();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * 检测是否是刚升级的新版本,新版本弹出升级信息对话框
+     */
+    private void checkVersion() {
+        SharedPreferences sp = getSharedPreferences(UpgradeService.UPGRADE_INFO, Activity.MODE_PRIVATE);
+        String info = sp.getString(UpgradeService.UPGRADE_INFO, UpgradeService.NO_UPGRADE_INFO);
+        if (UpgradeService.NO_UPGRADE_INFO.equals(info)) {
+            Log.d("", "checkVersion: " + info);
+        } else {
+            try {
+                UpgradeInfo upgradeInfo = new Gson().fromJson(info, UpgradeInfo.class);
+                int localVersion = getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), PackageManager.GET_CONFIGURATIONS).versionCode;
+                Log.d("", "LocalVersionCode=" + localVersion + ",UpGradeVersionCode=" + upgradeInfo.versionCode);
+                if (localVersion == upgradeInfo.versionCode) {
+                    UpgradeInFoDialog dialog = new UpgradeInFoDialog(IndexActivity.this, getResources().getString(R.string.last_version), upgradeInfo.versionName, upgradeInfo.newFeature, getResources().getString(R.string.ok), false);
+                    dialog.show();
+                }
+                SharedPreferences.Editor editor = sp.edit();
+                editor.clear();
+                editor.commit();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
