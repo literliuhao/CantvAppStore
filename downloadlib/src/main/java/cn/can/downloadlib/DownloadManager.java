@@ -634,7 +634,7 @@ public class DownloadManager implements AppInstallListener {
      * @param task
      * @param listener
      */
-    public void singleTask(DownloadTask task, DownloadTaskListener listener) {
+    public void singleTask(DownloadTask task, DownloadTaskListener listener,String downloadPath) {
         if (!NetworkUtils.isNetworkConnected(mContext.getApplicationContext())) {
             return;
         }
@@ -646,7 +646,7 @@ public class DownloadManager implements AppInstallListener {
         task.setHttpClient(mOkHttpClient);
         task.addDownloadListener(listener);
         task.setAppListener(this);
-        task.setSaveDirPath(mDownloadPath);
+        task.setSaveDirPath(downloadPath);
         if (getDBTaskById(task.getId()) == null) {
             DownloadDBEntity dbEntity = new DownloadDBEntity(task.getId(), task.getTotalSize(),
                     task.getCompletedSize(), task.getUrl(), task.getSaveDirPath(), task
@@ -694,6 +694,9 @@ public class DownloadManager implements AppInstallListener {
 
     @Override
     public void onInstalling(DownloadTask downloadTask) {
+        if (mSingleTaskMap!=null&&mSingleTaskMap.containsKey(downloadTask.getId())) {
+            return;
+        }
         install(downloadTask);
         if (mAppInstallListeners != null) {
             Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
@@ -787,11 +790,7 @@ public class DownloadManager implements AppInstallListener {
      * @param downloadTask
      */
     public void install(DownloadTask downloadTask) {
-        if (mSingleTaskMap!=null&&mSingleTaskMap.containsKey(downloadTask.getId())) {
-            return;
-        }
         mTaskCntListener.getTaskCount(getCurrentTaskList().size());
-
         downloadTask.setDownloadStatus(AppInstallListener.APP_INSTALLING);
         Message msg = Message.obtain();
         msg.what = MSG_APP_INSTALL;
