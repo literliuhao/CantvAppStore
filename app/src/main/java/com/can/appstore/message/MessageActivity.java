@@ -155,7 +155,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         });
         mAdapter.setOnItemRemoveListener(new MessageAdapter.OnItemRemoveListener() {
             @Override
-            public void onRemoveItem(int position , String msgId) {
+            public void onRemoveItem(int position, String msgId) {
                 messageManager.deleteMsg(msgId);
                 int msgCount = msgList.size();
                 if (msgCount == 0) {
@@ -277,7 +277,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
 
 
     private void changeListStatus() {
-        for (MessageInfo msg: msgList) {
+        for (MessageInfo msg : msgList) {
             msg.setStatus(false);
         }
     }
@@ -324,7 +324,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_tag:
-                if (!messageManager.existUnreadMsg() || msgList == null || msgList.isEmpty() ) {
+                if (!messageManager.existUnreadMsg() || msgList == null || msgList.isEmpty()) {
                     return;
                 }
                 messageManager.updateAllMsgStatus();
@@ -374,6 +374,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         DCEvent.onEventDuration(AppConstants.NEWS_LIST, mDuration);
     }
 
+
     @Override
     protected void onDestroy() {
         if (focusMoveUtil != null) {
@@ -388,6 +389,12 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         }
         if (mAdapter != null) {
             mAdapter.setFocusListener(null);
+            mAdapter.setOnItemRemoveListener(null);
+            mAdapter.setOnMsgFocusLayoutClickListener(null);
+            mAdapter.setOnMsgFocusLayoutFocusChangeListener(null);
+        }
+        if (mHandler != null) {
+            mHandler = null;
         }
         super.onDestroy();
     }
