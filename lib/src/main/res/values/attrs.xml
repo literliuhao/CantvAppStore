@@ -9,11 +9,16 @@
 
     <declare-styleable name="RoundCornerView">
         <attr name="cornerSize" format="dimension"/>
+        <attr name="placeholder" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="RoundCornerView2">
+        <attr name="cornerSize2" format="dimension"/>
         <attr name="maskColor" format="color"/>
         <attr name="maskSize" format="dimension"/>
     </declare-styleable>
 
-    <declare-styleable name="GlideRoundCornerImageView">
+    <declare-styleable name="GlideRoundCornerImageView2">
         <attr name="background_res" format="reference|color"/>
         <attr name="loading_res" format="reference"/>
         <attr name="src" format="reference|color"/>

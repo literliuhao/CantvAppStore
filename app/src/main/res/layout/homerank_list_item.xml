@@ -7,13 +7,17 @@
                 android:descendantFocusability="blocksDescendants"
                 android:focusable="true">
 
-    <cn.can.tvlib.ui.view.RoundCornerImageView
+    <cn.can.tvlib.ui.view.GlideRoundCornerImageView
         android:id="@+id/icon_view"
         android:layout_width="@dimen/px72"
         android:layout_height="@dimen/px72"
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/px24"
-        android:scaleType="fitXY"/>
+        android:background="@drawable/shap_app_list_icon_bg"
+        android:scaleType="fitXY"
+        app:cornerSize="@dimen/px24"
+        app:placeholder="@mipmap/cibn_icon_mini"
+        />
 
     <RelativeLayout
         android:layout_width="@dimen/px56"

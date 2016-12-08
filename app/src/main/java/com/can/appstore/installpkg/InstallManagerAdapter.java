@@ -1,6 +1,5 @@
 package com.can.appstore.installpkg;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,7 +41,6 @@ public class InstallManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
         Installholder.appName.setText(mDatas.get(position).getAppName());
         Installholder.appSize.setText(mDatas.get(position).getAppSize());
         Installholder.appVersioncode.setText(mDatas.get(position).getVersionName());
-        //Glide.with(MyApp.mContext).load(mDatas.get(position).getIcon()).into(holder.appIcon);
         Installholder.appIcon.setImageDrawable(mDatas.get(position).getIcon());
         Installholder.installIcon.setVisibility(mDatas.get(position).getInstall() ? View.VISIBLE : View.INVISIBLE);
         Installholder.installing.setVisibility(mDatas.get(position).getIsInstalling() ? (mDatas.get(position).getInstall() ? View.INVISIBLE : View.VISIBLE) : View.INVISIBLE);

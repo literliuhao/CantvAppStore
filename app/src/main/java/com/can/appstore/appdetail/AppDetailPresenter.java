@@ -17,6 +17,7 @@ import com.can.appstore.entity.Result;
 import com.can.appstore.http.CanCall;
 import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
+import com.can.appstore.http.EmptyCallback;
 import com.can.appstore.http.HttpManager;
 import com.can.appstore.widgets.CanDialog;
 import com.dataeye.sdk.api.app.channel.DCResource;
@@ -603,11 +604,14 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
      * 统计下载量
      */
     public void downloadCount() {
+        //dataEye统计下载量
         if (mFromPage.equals(AppConstants.RESEARCH_PAGE)) {
             DCResource.onDownloadFromSearch(mAppInfo.getName(), mValue);
         } else if (mFromPage.equals(AppConstants.RESOURCES_POSITION)) {
             DCResource.onDownloadFromResourceLocation(mAppInfo.getName(), mValue);
         }
+        //调用接口统计下载量
+        HttpManager.getApiService().appDownloadReport(mAppId, mAppInfo.getVersionCode()).enqueue(new EmptyCallback());
     }
 
     /**

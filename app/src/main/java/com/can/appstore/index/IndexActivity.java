@@ -1,7 +1,11 @@
 package com.can.appstore.index;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -47,9 +51,10 @@ import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.update.AutoUpdate;
 import com.can.appstore.update.model.UpdateApkModel;
-import com.can.appstore.widgets.CanDialog;
-import com.can.appstore.upgrade.service.BuglyUpgradeService;
+import com.can.appstore.upgrade.MyUpgradeListener;
 import com.can.appstore.upgrade.service.UpgradeService;
+import com.can.appstore.upgrade.view.UpgradeInFoDialog;
+import com.can.appstore.widgets.CanDialog;
 import com.dataeye.sdk.api.app.DCAgent;
 import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
@@ -58,7 +63,6 @@ import com.google.gson.reflect.TypeToken;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
-import com.tencent.bugly.beta.upgrade.UpgradeListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -107,7 +111,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private int mCurrentPage;
     private int mUpdateNum;
     private long mEnter = 0;
-    private Context mContext;
     private CanDialog canDialog;
     private Boolean isIntercept = false;
     private MessageManager messageManager;
@@ -117,17 +120,22 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle();
+        initDataEye();
         initView();
         initFocus();
         getNavigation();
+    }
 
+    private void initDataEye() {
+        DCAgent.openAdTracking();//是否跟踪推广分析，默认是False，调用即为True.该接口必须在SDK初始化之前调用.
+        DCAgent.initWithAppIdAndChannelId(getApplicationContext(), AppConstants.DATAEYE_APPID, MyApp.DATAEYE_CHANNELID);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         mEnter = System.currentTimeMillis();
-        DCAgent.resume(this);
+        DCAgent.resume(getApplicationContext());
         DCPage.onEntry(AppConstants.HOME_PAGE);
         DCEvent.onEvent(AppConstants.HOME_PAGE);
         refreshMsg();
@@ -145,7 +153,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      * 首页初始化所有View
      */
     private void initView() {
-        mContext = IndexActivity.this;
         //导航
         mTitleBar = (TitleBar) findViewById(R.id.id_indicator);
         mTitleBar.initTitle(this);
@@ -168,13 +175,12 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      * 首页焦点初始化，并且在IndexActivity做统一处理
      */
     private void initFocus() {
-        mFocusUtils = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
-        mFocusUtils.hideFocus();
+        mFocusUtils = new FocusMoveUtil(this, R.drawable.btn_focus, getWindow().getDecorView(), true, true, 2);
         mFocusScaleUtils = new FocusScaleUtil(DURATION_LARGE, DURATION_SMALL, SCALE, null, null);
     }
 
     public void getNavigation() {
-        if (NetworkUtils.isNetworkConnected(mContext)) {
+        if (NetworkUtils.isNetworkConnected(this)) {
             mNavigationCall = HttpManager.getApiService().getNavigations();
             mNavigationCall.enqueue(new CanCallback<ListResult<Navigation>>() {
                 @Override
@@ -194,20 +200,21 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void ProxyCache(Response<ListResult<Navigation>> response) {
+        DataUtils dataUtil = DataUtils.getInstance(this);
         try {
             //JSON不完整或错误会出现异常
             ListResult<Navigation> listResult;
             if (null != response) {
                 listResult = response.body();
             } else {
-                listResult = new Gson().fromJson(DataUtils.getInstance(mContext).getCache(), new TypeToken<ListResult<Navigation>>() {
+                listResult = new Gson().fromJson(DataUtils.getInstance(this).getCache(), new TypeToken<ListResult<Navigation>>() {
                 }.getType());
             }
-            DataUtils.getInstance(mContext).setIndexData(listResult);
+            dataUtil.setIndexData(listResult);
             parseData(listResult);
         } catch (Exception e) {
-            PromptUtils.toast(mContext, getResources().getString(R.string.index_data_error));
-            DataUtils.getInstance(mContext).clearData();
+            PromptUtils.toast(this, getResources().getString(R.string.index_data_error));
+            dataUtil.clearData();
             e.printStackTrace();
         }
     }
@@ -224,11 +231,17 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      */
     private void initData(ListResult<Navigation> navigationListResult) {
         mFragmentLists = new ArrayList<>();
-        if (null == navigationListResult.getData()) return;
+        if (null == navigationListResult.getData())
+            return;
         //根据服务器配置文件生成不同样式加入Fragment列表中
         FragmentBody fragment;
         for (int i = 0; i < navigationListResult.getData().size(); i++) {
-            fragment = new FragmentBody(this, navigationListResult.getData().get(i));
+            if (i == 1)
+                continue;
+            fragment = FragmentBody.newInstance(this, navigationListResult.getData().get(i));
+            if (i == 0) {
+                fragment.markOnKeyListener(false);
+            }
             mFragmentLists.add(fragment);
         }
 
@@ -258,11 +271,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             mDatas.add(navigation.getTitle());
         }
         //排行、管理、我的应用不受服务器后台配置，因此手动干预位置
-        if (mDatas.size() > 0) {
-            mDatas.add(TOP_INDEX, getResources().getString(R.string.index_top));
-        } else {
-            mDatas.add(getResources().getString(R.string.index_top));
-        }
+        //        if (mDatas.size() > 0) {
+        //            mDatas.add(TOP_INDEX, getResources().getString(R.string.index_top));
+        //        } else {
+        //            mDatas.add(getResources().getString(R.string.index_top));
+        //        }
         mDatas.add(getResources().getString(R.string.index_manager));
         mDatas.add(getResources().getString(R.string.index_myapp));
         //设置导航栏Title
@@ -311,12 +324,14 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         //恢复下载任务。2016-11-29 11:47:23 xzl
         DownloadManager.getInstance(this).resumeAllTasks();
         //初始化Bugly
+        checkVersion();
+        //初始化bugly
         initBugly(true);
     }
 
     //------------注册首页监听---------------
     private void initUpdateListener() {
-        EventBus.getDefault().register(mContext);
+        EventBus.getDefault().register(this);
         AutoUpdate.getInstance().autoUpdate(IndexActivity.this);
     }
 
@@ -337,11 +352,12 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 imageRed.setVisibility(View.VISIBLE);
             }
         });
-        messageManager.requestMsg(mContext);
+        messageManager.requestMsg(this);
     }
 
     private void refreshMsg() {
-        if (null == messageManager) return;
+        if (null == messageManager)
+            return;
         if (messageManager.existUnreadMsg()) {
             imageRed.setVisibility(View.VISIBLE);
         } else {
@@ -381,11 +397,12 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 isIntercept = false;
                 return;
             }
-            if (null == v) return;
+            if (null == v)
+                return;
             switch (sourceEnum) {
                 case INDEX:
                     v.bringToFront();
-                    mFocusUtils.setFocusRes(mContext, R.drawable.btn_circle_focus);
+                    mFocusUtils.setFocusRes(this, R.drawable.btn_circle_focus);
                     mFocusUtils.startMoveFocus(v);
                     break;
                 case TITLE:
@@ -395,19 +412,19 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                         v.bringToFront();
                         mFocusScaleUtils.scaleToLarge(v);
                     }
-                    mFocusUtils.setFocusRes(mContext, R.drawable.btn_focus);
+                    mFocusUtils.setFocusRes(this, R.drawable.btn_focus);
                     mFocusUtils.startMoveFocus(v, SCALE);
                     break;
                 case RANK:
                     v.bringToFront();
-                    mFocusUtils.setFocusRes(mContext, R.drawable.btn_focus);
+                    mFocusUtils.setFocusRes(this, R.drawable.btn_focus);
                     mFocusUtils.startMoveFocus(v);
                     break;
                 case NORMAL:
                 case MYAPP:
                 case MANAGE:
                     v.bringToFront();
-                    mFocusUtils.setFocusRes(mContext, R.drawable.btn_focus);
+                    mFocusUtils.setFocusRes(this, R.drawable.btn_focus);
                     mFocusUtils.startMoveFocus(v, SCALE);
                     mFocusScaleUtils.scaleToLarge(v);
                     break;
@@ -457,65 +474,93 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         try {
             Beta.autoCheckUpgrade = false;
             Beta.showInterruptedStrategy = false;
-            Beta.upgradeListener = new UpgradeListener() {
-                @Override
-                public void onUpgrade(int ret, UpgradeInfo strategy, boolean isManual, boolean isSilence) {
-                    if (strategy != null) {
-                        Log.d(TAG, "onUpgrade: 更新");
-                        Intent intent;
-                        if (downloadSelf) {
-                            intent = new Intent(IndexActivity.this, UpgradeService.class);
-                        } else {
-                            intent = new Intent(IndexActivity.this, BuglyUpgradeService.class);
-                        }
-                        IndexActivity.this.startService(intent);
-                    } else {
-                        Log.d(TAG, "onUpgrade: 没有更新");
-                    }
-                }
-            };
+            Beta.upgradeListener = new MyUpgradeListener(IndexActivity.this, downloadSelf);
             //测试使用key
-            //Bugly.init(getApplicationContext(), "900059606", true);
+            //Bugly.init(getApplicationContext(), "900059606", false);
             //正式版本发布使用key
             Bugly.init(getApplicationContext(), "e3c3b1806e", false);
-            Beta.checkUpgrade();
+            Beta.checkUpgrade(false, true);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * 检测是否是刚升级的新版本,新版本弹出升级信息对话框
+     */
+    private void checkVersion() {
+        SharedPreferences sp = getSharedPreferences(UpgradeService.UPGRADE_INFO, Activity.MODE_PRIVATE);
+        String info = sp.getString(UpgradeService.UPGRADE_INFO, UpgradeService.NO_UPGRADE_INFO);
+        if (UpgradeService.NO_UPGRADE_INFO.equals(info)) {
+            Log.d("", "checkVersion: " + info);
+        } else {
+            try {
+                UpgradeInfo upgradeInfo = new Gson().fromJson(info, UpgradeInfo.class);
+                int localVersion = getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), PackageManager.GET_CONFIGURATIONS).versionCode;
+                Log.d("", "LocalVersionCode=" + localVersion + ",UpGradeVersionCode=" + upgradeInfo.versionCode);
+                if (localVersion == upgradeInfo.versionCode) {
+                    UpgradeInFoDialog dialog = new UpgradeInFoDialog(IndexActivity.this, getResources().getString(R.string.last_version), upgradeInfo.versionName, upgradeInfo.newFeature, getResources().getString(R.string.ok), false);
+                    dialog.show();
+                }
+                SharedPreferences.Editor editor = sp.edit();
+                editor.clear();
+                editor.commit();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     protected void onPause() {
-        super.onPause();
-        DCAgent.pause(this);
+        DCAgent.pause(MyApp.getContext());
         DCPage.onExit(AppConstants.HOME_PAGE);//统计页面结束
         DCEvent.onEventDuration(AppConstants.HOME_PAGE, (System.currentTimeMillis() - mEnter) / 1000);
+        super.onPause();
     }
 
     @Override
     protected void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        if (mHandler != null) {
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler = null;
+        }
+        if (messageManager != null) {
+            messageManager.removeCallMsgDataUpdate();
+            messageManager = null;
+        }
+        if (mDataEyeUtils != null) {
+            mDataEyeUtils.release();
+            mDataEyeUtils = null;
+        }
+        if (mFocusUtils != null) {
+            mFocusUtils.release();
+            mFocusUtils = null;
+        }
         super.onDestroy();
-        EventBus.getDefault().unregister(mContext);
-        mDataEyeUtils.release();
     }
 
     @Override
     public void onBackPressed() {
-        canDialog = new CanDialog(IndexActivity.this);
-        canDialog.setTitle(getResources().getString(R.string.index_exit_titile));
-        canDialog.setRlCOntent(false);
-        canDialog.setPositiveButton(getResources().getString(R.string.index_exit)).setNegativeButton(getResources().getString(R.string.index_cancel)).setOnCanBtnClickListener(new CanDialog.OnClickListener() {
-            @Override
-            public void onClickPositive() {
-                canDialog.dismiss();
-                IndexActivity.this.finish();
-            }
+        if (canDialog == null) {
+            canDialog = new CanDialog(this);
+            canDialog.setTitleToBottom(getResources().getString(R.string.index_exit_titile), R.dimen.dimen_32px);
+            canDialog.setMessageBackground(Color.TRANSPARENT);
+            canDialog.setPositiveButton(getResources().getString(R.string.index_exit)).setNegativeButton(getResources().getString(R.string.index_cancel))
+                    .setOnCanBtnClickListener(new CanDialog.OnClickListener() {
+                        @Override
+                        public void onClickPositive() {
+                            canDialog.dismiss();
+                            IndexActivity.this.finish();
+                        }
 
-            @Override
-            public void onClickNegative() {
-                canDialog.dismiss();
-            }
-        });
+                        @Override
+                        public void onClickNegative() {
+                            canDialog.dismiss();
+                        }
+                    });
+        }
         canDialog.show();
     }
 
@@ -535,7 +580,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mCurrentPage = position;
         mFocusUtils.showFocus();
         //统计首页资源位曝光量
-        mDataEyeUtils.resourcesPositionExposure(position);
+        if (mDataEyeUtils != null) {
+            mDataEyeUtils.resourcesPositionExposure(position);
+        }
     }
 
     @Override

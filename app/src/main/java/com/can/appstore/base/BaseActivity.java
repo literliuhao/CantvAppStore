@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 
+import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.dataeye.sdk.api.app.DCAgent;
 
@@ -36,7 +37,7 @@ public abstract class BaseActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
         startHomeKeyListener();
-        DCAgent.resume(this);
+        DCAgent.resume(MyApp.getContext());
         mEnter = System.currentTimeMillis();
     }
 
@@ -44,7 +45,7 @@ public abstract class BaseActivity extends FragmentActivity {
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mHomeKeyReceiver);
-        DCAgent.pause(this);
+        DCAgent.pause(MyApp.getContext());
         mDuration = (System.currentTimeMillis() - mEnter) / 1000;
     }
 

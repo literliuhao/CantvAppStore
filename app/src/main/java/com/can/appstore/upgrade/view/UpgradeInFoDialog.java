@@ -30,7 +30,15 @@ public class UpgradeInFoDialog extends Dialog {
         void onClick();
     }
 
-    public UpgradeInFoDialog(Context context, String title, String version, String content, String buttonText, OnUpgradeClickListener onUpgradeClickListener) {
+    public UpgradeInFoDialog(Context context, String title, String version, String content, String buttonText,boolean isSystem) {
+        super(context, R.style.upgradeDialogStyle);
+        mContext = context;
+        initView();
+        initData(title, version, content, buttonText);
+    }
+
+    public UpgradeInFoDialog(Context context, String title, String version, String content, String buttonText,
+                             OnUpgradeClickListener onUpgradeClickListener) {
         super(context, R.style.upgradeDialogStyle);
         getWindow().setType((WindowManager.LayoutParams.TYPE_SYSTEM_ALERT));
         mContext = context;
@@ -56,7 +64,9 @@ public class UpgradeInFoDialog extends Dialog {
             @Override
             public void onClick(View v) {
                 dismiss();
-                mOnUpgradeClickListener.onClick();
+                if (mOnUpgradeClickListener != null) {
+                    mOnUpgradeClickListener.onClick();
+                }
             }
         });
     }
@@ -70,7 +80,7 @@ public class UpgradeInFoDialog extends Dialog {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_BACK){
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             return true;
         }
         return super.onKeyDown(keyCode, event);

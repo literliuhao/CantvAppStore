@@ -11,8 +11,6 @@ import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.target.Target;
 import com.can.appstore.R;
 import com.can.appstore.entity.Layout;
 import com.can.appstore.entity.Navigation;
@@ -21,10 +19,7 @@ import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.interfaces.IOnPagerKeyListener;
 import com.can.appstore.index.model.ActionUtils;
 
-import cn.can.tvlib.imageloader.GlideLoadTask;
-import cn.can.tvlib.imageloader.ImageLoader;
-import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
-import cn.can.tvlib.ui.view.RoundCornerImageView;
+import cn.can.tvlib.ui.view.GlideRoundCornerImageView;
 import cn.can.tvlib.utils.DisplayUtil;
 
 /**
@@ -33,20 +28,31 @@ import cn.can.tvlib.utils.DisplayUtil;
 public class FragmentBody extends BaseFragment implements View.OnFocusChangeListener, View.OnKeyListener {
     public static final String BUNDLE_TITLE = "title";
     private String mTitle = "DefaultValue";
-    private Navigation mNavigation;
-    private IAddFocusListener mFocusListener;
-    private int bodeColor = 0x782A2B2B;
-    private View lastView = null;
-    private FrameLayout frameLayout;
     private IOnPagerKeyListener mPagerKeyListener;
+    private IAddFocusListener mFocusListener;
+    private Navigation mNavigation;
+    private FrameLayout frameLayout;
+    private View lastView = null;
+    private Float SEVICER_HEIGHT = 1080f;
+    private Boolean isOnKeyListener = true;
 
     public FragmentBody() {
     }
 
-    public FragmentBody(IndexActivity indexActivity, Navigation navigation) {
-        mFocusListener = indexActivity;
-        mPagerKeyListener = indexActivity;
+    public void setFocusListener(IAddFocusListener focusListener) {
+        mFocusListener = focusListener;
+    }
+
+    public void setPagerKeyListener(IOnPagerKeyListener pagerKeyListener) {
+        mPagerKeyListener = pagerKeyListener;
+    }
+
+    public void setPageData(Navigation navigation) {
         mNavigation = navigation;
+    }
+
+    public void markOnKeyListener(Boolean bool){
+        isOnKeyListener = bool;
     }
 
     /**
@@ -112,8 +118,9 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
         FrameLayout imageFrame;
         for (int j = 0; j < mNavigation.getLayout().size(); j++) {
             final Layout childBean = mNavigation.getLayout().get(j);
-            final RoundCornerImageView myImageView = new RoundCornerImageView(getActivity());
-            myImageView.setScaleType(MyImageView.ScaleType.CENTER_INSIDE);
+            final GlideRoundCornerImageView myImageView = new GlideRoundCornerImageView(getActivity());
+            myImageView.setScaleType(MyImageView.ScaleType.FIT_XY);
+            myImageView.setCornerRadius(getResources().getDimensionPixelSize(R.dimen.px8));
 //            myImageView.setImageURI(childBean.getIcon());
             imageFrame = new FrameLayout(context);
             imageFrame.setId(Integer.parseInt(childBean.getId()));
@@ -131,18 +138,12 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
                     }
                 }
             });
-            if (childBean.getX() == 0) {
+            if (childBean.getX() == 0 && isOnKeyListener) {
                 imageFrame.setOnKeyListener(this);
             }
 
             if (ActionUtils.getInstance().checkURL(childBean.getIcon())) {
-                ImageLoader.getInstance().buildTask(myImageView, childBean.getIcon()).bitmapTransformation(new GlideRoundTransform(context, getResources().getDimension(R.dimen.px8))).size(childBean.getWidth(), childBean.getHeight()).placeholder(R.mipmap.icon_load_default).errorHolder(R.mipmap.icon_loading_fail).successCallback(new GlideLoadTask.SuccessCallback() {
-                    @Override
-                    public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        myImageView.setImageDrawable(resource);
-                        return true;
-                    }
-                }).build().start(context);
+                myImageView.load(childBean.getIcon(), 0, R.mipmap.icon_load_default, R.mipmap.icon_loading_fail, true);
             } else {
                 Glide.with(context).load(ActionUtils.getInstance().getResourceId(childBean.getIcon())).into(myImageView);
             }
@@ -166,11 +167,10 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
 
     private Navigation converPosition(Navigation mNavigation, float scale) {
         Navigation converNavigation = mNavigation;
-        if (null == converNavigation ) return null;
+        if (null == converNavigation) return null;
         for (int i = 0; i < converNavigation.getLayout().size(); i++) {
             Layout layoutBean = converNavigation.getLayout().get(i);
             layoutBean.setX((int) ((converNavigation.getBaseWidth() * layoutBean.getX() * scale) + (converNavigation.getLineSpace() * scale) * layoutBean.getX()));
-            Log.i("FragmentBody", "childBean X " + layoutBean.getX());
             layoutBean.setY((int) ((converNavigation.getBaseHeight() * layoutBean.getY() * scale) + (converNavigation.getLineSpace() * scale) * layoutBean.getY()));
             layoutBean.setWidth((int) (((converNavigation.getBaseWidth() * layoutBean.getWidth()) * scale) + (((layoutBean.getWidth() - 1) * converNavigation.getLineSpace()) * scale)));
             layoutBean.setHeight((int) (((converNavigation.getBaseHeight() * layoutBean.getHeight()) * scale) + (((layoutBean.getHeight() - 1) * converNavigation.getLineSpace()) * scale)));
@@ -184,9 +184,16 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
         } else {
             if (mView.getTop() <= lastView.getTop() && mView.getLeft() >= lastView.getLeft()) {
                 lastView = mView;
-                Log.i("FragmentBody", "return lastView " + lastView.getId());
             }
         }
+    }
+
+    public static FragmentBody newInstance(IndexActivity indexActivity, Navigation navigation) {
+        FragmentBody fragmentBody = new FragmentBody();
+        fragmentBody.setFocusListener(indexActivity);
+        fragmentBody.setPagerKeyListener(indexActivity);
+        fragmentBody.setPageData(navigation);
+        return fragmentBody;
     }
 
     /**
@@ -198,7 +205,7 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
         //得到当前分辨率
         float currentH = DisplayUtil.getScreenHeight(context);
         //已知后端配置为1080p
-        float serviceH = 1080f;
+        float serviceH = SEVICER_HEIGHT;
         return currentH / serviceH;
     }
 
@@ -220,8 +227,6 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
      */
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-//        Log.i("FragmentBody", v.getId() + "");
-//        v.bringToFront();
         mFocusListener.addFocusListener(v, hasFocus, FragmentEnum.NORMAL);
     }
 
@@ -232,7 +237,6 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
 
     @Override
     public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
-        Log.i("FragmentBody", "keyCode " + keyCode);
         if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
             mPagerKeyListener.onKeyEvent(view, keyCode, keyEvent);
         }
