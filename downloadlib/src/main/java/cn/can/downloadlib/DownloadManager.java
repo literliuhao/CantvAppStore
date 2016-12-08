@@ -101,7 +101,7 @@ public class DownloadManager implements AppInstallListener {
                     Bundle bundle = msg.getData();
                     String path = bundle.getString("path");
                     String id = bundle.getString("id");
-                    ShellUtils.CommandResult res = ShellUtils.execCommand("pm install " + path, false);
+                    ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r " + path, false);
                     if (res.result == 0) {
                         onInstallSucess(id);
                     } else {
@@ -790,7 +790,10 @@ public class DownloadManager implements AppInstallListener {
      * @param downloadTask
      */
     public void install(DownloadTask downloadTask) {
-        mTaskCntListener.getTaskCount(getCurrentTaskList().size());
+        /**添加叛空处理，xzl 2016-12-8 17:51:28*/
+        if(mTaskCntListener!=null){
+            mTaskCntListener.getTaskCount(getCurrentTaskList().size());
+        }
         downloadTask.setDownloadStatus(AppInstallListener.APP_INSTALLING);
         Message msg = Message.obtain();
         msg.what = MSG_APP_INSTALL;

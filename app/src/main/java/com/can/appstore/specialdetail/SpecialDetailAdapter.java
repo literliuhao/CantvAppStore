@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.can.appstore.R;
@@ -14,11 +13,7 @@ import com.can.appstore.entity.AppInfo;
 
 import java.util.List;
 
-import cn.can.tvlib.imageloader.ImageLoader;
-import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
-import cn.can.tvlib.ui.focus.CanRecyclerViewFocusHelper;
 import cn.can.tvlib.ui.view.GlideRoundCornerImageView;
-import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 /**
@@ -44,7 +39,7 @@ public class SpecialDetailAdapter extends CanRecyclerViewAdapter<AppInfo> {
     @Override
     protected void bindContentData(AppInfo appInfo, RecyclerView.ViewHolder holder, int position) {
         MyViewHolder viewHolder = (MyViewHolder) holder;
-        viewHolder.mAppImgView.load(appInfo.getIcon(), 0, R.mipmap.cibn_icon);
+        viewHolder.mAppImgView.load(appInfo.getIcon());
         viewHolder.mAppNameView.setText(appInfo.getName());
         viewHolder.mAppSize.setText(appInfo.getSizeStr());
         viewHolder.mAppDownloadNum.setText(appInfo.getDownloadCount());

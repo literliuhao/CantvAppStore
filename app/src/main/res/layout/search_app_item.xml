@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:roundCornerView="http://schemas.android.com/apk/res-auto"
                 android:layout_width="@dimen/px228"
                 android:layout_height="@dimen/px240"
                 android:layout_marginBottom="@dimen/px25"
@@ -19,12 +20,16 @@
         android:orientation="vertical">
 
 
-        <cn.can.tvlib.ui.view.RoundCornerImageView
+        <cn.can.tvlib.ui.view.GlideRoundCornerImageView
             android:id="@+id/app_icon"
             android:layout_width="@dimen/px120"
             android:layout_height="@dimen/px120"
             android:layout_marginTop="@dimen/px20"
-            android:scaleType="fitXY"/>
+            android:background="@drawable/shap_app_list_icon_bg"
+            android:scaleType="fitXY"
+            roundCornerView:cornerSize="@dimen/px24"
+            roundCornerView:placeholder="@mipmap/cibn_icon"
+            />
 
         <TextView
             android:id="@+id/app_name_view"

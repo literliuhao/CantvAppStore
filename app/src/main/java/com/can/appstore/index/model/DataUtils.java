@@ -26,7 +26,7 @@ public class DataUtils {
 
     public static DataUtils getInstance(Context context) {
         if (null == instance) {
-            instance = new DataUtils(context);
+            instance = new DataUtils(context.getApplicationContext());
         }
         return instance;
     }

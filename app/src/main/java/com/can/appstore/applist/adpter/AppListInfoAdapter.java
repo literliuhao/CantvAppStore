@@ -39,7 +39,7 @@ public class AppListInfoAdapter extends CanRecyclerViewAdapter<AppInfo> {
     @Override
     protected void bindContentData(AppInfo mDatas, RecyclerView.ViewHolder holder, int position) {
         AppItemViewHolder itemViewHolder = (AppItemViewHolder) holder;
-        itemViewHolder.iv_app_list_item.load(mDatas.getIcon(), R.drawable.shap_app_list_icon_bg, R.mipmap.cibn_icon);
+        itemViewHolder.iv_app_list_item.load(mDatas.getIcon());
         itemViewHolder.iv_app_list_name.setText(mDatas.getName());
         itemViewHolder.tv_app_list_size.setText(mDatas.getSizeStr());
         itemViewHolder.tv_app_list_volume.setText(mDatas.getDownloadCount());

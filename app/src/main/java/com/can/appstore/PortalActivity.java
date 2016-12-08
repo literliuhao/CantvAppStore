@@ -22,6 +22,8 @@ import com.can.appstore.specialdetail.SpecialDetailActivity;
 import com.can.appstore.uninstallmanager.UninstallManagerActivity;
 import com.can.appstore.upgrade.InstallApkListener;
 import com.can.appstore.upgrade.UpgradeUtil;
+import com.can.appstore.upgrade.activity.UpgradeInfoActivity;
+import com.can.appstore.upgrade.view.UpgradeInFoDialog;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -105,11 +107,8 @@ public class PortalActivity extends Activity {
                 Log.d("", "mRecyclerView" + position);
                 // TODO: 2016/11/4  添加跳转页面点击事件
                 if (position == 0) {
-                    Intent intent = new Intent(PortalActivity.this, AppListActivity.class);
-                    intent.putExtra(AppListActivity.ENTRY_KEY_SRC_TYPE, AppListActivity.PAGE_TYPE_APP_LIST);
-                    intent.putExtra(AppListActivity.ENTRY_KEY_TOPIC_ID, "");
-                    intent.putExtra(AppListActivity.ENTRY_KEY_TYPE_ID, "5");
-                    PortalActivity.this.startActivity(intent);
+                    Intent intent = new Intent(PortalActivity.this, UpgradeInfoActivity.class);
+                    startActivity(intent);
                 } else if (position == 1) {
                     Intent intent = new Intent(PortalActivity.this, DownloadLeadAcitivity.class);
                     startActivity(intent);

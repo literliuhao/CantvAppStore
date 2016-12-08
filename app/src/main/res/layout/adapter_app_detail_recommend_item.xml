@@ -16,8 +16,10 @@
         android:layout_height="@dimen/dimen_120px"
         android:layout_centerVertical="true"
         android:layout_marginStart="@dimen/dimen_24px"
-        android:scaleType="centerInside"
+        android:background="@drawable/shap_detail_recommend_icon_bg"
+        android:scaleType="fitXY"
         custom:cornerSize="@dimen/dimen_20px"
+        custom:placeholder="@mipmap/cibn_icon"
         />
 
     <LinearLayout

@@ -90,10 +90,10 @@ public class PromptUtils {
                         public void run() {
                             synchronized (synObj) {
                                 if (mToast == null) {
-                                    mToast = new Toast(context);
+                                    mToast = new Toast(context.getApplicationContext());
                                 }
                                 if (mTextView == null) {
-                                    mTextView = new TextView(context);
+                                    mTextView = new TextView(context.getApplicationContext());
                                     mTextView.setBackgroundResource(R.drawable.shape_toast);
                                     mTextView.setTextColor(Color.WHITE);
                                     mTextView.setPadding(50, 30, 50, 30);

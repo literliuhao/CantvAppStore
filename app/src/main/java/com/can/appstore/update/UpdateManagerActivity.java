@@ -296,7 +296,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                 } else {
                     downloadTask = new DownloadTask();
                     String md5 = MD5.MD5(downloadUrl);
-                    downloadTask.setFileName(md5);
+                    downloadTask.setFileName(mUpdateList.get(position).getAppName()+"1");
                     downloadTask.setId(md5);
                     downloadTask.setUrl(downloadUrl);
                     status.setText(getResources().getString(R.string.update_download_waitting));
@@ -571,6 +571,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         mFocusMoveUtil = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
         mFocusScaleUtil = new FocusScaleUtil();
         myFocusRunnable = new MyFocusRunnable();
+        mFocusMoveUtil.hideFocusForShowDelay(500);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         CanRecyclerViewDivider canRecyclerViewDivider = new CanRecyclerViewDivider(0, getResources().getDimensionPixelSize(R.dimen.px38), 0);
         mRecyclerView.addItemDecoration(canRecyclerViewDivider);
@@ -650,6 +651,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         mRecyclerAdapter.notifyDataSetChanged();
         if (mDatas.size() > 0) {
             mDetectionButton.setNextFocusRightId(R.id.rv_update_recyclerview);
+            mAutoButton.setNextFocusRightId(R.id.rv_update_recyclerview);
         } else {
             mDetectionButton.setNextFocusRightId(R.id.bt_update_detection);
             mAutoButton.setNextFocusRightId(R.id.bt_update_auto);
