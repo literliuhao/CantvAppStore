@@ -1,6 +1,8 @@
 package com.can.appstore.http;
 
 import com.can.appstore.AppConstants;
+import com.can.appstore.BuildConfig;
+import com.can.appstore.entity.TvInfoModel;
 
 import java.io.IOException;
 
@@ -20,15 +22,15 @@ public class RequestParamsInterceptor implements Interceptor {
             HttpUrl url = request.url()
                     .newBuilder()
                     // Test -->
-                    .addQueryParameter("channelId", "12")
-                    .addQueryParameter("internalModel", "neibu")
-                    .addQueryParameter("model", "f66")
-                    .addQueryParameter("versionId", "1")
+//                    .addQueryParameter("channelId", "12")
+//                    .addQueryParameter("internalModel", "neibu")
+//                    .addQueryParameter("model", "f66")
+//                    .addQueryParameter("versionId", "1")
                     // <-- Test
-//                    .addQueryParameter("channelId", TvInfoModel.getInstance().getChannelId())
-//                    .addQueryParameter("internalModel", TvInfoModel.getInstance().getInternalmodelName())
-//                    .addQueryParameter("model", TvInfoModel.getInstance().getModelName())
-//                    .addQueryParameter("versionId", String.valueOf(BuildConfig.VERSION_CODE))
+                    .addQueryParameter("channelId", TvInfoModel.getInstance().getChannelId())
+                    .addQueryParameter("internalModel", TvInfoModel.getInstance().getInternalmodelName())
+                    .addQueryParameter("model", TvInfoModel.getInstance().getModelName())
+                    .addQueryParameter("versionId", String.valueOf(BuildConfig.VERSION_CODE))
                     .addQueryParameter("mac", NetworkUtils.getMac())
                     .build();
             request = request.newBuilder().url(url)
