@@ -111,7 +111,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private int mCurrentPage;
     private int mUpdateNum;
     private long mEnter = 0;
-    private Context mContext;
     private CanDialog canDialog;
     private Boolean isIntercept = false;
     private MessageManager messageManager;
@@ -129,14 +128,14 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     private void initDataEye() {
         DCAgent.openAdTracking();//是否跟踪推广分析，默认是False，调用即为True.该接口必须在SDK初始化之前调用.
-        DCAgent.initWithAppIdAndChannelId(MyApp.getContext(), AppConstants.DATAEYE_APPID, MyApp.DATAEYE_CHANNELID);
+        DCAgent.initWithAppIdAndChannelId(getApplicationContext(), AppConstants.DATAEYE_APPID, MyApp.DATAEYE_CHANNELID);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         mEnter = System.currentTimeMillis();
-        DCAgent.resume(MyApp.getContext());
+        DCAgent.resume(getApplicationContext());
         DCPage.onEntry(AppConstants.HOME_PAGE);
         DCEvent.onEvent(AppConstants.HOME_PAGE);
         refreshMsg();
@@ -154,7 +153,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      * 首页初始化所有View
      */
     private void initView() {
-        mContext = IndexActivity.this;
         //导航
         mTitleBar = (TitleBar) findViewById(R.id.id_indicator);
         mTitleBar.initTitle(this);
@@ -177,13 +175,12 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      * 首页焦点初始化，并且在IndexActivity做统一处理
      */
     private void initFocus() {
-        mFocusUtils = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
-        mFocusUtils.hideFocus();
+        mFocusUtils = new FocusMoveUtil(this, R.drawable.btn_focus, getWindow().getDecorView(), true, true, 2);
         mFocusScaleUtils = new FocusScaleUtil(DURATION_LARGE, DURATION_SMALL, SCALE, null, null);
     }
 
     public void getNavigation() {
-        if (NetworkUtils.isNetworkConnected(mContext)) {
+        if (NetworkUtils.isNetworkConnected(this)) {
             mNavigationCall = HttpManager.getApiService().getNavigations();
             mNavigationCall.enqueue(new CanCallback<ListResult<Navigation>>() {
                 @Override
@@ -203,20 +200,21 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void ProxyCache(Response<ListResult<Navigation>> response) {
+        DataUtils dataUtil = DataUtils.getInstance(this);
         try {
             //JSON不完整或错误会出现异常
             ListResult<Navigation> listResult;
             if (null != response) {
                 listResult = response.body();
             } else {
-                listResult = new Gson().fromJson(DataUtils.getInstance(mContext).getCache(), new TypeToken<ListResult<Navigation>>() {
+                listResult = new Gson().fromJson(DataUtils.getInstance(this).getCache(), new TypeToken<ListResult<Navigation>>() {
                 }.getType());
             }
-            DataUtils.getInstance(mContext).setIndexData(listResult);
+            dataUtil.setIndexData(listResult);
             parseData(listResult);
         } catch (Exception e) {
-            PromptUtils.toast(mContext, getResources().getString(R.string.index_data_error));
-            DataUtils.getInstance(mContext).clearData();
+            PromptUtils.toast(this, getResources().getString(R.string.index_data_error));
+            dataUtil.clearData();
             e.printStackTrace();
         }
     }
@@ -333,7 +331,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     //------------注册首页监听---------------
     private void initUpdateListener() {
-        EventBus.getDefault().register(mContext);
+        EventBus.getDefault().register(this);
         AutoUpdate.getInstance().autoUpdate(IndexActivity.this);
     }
 
@@ -354,7 +352,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 imageRed.setVisibility(View.VISIBLE);
             }
         });
-        messageManager.requestMsg(mContext);
+        messageManager.requestMsg(this);
     }
 
     private void refreshMsg() {
@@ -404,7 +402,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             switch (sourceEnum) {
                 case INDEX:
                     v.bringToFront();
-                    mFocusUtils.setFocusRes(mContext, R.drawable.btn_circle_focus);
+                    mFocusUtils.setFocusRes(this, R.drawable.btn_circle_focus);
                     mFocusUtils.startMoveFocus(v);
                     break;
                 case TITLE:
@@ -414,19 +412,19 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                         v.bringToFront();
                         mFocusScaleUtils.scaleToLarge(v);
                     }
-                    mFocusUtils.setFocusRes(mContext, R.drawable.btn_focus);
+                    mFocusUtils.setFocusRes(this, R.drawable.btn_focus);
                     mFocusUtils.startMoveFocus(v, SCALE);
                     break;
                 case RANK:
                     v.bringToFront();
-                    mFocusUtils.setFocusRes(mContext, R.drawable.btn_focus);
+                    mFocusUtils.setFocusRes(this, R.drawable.btn_focus);
                     mFocusUtils.startMoveFocus(v);
                     break;
                 case NORMAL:
                 case MYAPP:
                 case MANAGE:
                     v.bringToFront();
-                    mFocusUtils.setFocusRes(mContext, R.drawable.btn_focus);
+                    mFocusUtils.setFocusRes(this, R.drawable.btn_focus);
                     mFocusUtils.startMoveFocus(v, SCALE);
                     mFocusScaleUtils.scaleToLarge(v);
                     break;
@@ -515,17 +513,16 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     @Override
     protected void onPause() {
-        super.onPause();
         DCAgent.pause(MyApp.getContext());
         DCPage.onExit(AppConstants.HOME_PAGE);//统计页面结束
         DCEvent.onEventDuration(AppConstants.HOME_PAGE, (System.currentTimeMillis() - mEnter) / 1000);
+        super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(mContext);
-        if (mHandler != null){
+        EventBus.getDefault().unregister(this);
+        if (mHandler != null) {
             mHandler.removeCallbacksAndMessages(null);
             mHandler = null;
         }
@@ -535,30 +532,34 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         }
         if (mDataEyeUtils != null) {
             mDataEyeUtils.release();
+            mDataEyeUtils = null;
         }
+        if (mFocusUtils != null) {
+            mFocusUtils.release();
+            mFocusUtils = null;
+        }
+        super.onDestroy();
     }
 
     @Override
     public void onBackPressed() {
-        if(canDialog == null){
-            canDialog = new CanDialog(IndexActivity.this);
+        if (canDialog == null) {
+            canDialog = new CanDialog(this);
             canDialog.setTitleToBottom(getResources().getString(R.string.index_exit_titile), R.dimen.dimen_32px);
             canDialog.setMessageBackground(Color.TRANSPARENT);
-            canDialog.setPositiveButton(getResources().getString(R.string.index_exit)).setNegativeButton(getResources().getString(R.string.index_cancel)).setOnCanBtnClickListener(new CanDialog.OnClickListener() {
-                @Override
-                public void onClickPositive() {
-                    canDialog.dismiss();
-                    if (mDataEyeUtils != null) {
-                        mDataEyeUtils.release();
-                    }
-                    IndexActivity.this.finish();
-                }
+            canDialog.setPositiveButton(getResources().getString(R.string.index_exit)).setNegativeButton(getResources().getString(R.string.index_cancel))
+                    .setOnCanBtnClickListener(new CanDialog.OnClickListener() {
+                        @Override
+                        public void onClickPositive() {
+                            canDialog.dismiss();
+                            IndexActivity.this.finish();
+                        }
 
-                @Override
-                public void onClickNegative() {
-                    canDialog.dismiss();
-                }
-            });
+                        @Override
+                        public void onClickNegative() {
+                            canDialog.dismiss();
+                        }
+                    });
         }
         canDialog.show();
     }
