@@ -3,10 +3,8 @@ package com.can.appstore;
 import android.app.Application;
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.can.appstore.entity.TvInfoModel;
-import com.dataeye.sdk.api.app.DCAgent;
 
 /**
  * ================================================
@@ -19,31 +17,31 @@ import com.dataeye.sdk.api.app.DCAgent;
  */
 public class MyApp extends Application {
     private static MyApp INSTANCE;
-    public static String DATAEYE_CHANNELID = "C42S-10002";//测试渠道,正式的默认渠道,发布正式版本时将getDataEyeChannelid打开
+    public static String DATAEYE_CHANNELID = "C42S-10002";//测试渠道,正式的默认渠道
 
     @Override
     public void onCreate() {
         super.onCreate();
         INSTANCE = this;
-        getDataEyeChannelid();
+        getDataEyeChannelId();
     }
 
     public static Context getContext() {
         return INSTANCE.getApplicationContext();
     }
 
-    private void getDataEyeChannelid() {
-        String channelid = TvInfoModel.getInstance().getChannelId();
+    private void getDataEyeChannelId() {
+        TvInfoModel.getInstance().init(this);
+        String channelId = TvInfoModel.getInstance().getChannelId();
         String modelName = TvInfoModel.getInstance().getModelName();
-        if (channelid != null && channelid.contains("|")) {
-            channelid = channelid.substring(0, channelid.indexOf("|") - 1);
+        if (channelId != null && channelId.contains("|")) {
+            channelId = channelId.substring(0, channelId.indexOf("|")).trim();
         }
-        if (!TextUtils.isEmpty(modelName) && !TextUtils.isEmpty(channelid)) {
-            MyApp.DATAEYE_CHANNELID = modelName + "-" + channelid;
-        } else if (!TextUtils.isEmpty(channelid)) {
-            MyApp.DATAEYE_CHANNELID = channelid;
+        if (!TextUtils.isEmpty(modelName) && !TextUtils.isEmpty(channelId)) {
+            MyApp.DATAEYE_CHANNELID = modelName + "-" + channelId;
+        } else if (!TextUtils.isEmpty(channelId)) {
+            MyApp.DATAEYE_CHANNELID = channelId;
         }
-        Log.d("", "getChannelid: channelid :" + channelid + "  modelName :" + modelName + " MyApp.DATAEYE_CHANNELID : " + MyApp.DATAEYE_CHANNELID);
     }
 
 
