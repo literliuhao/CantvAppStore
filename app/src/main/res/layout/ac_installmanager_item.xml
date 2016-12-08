@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="@dimen/px424"
-    android:layout_height="@dimen/px184"
-    android:background="@drawable/selector_updateitem"
-    android:descendantFocusability="blocksDescendants"
-    android:focusable="true">
+                xmlns:roundCornerView="http://schemas.android.com/apk/res-auto"
+                android:layout_width="@dimen/px424"
+                android:layout_height="@dimen/px184"
+                android:background="@drawable/selector_updateitem"
+                android:descendantFocusability="blocksDescendants"
+                android:focusable="true">
 
     <RelativeLayout
         android:id="@+id/rl_layout"
@@ -17,16 +18,18 @@
             android:layout_height="@dimen/px136"
             android:layout_marginLeft="@dimen/px24"
             android:layout_marginTop="@dimen/px24"
+            android:background="@drawable/shap_app_list_icon_bg"
             android:scaleType="fitXY"
-            android:src="@mipmap/ic_launcher" />
+            roundCornerView:cornerSize="@dimen/px24"
+            roundCornerView:placeholder="@mipmap/cibn_icon"/>
 
         <TextView
             android:id="@+id/tv_installpkg_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/px24"
-            android:layout_marginTop="@dimen/px34"
             android:layout_marginRight="@dimen/px20"
+            android:layout_marginTop="@dimen/px34"
             android:layout_toRightOf="@id/iv_installpkg_icon"
             android:ellipsize="marquee"
             android:focusable="true"
@@ -36,7 +39,7 @@
             android:singleLine="true"
             android:text="@string/install_title"
             android:textColor="#ccffffff"
-            android:textSize="@dimen/px32" />
+            android:textSize="@dimen/px32"/>
 
         <TextView
             android:id="@+id/tv_installpkg_versioncode"
@@ -44,17 +47,17 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/tv_installpkg_name"
             android:layout_marginLeft="@dimen/px24"
-            android:layout_marginTop="@dimen/px6"
             android:layout_marginRight="@dimen/px20"
+            android:layout_marginTop="@dimen/px6"
+            android:layout_toRightOf="@id/iv_installpkg_icon"
             android:ellipsize="marquee"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:marqueeRepeatLimit="marquee_forever"
-            android:layout_toRightOf="@id/iv_installpkg_icon"
             android:singleLine="true"
             android:text="@string/install_app_versionname"
             android:textColor="#80ffffff"
-            android:textSize="@dimen/px24" />
+            android:textSize="@dimen/px24"/>
 
         <TextView
             android:id="@+id/tv_installpkg_size"
@@ -66,7 +69,7 @@
             android:layout_toRightOf="@id/iv_installpkg_icon"
             android:text="@string/install_app_size"
             android:textColor="#80ffffff"
-            android:textSize="@dimen/px24" />
+            android:textSize="@dimen/px24"/>
     </RelativeLayout>
 
     <ImageView
@@ -76,7 +79,7 @@
         android:layout_alignParentLeft="true"
         android:scaleType="centerCrop"
         android:src="@mipmap/install_ready"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/tv_install_installing"
@@ -91,6 +94,6 @@
         android:text="@string/install_installing"
         android:textColor="#cc0e0f12"
         android:textSize="@dimen/px22"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
 </RelativeLayout>

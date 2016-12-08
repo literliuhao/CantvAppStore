@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.can.appstore.AppConstants;
-import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.entity.AppInfo;
@@ -20,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.tvlib.imageloader.ImageLoader;
+import cn.can.tvlib.ui.view.GlideRoundCornerImageView;
 
 /**
  * Created by yibh on 2016/10/14 18:48 .
@@ -37,7 +37,7 @@ public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapte
 
     public class HotViewHolder extends RecyclerView.ViewHolder {
         TextView mAppName;
-        ImageView mAppIcon;
+        GlideRoundCornerImageView mAppIcon;
         TextView mAppSize;  //app大小
         TextView mAppDownloadCount; //下载量
         ImageView mAppLabelImg; //标签(左上角展示)
@@ -47,7 +47,7 @@ public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapte
             super(itemView);
             mView = itemView;
             mAppName = (TextView) itemView.findViewById(R.id.app_name_view);
-            mAppIcon = (ImageView) itemView.findViewById(R.id.app_icon);
+            mAppIcon = (GlideRoundCornerImageView) itemView.findViewById(R.id.app_icon);
             mAppLabelImg = (ImageView) itemView.findViewById(R.id.label_img);
             mAppSize = (TextView) itemView.findViewById(R.id.app_size_view);
             mAppDownloadCount = (TextView) itemView.findViewById(R.id.app_dwoncount_view);
@@ -63,7 +63,7 @@ public class HotRecommendAdapter extends RecyclerView.Adapter<HotRecommendAdapte
             mAppName.setText(app.getName());
             mAppSize.setText(app.getSizeStr());
             mAppDownloadCount.setText(app.getDownloadCount());
-            ImageLoader.getInstance().load(MyApp.getContext(), mAppIcon, app.getIcon());
+            mAppIcon.load(app.getIcon());
             //+100是为了防止在搜索页出现相同的id
             mView.setId(position + 100);
             mView.setOnClickListener(new View.OnClickListener() {

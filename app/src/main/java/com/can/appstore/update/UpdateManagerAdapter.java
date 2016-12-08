@@ -1,7 +1,6 @@
 package com.can.appstore.update;
 
 
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,8 +10,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.target.Target;
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.installpkg.utils.InstallPkgUtils;
@@ -26,9 +23,7 @@ import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
-import cn.can.tvlib.imageloader.GlideLoadTask;
-import cn.can.tvlib.imageloader.ImageLoader;
-import cn.can.tvlib.ui.view.RoundCornerImageView;
+import cn.can.tvlib.ui.view.GlideRoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.utils.PromptUtils;
 
@@ -65,29 +60,7 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
         updateHolder.appName.setText(date.getAppName());
         updateHolder.appSize.setText(date.getAppSize());
         updateHolder.appVersioncode.setText(mDatas.get(position).getVersionName());
-        //updateHolder.appIcon.setImageDrawable(mDatas.get(position).getIcon());
-        ImageLoader.getInstance().load(getAttachedView().getContext(), updateHolder.appIcon, mDatas.get(position).getIconUrl(), R.mipmap
-                .cibn_icon, R.mipmap.cibn_icon, new GlideLoadTask
-                .SuccessCallback() {
-            @Override
-            public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean
-                    isFromMemoryCache, boolean isFirstResource) {
-                Log.d(TAG, "onSuccess: ");
-                updateHolder.appIcon.setScaleType(ImageView.ScaleType.FIT_XY);
-                updateHolder.appIcon.setImageDrawable(resource);
-                updateHolder.appIcon.setBackgroundColor(Color.TRANSPARENT);
-                return true;
-            }
-        }, new GlideLoadTask.FailCallback() {
-            @Override
-            public boolean onFail(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                Log.d(TAG, "onFail: ");
-                updateHolder.appIcon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                updateHolder.appIcon.setImageResource(R.mipmap.cibn_icon);
-                updateHolder.appIcon.setBackgroundResource(R.drawable.shap_app_list_icon_bg);
-                return true;
-            }
-        });
+        updateHolder.appIcon.load(mDatas.get(position).getIconUrl());
         updateHolder.updatedIcon.setVisibility(mDatas.get(position).getUpdated() ? View.VISIBLE : View.INVISIBLE);
         updateHolder.downloading.setVisibility(View.INVISIBLE);
         /**
@@ -356,7 +329,7 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
     }
 
     class UpdateViewHolder extends RecyclerView.ViewHolder {
-        RoundCornerImageView appIcon;
+        GlideRoundCornerImageView appIcon;
         TextView appName;
         TextView appVersioncode;
         TextView appSize;
@@ -369,7 +342,7 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
             appName = (TextView) view.findViewById(R.id.tv_updateapp_name);
             appSize = (TextView) view.findViewById(R.id.tv_updateapp_size);
             appVersioncode = (TextView) view.findViewById(R.id.tv_updateapp_versioncode);
-            appIcon = (RoundCornerImageView) view.findViewById(R.id.iv_updateapp_icon);
+            appIcon = (GlideRoundCornerImageView) view.findViewById(R.id.iv_updateapp_icon);
             progressbar = (ProgressBar) view.findViewById(R.id.pb_updateapp_progressbar);
             updatedIcon = (ImageView) view.findViewById(R.id.iv_updateapp_updatedicon);
             downloading = (TextView) view.findViewById(R.id.tv_updateapp_downloading);

@@ -47,7 +47,8 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
     private IOnPagerKeyListener mPagerKeyListener;
     private long mEnter = 0;
 
-    public HomeRankFragment(){}
+    public HomeRankFragment() {
+    }
 
     public HomeRankFragment(IndexActivity indexActivity) {
         this.mFocusListener = indexActivity;
@@ -166,7 +167,9 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
                 RecyclerView firRecy = (RecyclerView) firstView.getChildAt(0);
                 RecyclerView.LayoutManager layoutManager = firRecy.getLayoutManager();
                 for (int i = 0; i < layoutManager.getItemCount(); i++) {
-                    layoutManager.getChildAt(i).setOnKeyListener(HomeRankFragment.this);
+                    if (null != layoutManager.getChildAt(i)) {
+                        layoutManager.getChildAt(i).setOnKeyListener(HomeRankFragment.this);
+                    }
                 }
             }
         }, 1500);
