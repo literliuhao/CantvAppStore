@@ -1,8 +1,5 @@
 package com.can.appstore.http;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-
 import com.can.appstore.AppConstants;
 import com.can.appstore.BuildConfig;
 import com.can.appstore.entity.TvInfoModel;
