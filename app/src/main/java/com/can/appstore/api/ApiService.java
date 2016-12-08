@@ -14,6 +14,8 @@ import com.can.appstore.http.CanCall;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
@@ -120,5 +122,5 @@ public interface ApiService {
      * @return
      */
     @GET("application/addappdowncnt")
-    CanCall<Result> appDownloadReport(@Query("id") String appId, @Query("versionCode") int versionCode);
+    Call<ResponseBody> appDownloadReport(@Query("id") String appId, @Query("versionCode") int versionCode);
 }
