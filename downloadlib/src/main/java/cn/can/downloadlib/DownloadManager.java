@@ -790,7 +790,10 @@ public class DownloadManager implements AppInstallListener {
      * @param downloadTask
      */
     public void install(DownloadTask downloadTask) {
-        mTaskCntListener.getTaskCount(getCurrentTaskList().size());
+        /**添加叛空处理，xzl 2016-12-8 17:51:28*/
+        if(mTaskCntListener!=null){
+            mTaskCntListener.getTaskCount(getCurrentTaskList().size());
+        }
         downloadTask.setDownloadStatus(AppInstallListener.APP_INSTALLING);
         Message msg = Message.obtain();
         msg.what = MSG_APP_INSTALL;
