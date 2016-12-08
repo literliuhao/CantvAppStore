@@ -11,6 +11,9 @@
         android:id="@+id/iv_introduc_item"
         android:layout_width="@dimen/dimen_513px"
         android:layout_height="@dimen/dimen_288px"
-        custom:cornerSize="@dimen/dimen_8px"/>
+        android:background="@drawable/shap_image_bg"
+        android:scaleType="fitXY"
+        custom:cornerSize="@dimen/dimen_8px"
+        custom:placeholder="@mipmap/cibn_picture"/>
 
 </LinearLayout>

@@ -11,10 +11,11 @@ import com.can.appstore.entity.Ranking;
 import com.can.appstore.entity.Result;
 import com.can.appstore.entity.SpecialTopic;
 import com.can.appstore.http.CanCall;
-import com.can.appstore.http.TvInfoHolderWrapper;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
@@ -85,7 +86,7 @@ public interface ApiService {
      * @param key 搜索关键字
      */
     @GET("start/search")
-    CanCall<ListResult<AppInfo>> search(@Query("keyword") String key,@Query("pageIndex") int pageIndex,@Query("pageSize") int pageSize);
+    CanCall<ListResult<AppInfo>> search(@Query("keyword") String key, @Query("pageIndex") int pageIndex, @Query("pageSize") int pageSize);
 
     /**
      * 获取隐藏应用列表
@@ -112,4 +113,14 @@ public interface ApiService {
      */
     @GET("application/getmessage")
     CanCall<Result<MessageContainer>> getMessages();
+
+    /**
+     * 应用下载上报接口
+     *
+     * @param appId       应用ID
+     * @param versionCode 应用版本号
+     * @return
+     */
+    @GET("application/addappdowncnt")
+    Call<ResponseBody> appDownloadReport(@Query("id") String appId, @Query("versionCode") int versionCode);
 }

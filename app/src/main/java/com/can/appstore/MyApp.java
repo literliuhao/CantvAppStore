@@ -2,8 +2,9 @@ package com.can.appstore;
 
 import android.app.Application;
 import android.content.Context;
+import android.text.TextUtils;
 
-import com.dataeye.sdk.api.app.DCAgent;
+import com.can.appstore.entity.TvInfoModel;
 
 /**
  * ================================================
@@ -16,22 +17,31 @@ import com.dataeye.sdk.api.app.DCAgent;
  */
 public class MyApp extends Application {
     private static MyApp INSTANCE;
+    public static String DATAEYE_CHANNELID = "C42S-10002";//测试渠道,正式的默认渠道
 
     @Override
     public void onCreate() {
         super.onCreate();
         INSTANCE = this;
-        initDataEye();
-    }
-
-
-    private void initDataEye() {
-        DCAgent.openAdTracking();//是否跟踪推广分析，默认是False，调用即为True.该接口必须在SDK初始化之前调用.
-        DCAgent.initWithAppIdAndChannelId(this, AppConstants.DATAEYE_APPID, AppConstants.DATAEYE_CHANNELID);
+        getDataEyeChannelId();
     }
 
     public static Context getContext() {
         return INSTANCE.getApplicationContext();
+    }
+
+    private void getDataEyeChannelId() {
+        TvInfoModel.getInstance().init(this);
+        String channelId = TvInfoModel.getInstance().getChannelId();
+        String modelName = TvInfoModel.getInstance().getModelName();
+        if (channelId != null && channelId.contains("|")) {
+            channelId = channelId.substring(0, channelId.indexOf("|")).trim();
+        }
+        if (!TextUtils.isEmpty(modelName) && !TextUtils.isEmpty(channelId)) {
+            MyApp.DATAEYE_CHANNELID = modelName + "-" + channelId;
+        } else if (!TextUtils.isEmpty(channelId)) {
+            MyApp.DATAEYE_CHANNELID = channelId;
+        }
     }
 
 
@@ -58,8 +68,7 @@ public class MyApp extends Application {
     //            if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)) {
     //                String packageName = intent.getDataString().substring(8);
     //                String appName = PackageUtil.getAppInfo(getApplicationContext(), packageName).appName;
-    //                ToastUtils.showMessage(getApplicationContext(), appName + getResources().getString(R.string
-    // .install_success));
+    //                ToastUtils.showMessage(getApplicationContext(), appName + getResources().getString(R.string.install_success));
     //            } else if (intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)) {
     //                String packageName = intent.getData().getSchemeSpecificPart();
     //            }

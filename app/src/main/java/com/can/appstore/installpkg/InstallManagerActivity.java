@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -453,7 +454,9 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
             return;
         }
         if (bean != null) {
-            canDialog.setTitle(bean.getAppName()).setIcon(bean.getIcon()).setRlCOntent(false).setNegativeButton(getResources().getString(R.string.install_dialog_delete)).setPositiveButton(getResources().getString(R.string.install_dialog_install));
+            canDialog.setTitle(bean.getAppName()).setIcon(bean.getIcon()).setMessageBackground(Color.TRANSPARENT).setNegativeButton
+                    (getResources()
+                            .getString(R.string.install_dialog_delete)).setPositiveButton(getResources().getString(R.string.install_dialog_install));
             canDialog.setOnCanBtnClickListener(new CanDialog.OnClickListener() {
                 @Override
                 public void onClickPositive() {
@@ -507,6 +510,7 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
 
     /**
      * 限制点击频率
+     *
      * @return
      */
     private boolean isFastContinueClickView() {
@@ -520,6 +524,7 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
 
     /**
      * 限制移动速度
+     *
      * @param event
      * @return
      */

@@ -7,7 +7,10 @@ import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
+
 import com.can.appstore.R;
 import com.can.appstore.upgrade.widgets.UpgradeProgressBar;
 

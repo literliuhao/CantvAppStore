@@ -14,8 +14,10 @@
         android:id="@+id/special_detail_item_appicon"
         android:layout_width="@dimen/px132"
         android:layout_height="@dimen/px132"
-        roundCornerImage:src="@mipmap/cibn_icon"
+        android:scaleType="fitXY"
+        android:background="@drawable/shap_app_list_icon_bg"
         roundCornerImage:cornerSize="@dimen/px20"
+        roundCornerImage:placeholder="@mipmap/cibn_icon"
         />
     <TextView
         android:layout_marginTop="@dimen/px20"

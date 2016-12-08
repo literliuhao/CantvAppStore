@@ -1,8 +1,5 @@
 package com.can.appstore.http;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-
 import com.can.appstore.AppConstants;
 import com.can.appstore.BuildConfig;
 import com.can.appstore.entity.TvInfoModel;
@@ -24,11 +21,17 @@ public class RequestParamsInterceptor implements Interceptor {
         if (urlStr.startsWith(AppConstants.BASE_URL)) {
             HttpUrl url = request.url()
                     .newBuilder()
+                    // Test -->
+//                    .addQueryParameter("channelId", "12")
+//                    .addQueryParameter("internalModel", "neibu")
+//                    .addQueryParameter("model", "f66")
+//                    .addQueryParameter("versionId", "1")
+                    // <-- Test
                     .addQueryParameter("channelId", TvInfoModel.getInstance().getChannelId())
                     .addQueryParameter("internalModel", TvInfoModel.getInstance().getInternalmodelName())
                     .addQueryParameter("model", TvInfoModel.getInstance().getModelName())
-                    .addQueryParameter("mac", NetworkUtils.getMac())
                     .addQueryParameter("versionId", String.valueOf(BuildConfig.VERSION_CODE))
+                    .addQueryParameter("mac", NetworkUtils.getMac())
                     .build();
             request = request.newBuilder().url(url)
                     .build();
