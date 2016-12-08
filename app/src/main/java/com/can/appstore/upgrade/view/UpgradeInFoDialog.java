@@ -36,13 +36,6 @@ public class UpgradeInFoDialog extends Dialog {
         initView();
         initData(title, version, content, buttonText);
     }
-    public UpgradeInFoDialog(Context context, String title, String version, String content, String buttonText) {
-        super(context, R.style.upgradeDialogStyle);
-        getWindow().setType((WindowManager.LayoutParams.TYPE_SYSTEM_ALERT));
-        mContext = context;
-        initView();
-        initData(title, version, content, buttonText);
-    }
 
     public UpgradeInFoDialog(Context context, String title, String version, String content, String buttonText,
                              OnUpgradeClickListener onUpgradeClickListener) {

@@ -4,9 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.can.appstore.PortalActivity;
+import com.can.appstore.R;
 import com.can.appstore.index.IndexActivity;
 import com.can.appstore.upgrade.service.BuglyUpgradeService;
 import com.can.appstore.upgrade.service.UpgradeService;
+import com.can.appstore.upgrade.view.UpgradeInFoDialog;
 import com.tencent.bugly.beta.UpgradeInfo;
 import com.tencent.bugly.beta.upgrade.UpgradeListener;
 
