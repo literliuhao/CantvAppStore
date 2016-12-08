@@ -19,13 +19,13 @@ import com.dataeye.sdk.api.app.DCAgent;
  */
 public class MyApp extends Application {
     private static MyApp INSTANCE;
-    public static String DATAEYE_CHANNELID = "Can_W55";//需要从canos上获取渠道id,测试时暂时写死,发布正式版本时将getDataEyeChannelid打开
+    public static String DATAEYE_CHANNELID = "C42S-10002";//测试渠道,正式的默认渠道,发布正式版本时将getDataEyeChannelid打开
 
     @Override
     public void onCreate() {
         super.onCreate();
         INSTANCE = this;
-        //        getDataEyeChannelid();
+        getDataEyeChannelid();
     }
 
     public static Context getContext() {
