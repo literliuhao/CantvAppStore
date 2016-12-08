@@ -28,16 +28,16 @@ public class SystemUtil {
      * 内部存储空间总大小
      * @return 单位：Byte
      */
-    public static long getInternalTotalSpace(){
-        return new StatFs(Environment.getDataDirectory().getAbsolutePath()).getTotalBytes();
+    public static long getInternalTotalSpace(Context context){
+        return new StatFs(context.getFilesDir().getAbsolutePath()).getTotalBytes();
     }
 
     /**
      * 内部存储空间剩余大小
      * @return 单位：Byte
      */
-    public static long getInternalAvailableSpace(){
-        return new StatFs(Environment.getDataDirectory().getAbsolutePath()).getAvailableBytes();
+    public static long getInternalAvailableSpace(Context context ){
+        return new StatFs(context.getFilesDir().getAbsolutePath()).getAvailableBytes();
     }
 
     /**
