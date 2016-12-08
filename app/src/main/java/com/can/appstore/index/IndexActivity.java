@@ -530,6 +530,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             messageManager.removeCallMsgDataUpdate();
             messageManager = null;
         }
+        if (mDataEyeUtils != null) {
+            mDataEyeUtils.release();
+        }
     }
 
     @Override
@@ -541,9 +544,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             @Override
             public void onClickPositive() {
                 canDialog.dismiss();
-                if (mDataEyeUtils != null) {
-                    mDataEyeUtils.release();
-                }
                 IndexActivity.this.finish();
             }
 
