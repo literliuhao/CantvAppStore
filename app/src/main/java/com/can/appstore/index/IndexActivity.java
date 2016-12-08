@@ -51,10 +51,10 @@ import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.update.AutoUpdate;
 import com.can.appstore.update.model.UpdateApkModel;
-import com.can.appstore.upgrade.MyUpgradeListener;
-import com.can.appstore.upgrade.service.UpgradeService;
-import com.can.appstore.upgrade.view.UpgradeInFoDialog;
 import com.can.appstore.widgets.CanDialog;
+import com.can.appstore.upgrade.service.UpgradeService;
+import com.can.appstore.upgrade.MyUpgradeListener;
+import com.can.appstore.upgrade.view.UpgradeInFoDialog;
 import com.dataeye.sdk.api.app.DCAgent;
 import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
@@ -475,10 +475,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             Beta.showInterruptedStrategy = false;
             Beta.upgradeListener = new MyUpgradeListener(IndexActivity.this, downloadSelf);
             //测试使用key
-            //Bugly.init(getApplicationContext(), "900059606", true);
+            //Bugly.init(getApplicationContext(), "900059606", false);
             //正式版本发布使用key
             Bugly.init(getApplicationContext(), "e3c3b1806e", false);
-            Beta.checkUpgrade();
+            Beta.checkUpgrade(false,true);
         } catch (Exception e) {
             e.printStackTrace();
         }
