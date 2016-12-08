@@ -130,14 +130,14 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     private void initDataEye() {
         DCAgent.openAdTracking();//是否跟踪推广分析，默认是False，调用即为True.该接口必须在SDK初始化之前调用.
-        DCAgent.initWithAppIdAndChannelId(this, AppConstants.DATAEYE_APPID, MyApp.DATAEYE_CHANNELID);
+        DCAgent.initWithAppIdAndChannelId(MyApp.getContext(), AppConstants.DATAEYE_APPID, MyApp.DATAEYE_CHANNELID);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         mEnter = System.currentTimeMillis();
-        DCAgent.resume(this);
+        DCAgent.resume(MyApp.getContext());
         DCPage.onEntry(AppConstants.HOME_PAGE);
         DCEvent.onEvent(AppConstants.HOME_PAGE);
         refreshMsg();
@@ -517,7 +517,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     @Override
     protected void onPause() {
         super.onPause();
-        DCAgent.pause(this);
+        DCAgent.pause(MyApp.getContext());
         DCPage.onExit(AppConstants.HOME_PAGE);//统计页面结束
         DCEvent.onEventDuration(AppConstants.HOME_PAGE, (System.currentTimeMillis() - mEnter) / 1000);
     }
