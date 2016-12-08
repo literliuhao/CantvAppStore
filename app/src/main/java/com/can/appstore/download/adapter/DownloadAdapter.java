@@ -5,13 +5,10 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.target.Target;
 import com.can.appstore.R;
 import com.can.appstore.download.DownloadListener;
 import com.can.appstore.download.DownloadPresenterImpl;
@@ -28,8 +25,7 @@ import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
-import cn.can.tvlib.imageloader.GlideLoadTask;
-import cn.can.tvlib.imageloader.ImageLoader;
+import cn.can.tvlib.ui.view.GlideRoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.utils.ApkUtils;
 import cn.can.tvlib.utils.FileUtils;
@@ -77,28 +73,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
         viewHolder.appContentLayout.setTag(viewHolder);
         viewHolder.appControlBtn.setTag(viewHolder);
         viewHolder.appDeleteBtn.setTag(viewHolder);
-        viewHolder.appIconImgVi.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        viewHolder.appIconImgVi.setBackgroundResource(R.drawable.shap_download_icon_bg);
-        ImageLoader.getInstance().load(viewHolder.appIconImgVi.getContext(), viewHolder.appIconImgVi, task.getIcon(), android.R.anim.fade_in,
-                R.mipmap.cibn_icon, R.mipmap.cibn_icon, new GlideLoadTask.SuccessCallback() {
-                    @Override
-                    public boolean onSuccess(GlideDrawable resource, String model,
-                                             Target<GlideDrawable> target,
-                                             boolean isFromMemoryCache,
-                                             boolean isFirstResource) {
-                        viewHolder.appIconImgVi.setScaleType(ImageView.ScaleType.FIT_XY);
-                        viewHolder.appIconImgVi.setBackgroundResource(android.R.color.transparent);
-                        viewHolder.appIconImgVi.setImageDrawable(resource);
-                        return true;
-                    }
-                }, new GlideLoadTask.FailCallback() {
-                    @Override
-                    public boolean onFail(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                        viewHolder.appIconImgVi.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        viewHolder.appIconImgVi.setImageResource(R.mipmap.cibn_icon);
-                        return true;
-                    }
-                });
+        viewHolder.appIconImgVi.load(task.getIcon());
         viewHolder.refreshStatus();
         viewHolder.setDownloadListener();
     }
@@ -117,7 +92,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
         public static final int DELAY_MILLIS = 100;
 
         public TextView appNameTv, appSizeTv, appDownloadStatusTv;
-        public ImageView appIconImgVi;
+        public GlideRoundCornerImageView appIconImgVi;
         public RotateView appDownloadStatusImgVi;
         public ProgressBar appDownloadProgressBar;
         public RelativeLayout appControlLayout, appContentLayout;
@@ -170,7 +145,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
         private void initView() {
             appNameTv = (TextView) itemView.findViewById(R.id.download_item_title_tv);
             appSizeTv = (TextView) itemView.findViewById(R.id.download_item_size_tv);
-            appIconImgVi = (ImageView) itemView.findViewById(R.id.download_item_appicon_imgvi);
+            appIconImgVi = (GlideRoundCornerImageView) itemView.findViewById(R.id.download_item_appicon_imgvi);
             appDownloadProgressBar = (ProgressBar) itemView.findViewById(R.id.download_item_progress);
             appDownloadStatusImgVi = (RotateView) itemView.findViewById(R.id.download_item_status_imgvi);
             appDownloadStatusTv = (TextView) itemView.findViewById(R.id.download_item_status_tv);

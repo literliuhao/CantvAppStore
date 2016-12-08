@@ -4,6 +4,7 @@ import com.can.appstore.entity.ResultWrapper;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 public class CanErrorWrapper {
@@ -24,17 +25,20 @@ public class CanErrorWrapper {
 
     private void getReason(Throwable throwable, boolean internal, int httpCode) {
         if (internal) {
-            reason = "程序内部发生错误";
+            StackTraceElement element = throwable.getStackTrace()[0];
+            reason = "程序内部发生错误(" + element.getFileName() + ":" + element.getLineNumber() + ")";
         } else if (httpCode >= 400 && httpCode < 500) {
-            reason = "HTTP请求错误";
+            reason = "HTTP请求错误(" + httpCode + ")";
         } else if (httpCode >= 500) {
-            reason = "服务器发生错误";
+            reason = "服务器发生错误(" + httpCode + ")";
         } else if (throwable != null) {
             if (throwable instanceof JsonSyntaxException
                     || throwable instanceof JsonParseException) {
                 reason = "Gson解析错误";
             } else if (throwable instanceof UnknownHostException) {
                 reason = "域名解析错误";
+            } else if (throwable instanceof SocketTimeoutException) {
+                reason = "网络读写超时";
             } else {
                 reason = "未知错误";
             }
@@ -63,14 +67,12 @@ public class CanErrorWrapper {
     }
 
     static CanErrorWrapper errorCheck(Object o) {
-        if (o != null) {
-            if (o instanceof ResultWrapper) {
-                ResultWrapper result = (ResultWrapper) o;
-                if (!result.isSuccessful()) {
-                    CanErrorWrapper canErrorWrapper = new CanErrorWrapper();
-                    canErrorWrapper.reason = result.getMessage();
-                    return canErrorWrapper;
-                }
+        if (o != null && o instanceof ResultWrapper) {
+            ResultWrapper result = (ResultWrapper) o;
+            if (!result.isSuccessful()) {
+                CanErrorWrapper canErrorWrapper = new CanErrorWrapper();
+                canErrorWrapper.reason = result.getMessage();
+                return canErrorWrapper;
             }
         }
         return null;

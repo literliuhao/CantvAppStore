@@ -7,13 +7,13 @@
     android:focusable="true"
     android:descendantFocusability="blocksDescendants"
     >
-    <cn.can.tvlib.ui.view.GlideRoundCornerImageView
+    <cn.can.tvlib.ui.view.GlideRoundCornerImageView2
         android:id="@+id/subject_item_imgvi"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:cornerSize2="@dimen/px8"
         app:maskColor="@color/black_opa80"
         app:maskSize="@dimen/dimen_64px"
-        app:cornerSize="@dimen/px8"
         />
 
     <TextView

@@ -3,9 +3,9 @@ package com.can.appstore.index;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -52,7 +52,6 @@ import com.can.appstore.search.SearchActivity;
 import com.can.appstore.update.AutoUpdate;
 import com.can.appstore.update.model.UpdateApkModel;
 import com.can.appstore.widgets.CanDialog;
-import com.can.appstore.upgrade.service.BuglyUpgradeService;
 import com.can.appstore.upgrade.service.UpgradeService;
 import com.can.appstore.upgrade.MyUpgradeListener;
 import com.can.appstore.upgrade.view.UpgradeInFoDialog;
@@ -64,7 +63,6 @@ import com.google.gson.reflect.TypeToken;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
-import com.tencent.bugly.beta.upgrade.UpgradeListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -81,6 +79,7 @@ import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PromptUtils;
 import retrofit2.Response;
 
+import static com.can.appstore.MyApp.DATAEYE_CHANNELID;
 import static com.can.appstore.index.ui.FragmentEnum.INDEX;
 
 /**
@@ -123,10 +122,15 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle();
+        initDataEye();
         initView();
         initFocus();
         getNavigation();
+    }
 
+    private void initDataEye() {
+        DCAgent.openAdTracking();//是否跟踪推广分析，默认是False，调用即为True.该接口必须在SDK初始化之前调用.
+        DCAgent.initWithAppIdAndChannelId(this, AppConstants.DATAEYE_APPID, MyApp.DATAEYE_CHANNELID);
     }
 
     @Override
@@ -230,11 +234,13 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      */
     private void initData(ListResult<Navigation> navigationListResult) {
         mFragmentLists = new ArrayList<>();
-        if (null == navigationListResult.getData()) return;
+        if (null == navigationListResult.getData())
+            return;
         //根据服务器配置文件生成不同样式加入Fragment列表中
         FragmentBody fragment;
         for (int i = 0; i < navigationListResult.getData().size(); i++) {
-            if (i == 1) continue;
+            if (i == 1)
+                continue;
             fragment = FragmentBody.newInstance(this, navigationListResult.getData().get(i));
             if (i == 0) {
                 fragment.markOnKeyListener(false);
@@ -268,11 +274,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             mDatas.add(navigation.getTitle());
         }
         //排行、管理、我的应用不受服务器后台配置，因此手动干预位置
-//        if (mDatas.size() > 0) {
-//            mDatas.add(TOP_INDEX, getResources().getString(R.string.index_top));
-//        } else {
-//            mDatas.add(getResources().getString(R.string.index_top));
-//        }
+        //        if (mDatas.size() > 0) {
+        //            mDatas.add(TOP_INDEX, getResources().getString(R.string.index_top));
+        //        } else {
+        //            mDatas.add(getResources().getString(R.string.index_top));
+        //        }
         mDatas.add(getResources().getString(R.string.index_manager));
         mDatas.add(getResources().getString(R.string.index_myapp));
         //设置导航栏Title
@@ -353,7 +359,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void refreshMsg() {
-        if (null == messageManager) return;
+        if (null == messageManager)
+            return;
         if (messageManager.existUnreadMsg()) {
             imageRed.setVisibility(View.VISIBLE);
         } else {
@@ -393,7 +400,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 isIntercept = false;
                 return;
             }
-            if (null == v) return;
+            if (null == v)
+                return;
             switch (sourceEnum) {
                 case INDEX:
                     v.bringToFront();
@@ -471,10 +479,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             Beta.showInterruptedStrategy = false;
             Beta.upgradeListener = new MyUpgradeListener(IndexActivity.this, downloadSelf);
             //测试使用key
-            //Bugly.init(getApplicationContext(), "900059606", true);
+            //Bugly.init(getApplicationContext(), "900059606", false);
             //正式版本发布使用key
             Bugly.init(getApplicationContext(), "e3c3b1806e", false);
-            Beta.checkUpgrade();
+            Beta.checkUpgrade(false, true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -518,7 +526,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(mContext);
-        mDataEyeUtils.release();
+        if (messageManager != null) {
+            messageManager.removeCallMsgDataUpdate();
+            messageManager = null;
+        }
     }
 
     @Override
@@ -530,6 +541,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             @Override
             public void onClickPositive() {
                 canDialog.dismiss();
+                if (mDataEyeUtils != null) {
+                    mDataEyeUtils.release();
+                }
                 IndexActivity.this.finish();
             }
 
@@ -557,7 +571,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mCurrentPage = position;
         mFocusUtils.showFocus();
         //统计首页资源位曝光量
-        mDataEyeUtils.resourcesPositionExposure(position);
+        if (mDataEyeUtils != null) {
+            mDataEyeUtils.resourcesPositionExposure(position);
+        }
     }
 
     @Override

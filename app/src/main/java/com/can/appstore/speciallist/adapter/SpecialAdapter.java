@@ -11,8 +11,8 @@ import com.can.appstore.entity.SpecialTopic;
 
 import java.util.List;
 
-import cn.can.tvlib.ui.view.GlideRoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
+import cn.can.tvlib.ui.view.tmp.GlideRoundCornerImageView2;
 
 /**
  * Created by laifrog on 2016/10/25.
@@ -38,12 +38,12 @@ public class SpecialAdapter extends CanRecyclerViewAdapter<SpecialTopic> {
     }
 
     public static class SubjectViewHolder extends RecyclerView.ViewHolder {
-        private GlideRoundCornerImageView iconImgvi;
+        private GlideRoundCornerImageView2 iconImgvi;
         private TextView titleTv;
 
         public SubjectViewHolder(View itemView) {
             super(itemView);
-            iconImgvi = (GlideRoundCornerImageView) itemView.findViewById(R.id.subject_item_imgvi);
+            iconImgvi = (GlideRoundCornerImageView2) itemView.findViewById(R.id.subject_item_imgvi);
             titleTv = (TextView) itemView.findViewById(R.id.subject_item_title_tv);
         }
     }
