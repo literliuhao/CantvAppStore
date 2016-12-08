@@ -533,6 +533,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             messageManager.removeCallMsgDataUpdate();
             messageManager = null;
         }
+        if (mDataEyeUtils != null) {
+            mDataEyeUtils.release();
+        }
     }
 
     @Override
