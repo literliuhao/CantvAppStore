@@ -475,9 +475,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             Beta.showInterruptedStrategy = false;
             Beta.upgradeListener = new MyUpgradeListener(IndexActivity.this, downloadSelf);
             //测试使用key
-            Bugly.init(getApplicationContext(), "900059606", false);
+            //Bugly.init(getApplicationContext(), "900059606", false);
             //正式版本发布使用key
-            //Bugly.init(getApplicationContext(), "e3c3b1806e", false);
+            Bugly.init(getApplicationContext(), "e3c3b1806e", false);
             Beta.checkUpgrade(false,true);
         } catch (Exception e) {
             e.printStackTrace();
