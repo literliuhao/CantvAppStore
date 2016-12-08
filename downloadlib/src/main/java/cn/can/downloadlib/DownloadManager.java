@@ -101,7 +101,7 @@ public class DownloadManager implements AppInstallListener {
                     Bundle bundle = msg.getData();
                     String path = bundle.getString("path");
                     String id = bundle.getString("id");
-                    ShellUtils.CommandResult res = ShellUtils.execCommand("pm install " + path, false);
+                    ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r " + path, false);
                     if (res.result == 0) {
                         onInstallSucess(id);
                     } else {
