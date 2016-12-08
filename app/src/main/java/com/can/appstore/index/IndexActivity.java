@@ -51,10 +51,10 @@ import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.update.AutoUpdate;
 import com.can.appstore.update.model.UpdateApkModel;
-import com.can.appstore.widgets.CanDialog;
-import com.can.appstore.upgrade.service.UpgradeService;
 import com.can.appstore.upgrade.MyUpgradeListener;
+import com.can.appstore.upgrade.service.UpgradeService;
 import com.can.appstore.upgrade.view.UpgradeInFoDialog;
+import com.can.appstore.widgets.CanDialog;
 import com.dataeye.sdk.api.app.DCAgent;
 import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
@@ -79,7 +79,6 @@ import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PromptUtils;
 import retrofit2.Response;
 
-import static com.can.appstore.MyApp.DATAEYE_CHANNELID;
 import static com.can.appstore.index.ui.FragmentEnum.INDEX;
 
 /**
@@ -526,6 +525,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(mContext);
+        if (mHandler != null){
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler = null;
+        }
         if (messageManager != null) {
             messageManager.removeCallMsgDataUpdate();
             messageManager = null;
@@ -534,24 +537,26 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     @Override
     public void onBackPressed() {
-        canDialog = new CanDialog(IndexActivity.this);
-        canDialog.setTitleToBottom(getResources().getString(R.string.index_exit_titile), R.dimen.dimen_32px);
-        canDialog.setMessageBackground(Color.TRANSPARENT);
-        canDialog.setPositiveButton(getResources().getString(R.string.index_exit)).setNegativeButton(getResources().getString(R.string.index_cancel)).setOnCanBtnClickListener(new CanDialog.OnClickListener() {
-            @Override
-            public void onClickPositive() {
-                canDialog.dismiss();
-                if (mDataEyeUtils != null) {
-                    mDataEyeUtils.release();
+        if(canDialog != null){
+            canDialog = new CanDialog(IndexActivity.this);
+            canDialog.setTitleToBottom(getResources().getString(R.string.index_exit_titile), R.dimen.dimen_32px);
+            canDialog.setMessageBackground(Color.TRANSPARENT);
+            canDialog.setPositiveButton(getResources().getString(R.string.index_exit)).setNegativeButton(getResources().getString(R.string.index_cancel)).setOnCanBtnClickListener(new CanDialog.OnClickListener() {
+                @Override
+                public void onClickPositive() {
+                    canDialog.dismiss();
+                    if (mDataEyeUtils != null) {
+                        mDataEyeUtils.release();
+                    }
+                    IndexActivity.this.finish();
                 }
-                IndexActivity.this.finish();
-            }
 
-            @Override
-            public void onClickNegative() {
-                canDialog.dismiss();
-            }
-        });
+                @Override
+                public void onClickNegative() {
+                    canDialog.dismiss();
+                }
+            });
+        }
         canDialog.show();
     }
 
