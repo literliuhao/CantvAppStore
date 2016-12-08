@@ -51,10 +51,10 @@ import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.update.AutoUpdate;
 import com.can.appstore.update.model.UpdateApkModel;
-import com.can.appstore.upgrade.MyUpgradeListener;
-import com.can.appstore.upgrade.service.UpgradeService;
-import com.can.appstore.upgrade.view.UpgradeInFoDialog;
 import com.can.appstore.widgets.CanDialog;
+import com.can.appstore.upgrade.service.UpgradeService;
+import com.can.appstore.upgrade.MyUpgradeListener;
+import com.can.appstore.upgrade.view.UpgradeInFoDialog;
 import com.dataeye.sdk.api.app.DCAgent;
 import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
@@ -234,11 +234,13 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      */
     private void initData(ListResult<Navigation> navigationListResult) {
         mFragmentLists = new ArrayList<>();
-        if (null == navigationListResult.getData()) return;
+        if (null == navigationListResult.getData())
+            return;
         //根据服务器配置文件生成不同样式加入Fragment列表中
         FragmentBody fragment;
         for (int i = 0; i < navigationListResult.getData().size(); i++) {
-            if (i == 1) continue;
+            if (i == 1)
+                continue;
             fragment = FragmentBody.newInstance(this, navigationListResult.getData().get(i));
             if (i == 0) {
                 fragment.markOnKeyListener(false);
@@ -272,11 +274,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             mDatas.add(navigation.getTitle());
         }
         //排行、管理、我的应用不受服务器后台配置，因此手动干预位置
-//        if (mDatas.size() > 0) {
-//            mDatas.add(TOP_INDEX, getResources().getString(R.string.index_top));
-//        } else {
-//            mDatas.add(getResources().getString(R.string.index_top));
-//        }
+        //        if (mDatas.size() > 0) {
+        //            mDatas.add(TOP_INDEX, getResources().getString(R.string.index_top));
+        //        } else {
+        //            mDatas.add(getResources().getString(R.string.index_top));
+        //        }
         mDatas.add(getResources().getString(R.string.index_manager));
         mDatas.add(getResources().getString(R.string.index_myapp));
         //设置导航栏Title
@@ -357,7 +359,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void refreshMsg() {
-        if (null == messageManager) return;
+        if (null == messageManager)
+            return;
         if (messageManager.existUnreadMsg()) {
             imageRed.setVisibility(View.VISIBLE);
         } else {
@@ -397,7 +400,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 isIntercept = false;
                 return;
             }
-            if (null == v) return;
+            if (null == v)
+                return;
             switch (sourceEnum) {
                 case INDEX:
                     v.bringToFront();
@@ -475,10 +479,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             Beta.showInterruptedStrategy = false;
             Beta.upgradeListener = new MyUpgradeListener(IndexActivity.this, downloadSelf);
             //测试使用key
-            //Bugly.init(getApplicationContext(), "900059606", true);
+            //Bugly.init(getApplicationContext(), "900059606", false);
             //正式版本发布使用key
             Bugly.init(getApplicationContext(), "e3c3b1806e", false);
-            Beta.checkUpgrade();
+            Beta.checkUpgrade(false, true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -522,8 +526,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(mContext);
-        mDataEyeUtils.release();
-        if (messageManager != null){
+        if (messageManager != null) {
             messageManager.removeCallMsgDataUpdate();
             messageManager = null;
         }
@@ -538,6 +541,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             @Override
             public void onClickPositive() {
                 canDialog.dismiss();
+                if (mDataEyeUtils != null) {
+                    mDataEyeUtils.release();
+                }
                 IndexActivity.this.finish();
             }
 
@@ -565,7 +571,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mCurrentPage = position;
         mFocusUtils.showFocus();
         //统计首页资源位曝光量
-        mDataEyeUtils.resourcesPositionExposure(position);
+        if (mDataEyeUtils != null) {
+            mDataEyeUtils.resourcesPositionExposure(position);
+        }
     }
 
     @Override
