@@ -552,6 +552,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                         @Override
                         public void onClickPositive() {
                             canDialog.dismiss();
+                            canDialog.release();
                             IndexActivity.this.finish();
                         }
 

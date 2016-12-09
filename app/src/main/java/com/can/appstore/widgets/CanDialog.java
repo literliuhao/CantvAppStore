@@ -190,8 +190,7 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
         this.mOnClickListener = listener;
     }
 
-    @Override
-    public void dismiss() {
+    public void release(){
         if (mHandler != null){
             mHandler.removeCallbacksAndMessages(null);
             mHandler = null;
@@ -200,6 +199,5 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
             mFocusMoveUtil.release();
             mFocusMoveUtil = null;
         }
-        super.dismiss();
     }
 }
