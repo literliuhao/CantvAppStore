@@ -260,8 +260,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                                             JSONObject jsonParams = new JSONObject(new Gson().toJson(jsonElement));
                                             ActionUtils.getInstance().sendActionById(mContext, jsonParams.optString("appid"), jsonParams.optString("topicid"), jsonParams.optString("applist"), jsonParams.optString("activityid"), jsonParams.optString("topiclist"));
                                             Log.i("IndexActivity", "onSuccess mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED) ");
+                                            stopTimer();
                                             mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED);
-                                            mTimer.cancel();
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
@@ -304,12 +304,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         adReportParam.setMaterialId(materialId);
         adReportParam.setDuration(mDefaultTime);
         adReportParam.setImpressions(1);
-
-//        adReportParam.setArea("beijing");
-//        adReportParam.setPlatform(1);
-//        adReportParam.setDeviceType(1);
-
-        Log.i("IndexActivity", new Gson().toJson(adReportParam));
 
         CanCall<ClassicResult> reportCall = HttpManager.getAdService().report(adReportParam);
         reportCall.enqueue(new CanCallback<ClassicResult>() {
@@ -422,12 +416,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             Navigation navigation = mPage.getData().get(i);
             mDatas.add(navigation.getTitle());
         }
-        //排行、管理、我的应用不受服务器后台配置，因此手动干预位置
-        //        if (mDatas.size() > 0) {
-        //            mDatas.add(TOP_INDEX, getResources().getString(R.string.index_top));
-        //        } else {
-        //            mDatas.add(getResources().getString(R.string.index_top));
-        //        }
+        //管理、我的应用不受服务器后台配置，因此手动干预位置
         mDatas.add(getResources().getString(R.string.index_manager));
         mDatas.add(getResources().getString(R.string.index_myapp));
         //设置导航栏Title
@@ -691,7 +680,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         }
     };
 
-    private void stopTimer(){
+    private void stopTimer() {
         if (null != mTimer) {
             mTimer.cancel();
         }
