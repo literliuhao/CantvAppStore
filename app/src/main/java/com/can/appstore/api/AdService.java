@@ -20,13 +20,13 @@ public interface AdService {
      * @param params 请求参数，通过 {@link CommonAdParam#toMap()} 获取
      * @return
      */
-    @GET(AppConstants.AMS_BASE_URL + AppConstants.AD_COMMON_GET_URL_PATH)
+    @GET(AppConstants.AD_COMMON_GET_URL)
     CanCall<ClassicResult<List<Ad>>> getCommonAd(@QueryMap Map<String, String> params);
 
     /**
      * @param paramEntity 请求参数
      * @return
      */
-    @POST(AppConstants.AMS_BASE_URL + AppConstants.AD_REPORT_URL_PATH)
+    @POST(AppConstants.AD_REPORT_URL)
     CanCall<ClassicResult> report(@Body AdReportParam paramEntity);
 }
