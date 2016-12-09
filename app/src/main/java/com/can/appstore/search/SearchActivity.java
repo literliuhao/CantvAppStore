@@ -628,10 +628,10 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         DCEvent.onEventDuration(AppConstants.RESEARCH_PAGE, mDuration);
     }
 
-    @Override
+    /*@Override
     protected void onHomeKeyDown() {
         finish();
-    }
+    }*/
 
     @Override
     protected void onDestroy() {

@@ -11,7 +11,10 @@ import com.can.appstore.http.CanCall;
 import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
+import com.can.appstore.installpkg.InstallApkModel;
+import com.can.appstore.installpkg.utils.InstallPkgUtils;
 import com.can.appstore.update.model.AppInfoBean;
+import com.can.appstore.update.model.UpdateApkInstallModel;
 import com.can.appstore.update.model.UpdateApkModel;
 import com.can.appstore.update.utils.UpdateUtils;
 
@@ -42,19 +45,17 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     private Context mContext;
     private List<AppInfoBean> mDatas;//更新应用集合
     private List<AppInfoBean> mAppInfoBeanList;
-    private List<AppInfoBean> mUpdateNumDatas;//未更新应用集合
 
     public UpdatePresenter(UpdateContract.View mView, Context mContext) {
         this.mView = mView;
         this.mContext = mContext;
         mDatas = new ArrayList<AppInfoBean>();
-        mUpdateNumDatas = new ArrayList<AppInfoBean>();
     }
 
     @Override
     public void getInstallPkgList(boolean isAutoUpdate) {
         mDatas.clear();
-        mUpdateNumDatas.clear();
+        AutoUpdate.getInstance().mUpdateNumDatas.clear();
         mView.hideNoData();
         mView.showInstallPkgList(mDatas);
         if (isAutoUpdate) {
@@ -94,7 +95,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                     mView.hideLoading();
                     mView.hideNoData();
                     mDatas.addAll(mAppInfoBeanList);
-                    mUpdateNumDatas.addAll(mAppInfoBeanList);
+                    AutoUpdate.getInstance().mUpdateNumDatas.addAll(mAppInfoBeanList);
                     mView.showInstallPkgList(mDatas);
                     setNum(0);
                 }
@@ -117,13 +118,13 @@ public class UpdatePresenter implements UpdateContract.Presenter {
             mView.hideLoading();
             mView.hideNoData();
             mDatas.addAll(mAppInfoBeanList);
-            mUpdateNumDatas.addAll(mAppInfoBeanList);
+            AutoUpdate.getInstance().mUpdateNumDatas.addAll(mAppInfoBeanList);
             mView.showInstallPkgList(mDatas);
             setNum(0);
         }
         //发送数量
         EventBus.getDefault().post(new UpdateApkModel(mAppInfoBeanList.size()));
-        Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());*/
+        Log.i(TAG, "getUpdateApkNum: " + AutoUpdate.getInstance().mUpdateNumDatas.size());*/
 
     }
 
@@ -227,7 +228,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
 
                 //发送数量
                 EventBus.getDefault().post(new UpdateApkModel(data.size()));
-                Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
+                Log.i(TAG, "getUpdateApkNum: " + AutoUpdate.getInstance().mUpdateNumDatas.size());
                 //判断是否开启自动更新
                 boolean isAutoUpdate = PreferencesUtils.getBoolean(MyApp.getContext(), "AUTO_UPDATE", false);
                 if (isAutoUpdate == false) {
@@ -304,14 +305,14 @@ public class UpdatePresenter implements UpdateContract.Presenter {
      */
     public void getUpdateApkNum(int position) {
         try {
-            mUpdateNumDatas.remove(0);
+            AutoUpdate.getInstance().mUpdateNumDatas.remove(0);
             //发送数量
-            EventBus.getDefault().post(new UpdateApkModel(mUpdateNumDatas.size()));
-            Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
+            EventBus.getDefault().post(new UpdateApkModel(AutoUpdate.getInstance().mUpdateNumDatas.size()));
+            Log.i(TAG, "getUpdateApkNum: " + AutoUpdate.getInstance().mUpdateNumDatas.size());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.i(TAG, "getUpdateApkNum: " + mUpdateNumDatas.size());
+        Log.i(TAG, "getUpdateApkNum: " + AutoUpdate.getInstance().mUpdateNumDatas.size());
     }
 
     /**
@@ -332,6 +333,20 @@ public class UpdatePresenter implements UpdateContract.Presenter {
 
         return 0;
 
+    }
+
+    /**
+     * 静默安装应用
+     */
+    public void installApp(String saveDirPath,int position,String url) {
+        mDatas.get(position).setInstalling(true);//开始安装
+        String fliePath = mDatas.get(position).getFliePath();
+        int result = InstallPkgUtils.installApp(saveDirPath);
+        if (result == 0) {
+            EventBus.getDefault().post(new UpdateApkInstallModel(0,mDatas.get(position).getAppName(),url));
+        } else {
+            EventBus.getDefault().post(new UpdateApkInstallModel(1,mDatas.get(position).getAppName(),url));
+        }
     }
 
 }

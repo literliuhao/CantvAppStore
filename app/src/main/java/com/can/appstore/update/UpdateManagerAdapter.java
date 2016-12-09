@@ -14,6 +14,9 @@ import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.installpkg.utils.InstallPkgUtils;
 import com.can.appstore.update.model.AppInfoBean;
+import com.can.appstore.update.model.UpdateApkModel;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -326,6 +329,23 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
 
         return 0;
 
+    }
+
+    /**
+     * 获取可更新app数量
+     *
+     * @return
+     */
+    public void getUpdateApkNum(int position) {
+        try {
+            AutoUpdate.getInstance().mUpdateNumDatas.remove(0);
+            //发送数量
+            EventBus.getDefault().post(new UpdateApkModel(AutoUpdate.getInstance().mUpdateNumDatas.size()));
+            Log.i(TAG, "getUpdateApkNum: " + AutoUpdate.getInstance().mUpdateNumDatas.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Log.i(TAG, "getUpdateApkNum: " + AutoUpdate.getInstance().mUpdateNumDatas.size());
     }
 
     class UpdateViewHolder extends RecyclerView.ViewHolder {

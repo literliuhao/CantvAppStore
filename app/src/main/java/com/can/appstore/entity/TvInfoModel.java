@@ -84,8 +84,8 @@ public class TvInfoModel {
     }
 
     public boolean alreadyInit() {
-        return !(TextUtils.isEmpty(channelId) &&
-                TextUtils.isEmpty(internalmodelName) &&
+        return !(TextUtils.isEmpty(channelId) ||
+                TextUtils.isEmpty(internalmodelName) ||
                 TextUtils.isEmpty(modelName));
     }
 
@@ -114,6 +114,14 @@ public class TvInfoModel {
             this.channelId = Settings.System.getString(contentResolver, AppConstants.SYSTEM_PROVIDER_KEY_CHANNELID);
             this.internalmodelName = Settings.System.getString(contentResolver, AppConstants.SYSTEM_PROVIDER_KEY_INTERNAL_MODEL);
             this.modelName = Settings.System.getString(contentResolver, AppConstants.SYSTEM_PROVIDER_KEY_MODEL);
+            if (channelId != null) {
+                int i = channelId.indexOf('|');
+                if (i >= 0) {
+                    channelId = channelId.substring(0, i).trim();
+                }
+            } else {
+                return false;
+            }
         } catch (Exception ignore) {
             Log.d("TvInfoModel", "init from local failed");
         }

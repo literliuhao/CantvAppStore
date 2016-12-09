@@ -64,6 +64,10 @@ public class InstallPkgUtils {
                     PackageManager pm = MyApp.getContext().getPackageManager();
                     PackageInfo packageInfo = pm.getPackageArchiveInfo(apk_path, GET_ACTIVITIES);
                     ApplicationInfo appInfo = packageInfo.applicationInfo;
+                    String pkgeName = packageInfo.packageName;
+                    if("com.can.appstore".equals(pkgeName)){
+                        continue;
+                    }
                     /**获取apk的图标 */
                     appInfo.sourceDir = apk_path;
                     appInfo.publicSourceDir = apk_path;

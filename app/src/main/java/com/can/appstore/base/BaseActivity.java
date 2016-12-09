@@ -132,6 +132,7 @@ public abstract class BaseActivity extends FragmentActivity {
      * Home键监听
      */
     protected void onHomeKeyDown() {
+        finish();
     }
 
     class HomeKeyReceiver extends BroadcastReceiver {

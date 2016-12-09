@@ -263,16 +263,20 @@ public class InstallPresenter implements InstallContract.Presenter {
     public void installApp(int position) {
         mDatas.get(position).setInstalling(true);//开始安装
         String fliePath = mDatas.get(position).getFliePath();
-        int result = InstallPkgUtils.installApp2(fliePath);
-        if (result == 0) {
-            mDatas.get(position).setInstalling(false);
-            mDatas.get(position).setInstall(true);
-            EventBus.getDefault().post(new InstallApkModel(mDatas.get(position).getAppName(),0));
-        } else {
-            mDatas.get(position).setInstalling(true);
-            mDatas.get(position).setInstall(false);
-            mDatas.get(position).setInstalledFalse(true);
-            EventBus.getDefault().post(new InstallApkModel(mDatas.get(position).getAppName(),1));
+        try {
+            int result = InstallPkgUtils.installApp2(fliePath);
+            if (result == 0) {
+                mDatas.get(position).setInstalling(false);
+                mDatas.get(position).setInstall(true);
+                EventBus.getDefault().post(new InstallApkModel(mDatas.get(position).getAppName(),0));
+            } else {
+                mDatas.get(position).setInstalling(true);
+                mDatas.get(position).setInstall(false);
+                mDatas.get(position).setInstalledFalse(true);
+                EventBus.getDefault().post(new InstallApkModel(mDatas.get(position).getAppName(),1));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
