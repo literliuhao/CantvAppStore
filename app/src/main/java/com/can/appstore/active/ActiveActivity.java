@@ -237,9 +237,9 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
         super.onStop();
     }
 
-    @Override
+/*    @Override
     protected void onHomeKeyDown() {
         finish();
         super.onHomeKeyDown();
-    }
+    }*/
 }

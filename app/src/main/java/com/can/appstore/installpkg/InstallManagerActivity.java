@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,7 +20,6 @@ import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.update.model.AppInfoBean;
-import com.can.appstore.update.utils.UpdateUtils;
 import com.can.appstore.widgets.CanDialog;
 import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
@@ -33,7 +30,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
-import cn.can.downloadlib.utils.ToastUtils;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
@@ -525,7 +521,8 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
     @Override
     protected void onHomeKeyDown() {
         mPresenter.release();
-        finish();
+        //finish();
+        super.onHomeKeyDown();
     }
 
     /**

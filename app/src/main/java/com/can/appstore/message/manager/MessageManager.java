@@ -117,10 +117,11 @@ public class MessageManager {
      * 请求服务器消息数据
      */
     public void requestMsg(Context context) {
+
 /*        //假数据
         deleteOverdueMsg(System.currentTimeMillis());
         List<MessageInfo> list = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             MessageInfo msgInfo = new MessageInfo();
             msgInfo.setMsgId(System.currentTimeMillis() + i + "");
             msgInfo.setMsgExpires(System.currentTimeMillis());

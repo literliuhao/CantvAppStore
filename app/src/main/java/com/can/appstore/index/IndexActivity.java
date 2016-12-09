@@ -465,6 +465,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         initBugly(true);
     }
 
+    @Override
+    public void supportFinishAfterTransition() {
+        super.supportFinishAfterTransition();
+    }
+
     //------------注册首页监听---------------
     private void initUpdateListener() {
         EventBus.getDefault().register(this);
@@ -617,7 +622,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             //Bugly.init(getApplicationContext(), "900059606", false);
             //正式版本发布使用key
             Bugly.init(getApplicationContext(), "e3c3b1806e", false);
-            Beta.checkUpgrade(false, true);
         } catch (Exception e) {
             e.printStackTrace();
         }

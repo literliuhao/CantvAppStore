@@ -114,6 +114,9 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         mAdapter.setOnMsgFocusLayoutClickListener(new MessageAdapter.OnMsgFocusLayoutClickListener() {
             @Override
             public void onMsgFocusLayoutClick(int position) {
+                if (position < 0) {
+                    return;
+                }
                 boolean isNetConnected = NetworkUtils.isNetworkConnected(MessageActivity.this);
                 MessageInfo msg = msgList.get(position);
                 if (msg == null) {
@@ -282,6 +285,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         }
     }
 
+
     /**
      * 刷新右上角焦点框所在条目上的位置信息
      */
@@ -312,12 +316,6 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     @Override
     public void showToast(int resId) {
         super.showToast(resId);
-    }
-
-    @Override
-    protected void onHomeKeyDown() {
-        finish();
-        super.onHomeKeyDown();
     }
 
     @Override
@@ -374,9 +372,23 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         DCEvent.onEventDuration(AppConstants.NEWS_LIST, mDuration);
     }
 
+    /*    @Override
+    protected void onHomeKeyDown() {
+        finish();
+        super.onHomeKeyDown();
+    }*/
 
     @Override
     protected void onDestroy() {
+        if (msgList != null) {
+            msgList.clear();
+            msgList = null;
+        }
+        if (mHandler != null) {
+            mHandler.removeCallbacks(mFocusMoveRunnable);
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler = null;
+        }
         if (focusMoveUtil != null) {
             focusMoveUtil.release();
             focusMoveUtil = null;
@@ -384,17 +396,12 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         if (messageManager != null) {
             messageManager = null;
         }
-        if (msgList != null) {
-            msgList.clear();
-        }
         if (mAdapter != null) {
             mAdapter.setFocusListener(null);
             mAdapter.setOnItemRemoveListener(null);
             mAdapter.setOnMsgFocusLayoutClickListener(null);
             mAdapter.setOnMsgFocusLayoutFocusChangeListener(null);
-        }
-        if (mHandler != null) {
-            mHandler = null;
+            mAdapter = null;
         }
         super.onDestroy();
     }

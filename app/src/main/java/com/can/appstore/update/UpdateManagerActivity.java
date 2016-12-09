@@ -738,6 +738,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
     @Override
     protected void onHomeKeyDown() {
         mPresenter.release();
-        finish();
+        //finish();
+        super.onHomeKeyDown();
     }
 }
