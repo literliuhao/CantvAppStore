@@ -108,7 +108,7 @@ public class AutoUpdate {
             if (downloadTask == null) {
                 downloadTask = new DownloadTask();
                 String md5 = MD5.MD5(downloadUrl);
-                downloadTask.setFileName(md5);
+                downloadTask.setFileName(data.get(i).getName()+"1");
                 downloadTask.setId(md5);
                 downloadTask.setUrl(downloadUrl);
                 mDownloadManager.addDownloadTask(downloadTask, new DownloadTaskListener() {

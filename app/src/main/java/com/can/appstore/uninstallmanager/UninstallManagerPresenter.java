@@ -92,8 +92,8 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
      * 计算当前的内存进度
      */
     void calculateCurStoragePropgress() {
-        long freeSize = SystemUtil.getSDCardAvailableSpace();
-        long totalSize = SystemUtil.getSDCardTotalSpace();
+        long freeSize = SystemUtil.getInternalAvailableSpace(mContext);
+        long totalSize = SystemUtil.getInternalTotalSpace(mContext);
         int progress = (int) (((totalSize - freeSize) * 100) / totalSize);
         String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + StringUtils.formatFileSize(freeSize, false);
         mView.showCurStorageProgress(progress, freeStorage);

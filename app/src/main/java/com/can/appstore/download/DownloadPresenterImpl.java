@@ -81,8 +81,8 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
 
     @Override
     public void caculateStorage() {
-        long freeSize = SystemUtil.getSDCardAvailableSpace();
-        long totalSize = SystemUtil.getSDCardTotalSpace();
+        long freeSize = SystemUtil.getInternalAvailableSpace(mView.getContext());
+        long totalSize = SystemUtil.getInternalTotalSpace(mView.getContext());
         int progress = (int) ((totalSize - freeSize) * 100 / totalSize);
         String freeStorage = mView.getContext().getResources().getString(R.string.uninsatll_manager_free_storage) +
                 StringUtils.formatFileSize(freeSize, false);
