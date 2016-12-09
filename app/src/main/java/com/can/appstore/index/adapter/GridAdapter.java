@@ -98,6 +98,7 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
     public void setFocusAll() {
         for (int i = 0; i < mView.length; i++) {
             Log.i("GridAdapter", "i " + i);
+            mView[i].setId(i);
             mView[i].setClickable(true);
             mView[i].setFocusable(true);
             mView[i].setOnFocusChangeListener(this);
