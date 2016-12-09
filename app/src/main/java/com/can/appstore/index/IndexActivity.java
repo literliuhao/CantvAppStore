@@ -204,7 +204,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         //更新
         textUpdate = (TextView) findViewById(R.id.tv_update_number);
         messageManager = new MessageManager(this);
-        mTimer = new Timer();
     }
 
     /**
@@ -242,7 +241,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                         @Override
                         public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             isShowAD = true;
-                            getNavigation();
                             textTime.setVisibility(View.VISIBLE);
                             textTime.setText(String.valueOf(mShowTime));
                             imageAD.setImageDrawable(resource);
@@ -271,8 +269,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                                     return false;
                                 }
                             });
+                            mTimer = new Timer();
                             mTimer.schedule(task, 1000, 1000);
-
+                            getNavigation();
                             return true;
                         }
                     }).failCallback(new GlideLoadTask.FailCallback() {
@@ -363,6 +362,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         } catch (Exception e) {
             PromptUtils.toast(this, getResources().getString(R.string.index_data_error));
             dataUtil.clearData();
+            stopTimer();
             e.printStackTrace();
         }
     }
@@ -684,17 +684,21 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             });
             mShowTime--;
             if (mShowTime <= 0) {
-                if (null != mTimer) {
-                    mTimer.cancel();
-                }
-                if (null != task) {
-                    task.cancel();
-                }
+                stopTimer();
                 Log.i("IndexActivity", "mTimer mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED) ");
                 mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED);
             }
         }
     };
+
+    private void stopTimer(){
+        if (null != mTimer) {
+            mTimer.cancel();
+        }
+        if (null != task) {
+            task.cancel();
+        }
+    }
 
     @Override
     protected void onPause() {
