@@ -128,20 +128,21 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private final float SCALE = 1.1f;
     private final int SCROLLED = 0;
     private int mCurrentPage;
-    private int mUpdateNum;
-    private long mEnter = 0;
+    private Context mContext;
     private CanDialog canDialog;
     private Boolean isIntercept = false;
     private MessageManager messageManager;
     private HomeDataEyeUtils mDataEyeUtils;
     private Boolean isShowAD = false;
-    private Timer timer;
-    private int mShowTime = 5;
-    private int isClick = 0;
     private String materialId = null;
-    private Context mContext;
-    private long adTime = 0;
-
+    private int mDefaultTime = 10;
+    private int mShowTime = 10;
+    private int isClick = 0;
+    private long mEnter = 0;
+    private int mUpdateNum;
+    private String mAdtfid;
+    private Timer mTimer;
+    private final String ADPOSITIONID = "adyyscqd";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,7 +189,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         //广告
         textTime = (TextView) this.findViewById(R.id.tv_ad_time);
         imageAD = (ImageView) this.findViewById(R.id.iv_index_ad);
-        imageAD.setImageResource(R.drawable.homerank_bottom_bg4);
+        imageAD.setImageResource(R.drawable.app_store);
         //搜索
         rlSearch = (RelativeLayout) this.findViewById(R.id.rl_search);
         rlSearch.setOnFocusChangeListener(this);
@@ -202,6 +203,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         //更新
         textUpdate = (TextView) findViewById(R.id.tv_update_number);
         messageManager = new MessageManager(this);
+        mTimer = new Timer();
     }
 
     /**
@@ -227,40 +229,45 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 if (null != response) {
                     ClassicResult<List<Ad>> listResult = response.body();
                     List<Ad> listAD = listResult.getData();
+                    mAdtfid = listAD.get(0).getAdtfid();
                     List<Ad.Material> listMaterial = listAD.get(0).getMaterial();
                     final Ad.Material material = listMaterial.get(0);
                     materialId = material.getMaterialid();
-                    ImageLoader.getInstance().buildTask(imageAD, material.getMaterialurl()).placeholder(R.drawable.homerank_bottom_bg4).successCallback(new GlideLoadTask.SuccessCallback() {
+                    ImageLoader.getInstance().buildTask(imageAD, material.getMaterialurl()).placeholder(R.drawable.app_store).successCallback(new GlideLoadTask.SuccessCallback() {
                         @Override
                         public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             isShowAD = true;
+                            getNavigation();
                             textTime.setVisibility(View.VISIBLE);
                             textTime.setText(String.valueOf(mShowTime));
                             imageAD.setImageDrawable(resource);
                             imageAD.setFocusable(true);
                             imageAD.requestFocus();
-                            imageAD.setOnClickListener(new View.OnClickListener() {
+                            imageAD.setOnKeyListener(new View.OnKeyListener() {
                                 @Override
-                                public void onClick(View view) {
-                                    Log.i("IndexActivity", "view " + view.getId());
-                                    isClick = 1;
-                                    String action = material.getAction();
-                                    if (action.equals("") || null == action) return;
-                                    JsonObject jsonObject = material.getActionParam();
-                                    JsonElement jsonElement = jsonObject.get("parameters");
-                                    try {
-                                        JSONObject jsonParams = new JSONObject(new Gson().toJson(jsonElement));
-                                        ActionUtils.getInstance().sendActionById(mContext, jsonParams.optString("appid"), jsonParams.optString("topicid"), jsonParams.optString("applist"), jsonParams.optString("activityid"), jsonParams.optString("topiclist"));
-                                        mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED);
-                                        timer.cancel();
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
+                                public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                                    if (keyEvent.ACTION_DOWN == keyEvent.getAction() && (keyEvent.KEYCODE_ENTER == keyEvent.getKeyCode() || keyEvent.KEYCODE_DPAD_CENTER == keyEvent.getKeyCode())) {
+                                        Log.i("IndexActivity", "view " + view.getId());
+                                        isClick = 1;
+                                        String action = material.getAction();
+                                        if (action.equals("") || null == action) return true;
+                                        JsonObject jsonObject = material.getActionParam();
+                                        JsonElement jsonElement = jsonObject.get("parameters");
+                                        try {
+                                            JSONObject jsonParams = new JSONObject(new Gson().toJson(jsonElement));
+                                            ActionUtils.getInstance().sendActionById(mContext, jsonParams.optString("appid"), jsonParams.optString("topicid"), jsonParams.optString("applist"), jsonParams.optString("activityid"), jsonParams.optString("topiclist"));
+                                            Log.i("IndexActivity", "onSuccess mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED) ");
+                                            mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED);
+                                            mTimer.cancel();
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
+                                    return false;
                                 }
                             });
-                            timer = new Timer();
-                            timer.schedule(task, 1000, 1000);
-                            getNavigation();
+                            mTimer.schedule(task, 1000, 1000);
+
                             return true;
                         }
                     }).failCallback(new GlideLoadTask.FailCallback() {
@@ -283,15 +290,22 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     public void reportAD() {
         AdReportParam adReportParam = new AdReportParam();
-        adReportParam.setAdPositionId("adyyscqd");
-        adReportParam.setAdtfId("");
+        adReportParam.setAdPositionId(ADPOSITIONID);
+        adReportParam.setAdtfId(mAdtfid);
         adReportParam.setMac(NetworkUtils.getMac());
         adReportParam.setModel(TvInfoModel.getInstance().getModelName());
-        adReportParam.setChannel(TvInfoModel.getInstance().getChannelId());
+        adReportParam.setChannel(TvInfoModel.getInstance().getChannelId() + "|");
         adReportParam.setVersionId(PackageUtils.getVersionName(mContext));
         adReportParam.setUserAction(isClick);
         adReportParam.setMaterialId(materialId);
-        adReportParam.setDuration(mShowTime);
+        adReportParam.setDuration(mDefaultTime);
+        adReportParam.setImpressions(1);
+
+//        adReportParam.setArea("beijing");
+//        adReportParam.setPlatform(1);
+//        adReportParam.setDeviceType(1);
+
+        Log.i("IndexActivity", new Gson().toJson(adReportParam));
 
         CanCall<ClassicResult> reportCall = HttpManager.getAdService().report(adReportParam);
         reportCall.enqueue(new CanCallback<ClassicResult>() {
@@ -302,7 +316,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
             @Override
             public void onFailure(CanCall<ClassicResult> call, CanErrorWrapper errorWrapper) {
-                Log.i("IndexActivity", "onFailure " + errorWrapper.getThrowable());
+                Log.i("IndexActivity", "onFailure " + errorWrapper.getThrowable() + errorWrapper.getReason());
             }
         });
 
@@ -360,8 +374,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      */
     private void initData(ListResult<Navigation> navigationListResult) {
         mFragmentLists = new ArrayList<>();
-        if (null == navigationListResult.getData())
-            return;
+        if (null == navigationListResult.getData()) return;
         //根据服务器配置文件生成不同样式加入Fragment列表中
         FragmentBody fragment;
         Boolean rankVisibility = false;
@@ -430,6 +443,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mTitleBar.setViewPager(mViewPager, PAGER_CURRENT);
         fixedScroll();
         if (!isShowAD) {
+            Log.i("IndexActivity", "isShowAD mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED) ");
             mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED);
         }
         loadMore();
@@ -491,8 +505,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void refreshMsg() {
-        if (null == messageManager)
-            return;
+        if (null == messageManager) return;
         if (messageManager.existUnreadMsg()) {
             imageRed.setVisibility(View.VISIBLE);
         } else {
@@ -505,6 +518,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case INIT_FOCUS:
+                    Log.i("IndexActivity", "mHandler....................... ");
                     View first = mTitleBar.getFirstView();
                     mFocusUtils.setFocusView(first, SCALE);
                     first.requestFocus();
@@ -535,8 +549,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 isIntercept = false;
                 return;
             }
-            if (null == v)
-                return;
+            if (null == v) return;
             switch (sourceEnum) {
                 case INDEX:
                     v.bringToFront();
@@ -661,7 +674,13 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             });
             mShowTime--;
             if (mShowTime <= 0) {
-                timer.cancel();
+                if (null != mTimer) {
+                    mTimer.cancel();
+                }
+                if (null != task) {
+                    task.cancel();
+                }
+                Log.i("IndexActivity", "mTimer mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED) ");
                 mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED);
             }
         }
@@ -699,23 +718,22 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     @Override
     public void onBackPressed() {
-        if (canDialog == null) {
+        if (null == canDialog) {
             canDialog = new CanDialog(this);
             canDialog.setTitleToBottom(getResources().getString(R.string.index_exit_titile), R.dimen.dimen_32px);
             canDialog.setMessageBackground(Color.TRANSPARENT);
-            canDialog.setPositiveButton(getResources().getString(R.string.index_exit)).setNegativeButton(getResources().getString(R.string.index_cancel))
-                    .setOnCanBtnClickListener(new CanDialog.OnClickListener() {
-                        @Override
-                        public void onClickPositive() {
-                            canDialog.dismiss();
-                            IndexActivity.this.finish();
-                        }
+            canDialog.setPositiveButton(getResources().getString(R.string.index_exit)).setNegativeButton(getResources().getString(R.string.index_cancel)).setOnCanBtnClickListener(new CanDialog.OnClickListener() {
+                @Override
+                public void onClickPositive() {
+                    canDialog.dismiss();
+                    IndexActivity.this.finish();
+                }
 
-                        @Override
-                        public void onClickNegative() {
-                            canDialog.dismiss();
-                        }
-                    });
+                @Override
+                public void onClickNegative() {
+                    canDialog.dismiss();
+                }
+            });
         }
         canDialog.show();
     }
