@@ -129,6 +129,9 @@ public class UpgradeUtil {
     public static File creatDir(String dirName) {
         File dir = new File(dirName);
         dir.mkdirs();
+        dir.setWritable(true, false);
+        dir.setReadable(true, false);
+        dir.setExecutable(true, false);
         return dir;
     }
 

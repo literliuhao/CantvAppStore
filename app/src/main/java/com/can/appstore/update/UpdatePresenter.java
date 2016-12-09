@@ -134,8 +134,8 @@ public class UpdatePresenter implements UpdateContract.Presenter {
 
     @Override
     public void getSDInfo() {
-        long freeSize = SystemUtil.getSDCardAvailableSpace();
-        long totalSize = SystemUtil.getSDCardTotalSpace();
+        long freeSize = SystemUtil.getInternalAvailableSpace(mContext);
+        long totalSize = SystemUtil.getInternalTotalSpace(mContext);
         int progress = (int) (((totalSize - freeSize) * 100) / totalSize);
         String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + StringUtils.formatFileSize(freeSize, false);
         mView.showSDProgressbar(progress, freeStorage);

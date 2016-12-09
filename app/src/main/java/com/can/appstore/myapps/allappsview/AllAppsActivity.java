@@ -287,7 +287,7 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
         if (mCanDialog != null) {
             mCanDialog.dismiss();
         }
-        finish();
+        super.onHomeKeyDown();
     }
 
     private void addFocusListener() {

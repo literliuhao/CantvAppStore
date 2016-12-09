@@ -385,7 +385,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     protected void onHomeKeyDown() {
         mAppDetailPresenter.dismissInsufficientStorageSpaceDialog();
         mAppDetailPresenter.dismissIntroduceDialog();
-        finish();
+        super.onHomeKeyDown();
     }
 
     private void setData() {
@@ -394,7 +394,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         mAppSize.setText(String.format(getResources().getString(R.string.detail_app_size), mAppinfo.getSizeStr()));
         mAppUodateDate.setText(String.format(getResources().getString(R.string.detail_app_update_date), mAppinfo.getUpdateTime()));
         mAppDownloadCount.setText(String.format(getResources().getString(R.string.detail_app_downlaod_count), mAppinfo.getDownloadCount()));
-        mAppFreeStroage.setText(String.format(getResources().getString(R.string.detail_app_free_stroage), StringUtils.formatFileSize(SystemUtil.getSDCardAvailableSpace(), false)));
+        mAppFreeStroage.setText(String.format(getResources().getString(R.string.detail_app_free_stroage), StringUtils.formatFileSize(SystemUtil.getInternalAvailableSpace(this), false)));
         mTvAppIntroduc.setText(getResources().getString(R.string.app_introduce) + mAppinfo.getAbout());
         mTvDeveloper.setText(String.format(getResources().getString(R.string.detail_developer), mAppinfo.getDeveloper()));
         String updateLog = mAppinfo.getUpdateLog();

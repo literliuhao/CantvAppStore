@@ -161,6 +161,12 @@ public class AppListPresenter implements AppListContract.Presenter {
                 }
                 mView.refreshTypeName(typeName);
                 mView.refreshMenuList(mTopics, mMenuDataPosition);
+
+                //应用列表数据为空的时候不显示列表和行数
+                if (mAppInfos.size() == 0) {
+                    mView.hideLoadingDialog();
+                    return;
+                }
                 mView.refreshAppList(mAppInfos);
                 //计算总行数
                 mTotalLine = calculateRowNumber(mTotalSize);
