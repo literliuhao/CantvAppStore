@@ -26,10 +26,13 @@ import com.google.gson.Gson;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
 
+import java.io.File;
+
 import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
+import cn.can.downloadlib.utils.ShellUtils;
 
 /**
  * Created by syl on 2016/11/2.
@@ -79,13 +82,15 @@ public class UpgradeService extends IntentService {
     private void checkUpgradeInfo() {
 
         mManager = DownloadManager.getInstance(this);
-        mManager.getDownloadPath();
 
-        //mUpdatePath = mManager.getDownloadPath() + "/upgrade";
-        mUpdatePath = getExternalCacheDir().getAbsolutePath() + "/upgrade";
-        if (!UpgradeUtil.isFileExist(mUpdatePath)) {
-            UpgradeUtil.creatDir(mUpdatePath);
-        }
+        mUpdatePath = mManager.getDownloadPath() + "/upgrade";
+        File dir = new File(mUpdatePath);
+
+        dir.mkdirs();
+        dir.setWritable(true, false);
+        dir.setReadable(true, false);
+        dir.setExecutable(true, false);
+
         mFileName = mUpdatePath + "/" + mUpgradeInfo.versionCode + ".apk";
         //获取本地的版本号
         try {
@@ -199,14 +204,15 @@ public class UpgradeService extends IntentService {
             showUpgradeInfo();
         }
     }
-    private void showUpgradeInfo(){
+
+    private void showUpgradeInfo() {
         Intent intent = new Intent(UpgradeService.this, UpgradeInfoActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(VERSION_NAME,mUpgradeInfo.versionName);
-        intent.putExtra(NEW_FEATURE,mUpgradeInfo.newFeature);
-        intent.putExtra(FILE_NAME,mFileName);
-        intent.putExtra(UPGRADE_SIZE,mUpgradeInfo.fileSize);
-        intent.putExtra(FILE_PATH,mUpdatePath);
+        intent.putExtra(VERSION_NAME, mUpgradeInfo.versionName);
+        intent.putExtra(NEW_FEATURE, mUpgradeInfo.newFeature);
+        intent.putExtra(FILE_NAME, mFileName);
+        intent.putExtra(UPGRADE_SIZE, mUpgradeInfo.fileSize);
+        intent.putExtra(FILE_PATH, mUpdatePath);
         startActivity(intent);
     }
 
