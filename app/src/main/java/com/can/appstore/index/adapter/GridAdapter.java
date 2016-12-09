@@ -1,6 +1,7 @@
 package com.can.appstore.index.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import com.can.appstore.R;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.interfaces.IOnPagerKeyListener;
 import com.can.appstore.index.ui.FragmentEnum;
+import com.can.appstore.index.ui.GridManager;
 
 /**
  * Created by liuhao on 2016/11/15.
@@ -31,7 +33,6 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
     public GridAdapter(Context context) {
         this.mContext = context;
     }
-
 
     @Override
     public int getCount() {
@@ -52,6 +53,7 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
     public View getView(int position, View convertView, ViewGroup viewGroup) {
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view;
+        GridManager gridManager;
         if (convertView == null) {
             if (position < 4) {
                 view = inflater.inflate(R.layout.manage_grid_item, null);
@@ -69,17 +71,11 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
         } else {
             view = convertView;
         }
-        view.setId(position);
-        view.setClickable(true);
-//        view.setFocusable(true);
-        view.setOnFocusChangeListener(this);
-        view.setOnClickListener(this);
-        switch (position) {
-            case 0:
-            case 4:
-                view.setOnKeyListener(this);
-                break;
+        gridManager = (GridManager) viewGroup;
+        if (gridManager.isMeasure) {
+            return view;
         }
+        Log.i("GridAdapter", "position " + position);
         mView[position] = view;
         return view;
     }
@@ -99,9 +95,19 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
         }
     }
 
-    public void setFocusAll(){
+    public void setFocusAll() {
         for (int i = 0; i < mView.length; i++) {
+            Log.i("GridAdapter", "i " + i);
+            mView[i].setClickable(true);
             mView[i].setFocusable(true);
+            mView[i].setOnFocusChangeListener(this);
+            mView[i].setOnClickListener(this);
+            switch (i) {
+                case 0:
+                case 4:
+                    mView[i].setOnKeyListener(this);
+                    break;
+            }
         }
     }
 
@@ -147,4 +153,6 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
         }
         return false;
     }
+
+
 }

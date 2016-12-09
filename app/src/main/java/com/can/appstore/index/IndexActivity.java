@@ -136,8 +136,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private HomeDataEyeUtils mDataEyeUtils;
     private Boolean isShowAD = false;
     private String materialId = null;
-    private int mDefaultTime = 10;
-    private int mShowTime = 10;
+    private int mDefaultTime = 5;
+    private int mShowTime = 5;
     private int isClick = 0;
     private long mEnter = 0;
     private int mUpdateNum;
@@ -223,7 +223,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      * 广告无Action时，点击确定无效，但能退出应用；ok
      */
     private void getAD() {
-        CanCall<ClassicResult<List<Ad>>> listAD = HttpManager.getAdService().getCommonAd(new CommonAdParam().toMap());
+        CommonAdParam commonAdParam = new CommonAdParam();
+        commonAdParam.setAdPositionId(ADPOSITIONID);
+        commonAdParam.setMac(NetworkUtils.getMac());
+        commonAdParam.setVersionId(PackageUtils.getVersionName(mContext));
+        CanCall<ClassicResult<List<Ad>>> listAD = HttpManager.getAdService().getCommonAd(commonAdParam.toMap());
         listAD.enqueue(new CanCallback<ClassicResult<List<Ad>>>() {
             @Override
             public void onResponse(CanCall<ClassicResult<List<Ad>>> call, Response<ClassicResult<List<Ad>>> response) throws Exception {
@@ -525,6 +529,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             switch (msg.what) {
                 case INIT_FOCUS:
                     Log.i("IndexActivity", "mHandler....................... ");
+                    managerFragment.setAdapterFocus();
                     View first = mTitleBar.getFirstView();
                     mFocusUtils.setFocusView(first, SCALE);
                     first.requestFocus();
@@ -533,7 +538,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                     rlMessage.setFocusable(true);
                     textTime.setVisibility(View.GONE);
                     imageAD.setVisibility(View.GONE);
-                    managerFragment.setAdapterFocus();
                     reportAD();
                     break;
                 case HIDE_FOCUS:

@@ -120,7 +120,7 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
         return view;
     }
 
-    public void setAdapterFocus(){
+    public void setAdapterFocus() {
         gridAdapter.setFocusAll();
     }
 

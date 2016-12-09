@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.GridView;
 
 public class GridManager extends GridView {
+    public Boolean isMeasure = false;
 
     public GridManager(Context context) {
         super(context);
@@ -44,4 +45,15 @@ public class GridManager extends GridView {
         return mWidgetTvViewBring.getChildDrawingOrder(childCount, i);
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        isMeasure = true;
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        isMeasure = false;
+        super.onLayout(changed, l, t, r, b);
+    }
 }
