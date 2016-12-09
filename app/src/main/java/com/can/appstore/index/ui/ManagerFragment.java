@@ -93,6 +93,7 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
                         break;
                     //电视助手
                     case 3:
+                        PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
                         break;
                     //网络测速
                     case 4:
@@ -142,6 +143,7 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
         try {
             startActivity(intent);
         } catch (Exception e) {
+            PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
             e.printStackTrace();
         }
     }
