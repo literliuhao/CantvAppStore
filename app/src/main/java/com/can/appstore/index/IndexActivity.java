@@ -116,6 +116,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private TitleBar mTitleBar;
     private ImageView imageRed;
     private TextView textUpdate;
+    private ManagerFragment managerFragment;
     private final int DURATION_LARGE = 300;
     private final int DURATION_SMALL = 300;
     private final int INIT_FOCUS = 0X000001;
@@ -379,7 +380,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         FragmentBody fragment;
         Boolean rankVisibility = false;
         for (int i = 0; i < navigationListResult.getData().size(); i++) {
-            if (navigationListResult.getData().get(i).getTitle() == "排行") {
+            if (navigationListResult.getData().get(i).getTitle().equals("排行")) {
                 rankVisibility = true;
                 continue;
             }
@@ -399,7 +400,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 mFragmentLists.add(homeRankFragment);
             }
         }
-        ManagerFragment managerFragment = new ManagerFragment(this);
+        managerFragment = new ManagerFragment(this);
         mFragmentLists.add(managerFragment);
 
         MyAppsFragment myAppsFragment = new MyAppsFragment(this);
@@ -532,6 +533,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                     rlMessage.setFocusable(true);
                     textTime.setVisibility(View.GONE);
                     imageAD.setVisibility(View.GONE);
+                    managerFragment.setAdapterFocus();
                     reportAD();
                     break;
                 case HIDE_FOCUS:

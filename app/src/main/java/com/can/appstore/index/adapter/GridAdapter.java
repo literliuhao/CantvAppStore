@@ -32,6 +32,7 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
         this.mContext = context;
     }
 
+
     @Override
     public int getCount() {
         return mNames.length;
@@ -70,7 +71,7 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
         }
         view.setId(position);
         view.setClickable(true);
-        view.setFocusable(true);
+//        view.setFocusable(true);
         view.setOnFocusChangeListener(this);
         view.setOnClickListener(this);
         switch (position) {
@@ -95,6 +96,12 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
         } else {
             imageSize.setVisibility(View.GONE);
             textSize.setVisibility(View.GONE);
+        }
+    }
+
+    public void setFocusAll(){
+        for (int i = 0; i < mView.length; i++) {
+            mView[i].setFocusable(true);
         }
     }
 
