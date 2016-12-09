@@ -353,7 +353,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                         //列数
 //                        int colNumber = (position + 1) % SEARCH_APP_SPANCOUNT == 0 ? SEARCH_APP_SPANCOUNT : (position + 1) % SEARCH_APP_SPANCOUNT;
 //                        mright_top.setText(colNumber + "/" + lineNumber + "行");
-                        mright_top.setText(mCurrLineNumber + "/" + mSearchTotal + "行");
+                        mright_top.setText(mCurrLineNumber + "/" + mTotalLineCount + "行");
                     }
                     mFocusedListChild = view;
                     view.postDelayed(myFocusRunnable, 50);
