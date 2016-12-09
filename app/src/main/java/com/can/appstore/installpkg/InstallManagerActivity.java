@@ -243,8 +243,8 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
             public void onClick(View view) {
                 mPresenter.deleteInstall();
                 if (mPresenter.isNull()) {
-                    mDeleteAllButton.setFocusable(true);
-                    mDeleteAllButton.requestFocus();
+                    mDeleteButton.setFocusable(true);
+                    mDeleteButton.requestFocus();
                 }
             }
         });
