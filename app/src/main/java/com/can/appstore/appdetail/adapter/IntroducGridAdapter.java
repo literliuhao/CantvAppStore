@@ -2,6 +2,7 @@ package com.can.appstore.appdetail.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,12 +40,16 @@ public class IntroducGridAdapter extends CanRecyclerViewAdapter {
 
     @Override
     protected void bindContentData(Object mDatas, RecyclerView.ViewHolder holder, int position) {
+        Log.d("fjm", "bindContentData: ");
         final IntroducGridViewHolder introducGridViewHolder = (IntroducGridViewHolder) holder;
         introducGridViewHolder.introducItem.load(mIntroduceList.get(position), R.drawable.shap_image_bg,
                 R.mipmap.cibn_picture, R.mipmap.icon_loading_fail, true);
     }
 
     public void setData(List<String> thumbs) {
+        mDatas.clear();
+        mIntroduceList.clear();
+        mDatas.addAll(thumbs);
         mIntroduceList = thumbs;
     }
 
