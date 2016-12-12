@@ -92,7 +92,7 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
     @Override
     public void loadAppInfoSuccess(List<AppInfo> infoList, int myapplistsize) {
         mShowList = infoList;
-        if (infoList.size() - 2 < myapplistsize && infoList.size() < 18 && !infoList.get(infoList.size() - 1).packageName.isEmpty()) {
+        if (infoList.size() - 2 < myapplistsize && infoList.size() < 18 && !infoList.get(infoList.size() - 1).appName.equals(getString(R.string.add_app))) {
             infoList.add(new AppInfo(getResources().getString(R.string.add_app), getActivity().getResources().getDrawable(R.drawable.addapp_icon)));
         }
         if (mMyAppsRvAdapter == null) {
