@@ -20,11 +20,17 @@ import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
+import com.can.appstore.installpkg.InstallApkModel;
 import com.can.appstore.installpkg.utils.InstallPkgUtils;
 import com.can.appstore.update.model.AppInfoBean;
+import com.can.appstore.update.model.UpdateApkInstallModel;
 import com.can.appstore.widgets.CanDialog;
 import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -78,6 +84,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_updatemanager);
         mContext = this;
+        EventBus.getDefault().register(this);
         mPresenter = new UpdatePresenter(this, UpdateManagerActivity.this);
         //获取到屏幕的宽高
         WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
@@ -120,6 +127,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
         mPresenter.release();
     }
 
@@ -291,12 +299,12 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                     if (taskstatus == AppInstallListener.APP_INSTALL_FAIL) {
                         status.setText(getResources().getString(R.string.update_download_installing));
                         status.setVisibility(View.VISIBLE);
-                        installUpdateApk(progress, status, updatedIcon, saveDirPath, position);
+                        installUpdateApk(progress, status, updatedIcon, saveDirPath, position, downloadTask.getUrl());
                     }
                 } else {
                     downloadTask = new DownloadTask();
                     String md5 = MD5.MD5(downloadUrl);
-                    downloadTask.setFileName(md5);
+                    downloadTask.setFileName(mUpdateList.get(position).getAppName() + "1");
                     downloadTask.setId(md5);
                     downloadTask.setUrl(downloadUrl);
                     status.setText(getResources().getString(R.string.update_download_waitting));
@@ -450,25 +458,16 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
      * @param updatedIcon
      * @param saveDirPath
      */
-    private void installUpdateApk(ProgressBar progress, final TextView status, final ImageView updatedIcon, final String saveDirPath, final int position) {
+    private void installUpdateApk(ProgressBar progress, final TextView status, final ImageView updatedIcon, final String saveDirPath, final int position, final String url) {
         status.setVisibility(View.VISIBLE);
         status.setText(getResources().getString(R.string.update_download_installing));
         progress.setVisibility(View.INVISIBLE);
-        new Handler().postDelayed(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                int result = InstallPkgUtils.installApp(saveDirPath);
-                if (result == 0) {
-                    status.setVisibility(View.INVISIBLE);
-                    updatedIcon.setVisibility(View.VISIBLE);
-                    mPresenter.getUpdateApkNum(position);
-                } else {
-                    status.setVisibility(View.VISIBLE);
-                    status.setText(getResources().getString(R.string.update_download_installfalse));
-                    updatedIcon.setVisibility(View.INVISIBLE);
-                }
+                mPresenter.installApp(saveDirPath, position, url);
             }
-        }, 1000);
+        }).start();
     }
 
     /**
@@ -571,6 +570,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         mFocusMoveUtil = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
         mFocusScaleUtil = new FocusScaleUtil();
         myFocusRunnable = new MyFocusRunnable();
+        mFocusMoveUtil.hideFocusForShowDelay(500);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         CanRecyclerViewDivider canRecyclerViewDivider = new CanRecyclerViewDivider(0, getResources().getDimensionPixelSize(R.dimen.px38), 0);
         mRecyclerView.addItemDecoration(canRecyclerViewDivider);
@@ -650,6 +650,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         mRecyclerAdapter.notifyDataSetChanged();
         if (mDatas.size() > 0) {
             mDetectionButton.setNextFocusRightId(R.id.rv_update_recyclerview);
+            mAutoButton.setNextFocusRightId(R.id.rv_update_recyclerview);
         } else {
             mDetectionButton.setNextFocusRightId(R.id.bt_update_detection);
             mAutoButton.setNextFocusRightId(R.id.bt_update_auto);
@@ -736,6 +737,32 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
     @Override
     protected void onHomeKeyDown() {
         mPresenter.release();
-        finish();
+        //finish();
+        super.onHomeKeyDown();
+    }
+
+    /**
+     * 使用eventbus
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventMainThread(UpdateApkInstallModel model) {
+        //mRecyclerAdapter.notifyDataSetChanged();
+        int number = model.getNumber();
+        String url = model.getUrl();
+        int itemPosition = mPresenter.getItemPosition(url);
+        View childAt = mRecyclerView.getChildAt(itemPosition);
+        final TextView status = (TextView) childAt.findViewById(R.id.tv_updateapp_downloading);
+        final ImageView updateIcon = (ImageView) childAt.findViewById(R.id.iv_updateapp_updatedicon);
+        if(number == 0){
+            status.setVisibility(View.INVISIBLE);
+            updateIcon.setVisibility(View.VISIBLE);
+            mPresenter.getUpdateApkNum(itemPosition);
+            showToast(model.getAppname()+getResources().getString(R.string.install_success));
+        }else if(number == 1){
+            status.setVisibility(View.VISIBLE);
+            status.setText(getResources().getString(R.string.update_download_installfalse));
+            updateIcon.setVisibility(View.INVISIBLE);
+            showToast(model.getAppname()+getResources().getString(R.string.install_fail));
+        }
     }
 }

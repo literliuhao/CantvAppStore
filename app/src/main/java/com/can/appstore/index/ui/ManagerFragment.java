@@ -58,16 +58,6 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
         gridView = (GridView) view.findViewById(R.id.manage_grid);
         gridView.setFocusable(false);
         gridView.findViewById(R.id.iv_manage_size);
-//        gridView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-//        gridView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View view, boolean b) {
-//                Log.i("ManagerFragment", view.getId() + " " + b);
-//                if (!b) {
-//                    gridView.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
-//                }
-//            }
-//        });
         gridAdapter = new GridAdapter(inflater.getContext());
         gridAdapter.setNames(NAMES);
         gridAdapter.setIcons(ICONS);
@@ -103,6 +93,7 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
                         break;
                     //电视助手
                     case 3:
+                        PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
                         break;
                     //网络测速
                     case 4:
@@ -130,6 +121,10 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
         return view;
     }
 
+    public void setAdapterFocus() {
+        gridAdapter.setFocusAll();
+    }
+
     public void startAc(String action) {
         Intent intent = new Intent();
         intent.setAction(action);
@@ -148,6 +143,7 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
         try {
             startActivity(intent);
         } catch (Exception e) {
+            PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
             e.printStackTrace();
         }
     }

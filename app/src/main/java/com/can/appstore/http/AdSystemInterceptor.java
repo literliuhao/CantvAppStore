@@ -1,7 +1,7 @@
 package com.can.appstore.http;
 
 import com.can.appstore.AppConstants;
-import com.can.appstore.BuildConfig;
+import com.can.appstore.entity.TvInfoModel;
 
 import java.io.IOException;
 
@@ -20,12 +20,20 @@ public class AdSystemInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
         HttpUrl url = request.url();
-        // 为广告上报添加请求头
-        if (url.encodedPath().equals(AppConstants.AD_REPORT_URL_PATH)) {
-            // debug版本使用开发环境
-            if (BuildConfig.DEBUG) {
-                url = url.newBuilder().host("172.16.11.32").port(7006).build();
-            }
+        String urlStr = url.toString();
+        // 不处理非广告API
+        if (!urlStr.startsWith(AppConstants.AMS_BASE_URL)) {
+            return chain.proceed(request);
+        }
+
+        if (urlStr.startsWith(AppConstants.AD_COMMON_GET_URL)) {
+            // 重新对参数赋值
+            url = url.newBuilder()
+                    .setQueryParameter("channel", TvInfoModel.getInstance().getChannelId())
+                    .setQueryParameter("model", TvInfoModel.getInstance().getModelName())
+                    .build();
+            request = request.newBuilder().url(url).build();
+        } else if (urlStr.startsWith(AppConstants.AD_REPORT_URL)) { // 为广告上报添加请求头
             String timeSpan = String.valueOf(System.currentTimeMillis() / 1000);
             String checkCode = null;
             try {
@@ -60,6 +68,7 @@ public class AdSystemInterceptor implements Interceptor {
                     })
                     .build();
         }
+
         return chain.proceed(request);
     }
 }

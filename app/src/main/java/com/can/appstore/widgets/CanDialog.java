@@ -2,13 +2,11 @@ package com.can.appstore.widgets;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,7 +24,6 @@ import cn.can.tvlib.ui.focus.FocusMoveUtil;
  */
 
 public class CanDialog extends Dialog implements View.OnFocusChangeListener {
-    private Activity mContext;
     private TextView mDialogTitle;
     private TextView mDialogMsg;
     private TextView mDialogStateMsg;
@@ -63,9 +60,7 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
         public abstract void onClickPositive();
 
         public void onClickNegative() {
-        }
-
-        ;
+        };
     }
 
     public CanDialog(Activity context) {
@@ -74,14 +69,13 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
 
     public CanDialog(Activity context, int themeResId) {
         super(context, themeResId);
-        this.mContext = context;
-        mFocusMoveUtil = new FocusMoveUtil(mContext, getWindow().getDecorView(), R.mipmap.btn_focus);
+        mFocusMoveUtil = new FocusMoveUtil(context, getWindow().getDecorView(), R.mipmap.btn_focus);
         mFocusMoveUtil.hideFocusForShowDelay(500);
         initUI();
     }
 
     private void initUI() {
-        View dialogView = LayoutInflater.from(mContext).inflate(R.layout.can_dialog, null);
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.can_dialog, null);
         setContentView(dialogView);
 
         mDialogTitle = (TextView) dialogView.findViewById(R.id.tv_dialog_title);
@@ -162,7 +156,7 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
 
     public CanDialog setIcon(String iconUrl) {
         this.mDialogIcon.setVisibility(View.VISIBLE);
-        ImageLoader.getInstance().load(mContext, this.mDialogIcon, iconUrl);
+        ImageLoader.getInstance().load(getContext(), this.mDialogIcon, iconUrl);
         return this;
     }
 
@@ -184,7 +178,7 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
     public CanDialog setTitleToBottom(String contentMSg, int textSize) {
         LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
-        this.mDialogTitle.setTextSize(mContext.getResources().getDimensionPixelSize(textSize));
+        this.mDialogTitle.setTextSize(getContext().getResources().getDimensionPixelSize(textSize));
         this.mDialogTitle.setGravity(Gravity.BOTTOM);
         this.mDialogTitle.setVisibility(View.VISIBLE);
         this.mDialogTitle.setText(contentMSg);
@@ -196,9 +190,11 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
         this.mOnClickListener = listener;
     }
 
-    @Override
-    public void dismiss() {
-        super.dismiss();
+    public void release(){
+        if (mHandler != null){
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler = null;
+        }
         if (mFocusMoveUtil != null) {
             mFocusMoveUtil.release();
             mFocusMoveUtil = null;

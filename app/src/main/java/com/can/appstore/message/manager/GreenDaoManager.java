@@ -18,7 +18,7 @@ public class GreenDaoManager {
 
     private MessageInfoDao msgDao;
     private final String DB_NAME = "AppStore.db";   // 数据库名称
-    private static GreenDaoManager mInstance;
+    private volatile static GreenDaoManager mInstance;
     private DaoMaster.DevOpenHelper openHelper;
 
 //    数据库名称：AppStrore.db
@@ -40,6 +40,7 @@ public class GreenDaoManager {
             synchronized (GreenDaoManager.class) {
                 if (mInstance == null) {
                     mInstance = new GreenDaoManager(context.getApplicationContext());
+                    //mInstance = new GreenDaoManager(context);
                 }
             }
         }

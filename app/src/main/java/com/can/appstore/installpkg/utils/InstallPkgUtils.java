@@ -49,18 +49,25 @@ public class InstallPkgUtils {
      */
     public static List FindAllAPKFile(String path) {
 
+        if (!new File(path).exists() || !new File(path).isDirectory()) {
+            return myFiles;
+        }
         File[] files = new File(path).listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
             if (file.isFile()) {
-                String fileName = file.getName();
                 try {
+                    String fileName = file.getName();
                     AppInfoBean bean = new AppInfoBean();
                     String apk_path = null;
                     apk_path = file.getAbsolutePath();
                     PackageManager pm = MyApp.getContext().getPackageManager();
                     PackageInfo packageInfo = pm.getPackageArchiveInfo(apk_path, GET_ACTIVITIES);
                     ApplicationInfo appInfo = packageInfo.applicationInfo;
+                    String pkgeName = packageInfo.packageName;
+                    if("com.can.appstore".equals(pkgeName)){
+                        continue;
+                    }
                     /**获取apk的图标 */
                     appInfo.sourceDir = apk_path;
                     appInfo.publicSourceDir = apk_path;
@@ -255,10 +262,6 @@ public class InstallPkgUtils {
         }
 
         String result = execCommand("pm", "install", "-r", path);
-        //Toast.makeText(MyApp.mContext, "安装结果:" + result, Toast.LENGTH_LONG).show();
-        //ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r" + path, false);
-        //Log.i("installPkgUtils", "installApp: " + result);
-        //成功
         if (result.contains("Success")) {
             return 0;
         } else {

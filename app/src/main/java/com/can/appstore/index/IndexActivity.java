@@ -21,11 +21,18 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.target.Target;
 import com.can.appstore.AppConstants;
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
+import com.can.appstore.entity.Ad;
+import com.can.appstore.entity.AdReportParam;
+import com.can.appstore.entity.ClassicResult;
+import com.can.appstore.entity.CommonAdParam;
 import com.can.appstore.entity.ListResult;
 import com.can.appstore.entity.Navigation;
+import com.can.appstore.entity.TvInfoModel;
 import com.can.appstore.homerank.HomeRankFragment;
 import com.can.appstore.http.CanCall;
 import com.can.appstore.http.CanCallback;
@@ -35,6 +42,7 @@ import com.can.appstore.index.adapter.IndexPagerAdapter;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.interfaces.IOnPagerKeyListener;
 import com.can.appstore.index.interfaces.IOnPagerListener;
+import com.can.appstore.index.model.ActionUtils;
 import com.can.appstore.index.model.DataUtils;
 import com.can.appstore.index.model.HomeDataEyeUtils;
 import com.can.appstore.index.model.ShareData;
@@ -51,14 +59,16 @@ import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.update.AutoUpdate;
 import com.can.appstore.update.model.UpdateApkModel;
-import com.can.appstore.widgets.CanDialog;
-import com.can.appstore.upgrade.service.UpgradeService;
 import com.can.appstore.upgrade.MyUpgradeListener;
+import com.can.appstore.upgrade.service.UpgradeService;
 import com.can.appstore.upgrade.view.UpgradeInFoDialog;
+import com.can.appstore.widgets.CanDialog;
 import com.dataeye.sdk.api.app.DCAgent;
 import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
@@ -67,25 +77,31 @@ import com.tencent.bugly.beta.UpgradeInfo;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cn.can.downloadlib.DownloadManager;
+import cn.can.tvlib.imageloader.GlideLoadTask;
+import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.utils.NetworkUtils;
+import cn.can.tvlib.utils.PackageUtils;
 import cn.can.tvlib.utils.PromptUtils;
 import retrofit2.Response;
 
-import static com.can.appstore.MyApp.DATAEYE_CHANNELID;
 import static com.can.appstore.index.ui.FragmentEnum.INDEX;
 
 /**
  * Created by liuhao on 2016/10/15.
  */
-public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener, View.OnFocusChangeListener, IOnPagerKeyListener, IOnPagerListener {
+public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener, View.OnFocusChangeListener, IOnPagerKeyListener, IOnPagerListener, View.OnKeyListener {
     private CanCall<ListResult<Navigation>> mNavigationCall;
     private static final String TAG = "IndexActivity";
     private List<BaseFragment> mFragmentLists;
@@ -93,11 +109,14 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private IndexPagerAdapter mAdapter;
     private FocusMoveUtil mFocusUtils;
     private RelativeLayout rlMessage;
+    private TextView textTime;
+    private ImageView imageAD;
     private RelativeLayout rlSearch;
     private ViewPager mViewPager;
     private TitleBar mTitleBar;
     private ImageView imageRed;
     private TextView textUpdate;
+    private ManagerFragment managerFragment;
     private final int DURATION_LARGE = 300;
     private final int DURATION_SMALL = 300;
     private final int INIT_FOCUS = 0X000001;
@@ -110,13 +129,21 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private final float SCALE = 1.1f;
     private final int SCROLLED = 0;
     private int mCurrentPage;
-    private int mUpdateNum;
-    private long mEnter = 0;
     private Context mContext;
     private CanDialog canDialog;
     private Boolean isIntercept = false;
     private MessageManager messageManager;
     private HomeDataEyeUtils mDataEyeUtils;
+    private Boolean isShowAD = false;
+    private String materialId = null;
+    private int mDefaultTime = 5;
+    private int mShowTime = 5;
+    private int isClick = 0;
+    private long mEnter = 0;
+    private int mUpdateNum;
+    private String mAdtfid;
+    private Timer mTimer;
+    private final String ADPOSITIONID = "adyyscqd";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,19 +152,19 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         initDataEye();
         initView();
         initFocus();
-        getNavigation();
+        getAD();
     }
 
     private void initDataEye() {
         DCAgent.openAdTracking();//是否跟踪推广分析，默认是False，调用即为True.该接口必须在SDK初始化之前调用.
-        DCAgent.initWithAppIdAndChannelId(this, AppConstants.DATAEYE_APPID, MyApp.DATAEYE_CHANNELID);
+        DCAgent.initWithAppIdAndChannelId(getApplicationContext(), AppConstants.DATAEYE_APPID, MyApp.DATAEYE_CHANNELID);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         mEnter = System.currentTimeMillis();
-        DCAgent.resume(this);
+        DCAgent.resume(getApplicationContext());
         DCPage.onEntry(AppConstants.HOME_PAGE);
         DCEvent.onEvent(AppConstants.HOME_PAGE);
         refreshMsg();
@@ -160,6 +187,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mTitleBar = (TitleBar) findViewById(R.id.id_indicator);
         mTitleBar.initTitle(this);
         mViewPager = (ViewPager) findViewById(R.id.id_custom_pager);
+        //广告
+        textTime = (TextView) this.findViewById(R.id.tv_ad_time);
+        imageAD = (ImageView) this.findViewById(R.id.iv_index_ad);
+        imageAD.setImageResource(R.drawable.app_store);
         //搜索
         rlSearch = (RelativeLayout) this.findViewById(R.id.rl_search);
         rlSearch.setOnFocusChangeListener(this);
@@ -172,19 +203,125 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         imageRed = (ImageView) this.findViewById(R.id.iv_mssage_red);
         //更新
         textUpdate = (TextView) findViewById(R.id.tv_update_number);
+        messageManager = new MessageManager(this);
     }
 
     /**
      * 首页焦点初始化，并且在IndexActivity做统一处理
      */
     private void initFocus() {
-        mFocusUtils = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
-        mFocusUtils.hideFocus();
+        mFocusUtils = new FocusMoveUtil(this, R.drawable.btn_focus, getWindow().getDecorView(), true, true, 2);
         mFocusScaleUtils = new FocusScaleUtil(DURATION_LARGE, DURATION_SMALL, SCALE, null, null);
     }
 
+    /**
+     * 没网情况跳过广告 ok
+     * 有网能取到数据，展示广告，倒计时默认为5秒，以后台为准，右上角显示倒计时； ok
+     * 载入图片过程较长时提前加载默认图片； ok
+     * 广告展示过程中可退出应用；ok
+     * 广告无Action时，点击确定无效，但能退出应用；ok
+     */
+    private void getAD() {
+        CommonAdParam commonAdParam = new CommonAdParam();
+        commonAdParam.setAdPositionId(ADPOSITIONID);
+        commonAdParam.setMac(NetworkUtils.getMac());
+        commonAdParam.setVersionId(PackageUtils.getVersionName(mContext));
+        CanCall<ClassicResult<List<Ad>>> listAD = HttpManager.getAdService().getCommonAd(commonAdParam.toMap());
+        listAD.enqueue(new CanCallback<ClassicResult<List<Ad>>>() {
+            @Override
+            public void onResponse(CanCall<ClassicResult<List<Ad>>> call, Response<ClassicResult<List<Ad>>> response) throws Exception {
+                if (null != response) {
+                    ClassicResult<List<Ad>> listResult = response.body();
+                    List<Ad> listAD = listResult.getData();
+                    mAdtfid = listAD.get(0).getAdtfid();
+                    List<Ad.Material> listMaterial = listAD.get(0).getMaterial();
+                    final Ad.Material material = listMaterial.get(0);
+                    materialId = material.getMaterialid();
+                    ImageLoader.getInstance().buildTask(imageAD, material.getMaterialurl()).placeholder(R.drawable.app_store).successCallback(new GlideLoadTask.SuccessCallback() {
+                        @Override
+                        public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            isShowAD = true;
+                            textTime.setVisibility(View.VISIBLE);
+                            textTime.setText(String.valueOf(mShowTime));
+                            imageAD.setImageDrawable(resource);
+                            imageAD.setFocusable(true);
+                            imageAD.requestFocus();
+                            imageAD.setOnKeyListener(new View.OnKeyListener() {
+                                @Override
+                                public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                                    if (keyEvent.ACTION_DOWN == keyEvent.getAction() && (keyEvent.KEYCODE_ENTER == keyEvent.getKeyCode() || keyEvent.KEYCODE_DPAD_CENTER == keyEvent.getKeyCode())) {
+                                        Log.i("IndexActivity", "view " + view.getId());
+                                        isClick = 1;
+                                        String action = material.getAction();
+                                        if (action.equals("") || null == action) return true;
+                                        JsonObject jsonObject = material.getActionParam();
+                                        JsonElement jsonElement = jsonObject.get("parameters");
+                                        try {
+                                            JSONObject jsonParams = new JSONObject(new Gson().toJson(jsonElement));
+                                            ActionUtils.getInstance().sendActionById(mContext, jsonParams.optString("appid"), jsonParams.optString("topicid"), jsonParams.optString("applist"), jsonParams.optString("activityid"), jsonParams.optString("topiclist"));
+                                            Log.i("IndexActivity", "onSuccess mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED) ");
+                                            stopTimer();
+                                            mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    return false;
+                                }
+                            });
+                            mTimer = new Timer();
+                            mTimer.schedule(task, 1000, 1000);
+                            getNavigation();
+                            return true;
+                        }
+                    }).failCallback(new GlideLoadTask.FailCallback() {
+                        @Override
+                        public boolean onFail(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            getNavigation();
+                            return false;
+                        }
+                    }).build().start(mContext);
+                }
+            }
+
+            @Override
+            public void onFailure(CanCall<ClassicResult<List<Ad>>> call, CanErrorWrapper errorWrapper) {
+                Log.i("IndexActivity", errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
+                getNavigation();
+            }
+        });
+    }
+
+    public void reportAD() {
+        AdReportParam adReportParam = new AdReportParam();
+        adReportParam.setAdPositionId(ADPOSITIONID);
+        adReportParam.setAdtfId(mAdtfid);
+        adReportParam.setMac(NetworkUtils.getMac());
+        adReportParam.setModel(TvInfoModel.getInstance().getModelName());
+        adReportParam.setChannel(TvInfoModel.getInstance().getChannelId() + "|");
+        adReportParam.setVersionId(PackageUtils.getVersionName(mContext));
+        adReportParam.setUserAction(isClick);
+        adReportParam.setMaterialId(materialId);
+        adReportParam.setDuration(mDefaultTime);
+        adReportParam.setImpressions(1);
+
+        CanCall<ClassicResult> reportCall = HttpManager.getAdService().report(adReportParam);
+        reportCall.enqueue(new CanCallback<ClassicResult>() {
+            @Override
+            public void onResponse(CanCall<ClassicResult> call, Response<ClassicResult> response) throws Exception {
+                Log.i("IndexActivity", "IndexActivity ");
+            }
+
+            @Override
+            public void onFailure(CanCall<ClassicResult> call, CanErrorWrapper errorWrapper) {
+                Log.i("IndexActivity", "onFailure " + errorWrapper.getThrowable() + errorWrapper.getReason());
+            }
+        });
+
+    }
+
     public void getNavigation() {
-        if (NetworkUtils.isNetworkConnected(mContext)) {
+        if (NetworkUtils.isNetworkConnected(this)) {
             mNavigationCall = HttpManager.getApiService().getNavigations();
             mNavigationCall.enqueue(new CanCallback<ListResult<Navigation>>() {
                 @Override
@@ -204,20 +341,22 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void ProxyCache(Response<ListResult<Navigation>> response) {
+        DataUtils dataUtil = DataUtils.getInstance(this);
         try {
             //JSON不完整或错误会出现异常
             ListResult<Navigation> listResult;
             if (null != response) {
                 listResult = response.body();
             } else {
-                listResult = new Gson().fromJson(DataUtils.getInstance(mContext).getCache(), new TypeToken<ListResult<Navigation>>() {
+                listResult = new Gson().fromJson(DataUtils.getInstance(this).getCache(), new TypeToken<ListResult<Navigation>>() {
                 }.getType());
             }
-            DataUtils.getInstance(mContext).setIndexData(listResult);
+            dataUtil.setIndexData(listResult);
             parseData(listResult);
         } catch (Exception e) {
-            PromptUtils.toast(mContext, getResources().getString(R.string.index_data_error));
-            DataUtils.getInstance(mContext).clearData();
+            PromptUtils.toast(this, getResources().getString(R.string.index_data_error));
+            dataUtil.clearData();
+            stopTimer();
             e.printStackTrace();
         }
     }
@@ -234,13 +373,15 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      */
     private void initData(ListResult<Navigation> navigationListResult) {
         mFragmentLists = new ArrayList<>();
-        if (null == navigationListResult.getData())
-            return;
+        if (null == navigationListResult.getData()) return;
         //根据服务器配置文件生成不同样式加入Fragment列表中
         FragmentBody fragment;
+        Boolean rankVisibility = false;
         for (int i = 0; i < navigationListResult.getData().size(); i++) {
-            if (i == 1)
+            if (navigationListResult.getData().get(i).getTitle().equals("排行")) {
+                rankVisibility = true;
                 continue;
+            }
             fragment = FragmentBody.newInstance(this, navigationListResult.getData().get(i));
             if (i == 0) {
                 fragment.markOnKeyListener(false);
@@ -249,13 +390,15 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         }
 
         //排行、管理、我的应用、不受服务器后台配置，因此手动干预位置
-        HomeRankFragment homeRankFragment = new HomeRankFragment(this);
-        if (mFragmentLists.size() > 0) {
-            mFragmentLists.add(TOP_INDEX, homeRankFragment);
-        } else {
-            mFragmentLists.add(homeRankFragment);
+        if (rankVisibility) {
+            HomeRankFragment homeRankFragment = new HomeRankFragment(this);
+            if (mFragmentLists.size() > 0) {
+                mFragmentLists.add(TOP_INDEX, homeRankFragment);
+            } else {
+                mFragmentLists.add(homeRankFragment);
+            }
         }
-        ManagerFragment managerFragment = new ManagerFragment(this);
+        managerFragment = new ManagerFragment(this);
         mFragmentLists.add(managerFragment);
 
         MyAppsFragment myAppsFragment = new MyAppsFragment(this);
@@ -273,12 +416,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             Navigation navigation = mPage.getData().get(i);
             mDatas.add(navigation.getTitle());
         }
-        //排行、管理、我的应用不受服务器后台配置，因此手动干预位置
-        //        if (mDatas.size() > 0) {
-        //            mDatas.add(TOP_INDEX, getResources().getString(R.string.index_top));
-        //        } else {
-        //            mDatas.add(getResources().getString(R.string.index_top));
-        //        }
+        //管理、我的应用不受服务器后台配置，因此手动干预位置
         mDatas.add(getResources().getString(R.string.index_manager));
         mDatas.add(getResources().getString(R.string.index_myapp));
         //设置导航栏Title
@@ -297,8 +435,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mViewPager.setCurrentItem(PAGER_CURRENT);
         mViewPager.setPageMargin((int) getResources().getDimension(R.dimen.px165));
         mTitleBar.setViewPager(mViewPager, PAGER_CURRENT);
-        mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED);
         fixedScroll();
+        if (!isShowAD) {
+            Log.i("IndexActivity", "isShowAD mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED) ");
+            mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED);
+        }
         loadMore();
     }
 
@@ -332,9 +473,14 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         initBugly(true);
     }
 
+    @Override
+    public void supportFinishAfterTransition() {
+        super.supportFinishAfterTransition();
+    }
+
     //------------注册首页监听---------------
     private void initUpdateListener() {
-        EventBus.getDefault().register(mContext);
+        EventBus.getDefault().register(this);
         AutoUpdate.getInstance().autoUpdate(IndexActivity.this);
     }
 
@@ -348,19 +494,17 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void initMsgListener() {
-        messageManager = new MessageManager(this);
         messageManager.setCallMsgDataUpdate(new MessageManager.CallMsgDataUpdate() {
             @Override
             public void onUpdate() {
                 imageRed.setVisibility(View.VISIBLE);
             }
         });
-        messageManager.requestMsg(mContext);
+        messageManager.requestMsg(this);
     }
 
     private void refreshMsg() {
-        if (null == messageManager)
-            return;
+        if (null == messageManager) return;
         if (messageManager.existUnreadMsg()) {
             imageRed.setVisibility(View.VISIBLE);
         } else {
@@ -373,12 +517,17 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case INIT_FOCUS:
+                    Log.i("IndexActivity", "mHandler....................... ");
+                    managerFragment.setAdapterFocus();
                     View first = mTitleBar.getFirstView();
                     mFocusUtils.setFocusView(first, SCALE);
                     first.requestFocus();
                     mFocusUtils.showFocus(100);
                     rlSearch.setFocusable(true);
                     rlMessage.setFocusable(true);
+                    textTime.setVisibility(View.GONE);
+                    imageAD.setVisibility(View.GONE);
+                    reportAD();
                     break;
                 case HIDE_FOCUS:
                     mFocusUtils.hideFocus();
@@ -400,12 +549,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 isIntercept = false;
                 return;
             }
-            if (null == v)
-                return;
+            if (null == v) return;
             switch (sourceEnum) {
                 case INDEX:
                     v.bringToFront();
-                    mFocusUtils.setFocusRes(mContext, R.drawable.btn_circle_focus);
+                    mFocusUtils.setFocusRes(this, R.drawable.btn_circle_focus);
                     mFocusUtils.startMoveFocus(v);
                     break;
                 case TITLE:
@@ -415,19 +563,19 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                         v.bringToFront();
                         mFocusScaleUtils.scaleToLarge(v);
                     }
-                    mFocusUtils.setFocusRes(mContext, R.drawable.btn_focus);
+                    mFocusUtils.setFocusRes(this, R.drawable.btn_focus);
                     mFocusUtils.startMoveFocus(v, SCALE);
                     break;
                 case RANK:
                     v.bringToFront();
-                    mFocusUtils.setFocusRes(mContext, R.drawable.btn_focus);
+                    mFocusUtils.setFocusRes(this, R.drawable.btn_focus);
                     mFocusUtils.startMoveFocus(v);
                     break;
                 case NORMAL:
                 case MYAPP:
                 case MANAGE:
                     v.bringToFront();
-                    mFocusUtils.setFocusRes(mContext, R.drawable.btn_focus);
+                    mFocusUtils.setFocusRes(this, R.drawable.btn_focus);
                     mFocusUtils.startMoveFocus(v, SCALE);
                     mFocusScaleUtils.scaleToLarge(v);
                     break;
@@ -482,7 +630,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             //Bugly.init(getApplicationContext(), "900059606", false);
             //正式版本发布使用key
             Bugly.init(getApplicationContext(), "e3c3b1806e", false);
-            Beta.checkUpgrade(false, true);
+            Beta.checkUpgrade(false,true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -514,44 +662,84 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        DCAgent.pause(this);
-        DCPage.onExit(AppConstants.HOME_PAGE);//统计页面结束
-        DCEvent.onEventDuration(AppConstants.HOME_PAGE, (System.currentTimeMillis() - mEnter) / 1000);
-    }
+    TimerTask task = new TimerTask() {
+        @Override
+        public void run() {
+            Log.i("IndexActivity", "mShowTime " + mShowTime);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    textTime.setText(String.valueOf(mShowTime));
+                }
+            });
+            mShowTime--;
+            if (mShowTime <= 0) {
+                stopTimer();
+                Log.i("IndexActivity", "mTimer mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED) ");
+                mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED);
+            }
+        }
+    };
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(mContext);
-        if (messageManager != null) {
-            messageManager.removeCallMsgDataUpdate();
-            messageManager = null;
+    private void stopTimer() {
+        if (null != mTimer) {
+            mTimer.cancel();
+        }
+        if (null != task) {
+            task.cancel();
         }
     }
 
     @Override
-    public void onBackPressed() {
-        canDialog = new CanDialog(IndexActivity.this);
-        canDialog.setTitleToBottom(getResources().getString(R.string.index_exit_titile), R.dimen.dimen_32px);
-        canDialog.setMessageBackground(Color.TRANSPARENT);
-        canDialog.setPositiveButton(getResources().getString(R.string.index_exit)).setNegativeButton(getResources().getString(R.string.index_cancel)).setOnCanBtnClickListener(new CanDialog.OnClickListener() {
-            @Override
-            public void onClickPositive() {
-                canDialog.dismiss();
-                if (mDataEyeUtils != null) {
-                    mDataEyeUtils.release();
-                }
-                IndexActivity.this.finish();
-            }
+    protected void onPause() {
+        DCAgent.pause(MyApp.getContext());
+        DCPage.onExit(AppConstants.HOME_PAGE);//统计页面结束
+        DCEvent.onEventDuration(AppConstants.HOME_PAGE, (System.currentTimeMillis() - mEnter) / 1000);
+        super.onPause();
+    }
 
-            @Override
-            public void onClickNegative() {
-                canDialog.dismiss();
-            }
-        });
+    @Override
+    protected void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        if (mHandler != null) {
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler = null;
+        }
+        if (messageManager != null) {
+            messageManager.removeCallMsgDataUpdate();
+            messageManager = null;
+        }
+        if (mDataEyeUtils != null) {
+            mDataEyeUtils.release();
+            mDataEyeUtils = null;
+        }
+        if (mFocusUtils != null) {
+            mFocusUtils.release();
+            mFocusUtils = null;
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (null == canDialog) {
+            canDialog = new CanDialog(this);
+            canDialog.setTitleToBottom(getResources().getString(R.string.index_exit_titile), R.dimen.dimen_32px);
+            canDialog.setMessageBackground(Color.TRANSPARENT);
+            canDialog.setPositiveButton(getResources().getString(R.string.index_exit)).setNegativeButton(getResources().getString(R.string.index_cancel)).setOnCanBtnClickListener(new CanDialog.OnClickListener() {
+                @Override
+                public void onClickPositive() {
+                    canDialog.dismiss();
+                    canDialog.release();
+                    IndexActivity.this.finish();
+                }
+
+                @Override
+                public void onClickNegative() {
+                    canDialog.dismiss();
+                }
+            });
+        }
         canDialog.show();
     }
 
@@ -615,5 +803,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             }
             mFocusUtils.showFocus();
         }
+    }
+
+    @Override
+    public boolean onKey(View view, int i, KeyEvent keyEvent) {
+        return true;
     }
 }

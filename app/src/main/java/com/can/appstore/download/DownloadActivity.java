@@ -388,8 +388,8 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
         context.startActivity(intent);
     }
 
-    @Override
+/*    @Override
     protected void onHomeKeyDown() {
         this.finish();
-    }
+    }*/
 }

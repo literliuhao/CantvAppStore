@@ -11,11 +11,13 @@ import com.can.appstore.http.CanCall;
 import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
+import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.update.model.UpdateApkModel;
 import com.can.appstore.update.utils.UpdateUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.downloadlib.DownloadManager;
@@ -38,6 +40,8 @@ public class AutoUpdate {
 
     private static AutoUpdate instance = null;
 
+    public List<AppInfoBean> mUpdateNumDatas;//未更新应用集合
+
     private AutoUpdate() {
     }
 
@@ -56,6 +60,9 @@ public class AutoUpdate {
      * @param context
      */
     public void autoUpdate(Context context) {
+
+        mUpdateNumDatas = new ArrayList<AppInfoBean>();
+        mUpdateNumDatas.clear();
 
         //检测网络获取更新包数据
         if (!NetworkUtils.isNetworkConnected(context)) {
@@ -80,14 +87,14 @@ public class AutoUpdate {
             @Override
             public void onResponse(CanCall<ListResult<AppInfo>> call, Response<ListResult<AppInfo>> response) throws Exception {
                 List<AppInfo> data = response.body().getData();
-
-                //发送数量
-                EventBus.getDefault().post(new UpdateApkModel(data.size()));
                 Log.i(TAG, "getUpdateApkNum: " + data.size());
                 //判断是否开启自动更新
                 boolean isAutoUpdate = PreferencesUtils.getBoolean(MyApp.getContext(), "AUTO_UPDATE", false);
-                if (isAutoUpdate == false) {
+                if (!isAutoUpdate) {
+                    EventBus.getDefault().post(new UpdateApkModel(data.size()));
                     return;
+                }else {
+                    EventBus.getDefault().post(new UpdateApkModel(0));
                 }
                 //添加队列
                 addAutoUpdateTask(mDownloadManager, data);
@@ -108,7 +115,7 @@ public class AutoUpdate {
             if (downloadTask == null) {
                 downloadTask = new DownloadTask();
                 String md5 = MD5.MD5(downloadUrl);
-                downloadTask.setFileName(md5);
+                downloadTask.setFileName(data.get(i).getName()+"1");
                 downloadTask.setId(md5);
                 downloadTask.setUrl(downloadUrl);
                 mDownloadManager.addDownloadTask(downloadTask, new DownloadTaskListener() {

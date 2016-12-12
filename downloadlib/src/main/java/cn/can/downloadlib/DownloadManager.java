@@ -101,7 +101,7 @@ public class DownloadManager implements AppInstallListener {
                     Bundle bundle = msg.getData();
                     String path = bundle.getString("path");
                     String id = bundle.getString("id");
-                    ShellUtils.CommandResult res = ShellUtils.execCommand("pm install " + path, false);
+                    ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r " + path, false);
                     if (res.result == 0) {
                         onInstallSucess(id);
                     } else {
@@ -247,7 +247,12 @@ public class DownloadManager implements AppInstallListener {
      */
     private void init(InputStream in, OkHttpClient okHttpClient) {
         if (TextUtils.isEmpty(mDownloadPath)) {
-            mDownloadPath = mContext.getCacheDir().getParent()+ File.separator+"download";
+            mDownloadPath = mContext.getCacheDir().getPath() + File.separator + "download";
+            File dir = new File(mDownloadPath);
+            dir.mkdirs();
+            dir.setWritable(true, false);
+            dir.setReadable(true, false);
+            dir.setExecutable(true, false);
         }
 
         mHandlerThread = new HandlerThread("queue");
@@ -334,34 +339,34 @@ public class DownloadManager implements AppInstallListener {
         if (!NetworkUtils.isNetworkConnected(mContext)) {
             return null;
         }
-//        /**读取数据库task，不轮询提交任务问题 xingzhaolei 2016-11-4 17:05:13 start*/
-//        mHander.removeMessages(MSG_SUBMIT_TASK);
-//        mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
-//
-//        DownloadTask downloadTask = getCurrentTaskById(taskId);
-//        if (downloadTask != null) {
-//            if (downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
-//                downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
-//                Future future = mExecutorService.submit(downloadTask);
-//            }
-//        } else {
-//            downloadTask = getDBTaskById(taskId);
-//            if (downloadTask != null) {
-//                downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
-//                /**修复数据库获取task 无法resume 问题  xingzl 2016-11-4 16:51:58 start*/
-//                downloadTask.setDownloadDao(mDownloadDao);
-//                downloadTask.setHttpClient(mOkHttpClient);
-//                downloadTask.setAppListener(this);
-//                mTaskManager.put(downloadTask);
-//                Future future = mExecutorService.submit(downloadTask);
-//            }
-//        }
+        //        /**读取数据库task，不轮询提交任务问题 xingzhaolei 2016-11-4 17:05:13 start*/
+        //        mHander.removeMessages(MSG_SUBMIT_TASK);
+        //        mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
+        //
+        //        DownloadTask downloadTask = getCurrentTaskById(taskId);
+        //        if (downloadTask != null) {
+        //            if (downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_PAUSE) {
+        //                downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
+        //                Future future = mExecutorService.submit(downloadTask);
+        //            }
+        //        } else {
+        //            downloadTask = getDBTaskById(taskId);
+        //            if (downloadTask != null) {
+        //                downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
+        //                /**修复数据库获取task 无法resume 问题  xingzl 2016-11-4 16:51:58 start*/
+        //                downloadTask.setDownloadDao(mDownloadDao);
+        //                downloadTask.setHttpClient(mOkHttpClient);
+        //                downloadTask.setAppListener(this);
+        //                mTaskManager.put(downloadTask);
+        //                Future future = mExecutorService.submit(downloadTask);
+        //            }
+        //        }
 
         DownloadTask downloadTask = getCurrentTaskById(taskId);
         if (downloadTask == null) {
             downloadTask = getDBTaskById(taskId);
             if (downloadTask == null) {
-               return null;
+                return null;
             } else {
                 downloadTask.setDownloadDao(mDownloadDao);
                 downloadTask.setHttpClient(mOkHttpClient);
@@ -405,6 +410,7 @@ public class DownloadManager implements AppInstallListener {
 
     /**
      * 删除任务
+     *
      * @param id
      */
     private void deleteTask(String id) {
@@ -430,7 +436,7 @@ public class DownloadManager implements AppInstallListener {
     public void cancelAll() {
         mDownloadDao.deleteAll();
         mTaskManager.release();
-//        mHander.removeCallbacksAndMessages(null);
+        //        mHander.removeCallbacksAndMessages(null);
         mHander.removeMessages(MSG_SUBMIT_TASK);
     }
 
@@ -495,6 +501,7 @@ public class DownloadManager implements AppInstallListener {
 
     /**
      * 获取所有任务（执行中与未执行）
+     *
      * @return
      */
     public List<DownloadTask> loadAllTask() {
@@ -525,35 +532,35 @@ public class DownloadManager implements AppInstallListener {
      */
     public void resumeAllTasks() {
         /*********************是否需要考虑内存中的任务队列******************************/
-//        List<DownloadTask> list = loadAllDownloadTaskFromDB();
-//        Map<String, DownloadTask> currentTaskMap = getCurrentTaskList();
-//        List<DownloadTask> currentList = new ArrayList<DownloadTask>();
-//        if (currentTaskMap != null) {
-//            currentList.addAll(currentTaskMap.values());
-//        }
-//        if (!currentList.isEmpty() && list != null) {
-//            for (DownloadTask task : list) {
-//                if (!currentList.contains(task)) {
-//                    currentList.add(task);
-//                    task.setDownloadDao(mDownloadDao);
-//                    task.setHttpClient(mOkHttpClient);
-//                    currentTaskMap.put(task.getId(),task);
-//                    mTaskManager.put(task);
-//                    /**从数据库查到的数据直接加入任务队列中 免去下载页每次resume（taskid）时，
-//                     需重新更新列表数据问题。xingzl start*/
-//                }
-//            }
-//        } else {
-//            if (list != null) {
-//                currentList.addAll(list);
-//                for (DownloadTask task: list) {
-//                    mTaskManager.put(task);
-//                    task.setDownloadDao(mDownloadDao);
-//                    task.setHttpClient(mOkHttpClient);
-//                    currentTaskMap.put(task.getId(),task);
-//                }
-//            }
-//        }
+        //        List<DownloadTask> list = loadAllDownloadTaskFromDB();
+        //        Map<String, DownloadTask> currentTaskMap = getCurrentTaskList();
+        //        List<DownloadTask> currentList = new ArrayList<DownloadTask>();
+        //        if (currentTaskMap != null) {
+        //            currentList.addAll(currentTaskMap.values());
+        //        }
+        //        if (!currentList.isEmpty() && list != null) {
+        //            for (DownloadTask task : list) {
+        //                if (!currentList.contains(task)) {
+        //                    currentList.add(task);
+        //                    task.setDownloadDao(mDownloadDao);
+        //                    task.setHttpClient(mOkHttpClient);
+        //                    currentTaskMap.put(task.getId(),task);
+        //                    mTaskManager.put(task);
+        //                    /**从数据库查到的数据直接加入任务队列中 免去下载页每次resume（taskid）时，
+        //                     需重新更新列表数据问题。xingzl start*/
+        //                }
+        //            }
+        //        } else {
+        //            if (list != null) {
+        //                currentList.addAll(list);
+        //                for (DownloadTask task: list) {
+        //                    mTaskManager.put(task);
+        //                    task.setDownloadDao(mDownloadDao);
+        //                    task.setHttpClient(mOkHttpClient);
+        //                    currentTaskMap.put(task.getId(),task);
+        //                }
+        //            }
+        //        }
         /***************************************************/
         if (!NetworkUtils.isNetworkConnected(mContext)) {
             return;
@@ -634,7 +641,7 @@ public class DownloadManager implements AppInstallListener {
      * @param task
      * @param listener
      */
-    public void singleTask(DownloadTask task, DownloadTaskListener listener,String downloadPath) {
+    public void singleTask(DownloadTask task, DownloadTaskListener listener, String downloadPath) {
         if (!NetworkUtils.isNetworkConnected(mContext.getApplicationContext())) {
             return;
         }
@@ -661,8 +668,8 @@ public class DownloadManager implements AppInstallListener {
     }
 
     public DownloadTask addSingleTaskListener(String taskId, DownloadTaskListener downloadTaskListener) {
-        if(mSingleTaskMap != null){
-            DownloadTask task =  mSingleTaskMap.get(taskId);
+        if (mSingleTaskMap != null) {
+            DownloadTask task = mSingleTaskMap.get(taskId);
             if (task == null) {
                 return null;
             }
@@ -672,14 +679,14 @@ public class DownloadManager implements AppInstallListener {
         return null;
     }
 
-    public DownloadTask getSigleTaskById(String taskId){
-        if(mSingleTaskMap == null){
+    public DownloadTask getSigleTaskById(String taskId) {
+        if (mSingleTaskMap == null) {
             return null;
         }
         return mSingleTaskMap.get(taskId);
     }
 
-    public void deleteSigleTask(String taskId){
+    public void deleteSigleTask(String taskId) {
         mSingleTaskMap.remove(taskId);
         mDownloadDao.deleteByKey(taskId);
     }
@@ -688,13 +695,13 @@ public class DownloadManager implements AppInstallListener {
         mLimitSpace = size;
     }
 
-    public String getDownloadPath(){
+    public String getDownloadPath() {
         return mDownloadPath;
     }
 
     @Override
     public void onInstalling(DownloadTask downloadTask) {
-        if (mSingleTaskMap!=null&&mSingleTaskMap.containsKey(downloadTask.getId())) {
+        if (mSingleTaskMap != null && mSingleTaskMap.containsKey(downloadTask.getId())) {
             return;
         }
         install(downloadTask);
@@ -713,7 +720,8 @@ public class DownloadManager implements AppInstallListener {
         if (task != null) {
             task.setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
             Log.e(TAG, "***InstallSucess***" + task.getFileName());
-            ToastUtils.showMessageLong(mContext, task.getFileName() + mContext.getResources().getString(R.string.install_sucess));
+            ToastUtils.showMessageLong(mContext, task.getFileName() + mContext.getResources().getString(R.string
+                    .install_sucess));
             deleteTask(id);
         }
         if (mAppInstallListeners != null) {
@@ -731,7 +739,8 @@ public class DownloadManager implements AppInstallListener {
         if (task != null) {
             task.setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
             Log.e(TAG, "***InstallFail***" + task.getFileName());
-            ToastUtils.showMessageLong(mContext, task.getFileName() + mContext.getResources().getString(R.string.error_install));
+            ToastUtils.showMessageLong(mContext, task.getFileName() + mContext.getResources().getString(R.string
+                    .error_install));
         }
         if (mAppInstallListeners != null) {
             Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
@@ -766,6 +775,7 @@ public class DownloadManager implements AppInstallListener {
 
     /**
      * 设置应用安装监听器
+     *
      * @param listener
      */
     public void setAppInstallListener(AppInstallListener listener) {
@@ -777,6 +787,7 @@ public class DownloadManager implements AppInstallListener {
 
     /**
      * 删除安装应用监听
+     *
      * @param listener
      */
     public void removeAppInstallListener(AppInstallListener listener) {
@@ -787,10 +798,14 @@ public class DownloadManager implements AppInstallListener {
 
     /**
      * 安装APP
+     *
      * @param downloadTask
      */
     public void install(DownloadTask downloadTask) {
-        mTaskCntListener.getTaskCount(getCurrentTaskList().size());
+        /**添加叛空处理，xzl 2016-12-8 17:51:28*/
+        if(mTaskCntListener!=null){
+            mTaskCntListener.getTaskCount(getCurrentTaskList().size());
+        }
         downloadTask.setDownloadStatus(AppInstallListener.APP_INSTALLING);
         Message msg = Message.obtain();
         msg.what = MSG_APP_INSTALL;
@@ -803,6 +818,7 @@ public class DownloadManager implements AppInstallListener {
 
     /**
      * 卸载
+     *
      * @param pkg
      */
     public void uninstall(String pkg) {
