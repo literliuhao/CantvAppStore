@@ -17,6 +17,7 @@ import java.util.List;
 import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
+import cn.can.tvlib.ui.view.GlideRoundCornerImageView;
 
 
 /**
@@ -25,7 +26,7 @@ import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 
 public class ImageScaleAdapter extends PagerAdapter {
     private Context mContext;
-    private LinkedList<ImageView> mRecycledViews = new LinkedList<>();
+    private LinkedList<GlideRoundCornerImageView> mRecycledViews = new LinkedList<>();
     private List<String> mUrlList = new ArrayList<>();
     private int pageCount;
     private int mRoundSize;
@@ -52,31 +53,16 @@ public class ImageScaleAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         int index = getRealPosition(position);
-        ImageView imageView;
+        GlideRoundCornerImageView imageView;
         if (mRecycledViews != null && mRecycledViews.size() > 0) {
             imageView = mRecycledViews.getFirst();
             mRecycledViews.removeFirst();
         } else {
-            imageView = new ImageView(mContext);
+            imageView = new GlideRoundCornerImageView(mContext);
         }
-        imageView.setBackgroundResource(R.drawable.bg_item);
-        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        final ImageView finalImageView = imageView;
-        ImageLoader.getInstance()
-                .buildTask(imageView, mUrlList.get(index))
-                .bitmapTransformation(new GlideRoundTransform(mContext, mRoundSize))
-                .placeholder(R.mipmap.icon_load_default)
-                .errorHolder(R.mipmap.icon_loading_fail)
-                .successCallback(new GlideLoadTask.SuccessCallback() {
-                    @Override
-                    public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        finalImageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                        finalImageView.setImageDrawable(resource);
-                        return true;
-                    }
-                })
-                .build()
-                .start(mContext);
+        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+        imageView.setCornerRadius(mRoundSize);
+        imageView.load(mUrlList.get(index), R.drawable.shap_image_bg, R.mipmap.cibn_picture, R.mipmap.icon_loading_fail, false);
         container.addView(imageView);
         return imageView;
     }
@@ -94,7 +80,7 @@ public class ImageScaleAdapter extends PagerAdapter {
     public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView((View) object);
         if (object != null) {
-            mRecycledViews.addLast((ImageView) object);
+            mRecycledViews.addLast((GlideRoundCornerImageView) object);
         }
     }
 

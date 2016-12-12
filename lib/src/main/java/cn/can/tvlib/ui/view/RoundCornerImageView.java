@@ -65,8 +65,8 @@ public class RoundCornerImageView extends ImageView {
     // 加载动画
     private boolean animLoad;
     private int mImageAlpha;
-    private int animTimeInterval = 10;
-    private int animStep = 10;
+    private int animTimeInterval = 16;
+    private int animStep = 20;
     private Runnable mAlphaRunnable = new Runnable() {
         @Override
         public void run() {

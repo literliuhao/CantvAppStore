@@ -45,7 +45,7 @@ public class GlideRoundCornerImageView2 extends RelativeLayout {
             imageResId = typedArray.getResourceId(R.styleable.GlideRoundCornerImageView2_src, 0);
             typedArray.recycle();
 
-            TypedArray typedArray2 = context.obtainStyledAttributes(attrs, cn.can.tvlib.R.styleable.RoundCornerView);
+            TypedArray typedArray2 = context.obtainStyledAttributes(attrs, cn.can.tvlib.R.styleable.RoundCornerView2);
             cornerRadius = typedArray2.getDimensionPixelSize(cn.can.tvlib.R.styleable.RoundCornerView2_cornerSize2, cornerRadius);
             maskColor = typedArray2.getColor(cn.can.tvlib.R.styleable.RoundCornerView2_maskColor, 0);
             maskSize = typedArray2.getDimensionPixelSize(cn.can.tvlib.R.styleable.RoundCornerView2_maskSize, 0);
