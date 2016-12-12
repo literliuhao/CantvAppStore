@@ -700,6 +700,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     @Override
     protected void onDestroy() {
+        stopTimer();
         EventBus.getDefault().unregister(this);
         if (mHandler != null) {
             mHandler.removeCallbacksAndMessages(null);

@@ -96,6 +96,7 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
      * @return
      */
     private View drawView(final Context context, final Navigation mNavigation) {
+        if (null == mNavigation) return null;
         FrameLayout mainLayout = new FrameLayout(context);
         ViewGroup.LayoutParams mainParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         mainLayout.setLayoutParams(mainParams);
@@ -110,7 +111,8 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
         horizontalScrollView.setHorizontalScrollBarEnabled(false);
         horizontalScrollView.setFocusable(false);
         frameLayout = new FrameLayout(context);
-        frameLayout.setId(Integer.parseInt(mNavigation.getId()));
+
+        frameLayout.setId(Integer.parseInt(mNavigation .getId()));
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         frameLayout.setFocusable(false);
         frameLayout.setLayoutParams(params);
@@ -217,6 +219,7 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mNavigation = null;
     }
 
     /**
