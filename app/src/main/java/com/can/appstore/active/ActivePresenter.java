@@ -104,12 +104,12 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
                         mOperationView.showProgreessbar();
                         initDownloadTask(mDownloadUrl);
                     }
+                    //统计活动详情页按钮曝光量
+                    DCResourcePair pair = DCResourcePair.newBuilder().setResourceLocationId(mActiveDetail).setResourceId(mAppInfo.getName()).build();
+                    DCResourceLocation.onShow(pair);
                 } else {
                     mOperationView.loadwebview(active.getUrl());
                 }
-                //统计活动详情页按钮曝光量
-                DCResourcePair pair = DCResourcePair.newBuilder().setResourceLocationId(mActiveDetail).setResourceId(mAppInfo.getName()).build();
-                DCResourceLocation.onShow(pair);
             }
 
             @Override
