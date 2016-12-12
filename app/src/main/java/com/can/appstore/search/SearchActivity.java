@@ -90,6 +90,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
     private int mCurrLineNumber;
     private int mTotalLineCount;
     private int mSearchTotal;
+    private View mRightView;
 
     public static void startAc(Context context) {
         Intent intent = new Intent(context, SearchActivity.class);
@@ -129,6 +130,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         mRLNoNetworkView = findViewById(R.id.rl_no_network);
 
         //右侧布局
+        mRightView = findViewById(R.id.right_view);
         mTopView = (RelativeLayout) findViewById(R.id.top_view);
         mleft_top = (TextView) findViewById(R.id.left_top_view);
         mright_top = (TextView) findViewById(R.id.right_top_view);
@@ -377,6 +379,14 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
     @Override
     public void hideLoading() {
         hideLoadingDialog();
+    }
+
+    @Override
+    public void hotRecommedEnable(boolean enable) {
+    }
+
+    @Override
+    public void hotKeyEnable(boolean enable) {
     }
 
     /**

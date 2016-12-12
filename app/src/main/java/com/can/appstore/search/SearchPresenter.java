@@ -96,6 +96,13 @@ public class SearchPresenter implements SearchContract.Presenter {
             return;
         }
 
+        if (0==0){
+            mView.hotRecommedEnable(false);
+            mView.getHotKeyList(null);
+            mView.hotKeyEnable(false);
+            mView.hideLoading();
+            return;
+        }
         //热门推荐
         HttpManager.getApiService().recommend().enqueue(new CanCallback<ListResult<AppInfo>>() {
             @Override
@@ -120,12 +127,14 @@ public class SearchPresenter implements SearchContract.Presenter {
                         mHotRecommendList.addAll(appInfoList);
                     }
                 }
+                mView.hotRecommedEnable(true);
                 mView.hideLoading();
             }
 
             @Override
             public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
                 PromptUtils.toast(MyApp.getContext(), "加载数据失败,请稍后再试!");
+                mView.hotRecommedEnable(false);
                 mView.hideLoading();
             }
         });
@@ -146,6 +155,7 @@ public class SearchPresenter implements SearchContract.Presenter {
                 } else {
                     mView.getHotKeyList(popularWordList);
                 }
+                mView.hotKeyEnable(true);
                 mView.hideLoading();
             }
 
@@ -153,6 +163,7 @@ public class SearchPresenter implements SearchContract.Presenter {
             public void onFailure(CanCall<ListResult<PopularWord>> call, CanErrorWrapper errorWrapper) {
                 PromptUtils.toast(MyApp.getContext(), "加载数据失败,请稍后再试!");
                 mView.getHotKeyList(null);
+                mView.hotKeyEnable(false);
                 mView.hideLoading();
             }
         });

@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:id="@+id/right_view"
                 android:background="#252930">
 
     <!--显示行数-->
@@ -58,7 +59,7 @@
     <LinearLayout
         android:id="@+id/ll_recommed"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/px500"
+        android:layout_height="@dimen/px620"
         android:layout_alignParentBottom="true"
         android:orientation="vertical"
         android:visibility="gone">
@@ -87,6 +88,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/px246"
+        android:focusable="false"
         android:gravity="center"
         android:orientation="horizontal"
         android:visibility="gone">
