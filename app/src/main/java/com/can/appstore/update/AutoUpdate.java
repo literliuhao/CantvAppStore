@@ -41,6 +41,7 @@ public class AutoUpdate {
     private static AutoUpdate instance = null;
 
     public List<AppInfoBean> mUpdateNumDatas;//未更新应用集合
+    public List<AppInfoBean> mUpdateApkNumDatas;//未更新应用集合
 
     private AutoUpdate() {
     }
@@ -62,7 +63,9 @@ public class AutoUpdate {
     public void autoUpdate(Context context) {
 
         mUpdateNumDatas = new ArrayList<AppInfoBean>();
+        mUpdateApkNumDatas = new ArrayList<AppInfoBean>();
         mUpdateNumDatas.clear();
+        mUpdateApkNumDatas.clear();
 
         //检测网络获取更新包数据
         if (!NetworkUtils.isNetworkConnected(context)) {

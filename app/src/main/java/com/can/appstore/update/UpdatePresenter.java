@@ -57,6 +57,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     public void getInstallPkgList(boolean isAutoUpdate) {
         mDatas.clear();
         AutoUpdate.getInstance().mUpdateNumDatas.clear();
+        AutoUpdate.getInstance().mUpdateApkNumDatas.clear();
         mView.showInstallPkgList(mDatas);
         mView.hideNoData();
         if (isAutoUpdate) {
@@ -102,6 +103,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                     mView.hideNoData();
                     mDatas.addAll(mAppInfoBeanList);
                     AutoUpdate.getInstance().mUpdateNumDatas.addAll(mAppInfoBeanList);
+                    AutoUpdate.getInstance().mUpdateApkNumDatas.addAll(mAppInfoBeanList);
                     mView.showInstallPkgList(mDatas);
                     setNum(0);
                 }
