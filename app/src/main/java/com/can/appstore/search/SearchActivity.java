@@ -33,7 +33,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
-import cn.can.tvlib.utils.PromptUtils;
 
 public class SearchActivity extends BaseActivity implements SearchContract.View, View.OnClickListener {
 
@@ -248,7 +247,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
 
     @Override
     public void startSearch() {
-        PromptUtils.toast(this.getApplicationContext(), "开始搜索...");
+//        PromptUtils.toast(this.getApplicationContext(), "开始搜索...");
     }
 
     /**
@@ -358,8 +357,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                     mFocusedListChild = view;
                     view.postDelayed(myFocusRunnable, 50);
                 } else {
-                    mright_top.setVisibility(View.GONE);
-//                    mFocusScaleUtil.scaleToNormal();
+                    mright_top.setText(1 + "/" + mTotalLineCount + "行");
                 }
                 view.setSelected(hasFocus);
             }

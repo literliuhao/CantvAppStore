@@ -1,6 +1,7 @@
 package com.can.appstore.update;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
 import com.can.appstore.MyApp;
@@ -56,8 +57,8 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     public void getInstallPkgList(boolean isAutoUpdate) {
         mDatas.clear();
         AutoUpdate.getInstance().mUpdateNumDatas.clear();
-        mView.hideNoData();
         mView.showInstallPkgList(mDatas);
+        mView.hideNoData();
         if (isAutoUpdate) {
             mView.hideNoData();
             mView.showStartAutoUpdate();
@@ -90,7 +91,12 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                 Log.i(TAG, data.toString());
                 if (mAppInfoBeanList.size() < 1 || mAppInfoBeanList == null) {
                     mView.hideLoading();
-                    mView.showNoData();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mView.showNoData();
+                        }
+                    },100);
                 } else {
                     mView.hideLoading();
                     mView.hideNoData();
@@ -107,7 +113,13 @@ public class UpdatePresenter implements UpdateContract.Presenter {
             public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
                 Log.i(TAG, "onFailure");
                 mView.hideLoading();
-                mView.showNoData();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mView.showNoData();
+                    }
+                },100);
+                //mView.showNoData();
             }
         });
 

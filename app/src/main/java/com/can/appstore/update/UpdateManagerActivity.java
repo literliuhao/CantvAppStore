@@ -264,12 +264,8 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
             @Override
             public void onClick(View view) {
                 if (mAutoUpdate) {
-                    PreferencesUtils.putBoolean(mContext, "AUTO_UPDATE", false);
-                    mAutoUpdate = false;
                     initDialog(getResources().getString(R.string.update_setting_start));
                 } else {
-                    PreferencesUtils.putBoolean(mContext, "AUTO_UPDATE", true);
-                    mAutoUpdate = true;
                     initDialog(getResources().getString(R.string.update_setting_stop));
                 }
             }

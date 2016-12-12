@@ -114,6 +114,10 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         mCanRecyclerView.setLayoutManager(mLayoutManager);
         mCanRecyclerView.setKeyCodeEffectInterval(CanRecyclerView.KEYCODE_EFFECT_INTERVAL_NORMAL);
         mPresenter.calculateCurStoragePropgress();
+        addBatchUninstallListener();
+    }
+
+    private void uninstallButtonRequestFocus() {
         mBtBatchUninstall.post(new Runnable() {
             @Override
             public void run() {
@@ -121,7 +125,19 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
                 mBtBatchUninstall.requestFocus();
             }
         });
-        addBatchUninstallListener();
+    }
+
+    private void initOnePositionGetFocus() {
+        mCanRecyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                View view = mCanRecyclerView.getChildAt(0);
+                if (view != null) {
+                    view.setFocusable(true);
+                    view.requestFocus();
+                }
+            }
+        }, 10);
     }
 
     private void addBatchUninstallListener() {
@@ -209,11 +225,13 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             mTvItemCurRows.setVisibility(View.INVISIBLE);
             hideSelectAppCount();
             mBtBatchUninstall.setNextFocusRightId(mBtBatchUninstall.getId());
+            uninstallButtonRequestFocus();
             return;
         } else {
             if (mPresenter.isFirstIntoRefresh) {
                 mPresenter.isFirstIntoRefresh = false;
                 mPresenter.onItemFocus(0);
+                initOnePositionGetFocus();
             }
             mCanRecyclerView.setVisibility(View.VISIBLE);
             mTvItemCurRows.setVisibility(View.VISIBLE);
