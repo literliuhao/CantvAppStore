@@ -7,7 +7,7 @@
     android:focusable="true"
     android:descendantFocusability="blocksDescendants"
     >
-    <cn.can.tvlib.ui.view.GlideRoundCornerImageView2
+    <cn.can.tvlib.ui.view.tmp.GlideRoundCornerImageView2
         android:id="@+id/subject_item_imgvi"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
