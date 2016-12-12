@@ -112,13 +112,7 @@ public class PromptUtils {
     }
 
     public static void toastShort(Context context, String msg) {
-        if (mToast != null) {
-            mToast.setText(msg);
-            mToast.show();
-            return;
-        }
-        mToast = Toast.makeText(context.getApplicationContext(), msg, Toast.LENGTH_SHORT);
-        mToast.show();
+        toast(context,msg,Toast.LENGTH_SHORT);
     }
 
     public static Dialog showSysLoadingDialog(Context context, String msg) {
