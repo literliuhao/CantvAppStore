@@ -358,8 +358,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                     mFocusedListChild = view;
                     view.postDelayed(myFocusRunnable, 50);
                 } else {
-                    mright_top.setVisibility(View.GONE);
-//                    mFocusScaleUtil.scaleToNormal();
+                    mright_top.setText(1 + "/" + mTotalLineCount + "行");
                 }
                 view.setSelected(hasFocus);
             }
