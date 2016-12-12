@@ -40,7 +40,6 @@ public class IntroducGridAdapter extends CanRecyclerViewAdapter {
 
     @Override
     protected void bindContentData(Object mDatas, RecyclerView.ViewHolder holder, int position) {
-        Log.d("fjm", "bindContentData: ");
         final IntroducGridViewHolder introducGridViewHolder = (IntroducGridViewHolder) holder;
         introducGridViewHolder.introducItem.load(mIntroduceList.get(position), R.drawable.shap_image_bg,
                 R.mipmap.cibn_picture, R.mipmap.icon_loading_fail, true);
