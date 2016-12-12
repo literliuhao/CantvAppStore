@@ -3,31 +3,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#252930">
-    <!--热门推荐-->
-    <LinearLayout
-        android:id="@+id/ll_recommed"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/px82"
-            android:text="@string/search_bottom_recommend_st"
-            android:textColor="@color/tr_20_white_color"
-            android:textSize="@dimen/px32"/>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recommend_app_recycle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/px70"
-            android:layout_marginRight="@dimen/px110"/>
-
-    </LinearLayout>
 
     <!--显示行数-->
     <RelativeLayout
@@ -64,7 +39,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/ll_recommed"
         android:layout_below="@id/top_view">
 
         <android.support.v7.widget.RecyclerView
@@ -79,6 +53,32 @@
             />
 
     </RelativeLayout>
+
+    <!--热门推荐-->
+    <LinearLayout
+        android:id="@+id/ll_recommed"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/px500"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/px82"
+            android:text="@string/search_bottom_recommend_st"
+            android:textColor="@color/tr_20_white_color"
+            android:textSize="@dimen/px32"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recommend_app_recycle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/px70"
+            android:layout_marginRight="@dimen/px110"/>
+
+    </LinearLayout>
 
 
     <!--没搜索到内容-->
