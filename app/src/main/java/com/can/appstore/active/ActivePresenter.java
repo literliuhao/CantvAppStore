@@ -85,6 +85,7 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
         if (!NetworkUtils.isNetworkConnected(mContext)) {
             mOperationView.loadDataFail(R.string.no_network);
         }
+        mOperationView.showLoadingDialog();
         mActiveData = HttpManager.getApiService().getActivityInfo(activeId);
         mActiveData.enqueue(new CanCallback<Result<Activity>>() {
             @Override
@@ -95,8 +96,7 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
                     return;
                 }
                 Activity active = info.getData();
-                boolean isWebView = StringUtils.isEmpty(active.getUrl());
-                if (isWebView) {
+                if (StringUtils.isEmpty(active.getUrl())) {
                     mOperationView.showBackground(active.getBackground());
                     mAppInfo = active.getRecommend();
                     if(mAppInfo != null){
@@ -107,6 +107,7 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
                     //统计活动详情页按钮曝光量
                     DCResourcePair pair = DCResourcePair.newBuilder().setResourceLocationId(mActiveDetail).setResourceId(mAppInfo.getName()).build();
                     DCResourceLocation.onShow(pair);
+                    mOperationView.hideLoadingDialog();
                 } else {
                     mOperationView.loadwebview(active.getUrl());
                 }
@@ -122,9 +123,6 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
     @Override
     public void clickBtnDownload() {
         String downloadUrl = mDownloadUrl;
-//        if (TextUtils.isEmpty(downloadUrl)) {
-////            mOperationView.showToast("下载地址异常");
-//        }
         //需做按钮连续点击限制
         if (isFastContinueClickView()) {
             return;
@@ -216,10 +214,6 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
         if (downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_START) {
             if (downloadTask.getId().equalsIgnoreCase(MD5.MD5(mDownloadUrl))) {
                 mOperationView.refreshTextProgressbarTextStatus(R.string.active_null_str);
-                float downloadProgress = downloadTask.getPercent();
-                if (downloadProgress < 2) {
-                    mOperationView.refreshProgressbarProgress(2);
-                }
             }
 
         }

@@ -117,12 +117,14 @@ public class SpecialDetailActivity extends BaseActivity {
             loadDataFail(R.string.no_network);
             return;
         }
+        showLoadingDialog();
         mSpecialTopic = HttpManager.getApiService().getSpecialTopic(mTopicId);
         mSpecialTopic.enqueue(new CanCallback<Result<SpecialTopic>>() {
             @Override
             public void onResponse(CanCall<Result<SpecialTopic>> call, Response<Result<SpecialTopic>> response) throws Exception {
                 Result<SpecialTopic> info = response.body();
                 Log.d("SpecialDetailActivity", info.toString());
+                hideLoadingDialog();
                 if (info.getData() == null) {
                     loadDataFail(R.string.load_data_faild);
                     return;
@@ -136,6 +138,7 @@ public class SpecialDetailActivity extends BaseActivity {
 
             @Override
             public void onFailure(CanCall<Result<SpecialTopic>> call, CanErrorWrapper errorWrapper) {
+                hideLoadingDialog();
                 loadDataFail(R.string.load_data_faild);
             }
         });
