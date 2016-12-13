@@ -3,6 +3,7 @@ package com.can.appstore.index;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
@@ -47,9 +48,9 @@ import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.update.AutoUpdate;
 import com.can.appstore.update.model.UpdateApkModel;
-import com.can.appstore.widgets.CanDialog;
 import com.can.appstore.upgrade.service.BuglyUpgradeService;
 import com.can.appstore.upgrade.service.UpgradeService;
+import com.can.appstore.widgets.CanDialog;
 import com.dataeye.sdk.api.app.DCAgent;
 import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
@@ -59,6 +60,7 @@ import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
 import com.tencent.bugly.beta.upgrade.UpgradeListener;
+import com.tencent.bugly.proguard.aa;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -120,7 +122,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         initView();
         initFocus();
         getNavigation();
-
+        Beta.applyTinkerPatch(getApplication(), Environment.getExternalStorageDirectory().getAbsolutePath() + "/patch_signed_7zip.apk");
     }
 
     @Override
@@ -461,6 +463,12 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             Beta.autoCheckUpgrade = false;
             Beta.showInterruptedStrategy = false;
             Beta.upgradeListener = new UpgradeListener() {
+
+                @Override
+                public boolean onUpgrade(aa aa, int i, String s) {
+                    return false;
+                }
+
                 @Override
                 public void onUpgrade(int ret, UpgradeInfo strategy, boolean isManual, boolean isSilence) {
                     if (strategy != null) {
