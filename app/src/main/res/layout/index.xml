@@ -43,4 +43,34 @@
     </RelativeLayout>
 
 
+    <RelativeLayout
+        android:id="@+id/rl_content_ad"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/iv_index_ad"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:nextFocusDown="@id/iv_index_ad"
+            android:nextFocusForward="@id/iv_index_ad"
+            android:nextFocusLeft="@id/iv_index_ad"
+            android:nextFocusRight="@id/iv_index_ad"
+            android:nextFocusUp="@id/iv_index_ad"
+            android:scaleType="centerCrop"/>
+
+        <TextView
+            android:id="@+id/tv_ad_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/px40"
+            android:layout_marginTop="@dimen/px40"
+            android:background="@drawable/btn_circle_normal"
+            android:visibility="gone"
+            android:gravity="center"
+            android:textColor="@color/black_opa50"
+            android:textSize="@dimen/px36"/>
+    </RelativeLayout>
+
 </RelativeLayout>

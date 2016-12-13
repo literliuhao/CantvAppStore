@@ -28,12 +28,12 @@ import retrofit2.Response;
 
 public class MessageManager {
 
-    private  final String TAG = "MessageManager";
-    private  GreenDaoManager daoManager;
+    private final String TAG = "MessageManager";
+    private GreenDaoManager daoManager;
     // 数据库消息数据更新
-    private  CallMsgDataUpdate mCallMsgDataUpdate;
+    private CallMsgDataUpdate mCallMsgDataUpdate;
 
-    public MessageManager(Context context){
+    public MessageManager(Context context) {
         daoManager = GreenDaoManager.getInstance(context);
     }
 
@@ -41,7 +41,11 @@ public class MessageManager {
         void onUpdate();
     }
 
-    public  void setCallMsgDataUpdate(CallMsgDataUpdate callMsgDataUpdate) {
+    public void removeCallMsgDataUpdate() {
+        mCallMsgDataUpdate = null;
+    }
+
+    public void setCallMsgDataUpdate(CallMsgDataUpdate callMsgDataUpdate) {
         mCallMsgDataUpdate = callMsgDataUpdate;
     }
 
@@ -49,8 +53,8 @@ public class MessageManager {
      * 删除数据库过期消息数据
      * 参数：从服务器解析拿到的时间戳
      */
-    private  void deleteOverdueMsg(long timestamp) {
-        if (daoManager != null){
+    private void deleteOverdueMsg(long timestamp) {
+        if (daoManager != null) {
             daoManager.deleteOverdueMsg(timestamp);
         }
     }
@@ -59,8 +63,8 @@ public class MessageManager {
      * 插入数据
      * 参数：插入的数据集合
      */
-    private   void insert(List<MessageInfo> msgList) {
-        if (daoManager != null){
+    private void insert(List<MessageInfo> msgList) {
+        if (daoManager != null) {
             daoManager.insert(msgList);
         }
         if (mCallMsgDataUpdate != null) {
@@ -72,38 +76,38 @@ public class MessageManager {
      * 检查数据库是否有未读消息
      */
     public boolean existUnreadMsg() {
-        if (daoManager != null){
-            return  daoManager.existUnreadMsg();
+        if (daoManager != null) {
+            return daoManager.existUnreadMsg();
         }
         return false;
     }
 
-    public void deleteMsg( String msgId) {
-        if (daoManager != null){
+    public void deleteMsg(String msgId) {
+        if (daoManager != null) {
             daoManager.deleteMsg(msgId);
         }
     }
 
     public void updateStatus(String msgId) {
-        if (daoManager != null){
+        if (daoManager != null) {
             daoManager.updateStatus(msgId);
         }
     }
 
-    public void updateAllMsgStatus(){
-        if(daoManager != null){
+    public void updateAllMsgStatus() {
+        if (daoManager != null) {
             daoManager.updateAllMsgStatus();
         }
     }
 
-    public void clearAllMsg(){
-        if (daoManager != null){
+    public void clearAllMsg() {
+        if (daoManager != null) {
             daoManager.clear();
         }
     }
 
-    public List<MessageInfo> queryMsgData(){
-        if (daoManager != null){
+    public List<MessageInfo> queryMsgData() {
+        if (daoManager != null) {
             return daoManager.queryMsg();
         }
         return Collections.EMPTY_LIST;  // 返回一个空集合
@@ -113,10 +117,11 @@ public class MessageManager {
      * 请求服务器消息数据
      */
     public void requestMsg(Context context) {
+
 /*        //假数据
         deleteOverdueMsg(System.currentTimeMillis());
         List<MessageInfo> list = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             MessageInfo msgInfo = new MessageInfo();
             msgInfo.setMsgId(System.currentTimeMillis() + i + "");
             msgInfo.setMsgExpires(System.currentTimeMillis());
@@ -164,7 +169,7 @@ public class MessageManager {
                             msgInfo.setUserId(NetworkUtils.getMac());
                             msgList.add(msgInfo);
                         }
-                        insert( msgList); // 插入数据库
+                        insert(msgList); // 插入数据库
                     } else {
                         Log.i(TAG, "no new message");
                     }

@@ -15,9 +15,10 @@ import java.util.List;
 public class AppConstants {
 
     public static final String BASE_URL = BuildConfig.DEBUG ? "http://172.16.11.32:8011/api/" : "http://appstore.can.cibntv.net/api/";
-    public static final String AMS_BASE_URL = "http://ams.can.cibntv.net/api/ad/addadreport";
-    public static final String AD_REPORT_URL_PATH = "/api/ad/addadreport";
-    public static final String AD_COMMON_GET_URL_PATH = "/api/ad/getad";
+//    public static final String AMS_BASE_URL = "http://ams.can.cibntv.net";
+    public static final String AMS_BASE_URL = "http://172.16.11.32:7006";//广告测试，正式发布删除此行
+    public static final String AD_REPORT_URL = AMS_BASE_URL + "/api/ad/addadreport";
+    public static final String AD_COMMON_GET_URL = AMS_BASE_URL + "/api/ad/getad";
     public static final String TMS_GET_MAC_URL = "http://tms.can.cibntv.net/api/sync/getInfoByMac";
 
 
@@ -35,8 +36,9 @@ public class AppConstants {
         }
     };
     //正式发包的appid : C6D2811D3790106B15A89CE9B5C477B2B
+    //    public static final String DATAEYE_APPID = "C6D2811D3790106B15A89CE9B5C477B2B";//正式appid  发布正式上线包时需要将此打开
     public static final String DATAEYE_APPID = "C79A5CBE3FDFBDA429B11ED6E79FDD19A";//测试appid
-    public static final String DATAEYE_CHANNELID = "Can_W55";//需要从canos上获取渠道id , 现在暂时写死
+
     //页面埋点的事件ID
     public static final String RESOURCES_POSITION = "resources_position"; //资源位
     public static final String HOME_PAGE = "homepage"; //首页

@@ -1,25 +1,38 @@
 package com.can.appstore.upgrade.service;
 
+import android.app.Activity;
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
+import com.can.appstore.PortalActivity;
 import com.can.appstore.R;
+import com.can.appstore.base.BaseActivity;
 import com.can.appstore.upgrade.InstallApkListener;
 import com.can.appstore.upgrade.UpgradeUtil;
+import com.can.appstore.upgrade.activity.UpgradeInfoActivity;
 import com.can.appstore.upgrade.view.UpgradeFailDialog;
 import com.can.appstore.upgrade.view.UpgradeInFoDialog;
 import com.can.appstore.upgrade.view.UpgradeProgressBarDialog;
+import com.google.gson.Gson;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
+
+import java.io.File;
 
 import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
+import cn.can.downloadlib.utils.ShellUtils;
 
 /**
  * Created by syl on 2016/11/2.
@@ -28,56 +41,22 @@ import cn.can.downloadlib.DownloadTaskListener;
 
 public class UpgradeService extends IntentService {
     public static final String TAG = "UpgradeService";
-    //message.what
-    public static final int SHOW_UPGRADE_INFO_DIALOG = 1;
-    public static final int SHOW_UPGRADE_FAIL_DIALOG = 2;
-    public static final int SHOW_PROGRESS_DIALOG = 3;
-    public static final int INIT_SERVICE = 4;
     //常量
-    public static final int INSTALL_DELAY = 3000;
+    public static final String UPGRADE_INFO = "upgrade";
+    public static final String NO_UPGRADE_INFO = "no_upgrade";
+    //更新信息常量
+    public static final String VERSION_NAME = "VersionName";
+    public static final String NEW_FEATURE = "NewFeature";
+    public static final String FILE_NAME = "FileName";
+    public static final String UPGRADE_SIZE = "UpgradeSize";
+    public static final String FILE_PATH = "filepath";
     //全局变量
     private int mLocalVersion;
     private String mUpdatePath;
     private String mFileName;
     private UpgradeInfo mUpgradeInfo;
-    //dialog
-    private UpgradeProgressBarDialog mProgressDialog;
-
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case SHOW_UPGRADE_INFO_DIALOG:
-                    UpgradeInFoDialog.OnUpgradeClickListener listener = new UpgradeInFoDialog.OnUpgradeClickListener() {
-                        @Override
-                        public void onClick() {
-                            clickInstall();
-                        }
-                    };
-                    UpgradeInFoDialog dialog = new UpgradeInFoDialog(UpgradeService.this, getResources().getString(R
-                            .string.system_upgrade), mUpgradeInfo
-                            .versionName, mUpgradeInfo.newFeature, getResources().getString(R.string.install),
-                            listener);
-                    dialog.show();
-                    break;
-                case SHOW_UPGRADE_FAIL_DIALOG:
-                    String content = (String) msg.obj;
-                    UpgradeFailDialog failDialog = new UpgradeFailDialog(UpgradeService.this, content);
-                    failDialog.show();
-                    break;
-
-                case SHOW_PROGRESS_DIALOG:
-                    mProgressDialog = new UpgradeProgressBarDialog(UpgradeService.this);
-                    mProgressDialog.show();
-                    break;
-                case INIT_SERVICE:
-                    install();
-                    break;
-            }
-
-        }
-    };
+    //下载相关
+    private DownloadManager mManager;
 
     public UpgradeService() {
         super(TAG);
@@ -101,10 +80,17 @@ public class UpgradeService extends IntentService {
      * 检测更新信息并作出逻辑判断
      */
     private void checkUpgradeInfo() {
-        mUpdatePath = getExternalCacheDir().getAbsolutePath();
-        if (!UpgradeUtil.isFileExist(mUpdatePath)) {
-            UpgradeUtil.creatDir(mUpdatePath);
-        }
+
+        mManager = DownloadManager.getInstance(this);
+
+        mUpdatePath = mManager.getDownloadPath() + "/upgrade";
+        File dir = new File(mUpdatePath);
+
+        dir.mkdirs();
+        dir.setWritable(true, false);
+        dir.setReadable(true, false);
+        dir.setExecutable(true, false);
+
         mFileName = mUpdatePath + "/" + mUpgradeInfo.versionCode + ".apk";
         //获取本地的版本号
         try {
@@ -114,19 +100,31 @@ public class UpgradeService extends IntentService {
             e.printStackTrace();
         }
         Log.d(TAG, "LocalVersionCode=" + mLocalVersion + ",UpGradeVersionCode=" + mUpgradeInfo.versionCode);
+
         if (mUpgradeInfo.versionCode <= mLocalVersion) {
             return;
         }
+
+        storeInfo();
+
         if (checkIsExistApk()) {
-            Message msg = Message.obtain();
-            msg.what = SHOW_UPGRADE_INFO_DIALOG;
-            mHandler.sendMessage(msg);
+            showUpgradeInfo();
         } else {
             //先清空本地存放Apk的空间
-            // TODO: 2016/11/16 要不要清空
             UpgradeUtil.delAllDateFile(mUpdatePath);
             downLoadApk(mUpgradeInfo.apkUrl);
         }
+    }
+
+    /**
+     * 储存版本信息到sp中
+     */
+    private void storeInfo() {
+        SharedPreferences sp = getSharedPreferences(UPGRADE_INFO, Activity.MODE_PRIVATE);
+        String info = new Gson().toJson(mUpgradeInfo);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString(UPGRADE_INFO, info);
+        editor.commit();
     }
 
     /**
@@ -150,39 +148,12 @@ public class UpgradeService extends IntentService {
      * @param url 下载地址
      */
     private void downLoadApk(String url) {
-        DownloadManager manager = DownloadManager.getInstance(this);
+        mManager = DownloadManager.getInstance(this);
+        mManager.getDownloadPath();
         DownloadTask task = new DownloadTask(url);
         task.setFileName(mUpgradeInfo.versionCode + ".apk");
-        task.setSaveDirPath(mUpdatePath);
 
-        /**
-         * 调用监听，阻止下载完成自动静默安装，不可删除
-         */
-        task.setAppListener(new AppInstallListener() {
-            @Override
-            public void onInstalling(DownloadTask downloadTask) {
-            }
-
-            @Override
-            public void onInstallSucess(String id) {
-            }
-
-            @Override
-            public void onInstallFail(String id) {
-            }
-
-            @Override
-            public void onUninstallSucess(String id) {
-
-            }
-
-            @Override
-            public void onUninstallFail(String id) {
-
-            }
-        });
-
-        manager.singleTask(task, new DownloadTaskListener() {
+        mManager.singleTask(task, new DownloadTaskListener() {
             @Override
             public void onPrepare(DownloadTask downloadTask) {
                 Log.d(TAG, "DownloadManager=onPrepare");
@@ -218,16 +189,9 @@ public class UpgradeService extends IntentService {
             public void onError(DownloadTask downloadTask, int errorCode) {
                 Log.d(TAG, "DownloadManager=onError===" + errorCode);
             }
-        });
+        }, mUpdatePath);
     }
 
-
-    private void clickInstall() {
-        //显示正在安装对话框
-        mHandler.sendEmptyMessage(SHOW_PROGRESS_DIALOG);
-        //安装应用
-        mHandler.sendEmptyMessageDelayed(INIT_SERVICE,INSTALL_DELAY);
-    }
 
     private void onLoadingCompleted() {
         //校验MD5
@@ -237,39 +201,25 @@ public class UpgradeService extends IntentService {
             UpgradeUtil.delAllDateFile(mUpdatePath);
         } else {
             Log.d(TAG, "onLoadingCompleted: MD5success");
-            //显示安装apk对话框
-            Message msg = Message.obtain();
-            msg.what = SHOW_UPGRADE_INFO_DIALOG;
-            mHandler.sendMessage(msg);
+            showUpgradeInfo();
         }
     }
 
-
-    private void install() {
-        UpgradeUtil.installApk(this, mFileName, mUpgradeInfo.fileSize, new InstallApkListener() {
-            @Override
-            public void onInstallSuccess() {
-                Log.d(TAG, "onInstallSuccess: ");
-            }
-
-            @Override
-            public void onInstallFail(String reason) {
-                Log.d(TAG, "onInstallFail: ");
-                onInstallError(reason);
-            }
-        });
+    private void showUpgradeInfo() {
+        Intent intent = new Intent(UpgradeService.this, UpgradeInfoActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(VERSION_NAME, mUpgradeInfo.versionName);
+        intent.putExtra(NEW_FEATURE, mUpgradeInfo.newFeature);
+        intent.putExtra(FILE_NAME, mFileName);
+        intent.putExtra(UPGRADE_SIZE, mUpgradeInfo.fileSize);
+        intent.putExtra(FILE_PATH, mUpdatePath);
+        startActivity(intent);
     }
 
-    private void onInstallError(String reason) {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
-        }
-        Message msg = Message.obtain();
-        msg.what = SHOW_UPGRADE_FAIL_DIALOG;
-        msg.obj = reason;
-        mHandler.sendMessage(msg);
-        //安装失败，清空文件夹
-        UpgradeUtil.delAllDateFile(mUpdatePath);
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
+        super.onDestroy();
     }
 
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigInteger;
@@ -103,9 +104,11 @@ public class UpgradeUtil {
         }
         return flag;
     }
+
     /**
      * Indicates if this file represents a file on the underlying file system.
      * 判断给定的路径是一个文件
+     *
      * @param filePath
      * @return
      */
@@ -117,6 +120,7 @@ public class UpgradeUtil {
         File file = new File(filePath);
         return (file.exists() && file.isFile());
     }
+
     /**
      * 创建目录
      *
@@ -125,6 +129,9 @@ public class UpgradeUtil {
     public static File creatDir(String dirName) {
         File dir = new File(dirName);
         dir.mkdirs();
+        dir.setWritable(true, false);
+        dir.setReadable(true, false);
+        dir.setExecutable(true, false);
         return dir;
     }
 
@@ -132,34 +139,34 @@ public class UpgradeUtil {
     /**
      * 静默安装
      */
-    public static void installApk(Context mContext,String path,long size,InstallApkListener onInstallApkListener){
+    public static void installApk(Context mContext, String path, long size, InstallApkListener onInstallApkListener) {
         long space = SdcardUtils.getSDCardAvailableSpace();
         if (space < size) {
-            onInstallApkListener.onInstallFail(mContext.getResources().getString(cn.can.downloadlib.R.string.error_msg));
+            onInstallApkListener.onInstallFail(mContext.getResources().getString(cn.can.downloadlib.R.string
+                    .error_msg));
             return;
         }
-        Log.d("", "path: "+path);
+        Log.d("", "path: " + path);
         ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r " + path, false);
-        Log.d("", "inStallApk: "+res.result+"----"+res.errorMsg);
-        if (res.result == 0) {
-
-        } else {
-            onInstallApkListener.onInstallFail(mContext.getResources().getString(cn.can.downloadlib.R.string.error_install));
-        }
+        Log.d("", "inStallApk: " + res.result + "----" + res.errorMsg);
+        onInstallApkListener.onInstallFail(mContext.getResources().getString(cn.can.downloadlib.R.string
+                .error_install));
     }
+
     /**
      * 系统安装apk
      */
-    public static void install(Context mContext,String path,long size,InstallApkListener onInstallApkListener){
+    public static void install(Context mContext, String path, long size, InstallApkListener onInstallApkListener) {
         long space = SdcardUtils.getSDCardAvailableSpace();
         if (space < size) {
-            onInstallApkListener.onInstallFail(mContext.getResources().getString(cn.can.downloadlib.R.string.error_msg));
+            onInstallApkListener.onInstallFail(mContext.getResources().getString(cn.can.downloadlib.R.string
+                    .error_msg));
             return;
         }
         //创建URI
-        Uri uri=Uri.fromFile(new File(path));
+        Uri uri = Uri.fromFile(new File(path));
         //创建Intent意图
-        Intent intent=new Intent(Intent.ACTION_VIEW);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//启动新的activity
         //设置Uri和类型
         intent.setDataAndType(uri, "application/vnd.android.package-archive");

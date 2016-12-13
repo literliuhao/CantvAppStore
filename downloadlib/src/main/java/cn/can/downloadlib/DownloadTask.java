@@ -16,6 +16,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.downloadlib.utils.ShellUtils;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -373,6 +374,7 @@ public class DownloadTask implements Runnable {
     }
 
     private void onCompleted() {
+        ShellUtils.execCommand("chmod 666 "+ mSaveDirPath+File.separator+mFileName, false);
         for (DownloadTaskListener listener : mDownloadlisteners) {
             DCResource.onDownloadSuccess(this.getFileName());
             listener.onCompleted(this);

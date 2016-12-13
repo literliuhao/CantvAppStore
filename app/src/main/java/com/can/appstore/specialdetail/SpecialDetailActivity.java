@@ -117,18 +117,20 @@ public class SpecialDetailActivity extends BaseActivity {
             loadDataFail(R.string.no_network);
             return;
         }
+        showLoadingDialog();
         mSpecialTopic = HttpManager.getApiService().getSpecialTopic(mTopicId);
         mSpecialTopic.enqueue(new CanCallback<Result<SpecialTopic>>() {
             @Override
             public void onResponse(CanCall<Result<SpecialTopic>> call, Response<Result<SpecialTopic>> response) throws Exception {
                 Result<SpecialTopic> info = response.body();
                 Log.d("SpecialDetailActivity", info.toString());
+                hideLoadingDialog();
                 if (info.getData() == null) {
                     loadDataFail(R.string.load_data_faild);
                     return;
                 }
                 ImageLoader.getInstance().load(SpecialDetailActivity.this, mDetailImgBg, info.getData().getBackground());
-                if(!info.getData().getRecommend().isEmpty()){
+                if (!info.getData().getRecommend().isEmpty()) {
                     mRecommdList.addAll(info.getData().getRecommend());
                     showRecycleView();
                 }
@@ -136,20 +138,21 @@ public class SpecialDetailActivity extends BaseActivity {
 
             @Override
             public void onFailure(CanCall<Result<SpecialTopic>> call, CanErrorWrapper errorWrapper) {
+                hideLoadingDialog();
                 loadDataFail(R.string.load_data_faild);
             }
         });
     }
 
     private void loadDataFail(int toastId) {
-        if(toastId != R.string.no_network){
+        if (toastId != R.string.no_network) {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     SpecialDetailActivity.this.finish();
                 }
-            },500);
-        }else{
+            }, 500);
+        } else {
             SpecialDetailActivity.this.finish();
         }
         showToast(toastId);
@@ -230,9 +233,9 @@ public class SpecialDetailActivity extends BaseActivity {
         }
     }
 
-    @Override
+   /* @Override
     protected void onHomeKeyDown() {
         finish();
         super.onHomeKeyDown();
-    }
+    }*/
 }

@@ -48,7 +48,7 @@
     <string name="update_totalnum">/4行</string>
     <string name="update_bt_detection">检测更新</string>
     <string name="update_bt_autosetting">更新设置</string>
-    <string name="update_updateall">已安装应用均为最新版本</string>
+    <string name="update_updateall">已安装应用均为最新版本 !</string>
     <string name="update_downloading">下载中</string>
     <string name="update_app_versionname">版本1.12</string>
     <string name="update_app_size">12.5M</string>
@@ -73,7 +73,7 @@
     <string name="install_totalnum">/4行</string>
     <string name="install_bt_deleteall">删除全部</string>
     <string name="install_bt_deleteinstall">删除已安装</string>
-    <string name="install_updateall">暂未找到安装包!</string>
+    <string name="install_updateall">暂未找到安装包 !</string>
     <string name="install_installing">安装中</string>
     <string name="install_installfalse">安装失败</string>
     <string name="install_app_versionname">版本1.12</string>
@@ -201,12 +201,14 @@
     <string name="start_app">启动</string>
     <string name="uninstall_app">卸载</string>
     <!--自更新文本-->
-    <string name="system_upgrade">系统升级</string>
+    <string name="app_upgrade">应用升级</string>
+    <string name="last_version">已经是最新版本了</string>
     <string name="install">安装</string>
     <string name="run_apk">运行apk</string>
     <string name="load_error">下载异常，升级失败</string>
     <string name="install_error">升级失败</string>
     <string name="download">下载</string>
+    <string name="new_version">新版本:</string>
 
     <!--统计文本-->
     <string name="active_detail">活动详情页</string>

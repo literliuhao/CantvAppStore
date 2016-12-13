@@ -114,6 +114,9 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         mAdapter.setOnMsgFocusLayoutClickListener(new MessageAdapter.OnMsgFocusLayoutClickListener() {
             @Override
             public void onMsgFocusLayoutClick(int position) {
+                if (position < 0) {
+                    return;
+                }
                 boolean isNetConnected = NetworkUtils.isNetworkConnected(MessageActivity.this);
                 MessageInfo msg = msgList.get(position);
                 if (msg == null) {
@@ -155,7 +158,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         });
         mAdapter.setOnItemRemoveListener(new MessageAdapter.OnItemRemoveListener() {
             @Override
-            public void onRemoveItem(int position , String msgId) {
+            public void onRemoveItem(int position, String msgId) {
                 messageManager.deleteMsg(msgId);
                 int msgCount = msgList.size();
                 if (msgCount == 0) {
@@ -277,10 +280,11 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
 
 
     private void changeListStatus() {
-        for (MessageInfo msg: msgList) {
+        for (MessageInfo msg : msgList) {
             msg.setStatus(false);
         }
     }
+
 
     /**
      * 刷新右上角焦点框所在条目上的位置信息
@@ -315,16 +319,10 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
     }
 
     @Override
-    protected void onHomeKeyDown() {
-        finish();
-        super.onHomeKeyDown();
-    }
-
-    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_tag:
-                if (!messageManager.existUnreadMsg() || msgList == null || msgList.isEmpty() ) {
+                if (!messageManager.existUnreadMsg() || msgList == null || msgList.isEmpty()) {
                     return;
                 }
                 messageManager.updateAllMsgStatus();
@@ -374,8 +372,23 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         DCEvent.onEventDuration(AppConstants.NEWS_LIST, mDuration);
     }
 
+    /*    @Override
+    protected void onHomeKeyDown() {
+        finish();
+        super.onHomeKeyDown();
+    }*/
+
     @Override
     protected void onDestroy() {
+        if (msgList != null) {
+            msgList.clear();
+            msgList = null;
+        }
+        if (mHandler != null) {
+            mHandler.removeCallbacks(mFocusMoveRunnable);
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler = null;
+        }
         if (focusMoveUtil != null) {
             focusMoveUtil.release();
             focusMoveUtil = null;
@@ -383,11 +396,12 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
         if (messageManager != null) {
             messageManager = null;
         }
-        if (msgList != null) {
-            msgList.clear();
-        }
         if (mAdapter != null) {
             mAdapter.setFocusListener(null);
+            mAdapter.setOnItemRemoveListener(null);
+            mAdapter.setOnMsgFocusLayoutClickListener(null);
+            mAdapter.setOnMsgFocusLayoutFocusChangeListener(null);
+            mAdapter = null;
         }
         super.onDestroy();
     }

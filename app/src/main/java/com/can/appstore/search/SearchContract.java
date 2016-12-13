@@ -25,6 +25,10 @@ public interface SearchContract {
         void noNetWork();
 
         void hideLoading();
+
+        void hotRecommedEnable(boolean enable);
+
+        void hotKeyEnable(boolean enable);
     }
 
     interface Presenter {

@@ -90,10 +90,10 @@ public class PromptUtils {
                         public void run() {
                             synchronized (synObj) {
                                 if (mToast == null) {
-                                    mToast = new Toast(context);
+                                    mToast = new Toast(context.getApplicationContext());
                                 }
                                 if (mTextView == null) {
-                                    mTextView = new TextView(context);
+                                    mTextView = new TextView(context.getApplicationContext());
                                     mTextView.setBackgroundResource(R.drawable.shape_toast);
                                     mTextView.setTextColor(Color.WHITE);
                                     mTextView.setPadding(50, 30, 50, 30);
@@ -112,13 +112,7 @@ public class PromptUtils {
     }
 
     public static void toastShort(Context context, String msg) {
-        if (mToast != null) {
-            mToast.setText(msg);
-            mToast.show();
-            return;
-        }
-        mToast = Toast.makeText(context.getApplicationContext(), msg, Toast.LENGTH_SHORT);
-        mToast.show();
+        toast(context,msg,Toast.LENGTH_SHORT);
     }
 
     public static Dialog showSysLoadingDialog(Context context, String msg) {

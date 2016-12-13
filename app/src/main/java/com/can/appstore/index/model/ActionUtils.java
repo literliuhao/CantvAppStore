@@ -9,6 +9,7 @@ import com.can.appstore.active.ActiveActivity;
 import com.can.appstore.appdetail.AppDetailActivity;
 import com.can.appstore.applist.AppListActivity;
 import com.can.appstore.specialdetail.SpecialDetailActivity;
+import com.can.appstore.speciallist.SpecialActivity;
 import com.dataeye.sdk.api.app.channel.DCResourceLocation;
 import com.dataeye.sdk.api.app.channel.DCResourcePair;
 
@@ -67,6 +68,9 @@ public class ActionUtils {
      * 活动详情⻚ ok
      * com.can.appstore.ACTION_ACTIVITY_DETAIL
      * activeId(String)
+     * <p>
+     * 专题列表 ok
+     * com.can.appstore.
      *
      * @param mContext
      * @param id
@@ -74,8 +78,10 @@ public class ActionUtils {
      * @param actionData
      */
     public void convertAction(Context mContext, String id, String actionStr, String actionData) {
-        DCResourcePair pair = DCResourcePair.newBuilder().setResourceLocationId(id).build();
-        DCResourceLocation.onClick(pair);
+        if (!isTemp(id)) {
+            DCResourcePair pair = DCResourcePair.newBuilder().setResourceLocationId(id).build();
+            DCResourceLocation.onClick(pair);
+        }
         switch (actionStr) {
             //应用详情
             case ActionConstants.ACTION_APP_DETAIL:
@@ -84,6 +90,10 @@ public class ActionUtils {
             //专题详情
             case ActionConstants.ACTION_TOPIC_DETAIL:
                 SpecialDetailActivity.actionStart(mContext, actionData);
+                break;
+            //专题列表
+            case ActionConstants.ACTION_TOPIC_LIST:
+                SpecialActivity.actionStart(mContext);
                 break;
             //应用列表
             case ActionConstants.ACTION_APP_LIST:
@@ -97,14 +107,40 @@ public class ActionUtils {
             case ActionConstants.ACTION_APP_LIST_WITH_TYPE:
                 try {
                     JSONObject jsonObject = new JSONObject(actionData);
-                    String typeId = jsonObject.optString("typeId","");
-                    String topicId = jsonObject.optString("topicId","");
+                    String typeId = jsonObject.optString("typeId", "");
+                    String topicId = jsonObject.optString("topicId", "");
                     AppListActivity.actionStart(mContext, AppListActivity.MSG_HIDE_MENU_TOP_SHADOW, typeId, topicId);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 break;
         }
+    }
+
+    public void sendActionById(Context mContext, String appId, String topicId, String appList, String activityId, String topicList) {
+        if (!isTemp(appId)) {
+            convertAction(mContext, null, ActionConstants.ACTION_APP_DETAIL, appId);
+            return;
+        } else if (!isTemp(topicId)) {
+            convertAction(mContext, null, ActionConstants.ACTION_TOPIC_DETAIL, topicId);
+            return;
+        } else if (!isTemp(appList)) {
+            convertAction(mContext, null, ActionConstants.ACTION_APP_LIST, appList);
+            return;
+        } else if (!isTemp(activityId)) {
+            convertAction(mContext, null, ActionConstants.ACTION_ACTIVITY_DETAIL, activityId);
+            return;
+        } else if (topicList.equals("1") && !isTemp(topicList)) {
+            convertAction(mContext, null, ActionConstants.ACTION_TOPIC_LIST, activityId);
+            return;
+        }
+    }
+
+    public Boolean isTemp(String id) {
+        if (null != id && !id.equals("")) {
+            return false;
+        }
+        return true;
     }
 
     public Boolean checkURL(String mURL) {
@@ -117,7 +153,7 @@ public class ActionUtils {
     public int getResourceId(String iconName) {
         if (photoMap.containsKey(iconName)) {
             return photoMap.get(iconName);
-        }else{
+        } else {
             return R.drawable.homerank_bottom_bg1;
         }
     }

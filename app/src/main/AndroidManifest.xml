@@ -162,6 +162,24 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name=".upgrade.activity.UpgradeInfoActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/DialogTransparent"
+            >
+        </activity>
+        <activity
+            android:name=".upgrade.activity.ProgressActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/DialogTransparent"
+            >
+        </activity>
+        <activity
+            android:name=".upgrade.activity.UpgradeFailActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/DialogTransparent"
+            >
+        </activity>
 
         <service android:name=".upgrade.service.BuglyUpgradeService">
             <intent-filter>
@@ -179,8 +197,9 @@
                 android:resource="@xml/provider_paths"/>
         </provider>
 
-        <receiver android:name=".upgrade.receiver.UpgradeReceiver"
-                  android:exported="false">
+        <receiver
+            android:name=".upgrade.receiver.UpgradeReceiver"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"></action>
             </intent-filter>

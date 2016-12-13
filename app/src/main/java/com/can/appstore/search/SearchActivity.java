@@ -33,7 +33,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
-import cn.can.tvlib.utils.PromptUtils;
 
 public class SearchActivity extends BaseActivity implements SearchContract.View, View.OnClickListener {
 
@@ -91,6 +90,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
     private int mCurrLineNumber;
     private int mTotalLineCount;
     private int mSearchTotal;
+    private View mRightView;
 
     public static void startAc(Context context) {
         Intent intent = new Intent(context, SearchActivity.class);
@@ -130,6 +130,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         mRLNoNetworkView = findViewById(R.id.rl_no_network);
 
         //右侧布局
+        mRightView = findViewById(R.id.right_view);
         mTopView = (RelativeLayout) findViewById(R.id.top_view);
         mleft_top = (TextView) findViewById(R.id.left_top_view);
         mright_top = (TextView) findViewById(R.id.right_top_view);
@@ -248,7 +249,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
 
     @Override
     public void startSearch() {
-        PromptUtils.toast(this.getApplicationContext(), "开始搜索...");
+//        PromptUtils.toast(this.getApplicationContext(), "开始搜索...");
     }
 
     /**
@@ -353,13 +354,12 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                         //列数
 //                        int colNumber = (position + 1) % SEARCH_APP_SPANCOUNT == 0 ? SEARCH_APP_SPANCOUNT : (position + 1) % SEARCH_APP_SPANCOUNT;
 //                        mright_top.setText(colNumber + "/" + lineNumber + "行");
-                        mright_top.setText(mCurrLineNumber + "/" + mSearchTotal + "行");
+                        mright_top.setText(mCurrLineNumber + "/" + mTotalLineCount + "行");
                     }
                     mFocusedListChild = view;
                     view.postDelayed(myFocusRunnable, 50);
                 } else {
-                    mright_top.setVisibility(View.GONE);
-//                    mFocusScaleUtil.scaleToNormal();
+                    mright_top.setText(1 + "/" + mTotalLineCount + "行");
                 }
                 view.setSelected(hasFocus);
             }
@@ -379,6 +379,26 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
     @Override
     public void hideLoading() {
         hideLoadingDialog();
+    }
+
+    /**
+     * 热门推荐,处理无数据时的焦点问题
+     *
+     * @param enable
+     */
+    @Override
+    public void hotRecommedEnable(boolean enable) {
+        mBottom_re_recycle.setFocusable(enable);
+    }
+
+    /**
+     * 大家都在搜
+     *
+     * @param enable
+     */
+    @Override
+    public void hotKeyEnable(boolean enable) {
+        mSearAppList_recycle.setFocusable(enable);
     }
 
     /**
@@ -628,10 +648,10 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         DCEvent.onEventDuration(AppConstants.RESEARCH_PAGE, mDuration);
     }
 
-    @Override
+    /*@Override
     protected void onHomeKeyDown() {
         finish();
-    }
+    }*/
 
     @Override
     protected void onDestroy() {

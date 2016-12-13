@@ -4,8 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,10 +20,13 @@ import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.update.model.AppInfoBean;
-import com.can.appstore.update.utils.UpdateUtils;
 import com.can.appstore.widgets.CanDialog;
 import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -85,41 +88,6 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
     @Override
     protected void onStart() {
         super.onStart();
-        registerInstalledReceiver();
-        registerDownloadedReceiver();
-
-    }
-
-    /**
-     * 下载完成广播，刷新数据
-     */
-    private void registerDownloadedReceiver() {
-
-    }
-
-    /**
-     * 安装完成广播，刷新数据,失败广播获取包名，install为true再刷新 再加集合存储安装成功
-     */
-    private void registerInstalledReceiver() {
-        if (mInstallApkReceiver == null) {
-            mInstallApkReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    if (intent.getAction().equals("android.intent.action.PACKAGE_ADDED") || intent.getAction().equals("android.intent.action.PACKAGE_REPLACED")) {
-                        String packageName = intent.getDataString().substring(8);
-                        int versonCode = UpdateUtils.getVersonCode(InstallManagerActivity.this, packageName);
-                        mPresenter.isInstalled(packageName, versonCode);
-                    } else if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
-                    }
-                }
-            };
-            intentFilter = new IntentFilter();
-            intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
-            intentFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
-            intentFilter.addAction(Intent.ACTION_VIEW);
-            intentFilter.addDataScheme("package");
-        }
-        registerReceiver(mInstallApkReceiver, intentFilter);
     }
 
     @Override
@@ -146,7 +114,7 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(mInstallApkReceiver);
+        EventBus.getDefault().unregister(this);
         mPresenter.release();
     }
 
@@ -255,7 +223,6 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
     private void setLeftLayoutFocus(boolean focusable) {
         mDeleteButton.setFocusable(focusable);
         mDeleteAllButton.setFocusable(focusable);
-        //mUpdateButton.setFocusable(focusable);
     }
 
     private void initClick() {
@@ -276,8 +243,8 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
             public void onClick(View view) {
                 mPresenter.deleteInstall();
                 if (mPresenter.isNull()) {
-                    mDeleteAllButton.setFocusable(true);
-                    mDeleteAllButton.requestFocus();
+                    mDeleteButton.setFocusable(true);
+                    mDeleteButton.requestFocus();
                 }
             }
         });
@@ -297,6 +264,7 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
     }
 
     private void initView() {
+        EventBus.getDefault().register(this);
         mTotalnum = (TextView) findViewById(R.id.tv_install_totalnum);
         mCurrentnum = (TextView) findViewById(R.id.tv_install_currentnum);
         mRecyclerView = (CanRecyclerView) findViewById(R.id.rv_install_recyclerview);
@@ -308,6 +276,7 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
         mFocusMoveUtil = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
         mFocusScaleUtil = new FocusScaleUtil();
         myFocusRunnable = new MyFocusRunnable();
+        mFocusMoveUtil.hideFocusForShowDelay(500);
         mGridLayoutManager = new GridLayoutManager(this, 3);
         mRecyclerView.setLayoutManager(mGridLayoutManager);
         CanRecyclerViewDivider canRecyclerViewDivider = new CanRecyclerViewDivider(0, getResources().getDimensionPixelSize(R.dimen.px38), 0);
@@ -381,6 +350,13 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
         }
         mRecyclerView.setAdapter(mRecyclerAdapter);
         mRecyclerAdapter.notifyDataSetChanged();
+        if (mDatas.size() > 0) {
+            mDeleteAllButton.setNextFocusRightId(R.id.rv_install_recyclerview);
+            mDeleteButton.setNextFocusRightId(R.id.rv_install_recyclerview);
+        } else {
+            mDeleteAllButton.setNextFocusRightId(R.id.bt_install_deleteall);
+            mDeleteButton.setNextFocusRightId(R.id.bt_install_delete);
+        }
     }
 
     @Override
@@ -447,13 +423,15 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
     }*/
     private void initDialog(final View view, final int position) {
         canDialog = new CanDialog(InstallManagerActivity.this);
-        AppInfoBean bean = mPresenter.getItem(position);
+        final AppInfoBean bean = mPresenter.getItem(position);
         if (bean != null && bean.getIsInstalling() && !bean.getInstalledFalse()) {
             showToast(getResources().getString(R.string.install_dialog_installing));
             return;
         }
         if (bean != null) {
-            canDialog.setTitle(bean.getAppName()).setIcon(bean.getIcon()).setRlCOntent(false).setNegativeButton(getResources().getString(R.string.install_dialog_delete)).setPositiveButton(getResources().getString(R.string.install_dialog_install));
+            canDialog.setTitle(bean.getAppName()).setIcon(bean.getIcon()).setMessageBackground(Color.TRANSPARENT).setNegativeButton
+                    (getResources()
+                            .getString(R.string.install_dialog_delete)).setPositiveButton(getResources().getString(R.string.install_dialog_install));
             canDialog.setOnCanBtnClickListener(new CanDialog.OnClickListener() {
                 @Override
                 public void onClickPositive() {
@@ -466,12 +444,12 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
                     if (versonCode == 0) {
                         showToast(getResources().getString(R.string.install_dialog_error));
                     } else {
-                        new Handler().postDelayed(new Runnable() {
+                        new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 mPresenter.installApp(position);
                             }
-                        }, 1000);
+                        }).start();
                     }
                 }
 
@@ -507,6 +485,7 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
 
     /**
      * 限制点击频率
+     *
      * @return
      */
     private boolean isFastContinueClickView() {
@@ -520,6 +499,7 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
 
     /**
      * 限制移动速度
+     *
      * @param event
      * @return
      */
@@ -541,6 +521,22 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
     @Override
     protected void onHomeKeyDown() {
         mPresenter.release();
-        finish();
+        //finish();
+        super.onHomeKeyDown();
     }
+
+    /**
+     * 使用eventbus
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventMainThread(InstallApkModel model) {
+        mRecyclerAdapter.notifyDataSetChanged();
+        int number = model.getNumber();
+        if(number == 0){
+            showToast(model.getName()+getResources().getString(R.string.install_success));
+        }else if(number == 1){
+            showToast(model.getName()+getResources().getString(R.string.install_fail));
+        }
+    }
+
 }

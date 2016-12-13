@@ -1,16 +1,23 @@
 package com.can.appstore.installpkg;
 
 import android.content.Context;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 
 import com.can.appstore.R;
 import com.can.appstore.installpkg.utils.InstallPkgUtils;
 import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.update.utils.UpdateUtils;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.downloadlib.DownloadManager;
 import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.SystemUtil;
 
@@ -25,6 +32,29 @@ public class InstallPresenter implements InstallContract.Presenter {
     private Context mContext;
     private String mPath;
     private List<AppInfoBean> mDatas;//安装包集合
+    private static final int NO_DATA = 1;
+    private static final int DATA = 2;
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case NO_DATA:
+                    mView.hideLoading();
+                    mView.showNoData();
+                    break;
+                case DATA:
+                    List<AppInfoBean> appList = (List<AppInfoBean>)msg.obj;
+                    mView.hideLoading();
+                    mView.hideNoData();
+                    mDatas.addAll(appList);
+                    mView.showInstallPkgList(mDatas);
+                    setNum(0);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     public InstallPresenter(InstallContract.View mView, Context context) {
         this.mView = mView;
@@ -40,25 +70,32 @@ public class InstallPresenter implements InstallContract.Presenter {
         InstallPkgUtils.myFiles.clear();
         //mPath = Environment.getExternalStorageDirectory().getPath().toString();
         //mPath = Environment.getExternalStorageDirectory().getPath().toString() + File.separator + "Movies";
-        mPath = mContext.getExternalCacheDir().getAbsolutePath();
-        List appList = InstallPkgUtils.FindAllAPKFile(mPath);
-        mDatas.clear();
-        if (appList.size() < 1) {
-            mView.hideLoading();
-            mView.showNoData();
-        } else {
-            mView.hideLoading();
-            mView.hideNoData();
-            mDatas.addAll(appList);
-            //setNum(0);
-            mView.showInstallPkgList(mDatas);
-        }
+        //mPath = mContext.getExternalCacheDir().getAbsolutePath();
+        String downloadPath = DownloadManager.getInstance(mContext).getDownloadPath();
+        mPath = downloadPath;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List appList = InstallPkgUtils.FindAllAPKFile(mPath);
+                mDatas.clear();
+                if (appList.size() < 1) {
+                    Message msg = Message.obtain();
+                    msg.what = NO_DATA;
+                    mHandler.sendMessage(msg);
+                } else {
+                    Message msg = Message.obtain();
+                    msg.what = DATA;
+                    msg.obj = appList;
+                    mHandler.sendMessage(msg);
+                }
+            }
+        }).start();
     }
 
     @Override
     public void getSDInfo() {
-        long freeSize = SystemUtil.getSDCardAvailableSpace();
-        long totalSize = SystemUtil.getSDCardTotalSpace();
+        long freeSize = SystemUtil.getInternalAvailableSpace(mContext);
+        long totalSize = SystemUtil.getInternalTotalSpace(mContext);
         int progress = (int) (((totalSize - freeSize) * 100) / totalSize);
         String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + StringUtils.formatFileSize(freeSize, false);
         mView.showSDProgressbar(progress, freeStorage);
@@ -203,7 +240,7 @@ public class InstallPresenter implements InstallContract.Presenter {
             AppInfoBean bean = mDatas.get(i);
             if (bean.getPackageName().equals(packageName) && bean.getVersionCode().equals(String.valueOf(versionCode))) {
                 if (bean.getInstall()) {
-                    mView.refreshAll();
+                    //mView.refreshAll();
                 }
             }
         }
@@ -226,15 +263,20 @@ public class InstallPresenter implements InstallContract.Presenter {
     public void installApp(int position) {
         mDatas.get(position).setInstalling(true);//开始安装
         String fliePath = mDatas.get(position).getFliePath();
-        int result = InstallPkgUtils.installApp2(fliePath);
-        if (result == 0) {
-            mDatas.get(position).setInstalling(false);
-            mDatas.get(position).setInstall(true);
-        } else {
-            mDatas.get(position).setInstalling(true);
-            mDatas.get(position).setInstall(false);
-            mDatas.get(position).setInstalledFalse(true);
-            mView.refreshAll();
+        try {
+            int result = InstallPkgUtils.installApp2(fliePath);
+            if (result == 0) {
+                mDatas.get(position).setInstalling(false);
+                mDatas.get(position).setInstall(true);
+                EventBus.getDefault().post(new InstallApkModel(mDatas.get(position).getAppName(),0));
+            } else {
+                mDatas.get(position).setInstalling(true);
+                mDatas.get(position).setInstall(false);
+                mDatas.get(position).setInstalledFalse(true);
+                EventBus.getDefault().post(new InstallApkModel(mDatas.get(position).getAppName(),1));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

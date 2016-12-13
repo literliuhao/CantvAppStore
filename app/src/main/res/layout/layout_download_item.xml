@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/px1336"
-    android:layout_height="@dimen/px168"
-    android:gravity="left|center_vertical">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="@dimen/px1336"
+                android:layout_height="@dimen/px168"
+                android:gravity="left|center_vertical">
 
     <RelativeLayout
         android:id="@+id/download_item_content_rlayout"
@@ -19,13 +19,15 @@
             android:background="@drawable/selector_bg_download_item_left"
             tools:background="@drawable/selector_bg_download_item_left">
 
-            <cn.can.tvlib.ui.view.RoundCornerImageView
+            <cn.can.tvlib.ui.view.GlideRoundCornerImageView
                 android:id="@+id/download_item_appicon_imgvi"
                 android:layout_width="@dimen/px120"
                 android:layout_height="@dimen/px120"
                 android:layout_marginEnd="@dimen/px24"
+                android:background="@drawable/shap_download_icon_bg"
+                android:scaleType="fitXY"
                 app:cornerSize="@dimen/px24"
-                tools:src="@mipmap/ic_launcher" />
+                app:placeholder="@mipmap/cibn_icon"/>
 
             <TextView
                 android:id="@+id/download_item_title_tv"
@@ -36,7 +38,7 @@
                 android:layout_toRightOf="@+id/download_item_appicon_imgvi"
                 android:gravity="center_vertical"
                 android:textColor="@color/white_opa80"
-                android:textSize="@dimen/fontsize_34" />
+                android:textSize="@dimen/fontsize_34"/>
 
             <TextView
                 android:id="@+id/download_item_size_tv"
@@ -45,9 +47,9 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="@dimen/px20"
                 android:gravity="center_vertical|end"
-                tools:text="15.1MB/20MB"
                 android:textColor="@color/white_opa50"
-                android:textSize="@dimen/fontsize_30" />
+                android:textSize="@dimen/fontsize_30"
+                tools:text="15.1MB/20MB"/>
 
             <ProgressBar
                 android:id="@+id/download_item_progress"
@@ -58,7 +60,7 @@
                 android:layout_below="@+id/download_item_title_tv"
                 android:layout_marginTop="@dimen/px24"
                 android:layout_toEndOf="@+id/download_item_appicon_imgvi"
-                android:max="100" />
+                android:max="100"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -72,7 +74,7 @@
                 android:id="@+id/download_item_status_imgvi"
                 android:layout_width="@dimen/px40"
                 android:layout_height="@dimen/px40"
-                tools:src="@mipmap/icon_downloading" />
+                tools:src="@mipmap/icon_downloading"/>
 
             <TextView
                 android:id="@+id/download_item_status_tv"
@@ -83,7 +85,7 @@
                 android:includeFontPadding="false"
                 android:textColor="@color/white_opa80"
                 android:textSize="@dimen/px32"
-                tools:text="下载中" />
+                tools:text="下载中"/>
         </RelativeLayout>
 
 
@@ -110,7 +112,7 @@
             android:includeFontPadding="false"
             android:text="暂停"
             android:textColor="@color/white_opa80"
-            android:textSize="@dimen/px34" />
+            android:textSize="@dimen/px34"/>
 
         <TextView
             android:id="@+id/download_item_delete_btn"
@@ -125,7 +127,7 @@
             android:includeFontPadding="false"
             android:text="删除"
             android:textColor="@color/white_opa80"
-            android:textSize="@dimen/px34" />
+            android:textSize="@dimen/px34"/>
     </RelativeLayout>
 
 
