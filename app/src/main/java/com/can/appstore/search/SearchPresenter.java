@@ -63,6 +63,7 @@ public class SearchPresenter implements SearchContract.Presenter {
                 List<AppInfo> data = body.getData();
                 //说明是刚搜索,有内容就清空
                 if (pageIndex == 1 && mAppInfoList.size() > 0) {
+                    mView.hotKeyEnable(true);
                     mAppInfoList.clear();
                 }
                 if (!(data.size() > 0) && pageIndex != 1) {
@@ -96,13 +97,6 @@ public class SearchPresenter implements SearchContract.Presenter {
             return;
         }
 
-        if (0==0){
-            mView.hotRecommedEnable(false);
-            mView.getHotKeyList(null);
-            mView.hotKeyEnable(false);
-            mView.hideLoading();
-            return;
-        }
         //热门推荐
         HttpManager.getApiService().recommend().enqueue(new CanCallback<ListResult<AppInfo>>() {
             @Override

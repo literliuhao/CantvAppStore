@@ -381,12 +381,24 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         hideLoadingDialog();
     }
 
+    /**
+     * 热门推荐,处理无数据时的焦点问题
+     *
+     * @param enable
+     */
     @Override
     public void hotRecommedEnable(boolean enable) {
+        mBottom_re_recycle.setFocusable(enable);
     }
 
+    /**
+     * 大家都在搜
+     *
+     * @param enable
+     */
     @Override
     public void hotKeyEnable(boolean enable) {
+        mSearAppList_recycle.setFocusable(enable);
     }
 
     /**
