@@ -123,13 +123,6 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
 
     @Override
     public void loadwebview(String url) {
-//        showLoadingDialog();
-//        mHandler.removeMessages(SHOW_WEBVIEW);
-//        Message msg = mHandler.obtainMessage();
-//        msg.what = SHOW_WEBVIEW;
-//        msg.obj = url;
-////        mHandler.sendMessageDelayed(msg,1000);
-//        mHandler.sendMessage(msg);
         mActiveWebview.setWebViewClient(new CanWebViewClient());
         mActiveWebview.setVisibility(View.VISIBLE);
         mActiveWebview.loadUrl(url);
@@ -149,14 +142,15 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
 
     @Override
     public void loadDataFail(int toastId) {
+        hideLoadingDialog();
         mHandler.removeMessages(LOAD_DATA_FAIL);
         Message msg = mHandler.obtainMessage();
         msg.what = LOAD_DATA_FAIL;
         msg.arg1 = toastId;
-        if(toastId == R.string.no_network){
+        if (toastId == R.string.no_network) {
             mHandler.sendMessage(msg);
-        }else{
-            mHandler.sendMessageDelayed(msg,500);
+        } else {
+            mHandler.sendMessageDelayed(msg, 500);
         }
     }
 
@@ -167,7 +161,7 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
                 case REFRESH_PROGRESSBAR_TEXT:
                     int status = msg.arg1;
                     int showtype = status == R.string.active_click_participate ? ACTIVE_PARTICIPATE : ACTIVE_NORMAL;
-                    if(showtype != mShowType){
+                    if (showtype != mShowType) {
                         mFocusLayout.setBackgroundResource(showtype);
                         mShowType = showtype;
                     }
@@ -202,26 +196,11 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
     }
 
     private class CanWebViewClient extends WebViewClient {
-
-        @Override
-        public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            super.onPageStarted(view, url, favicon);
-            Log.d("ActiveAcitivity","onPageStarted ...");
-            showLoadingDialog();
-        }
-
-        @Override
-        public void onLoadResource(WebView view, String url) {
-            super.onLoadResource(view, url);
-            Log.d("ActiveAcitivity","onLoadResource ...");
-
-        }
-
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            Log.d("ActiveAcitivity","onPageFinished ...");
-            if(isLoadingDialogShowing()){
+            Log.d("ActiveAcitivity", "onPageFinished ...");
+            if (isLoadingDialogShowing()) {
                 hideLoadingDialog();
             }
         }
@@ -237,9 +216,4 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
         super.onStop();
     }
 
-/*    @Override
-    protected void onHomeKeyDown() {
-        finish();
-        super.onHomeKeyDown();
-    }*/
 }

@@ -196,6 +196,7 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                 @Override
                 public void onInstallSucess(String id) {
                     final int itemPosition = getItemPosition(id);
+                    getUpdateApkNum(0);
                     updateHolder.downloading.post(new Runnable() {
                         @Override
                         public void run() {
@@ -338,14 +339,14 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
      */
     public void getUpdateApkNum(int position) {
         try {
-            AutoUpdate.getInstance().mUpdateNumDatas.remove(0);
+            AutoUpdate.getInstance().mUpdateApkNumDatas.remove(0);
             //发送数量
-            EventBus.getDefault().post(new UpdateApkModel(AutoUpdate.getInstance().mUpdateNumDatas.size()));
-            Log.i(TAG, "getUpdateApkNum: " + AutoUpdate.getInstance().mUpdateNumDatas.size());
+            EventBus.getDefault().post(new UpdateApkModel(AutoUpdate.getInstance().mUpdateApkNumDatas.size()));
+            Log.i(TAG, "getUpdateApkNum: " + AutoUpdate.getInstance().mUpdateApkNumDatas.size());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.i(TAG, "getUpdateApkNum: " + AutoUpdate.getInstance().mUpdateNumDatas.size());
+        Log.i(TAG, "getUpdateApkNum: " + AutoUpdate.getInstance().mUpdateApkNumDatas.size());
     }
 
     class UpdateViewHolder extends RecyclerView.ViewHolder {

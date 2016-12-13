@@ -10,8 +10,8 @@ android {
         applicationId "com.can.appstore"
         minSdkVersion 19
         targetSdkVersion 24
-        versionCode 100
-        versionName "20161201_v1.0.0"
+        versionCode 101
+        versionName "20161212_v1.0.1"
     }
 
     signingConfigs {

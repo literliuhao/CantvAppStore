@@ -122,7 +122,9 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
     }
 
     public void setAdapterFocus() {
-        gridAdapter.setFocusAll();
+        if (null != gridAdapter) {
+            gridAdapter.setFocusAll();
+        }
     }
 
     public void startAc(String action) {

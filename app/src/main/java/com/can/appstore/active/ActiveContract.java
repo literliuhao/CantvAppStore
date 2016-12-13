@@ -29,5 +29,9 @@ public class ActiveContract {
 
         void loadDataFail(int toastId);
 
+        void showLoadingDialog();
+
+        void hideLoadingDialog();
+
     }
 }
