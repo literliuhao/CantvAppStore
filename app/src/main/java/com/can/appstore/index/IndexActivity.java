@@ -348,11 +348,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             ListResult<Navigation> listResult;
             if (null != response) {
                 listResult = response.body();
-                DataUtils.getInstance(this).setIndexData(listResult);
             } else {
                 listResult = new Gson().fromJson(DataUtils.getInstance(this).getCache(), new TypeToken<ListResult<Navigation>>() {
                 }.getType());
             }
+            DataUtils.getInstance(this).setIndexData(listResult);
             parseData(listResult);
         } catch (Exception e) {
             PromptUtils.toast(this, getResources().getString(R.string.index_data_error));
