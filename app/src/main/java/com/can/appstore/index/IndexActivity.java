@@ -49,7 +49,7 @@ import com.can.appstore.index.model.ShareData;
 import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.index.ui.FixedScroller;
 import com.can.appstore.index.ui.FragmentBody;
-import com.can.appstore.index.ui.FragmentEnum;
+import com.can.appstore.index.entity.FragmentEnum;
 import com.can.appstore.index.ui.LiteText;
 import com.can.appstore.index.ui.ManagerFragment;
 import com.can.appstore.index.ui.TitleBar;
@@ -96,7 +96,7 @@ import cn.can.tvlib.utils.PackageUtils;
 import cn.can.tvlib.utils.PromptUtils;
 import retrofit2.Response;
 
-import static com.can.appstore.index.ui.FragmentEnum.INDEX;
+import static com.can.appstore.index.entity.FragmentEnum.INDEX;
 
 /**
  * Created by liuhao on 2016/10/15.

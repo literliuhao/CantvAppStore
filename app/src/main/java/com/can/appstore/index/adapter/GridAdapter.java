@@ -1,7 +1,6 @@
 package com.can.appstore.index.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.index.entity.FragmentEnum;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.interfaces.IOnPagerKeyListener;
-import com.can.appstore.index.ui.FragmentEnum;
 import com.can.appstore.index.ui.GridManager;
 
 /**
@@ -75,7 +74,6 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
         if (gridManager.isMeasure) {
             return view;
         }
-        Log.i("GridAdapter", "position " + position);
         mView[position] = view;
         return view;
     }
@@ -97,8 +95,7 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
 
     public void setFocusAll() {
         for (int i = 0; i < mView.length; i++) {
-            Log.i("GridAdapter", "i " + i);
-            if(null != mView[i]){
+            if (null != mView[i]) {
                 mView[i].setId(i);
                 mView[i].setClickable(true);
                 mView[i].setFocusable(true);

@@ -15,6 +15,7 @@ import com.can.appstore.R;
 import com.can.appstore.entity.Layout;
 import com.can.appstore.entity.Navigation;
 import com.can.appstore.index.IndexActivity;
+import com.can.appstore.index.entity.FragmentEnum;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.interfaces.IOnPagerKeyListener;
 import com.can.appstore.index.model.ActionUtils;

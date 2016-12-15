@@ -21,7 +21,7 @@ import com.can.appstore.index.IndexActivity;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.interfaces.IOnPagerKeyListener;
 import com.can.appstore.index.ui.BaseFragment;
-import com.can.appstore.index.ui.FragmentEnum;
+import com.can.appstore.index.entity.FragmentEnum;
 import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
 

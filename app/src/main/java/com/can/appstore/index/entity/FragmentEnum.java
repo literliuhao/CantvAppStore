@@ -1,4 +1,4 @@
-package com.can.appstore.index.ui;
+package com.can.appstore.index.entity;
 
 /**
  * Created by liuhao on 2016/11/24.

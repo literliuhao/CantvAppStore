@@ -21,8 +21,6 @@ public class JsonFormat {
         try {
             pageBean = new PageBean();
             JSONObject mainObject = new JSONObject(json);
-
-
             JSONArray jsonArray = mainObject.getJSONArray("data");
             LayoutBean layoutBean;
             List<LayoutBean> layoutLists = new ArrayList<>();
