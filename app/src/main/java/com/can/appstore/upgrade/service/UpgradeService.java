@@ -2,37 +2,22 @@ package com.can.appstore.upgrade.service;
 
 import android.app.Activity;
 import android.app.IntentService;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 
-import com.can.appstore.PortalActivity;
-import com.can.appstore.R;
-import com.can.appstore.base.BaseActivity;
-import com.can.appstore.upgrade.InstallApkListener;
 import com.can.appstore.upgrade.UpgradeUtil;
 import com.can.appstore.upgrade.activity.UpgradeInfoActivity;
-import com.can.appstore.upgrade.view.UpgradeFailDialog;
-import com.can.appstore.upgrade.view.UpgradeInFoDialog;
-import com.can.appstore.upgrade.view.UpgradeProgressBarDialog;
 import com.google.gson.Gson;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
 
 import java.io.File;
 
-import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
-import cn.can.downloadlib.utils.ShellUtils;
 
 /**
  * Created by syl on 2016/11/2.

@@ -148,6 +148,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(R.style.AppTheme);
         setStyle();
         initDataEye();
         initView();

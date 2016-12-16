@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle"
-    >
-    <corners android:radius="@dimen/px8"/>
-    <solid android:color="@color/white_opa15" />
-</shape>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:opacity="opaque">
+
+    <item android:drawable="@color/colorPrimary"/>
+    <item >
+        <bitmap
+            android:src="@drawable/app_store"
+            android:gravity="center"/>
+    </item>
+    </layer-list>
