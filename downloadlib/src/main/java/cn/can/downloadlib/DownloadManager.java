@@ -687,8 +687,10 @@ public class DownloadManager implements AppInstallListener {
     }
 
     public void deleteSigleTask(String taskId) {
-        mSingleTaskMap.remove(taskId);
-        mDownloadDao.deleteByKey(taskId);
+        if (mSingleTaskMap != null && taskId != null) {
+            mSingleTaskMap.remove(taskId);
+            mDownloadDao.deleteByKey(taskId);
+        }
     }
 
     public void setLimitSpace(int size) {
