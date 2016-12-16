@@ -168,6 +168,7 @@ public class UpgradeService extends IntentService {
             public void onCompleted(DownloadTask downloadTask) {
                 Log.d(TAG, "DownloadManager=onCompleted");
                 onLoadingCompleted();
+                mManager.deleteSigleTask(downloadTask.getId());
             }
 
             @Override
