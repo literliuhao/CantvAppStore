@@ -5,10 +5,12 @@
     android:background="@drawable/index_bj"
     android:focusable="false">
 
+    <!--最顶层CIBN-->
     <include
         android:id="@+id/layout_top"
         layout="@layout/index_top"/>
 
+    <!--导航页面-->
     <com.can.appstore.index.ui.TitleBar
         android:id="@+id/id_indicator"
         android:layout_width="match_parent"
@@ -20,6 +22,7 @@
         android:orientation="horizontal">
     </com.can.appstore.index.ui.TitleBar>
 
+    <!--主体Pager页-->
     <com.can.appstore.index.ui.CustomPager
         android:id="@+id/id_custom_pager"
         android:layout_width="match_parent"
@@ -30,6 +33,7 @@
         android:scrollbars="none">
     </com.can.appstore.index.ui.CustomPager>
 
+    <!--可更新提示-->
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,6 +47,7 @@
     </RelativeLayout>
 
 
+    <!--广告-->
     <RelativeLayout
         android:id="@+id/rl_content_ad"
         android:layout_width="match_parent"
