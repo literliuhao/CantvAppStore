@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.index.entity.FragmentEnum;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 
 import java.util.ArrayList;
@@ -49,8 +50,6 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
     private static final int COLOR_TEXT_NORMAL = 0xCCFFFFFF;
     private static final int COLOR_TEXT_HIGHLIGHTCOLOR = 0xFFFFFFFF;
 
-    private int temp = 0;
-
     private List<LiteText> textViewList;
     private int mCurrentIndex = 0;
     private IAddFocusListener mFocusListener;
@@ -63,10 +62,6 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
 
     public TitleBar(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-//        LinearLayout.LayoutParams mainParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-//        this.setLayoutParams(mainParams);
-
         // 获得自定义属性，tab的数量
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TitleBar);
         mTabVisibleCount = a.getInt(R.styleable.TitleBar_item_count, COUNT_DEFAULT_TAB);
@@ -165,11 +160,11 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
      * 对外的ViewPager的回调接口
      */
     public interface PageChangeListener {
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
+        void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
 
-        public void onPageSelected(int position);
+        void onPageSelected(int position);
 
-        public void onPageScrollStateChanged(int state);
+        void onPageScrollStateChanged(int state);
     }
 
     // 对外的ViewPager的回调接口
@@ -179,8 +174,6 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
     public void setOnPageChangeListener(PageChangeListener pageChangeListener) {
         this.onPageChangeListener = pageChangeListener;
     }
-
-    private boolean isScrolling = false;
 
     // 设置关联的ViewPager
     public void setViewPager(final ViewPager mViewPager, final int pos) {
@@ -203,12 +196,8 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
 
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//                Log.i("onPagescrolled", "position " + position);
-//                Log.i("onPagescrolled", "positionOffset " + positionOffset);
-//                Log.i("onPagescrolled", "positionOffsetPixels " + positionOffsetPixels);
                 // 滚动
                 scroll(position, positionOffset);
-
                 // 回调
                 if (onPageChangeListener != null) {
                     onPageChangeListener.onPageScrolled(position, positionOffset, positionOffsetPixels);
@@ -217,11 +206,6 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                if (state == 1) {
-                    isScrolling = true;
-                } else {
-                    isScrolling = false;
-                }
                 // 回调
                 if (onPageChangeListener != null) {
                     onPageChangeListener.onPageScrollStateChanged(state);
@@ -232,8 +216,6 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
         TitleBar.this.getViewTreeObserver().addOnGlobalFocusChangeListener(new ViewTreeObserver.OnGlobalFocusChangeListener() {
             @Override
             public void onGlobalFocusChanged(View oldFocus, View newFocus) {
-//                Log.i("TitleBar", "onGlobalFocusChanged old " + String.valueOf(oldFocus));
-//                Log.i("TitleBar", "onGlobalFocusChanged new " + String.valueOf(newFocus));
                 mCurrentView = newFocus;
                 if (!(oldFocus instanceof LiteText) && newFocus instanceof LiteText) {
                     newFocus = textViewList.get(mViewPager.getCurrentItem());
@@ -252,7 +234,6 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
         });
         // 设置当前页
         mViewPager.setCurrentItem(pos);
-//        highLightTextView(pos);
     }
 
     /**
@@ -318,7 +299,7 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
 
         RelativeLayout.LayoutParams txtParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         txtParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        txtParams.setMargins((int)getResources().getDimension(R.dimen.px0),(int)getResources().getDimension(R.dimen.px8),(int)getResources().getDimension(R.dimen.px0),(int)getResources().getDimension(R.dimen.px10));
+        txtParams.setMargins((int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px8), (int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px10));
         textView.setLayoutParams(txtParams);
 
         int textSize = (int) getResources().getDimension(R.dimen.px38);
@@ -349,9 +330,7 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
     public void scroll(int position, float offset) {
         // 不断改变偏移量，invalidate
         mTranslationX = getWidth() / mTabVisibleCount * (position + offset);
-
         int tabWidth = getScreenWidth() / mTabVisibleCount;
-
         // 容器滚动，当移动到倒数最后一个的时候，开始滚动
         if (offset > 0 && position >= (mTabVisibleCount - 2) && getChildCount() > mTabVisibleCount) {
             if (mTabVisibleCount != 1) {

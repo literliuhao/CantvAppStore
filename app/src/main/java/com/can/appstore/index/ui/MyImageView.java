@@ -87,7 +87,6 @@ public class MyImageView extends ImageView {
         //设置边框宽度
         paint.setStrokeWidth(mBorder);
         canvas.drawRect(rec, paint);
-//        canvas.drawCircle(getWidth() / 2, getHeight() / 2, 20, paint);
         canvas.drawARGB(0, 0, 0, 0);
         canvas.drawRoundRect(mRect, cornerRadius, cornerRadius, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));

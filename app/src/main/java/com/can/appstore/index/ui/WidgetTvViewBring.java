@@ -13,7 +13,6 @@ public class WidgetTvViewBring {
     public WidgetTvViewBring(ViewGroup vg) {
         vg.setClipChildren(false);
         vg.setClipToPadding(false);
-        // vg.setChildrenDrawingOrderEnabled(true);
     }
 
     public void bringChildToFront(ViewGroup vg, View child) {

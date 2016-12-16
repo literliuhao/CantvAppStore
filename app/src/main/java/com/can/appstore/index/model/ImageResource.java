@@ -14,9 +14,4 @@ public class ImageResource {
             R.drawable.homerank_bottom_bg4,
             R.drawable.homerank_bottom_bg5,
     };
-
-//    public boolean isExists(){
-//        for (int i = 0; i < PHOTOS.length; i++) {
-//        }
-//    }
 }

@@ -49,7 +49,7 @@ import com.can.appstore.index.model.ShareData;
 import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.index.ui.FixedScroller;
 import com.can.appstore.index.ui.FragmentBody;
-import com.can.appstore.index.ui.FragmentEnum;
+import com.can.appstore.index.entity.FragmentEnum;
 import com.can.appstore.index.ui.LiteText;
 import com.can.appstore.index.ui.ManagerFragment;
 import com.can.appstore.index.ui.TitleBar;
@@ -96,7 +96,7 @@ import cn.can.tvlib.utils.PackageUtils;
 import cn.can.tvlib.utils.PromptUtils;
 import retrofit2.Response;
 
-import static com.can.appstore.index.ui.FragmentEnum.INDEX;
+import static com.can.appstore.index.entity.FragmentEnum.INDEX;
 
 /**
  * Created by liuhao on 2016/10/15.
@@ -138,12 +138,14 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private String materialId = null;
     private int mDefaultTime = 5;
     private int mShowTime = 5;
-    private int isClick = 0;
+    private int mClickCount = 0;
     private long mEnter = 0;
     private int mUpdateNum;
     private String mAdtfid;
     private Timer mTimer;
-    private final String ADPOSITIONID = "adyyscqd";
+    private final int AD_INDEX = 0;
+    private final int AD_SHOW_STEP = 1000;
+    private final String AD_POSITION_ID = "adyyscqd";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -224,7 +226,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      */
     private void getAD() {
         CommonAdParam commonAdParam = new CommonAdParam();
-        commonAdParam.setAdPositionId(ADPOSITIONID);
+        commonAdParam.setAdPositionId(AD_POSITION_ID);
         commonAdParam.setMac(NetworkUtils.getMac());
         commonAdParam.setVersionId(PackageUtils.getVersionName(mContext));
         CanCall<ClassicResult<List<Ad>>> listAD = HttpManager.getAdService().getCommonAd(commonAdParam.toMap());
@@ -234,9 +236,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 if (null != response) {
                     ClassicResult<List<Ad>> listResult = response.body();
                     List<Ad> listAD = listResult.getData();
-                    mAdtfid = listAD.get(0).getAdtfid();
-                    List<Ad.Material> listMaterial = listAD.get(0).getMaterial();
-                    final Ad.Material material = listMaterial.get(0);
+                    mAdtfid = listAD.get(AD_INDEX).getAdtfid();
+                    List<Ad.Material> listMaterial = listAD.get(AD_INDEX).getMaterial();
+                    final Ad.Material material = listMaterial.get(AD_INDEX);
                     materialId = material.getMaterialid();
                     ImageLoader.getInstance().buildTask(imageAD, material.getMaterialurl()).placeholder(R.drawable.app_store).successCallback(new GlideLoadTask.SuccessCallback() {
                         @Override
@@ -252,7 +254,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                                 public boolean onKey(View view, int i, KeyEvent keyEvent) {
                                     if (keyEvent.ACTION_DOWN == keyEvent.getAction() && (keyEvent.KEYCODE_ENTER == keyEvent.getKeyCode() || keyEvent.KEYCODE_DPAD_CENTER == keyEvent.getKeyCode())) {
                                         Log.i("IndexActivity", "view " + view.getId());
-                                        isClick = 1;
+                                        mClickCount = 1;
                                         String action = material.getAction();
                                         if (action.equals("") || null == action) return true;
                                         JsonObject jsonObject = material.getActionParam();
@@ -271,7 +273,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                                 }
                             });
                             mTimer = new Timer();
-                            mTimer.schedule(task, 1000, 1000);
+                            mTimer.schedule(task, AD_SHOW_STEP, AD_SHOW_STEP);
                             getNavigation();
                             return true;
                         }
@@ -295,13 +297,13 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     public void reportAD() {
         AdReportParam adReportParam = new AdReportParam();
-        adReportParam.setAdPositionId(ADPOSITIONID);
+        adReportParam.setAdPositionId(AD_POSITION_ID);
         adReportParam.setAdtfId(mAdtfid);
         adReportParam.setMac(NetworkUtils.getMac());
         adReportParam.setModel(TvInfoModel.getInstance().getModelName());
         adReportParam.setChannel(TvInfoModel.getInstance().getChannelId() + "|");
         adReportParam.setVersionId(PackageUtils.getVersionName(mContext));
-        adReportParam.setUserAction(isClick);
+        adReportParam.setUserAction(mClickCount);
         adReportParam.setMaterialId(materialId);
         adReportParam.setDuration(mDefaultTime);
         adReportParam.setImpressions(1);
@@ -342,7 +344,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void ProxyCache(Response<ListResult<Navigation>> response) {
-        DataUtils dataUtil = DataUtils.getInstance(this);
         try {
             //JSON不完整或错误会出现异常
             ListResult<Navigation> listResult;
@@ -352,11 +353,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 listResult = new Gson().fromJson(DataUtils.getInstance(this).getCache(), new TypeToken<ListResult<Navigation>>() {
                 }.getType());
             }
-            dataUtil.setIndexData(listResult);
+            DataUtils.getInstance(this).setIndexData(listResult);
             parseData(listResult);
         } catch (Exception e) {
             PromptUtils.toast(this, getResources().getString(R.string.index_data_error));
-            dataUtil.clearData();
+            DataUtils.getInstance(this).clearData();
             stopTimer();
             e.printStackTrace();
         }
@@ -374,16 +375,18 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      */
     private void initData(ListResult<Navigation> navigationListResult) {
         mFragmentLists = new ArrayList<>();
-        if (null == navigationListResult.getData()) return;
+        List<Navigation> navigationList = navigationListResult.getData();
+        if (null == navigationList) return;
         //根据服务器配置文件生成不同样式加入Fragment列表中
         FragmentBody fragment;
         Boolean rankVisibility = false;
-        for (int i = 0; i < navigationListResult.getData().size(); i++) {
-            if (navigationListResult.getData().get(i).getTitle().equals("排行")) {
+        for (int i = 0; i < navigationList.size(); i++) {
+            //因为后台没有及时添加更多字段，暂时以字符串判断。
+            if (navigationList.get(i).getTitle().equals("排行")) {
                 rankVisibility = true;
                 continue;
             }
-            fragment = FragmentBody.newInstance(this, navigationListResult.getData().get(i));
+            fragment = FragmentBody.newInstance(this, navigationList.get(i));
             if (i == 0) {
                 fragment.markOnKeyListener(false);
             }
@@ -412,16 +415,15 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      * @param mPage 导航栏数据
      */
     private void bindTtile(ListResult<Navigation> mPage) {
-        List<String> mDatas = new ArrayList<>();
+        List<String> mTitles = new ArrayList<>();
         for (int i = 0; i < mPage.getData().size(); i++) {
             Navigation navigation = mPage.getData().get(i);
-            mDatas.add(navigation.getTitle());
+            mTitles.add(navigation.getTitle());
         }
         //管理、我的应用不受服务器后台配置，因此手动干预位置
-        mDatas.add(getResources().getString(R.string.index_manager));
-        mDatas.add(getResources().getString(R.string.index_myapp));
-        //设置导航栏Title
-        mTitleBar.setTabItemTitles(mDatas);
+        mTitles.add(getResources().getString(R.string.index_manager));
+        mTitles.add(getResources().getString(R.string.index_myapp));
+        mTitleBar.setTabItemTitles(mTitles);//设置导航栏Title
     }
 
     /**
@@ -631,7 +633,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             //Bugly.init(getApplicationContext(), "900059606", false);
             //正式版本发布使用key
             Bugly.init(getApplicationContext(), "e3c3b1806e", false);
-            Beta.checkUpgrade(false,true);
+            Beta.checkUpgrade(false, true);
         } catch (Exception e) {
             e.printStackTrace();
         }

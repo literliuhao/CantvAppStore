@@ -104,28 +104,17 @@ public class IndexPagerAdapter extends PagerAdapter implements ViewPager.OnPageC
     @Override
     public void onPageSelected(int position) {
         Log.i("IndexPagerAdapter", "i " + position);
-        // 调用切换前Fargment的onPause()
         mFragmentList.get(getCurrentPageIndex()).onPause();
-        // 调用切换前Fargment的onStop()
-//        fragments.get(currentPageIndex).onStop();
         if (mFragmentList.get(position).isAdded()) {
-            // 调用切换后Fargment的onStart()
-//            fragments.get(i).onStart();
-            // 调用切换后Fargment的onResume()
             mFragmentList.get(position).onResume();
         }
 
-//        BaseFragment oldFragment = mFragmentList.get(getCurrentPageIndex());
-//        oldFragment.removeFocus();
         BaseFragment newFragment = mFragmentList.get(position);
         markView = null;
         if (getCurrentPageIndex() > position) {
             markView = newFragment.getLastView();
         }
         setCurrentPageIndex(position);
-
-//        newFragment.registerFocus();
-
         if (null != onExtraPageChangeListener) {
             onExtraPageChangeListener.onExtraPageSelected(position);
         }

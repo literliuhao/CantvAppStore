@@ -60,7 +60,6 @@ public class ShareData {
         if (null != hiddenList) {
             list = hiddenList.getData();
         }
-//        list.add("com.cantv.media");
         return list;
     }
 
