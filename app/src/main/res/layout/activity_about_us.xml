@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/px160"
+        android:layout_marginTop="@dimen/px100"
+        android:text="@string/about_us"
+        android:textColor="@color/white_opa80"
+        android:textSize="@dimen/px56"
+        />
+
+    <LinearLayout
+        android:layout_width="@dimen/px540"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/px410"
+        android:layout_marginTop="@dimen/px220"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        >
+
+        <ImageView
+            android:id="@+id/iv_icon"
+            android:layout_width="@dimen/px188"
+            android:layout_height="@dimen/px188"
+            android:scaleType="fitXY"
+            android:src="@drawable/icon_app"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/px32"
+            android:text="@string/app_name"
+            android:textColor="@color/white_opa80"
+            android:textSize="@dimen/px32"
+            />
+
+        <TextView
+            android:id="@+id/tv_version_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/px14"
+            android:textColor="@color/white_opa80"
+            android:textSize="@dimen/px32"
+            tools:text="@string/current_app_version_template"
+            />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/px1"
+            android:layout_marginTop="@dimen/px32"
+            android:background="@color/white_opa15"
+            />
+
+        <TextView
+            android:id="@+id/tv_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/px32"
+            android:textColor="@color/white_opa80"
+            android:textSize="@dimen/px32"
+            tools:text="@string/email_template"
+            />
+
+        <TextView
+            android:id="@+id/tv_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/px14"
+            android:textColor="@color/white_opa80"
+            android:textSize="@dimen/px32"
+            tools:text="@string/phone_template"
+            />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/iv_qrcode"
+        android:layout_width="@dimen/px360"
+        android:layout_height="@dimen/px436"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/px480"
+        android:layout_marginTop="@dimen/px220"
+        android:background="@drawable/about_us_qrcode"
+        android:scaleType="fitXY"
+        />
+
+</RelativeLayout>

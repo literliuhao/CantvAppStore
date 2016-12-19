@@ -193,8 +193,9 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
         return this;
     }
 
-    public void setOnCanBtnClickListener(OnClickListener listener) {
+    public CanDialog setOnCanBtnClickListener(OnClickListener listener) {
         this.mOnClickListener = listener;
+        return this;
     }
 
     public void release(){

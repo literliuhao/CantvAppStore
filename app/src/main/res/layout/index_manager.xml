@@ -135,36 +135,6 @@
             android:layout_width="@dimen/px270"
             android:layout_height="@dimen/px180"
             android:layout_centerHorizontal="true"
-            android:background="@drawable/index_item5_shape"/>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            style="@style/index_manager_icon_mini_top"
-            android:src="@drawable/index_manager_icon5"/>
-
-        <TextView
-            style="@style/index_manager_mini_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="@string/index_manager_text5"/>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/rl_item6"
-        style="@style/index_manager_padding"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/px10"
-        android:layout_alignBottom="@+id/rl_item5"
-        android:layout_toRightOf="@+id/rl_item5">
-
-        <ImageView
-            android:layout_width="@dimen/px270"
-            android:layout_height="@dimen/px180"
-            android:layout_centerHorizontal="true"
             android:background="@drawable/index_item6_shape"/>
 
         <ImageView
@@ -183,13 +153,13 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/rl_item7"
+        android:id="@+id/rl_item6"
         style="@style/index_manager_padding"
         android:layout_width="wrap_content"
-        android:layout_marginLeft="@dimen/px10"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/rl_item6"
-        android:layout_toRightOf="@+id/rl_item6">
+        android:layout_marginLeft="@dimen/px10"
+        android:layout_alignBottom="@+id/rl_item5"
+        android:layout_toRightOf="@+id/rl_item5">
 
         <ImageView
             android:layout_width="@dimen/px270"
@@ -213,13 +183,13 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/rl_item8"
+        android:id="@+id/rl_item7"
         style="@style/index_manager_padding"
         android:layout_width="wrap_content"
         android:layout_marginLeft="@dimen/px10"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/rl_item7"
-        android:layout_toRightOf="@+id/rl_item7">
+        android:layout_alignBottom="@+id/rl_item6"
+        android:layout_toRightOf="@+id/rl_item6">
 
         <ImageView
             android:layout_width="@dimen/px270"
@@ -240,6 +210,36 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:text="@string/index_manager_text8"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_item8"
+        style="@style/index_manager_padding"
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="@dimen/px10"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/rl_item7"
+        android:layout_toRightOf="@+id/rl_item7">
+
+        <ImageView
+            android:layout_width="@dimen/px270"
+            android:layout_height="@dimen/px180"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/index_item5_shape"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            style="@style/index_manager_icon_mini_top"
+            android:src="@drawable/index_manager_icon9"/>
+
+        <TextView
+            style="@style/index_manager_mini_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="@string/index_manager_text9"/>
     </RelativeLayout>
 
 </RelativeLayout>

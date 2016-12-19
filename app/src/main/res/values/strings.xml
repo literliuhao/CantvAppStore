@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">CANAppStore</string>
+    <string name="app_name">看尚应用商城</string>
     <!-- custom -->
     <string name="loading">加载中,请稍后…</string>
 
@@ -35,10 +35,12 @@
     <string name="index_manager_text2">更新管理</string>
     <string name="index_manager_text3">文件管理</string>
     <string name="index_manager_text4">电视助手</string>
-    <string name="index_manager_text5">网络测速</string>
-    <string name="index_manager_text6">卸载管理</string>
-    <string name="index_manager_text7">安装包管理</string>
-    <string name="index_manager_text8">下载管理</string>
+    <string name="index_manager_text5">关于</string>
+    <string name="index_manager_text6">网络测速</string>
+    <string name="index_manager_text7">卸载管理</string>
+    <string name="index_manager_text8">安装包管理</string>
+    <string name="index_manager_text9">下载管理</string>
+    <string name="index_manager_text10">缓存清理</string>
     <!-- 更新包管理 -->
     <string name="update_start_autoupdate">已开启自动更新</string>
     <string name="update_end_autoupdate">关闭自动更新</string>
@@ -214,4 +216,16 @@
     <string name="active_detail">活动详情页</string>
     <string name="app_detail_recommend">详情相关推荐-</string>
     <string name="search_recommend">搜索热门推荐-</string>
+
+    <!-- 关于我们 -->
+    <string name="about_us">关于我们</string>
+    <string name="current_app_version_template">当前版本：%s</string>
+    <string name="phone_template">电话：%s</string>
+    <string name="email_template">邮箱：%s</string>
+    <string name="contact_us">联系我们</string>
+
+    <!-- 清理缓存 -->
+    <string name="if_clear_cache">是否要清理应用商城缓存数据？</string>
+    <string name="confirm">确定</string>
+    <string name="clear_cache_success">缓存清理成功</string>
 </resources>

@@ -140,7 +140,7 @@
                         android:layout_width="@dimen/px270"
                         android:layout_height="@dimen/px180"
                         android:layout_centerHorizontal="true"
-                        android:background="@drawable/index_item5_shape"/>
+                        android:background="@drawable/index_item6_shape"/>
 
 
                     <TextView
@@ -164,7 +164,7 @@
                         android:layout_width="@dimen/px270"
                         android:layout_height="@dimen/px180"
                         android:layout_centerHorizontal="true"
-                        android:background="@drawable/index_item6_shape"/>
+                        android:background="@drawable/index_item7_shape"/>
 
 
                     <TextView
@@ -188,7 +188,7 @@
                         android:layout_width="@dimen/px270"
                         android:layout_height="@dimen/px180"
                         android:layout_centerHorizontal="true"
-                        android:background="@drawable/index_item7_shape"/>
+                        android:background="@drawable/index_item8_shape"/>
 
 
                     <TextView
@@ -212,7 +212,7 @@
                         android:layout_width="@dimen/px270"
                         android:layout_height="@dimen/px180"
                         android:layout_centerHorizontal="true"
-                        android:background="@drawable/index_item8_shape"/>
+                        android:background="@drawable/index_item5_shape"/>
 
                     <TextView
                         style="@style/index_manager_mini_text"

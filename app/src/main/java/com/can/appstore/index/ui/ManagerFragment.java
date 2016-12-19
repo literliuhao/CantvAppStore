@@ -2,7 +2,12 @@ package com.can.appstore.index.ui;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -10,23 +15,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
+import com.can.appstore.MyApp;
 import com.can.appstore.R;
+import com.can.appstore.about.AboutUsActivity;
 import com.can.appstore.download.DownloadActivity;
 import com.can.appstore.index.IndexActivity;
 import com.can.appstore.index.adapter.GridAdapter;
 import com.can.appstore.index.entity.FragmentEnum;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.interfaces.IOnPagerKeyListener;
+import com.can.appstore.index.model.DataUtils;
 import com.can.appstore.installpkg.InstallManagerActivity;
+import com.can.appstore.message.manager.MessageManager;
 import com.can.appstore.uninstallmanager.UninstallManagerActivity;
 import com.can.appstore.update.UpdateManagerActivity;
 import com.can.appstore.update.model.UpdateApkModel;
+import com.can.appstore.widgets.CanDialog;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import cn.can.downloadlib.DownloadTaskCountListener;
+import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.utils.PromptUtils;
 
 /**
@@ -34,15 +45,26 @@ import cn.can.tvlib.utils.PromptUtils;
  */
 
 public class ManagerFragment extends BaseFragment implements DownloadTaskCountListener {
-    private final int[] NAMES = {R.string.index_manager_text1, R.string.index_manager_text2, R.string.index_manager_text3, R.string.index_manager_text4, R.string.index_manager_text5, R.string.index_manager_text6, R.string.index_manager_text7, R.string.index_manager_text8};
-    private final int[] ICONS = {R.drawable.index_manager_icon1, R.drawable.index_manager_icon2, R.drawable.index_manager_icon3, R.drawable.index_manager_icon4, R.drawable.index_manager_icon5, R.drawable.index_manager_icon6, R.drawable.index_manager_icon7, R.drawable.index_manager_icon8};
-    private final int[] COLORS = {R.drawable.index_item1_shape, R.drawable.index_item2_shape, R.drawable.index_item3_shape, R.drawable.index_item4_shape, R.drawable.index_item5_shape, R.drawable.index_item6_shape, R.drawable.index_item7_shape, R.drawable.index_item8_shape};
+
+    private final int[] NAMES = {R.string.index_manager_text1, R.string.index_manager_text2, R.string.index_manager_text3,
+            R.string.index_manager_text4, R.string.index_manager_text5, R.string.index_manager_text6,
+            R.string.index_manager_text7, R.string.index_manager_text8, R.string.index_manager_text9,
+            R.string.index_manager_text10};
+    private final int[] ICONS = {R.drawable.index_manager_icon1, R.drawable.index_manager_icon2, R.drawable.index_manager_icon3,
+            R.drawable.index_manager_icon4, R.drawable.index_manager_icon5, R.drawable.index_manager_icon6,
+            R.drawable.index_manager_icon7, R.drawable.index_manager_icon8, R.drawable.index_manager_icon9,
+            R.drawable.index_manager_icon10};
+    private final int[] COLORS = {R.drawable.index_item1_shape, R.drawable.index_item2_shape, R.drawable.index_item3_shape,
+            R.drawable.index_item4_shape, R.drawable.index_item5_shape, R.drawable.index_item6_shape,
+            R.drawable.index_item7_shape, R.drawable.index_item8_shape, R.drawable.index_item9_shape,
+            R.drawable.index_item10_shape};
     private GridView gridView;
     private GridAdapter gridAdapter;
     private IAddFocusListener mFocusListener;
     private IOnPagerKeyListener mPagerKeyListener;
     private int UPDATE_INDEX = 1;
     private int DOWNLOAD_INDEX = 7;
+    private CanDialog mClearCacheConfirmDialog;
 
     public ManagerFragment() {
     }
@@ -96,21 +118,29 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
                     case 3:
                         PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
                         break;
-                    //网络测速
+                    //关于
                     case 4:
+                        AboutUsActivity.actionStart(getActivity());
+                        break;
+                    //网络测速
+                    case 5:
                         startAc("com.os.setting.NETWORK_SPEED_TEST");
                         break;
                     //卸载管理
-                    case 5:
+                    case 6:
                         UninstallManagerActivity.actionStart(getActivity());
                         break;
                     //安装包管理
-                    case 6:
+                    case 7:
                         InstallManagerActivity.actionStart(getActivity());
                         break;
                     //下载管理
-                    case 7:
+                    case 8:
                         DownloadActivity.actionStart(getActivity());
+                        break;
+                    //缓存清理
+                    case 9:
+                        showClearCacheConfirmDialog();
                         break;
                     default:
                         break;
@@ -164,18 +194,76 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
 
     @Override
     public void onDestroy() {
+        if (mClearCacheConfirmDialog != null) {
+            mClearCacheConfirmDialog.dismiss();
+            mClearCacheConfirmDialog.release();
+            mClearCacheConfirmDialog = null;
+        }
         super.onDestroy();
         EventBus.getDefault().unregister(ManagerFragment.this);
     }
 
     @Override
     public View getLastView() {
-        return gridView.getChildAt(3);
+        return gridView.getChildAt(4);
     }
 
     @Override
     public void getTaskCount(int count) {
         Log.i("ManagerFragment", "count " + count);
         gridAdapter.refreshUI(DOWNLOAD_INDEX, count);
+    }
+
+    private void showClearCacheConfirmDialog() {
+        if (getActivity() == null || getActivity().isFinishing()) {
+            return;
+        }
+        if (mClearCacheConfirmDialog == null) {
+            Resources resources = getActivity().getResources();
+            mClearCacheConfirmDialog = new CanDialog(getActivity())
+                    .setTitleToBottom(resources.getString(R.string.if_clear_cache), R.dimen.dimen_32px)
+                    .setMessageBackground(Color.TRANSPARENT)
+                    .setPositiveButton(resources.getString(R.string.confirm))
+                    .setNegativeButton(resources.getString(R.string.back))
+                    .setOnCanBtnClickListener(new CanDialog.OnClickListener() {
+                        @Override
+                        public void onClickPositive() {
+                            mClearCacheConfirmDialog.dismiss();
+                            ManagerFragment.this.clearCache();
+                        }
+
+                        @Override
+                        public void onClickNegative() {
+                            mClearCacheConfirmDialog.dismiss();
+                        }
+                    });
+        }
+        mClearCacheConfirmDialog.show();
+    }
+
+    private void clearCache() {
+        final FragmentActivity activity = getActivity();
+        if (activity == null || activity.isFinishing()) {
+            return;
+        }
+        // 清理图片内存缓存
+        ImageLoader.getInstance().clearMemoryCache(activity);
+        new Thread() {
+            @Override
+            public void run() {
+                // 清理图片磁盘缓存
+                ImageLoader.getInstance().clearDiskCache(activity);
+                // 清理首页布局缓存
+                DataUtils.getInstance(MyApp.getContext()).clearData();
+                // 清理数据库
+                new MessageManager(activity).clearAllMsg();
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        PromptUtils.toast(activity, getResources().getString(R.string.clear_cache_success));
+                    }
+                });
+            }
+        }.start();
     }
 }

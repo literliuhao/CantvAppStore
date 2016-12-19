@@ -673,6 +673,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     @Override
     protected void onDestroy() {
+        if(canDialog != null){
+            canDialog.dismiss();
+            canDialog.release();
+            canDialog = null;
+        }
         stopTimer();
         EventBus.getDefault().unregister(this);
         if (mHandler != null) {
@@ -704,7 +709,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 @Override
                 public void onClickPositive() {
                     canDialog.dismiss();
-                    canDialog.release();
                     IndexActivity.this.finish();
                 }
 
