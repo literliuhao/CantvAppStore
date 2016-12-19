@@ -17,8 +17,8 @@ android {
         applicationId "com.can.appstore"
         minSdkVersion 19
         targetSdkVersion 19
-        versionCode 101
-        versionName "20161212_v1.0.1"
+        versionCode 102
+        versionName "v1.0.2_20161219"
 
         // 开启multidex
         multiDexEnabled true
