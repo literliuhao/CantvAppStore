@@ -34,6 +34,7 @@ public final class ActionConstants {
     /**
      * 「无动作（消息中心用到）」：
      */
+    // TODO: 2016/12/6  ACTION_NULL
     public static final String ACTION_NOTHIN = "action_nothing";
 
     /**

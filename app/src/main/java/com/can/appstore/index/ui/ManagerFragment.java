@@ -26,7 +26,7 @@ import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.interfaces.IOnPagerKeyListener;
 import com.can.appstore.index.model.DataUtils;
 import com.can.appstore.installpkg.InstallManagerActivity;
-import com.can.appstore.message.manager.MessageManager;
+import com.can.appstore.message.manager.MessageDBManager;
 import com.can.appstore.uninstallmanager.UninstallManagerActivity;
 import com.can.appstore.update.UpdateManagerActivity;
 import com.can.appstore.update.model.UpdateApkModel;
@@ -256,7 +256,7 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
                 // 清理首页布局缓存
                 DataUtils.getInstance(MyApp.getContext()).clearData();
                 // 清理数据库
-                new MessageManager(activity).clearAllMsg();
+                new MessageDBManager(activity).clearAllMsg();
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {

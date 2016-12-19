@@ -53,7 +53,7 @@ import com.can.appstore.index.ui.LiteText;
 import com.can.appstore.index.ui.ManagerFragment;
 import com.can.appstore.index.ui.TitleBar;
 import com.can.appstore.message.MessageActivity;
-import com.can.appstore.message.manager.MessageManager;
+import com.can.appstore.message.manager.MessageDBManager;
 import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.update.AutoUpdate;
@@ -128,7 +128,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private Context mContext;
     private CanDialog canDialog;
     private Boolean isIntercept = false;
-    private MessageManager messageManager;
+    private MessageDBManager messageDBManager;
     private HomeDataEyeUtils mDataEyeUtils;
     private Boolean isShowAD = false;
     private String materialId = null;
@@ -196,7 +196,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         imageRed = (ImageView) this.findViewById(R.id.iv_mssage_red);
         //更新
         textUpdate = (TextView) findViewById(R.id.tv_update_number);
-        messageManager = new MessageManager(this);
+        messageDBManager = new MessageDBManager(this);
     }
 
     /**
@@ -485,21 +485,21 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     private void initMsgListener() {
-        messageManager.setCallMsgDataUpdate(new MessageManager.CallMsgDataUpdate() {
+        messageDBManager.setOnReceivedMsgListener(new MessageDBManager.OnReceivedMsgListener() {
             @Override
-            public void onUpdate() {
+            public void onReceivedMsg() {
                 imageRed.setVisibility(View.VISIBLE);
             }
         });
-        messageManager.requestMsg(this);
+        messageDBManager.requestMsgData(this);
     }
 
     private void refreshMsg() {
-        if (null == messageManager) return;
-        if (messageManager.existUnreadMsg()) {
+        if (null == messageDBManager) return;
+        if (messageDBManager.existUnreadMsg()) {
             imageRed.setVisibility(View.VISIBLE);
         } else {
-            imageRed.setVisibility(View.GONE);
+            imageRed.setVisibility(View.INVISIBLE);
         }
     }
     //------------注册首页监听---------------END
@@ -684,9 +684,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             mHandler.removeCallbacksAndMessages(null);
             mHandler = null;
         }
-        if (messageManager != null) {
-            messageManager.removeCallMsgDataUpdate();
-            messageManager = null;
+        if (messageDBManager != null) {
+            messageDBManager.removeOnReceivedMsgListener();
+            messageDBManager = null;
         }
         if (mDataEyeUtils != null) {
             mDataEyeUtils.release();

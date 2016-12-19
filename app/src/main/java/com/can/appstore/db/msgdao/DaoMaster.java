@@ -1,4 +1,4 @@
-package com.can.appstore.message.db.dao;
+package com.can.appstore.db.msgdao;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

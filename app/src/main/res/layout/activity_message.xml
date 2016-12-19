@@ -36,8 +36,8 @@
         android:layout_marginStart="@dimen/px64"
         android:layout_marginTop="@dimen/px80"
         android:layout_toEndOf="@+id/btn_tag"
-        android:drawableStart="@drawable/msg_rect_yellow"
         android:drawablePadding="@dimen/px20"
+        android:drawableStart="@drawable/msg_rect_yellow"
         android:includeFontPadding="false"
         android:text="@string/title_msg"
         android:textColor="@color/msg_white_80"
@@ -45,27 +45,15 @@
         />
 
     <TextView
-        android:id="@+id/tv_item_pos"
-        android:layout_width="@dimen/px150"
+        android:id="@+id/tv_msg_list_line"
+        android:layout_width="@dimen/px220"
         android:layout_height="@dimen/px50"
-        android:layout_alignBottom="@+id/tv_item_total"
-        android:layout_marginTop="@dimen/px86"
-        android:layout_toStartOf="@+id/tv_item_total"
-        android:gravity="end"
-        android:textColor="@color/msg_white_80"
-        android:textSize="@dimen/fontsize_32"
-        android:visibility="gone"
-        />
-
-    <TextView
-        android:id="@+id/tv_item_total"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="@dimen/px165"
         android:layout_marginTop="@dimen/px86"
         android:textColor="@color/msg_white_50"
         android:textSize="@dimen/fontsize_32"
+        android:gravity="right"
         android:visibility="gone"/>
 
     <TextView

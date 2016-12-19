@@ -1,5 +1,6 @@
 package com.can.appstore.entity;
 
+import com.can.appstore.db.entity.MessageInfo;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class MessageContainer {
     @SerializedName("timestamp")
     private long timestamp;
     @SerializedName("messages")
-    private List<Message> messages;
+    private List<MessageInfo> messages;
 
     public long getTimestamp() {
         return timestamp;
@@ -26,11 +27,11 @@ public class MessageContainer {
         this.timestamp = timestamp;
     }
 
-    public List<Message> getMessages() {
+    public List<MessageInfo> getMessages() {
         return CollectionUtil.emptyIfNull(messages);
     }
 
-    public void setMessages(List<Message> messages) {
+    public void setMessages(List<MessageInfo> messages) {
         this.messages = messages;
     }
 
