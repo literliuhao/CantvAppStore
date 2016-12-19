@@ -71,7 +71,7 @@ public interface UpdateContract {
         /**
          * 获取集合
          */
-        void getInstallPkgList(boolean isAutoUpdate);
+        void getInstallPkgList();
 
         /**
          * 刷新存储信息数据

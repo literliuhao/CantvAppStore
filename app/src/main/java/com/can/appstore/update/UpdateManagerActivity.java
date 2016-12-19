@@ -21,7 +21,6 @@ import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
 import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.update.model.UpdateApkInstallModel;
-import com.can.appstore.widgets.CanDialog;
 import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
 
@@ -42,7 +41,6 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.NetworkUtils;
-import cn.can.tvlib.utils.PreferencesUtils;
 
 /**
  * 更新管理
@@ -55,10 +53,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
     private CanRecyclerView mRecyclerView;
     private UpdateManagerAdapter mRecyclerAdapter;
     private TextView mDetectionButton;
-    private TextView mAutoButton;
     private TextView mReminder;
-    private int mCurrentPositon;
-    private boolean mAutoUpdate;
     private TextView mTotalnum;
     private TextView mCurrentnum;
     private TextProgressBar mSizeProgressBar;
@@ -66,7 +61,6 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
     private FocusScaleUtil mFocusScaleUtil;
     private View mFocusedListChild;
     private MyFocusRunnable myFocusRunnable;
-    private CanDialog canDialog;
     private UpdatePresenter mPresenter;
     private List<AppInfoBean> mUpdateList;
     private cn.can.downloadlib.DownloadManager mDownloadManager;
@@ -89,7 +83,6 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         wm.getDefaultDisplay().getMetrics(outMetrics);
         mWinH = outMetrics.heightPixels;
         mWinW = outMetrics.widthPixels;
-        mAutoUpdate = PreferencesUtils.getBoolean(this, "AUTO_UPDATE", false);
         initView();
         initData();
         initFocusChange();
@@ -145,25 +138,6 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                     }
                 } else {
                     mFocusScaleUtil.scaleToNormal(mDetectionButton);
-                }
-            }
-        });
-
-        mAutoButton.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus) {
-                    mFocusedListChild = view;
-                    mFocusMoveUtil.startMoveFocus(mAutoButton, 1.0f);
-                    boolean isNull = mPresenter.isNull(0);
-                    if (isNull) {
-                        mCurrentnum.setVisibility(View.INVISIBLE);
-                        mTotalnum.setVisibility(View.INVISIBLE);
-                    } else {
-                        mPresenter.setNum(0);
-                    }
-                } else {
-                    mFocusScaleUtil.scaleToNormal(mAutoButton);
                 }
             }
         });
@@ -227,7 +201,6 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
      */
     private void setLeftLayoutFocus(boolean focusable) {
         mDetectionButton.setFocusable(focusable);
-        mAutoButton.setFocusable(focusable);
     }
 
     private void initClick() {
@@ -238,35 +211,15 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                 if (isFastContinueClickView()) {
                     return;
                 }
-                mAutoUpdate = PreferencesUtils.getBoolean(mContext, "AUTO_UPDATE", false);
-                if (mAutoUpdate) {
-                    mPresenter.clearList();
+                mPresenter.getInstallPkgList();
+                if (!NetworkUtils.isNetworkConnected(UpdateManagerActivity.this)) {
                     mCurrentnum.setVisibility(View.INVISIBLE);
                     mTotalnum.setVisibility(View.INVISIBLE);
-                    mReminder.setVisibility(View.VISIBLE);
-                    mReminder.setText(R.string.update_start_autoupdate);
-                    return;
-                } else {
-                    mPresenter.getInstallPkgList(mAutoUpdate);
-                    if (!NetworkUtils.isNetworkConnected(UpdateManagerActivity.this)) {
-                        mCurrentnum.setVisibility(View.INVISIBLE);
-                        mTotalnum.setVisibility(View.INVISIBLE);
-                        return;
-                    }
                 }
+
             }
         });
 
-        mAutoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mAutoUpdate) {
-                    initDialog(getResources().getString(R.string.update_setting_start));
-                } else {
-                    initDialog(getResources().getString(R.string.update_setting_stop));
-                }
-            }
-        });
 
         mRecyclerAdapter.setOnItemClickListener(new CanRecyclerViewAdapter.OnItemClickListener() {
 
@@ -276,7 +229,6 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                     showToast(getResources().getString(R.string.no_network));
                     return;
                 }
-                mCurrentPositon = position;
                 String downloadUrl = mUpdateList.get(position).getDownloadUrl();
 
                 final ProgressBar progress = (ProgressBar) view.findViewById(R.id.pb_updateapp_progressbar);
@@ -519,35 +471,9 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                 break;
         }
     }
-
-    private void initDialog(String str) {
-        canDialog = new CanDialog(UpdateManagerActivity.this);
-        canDialog.setTitle(getResources().getString(R.string.update_setting_title)).setTitleMessage(getResources().getString(R.string.update_setting_contenttop)).setContentMessage(getResources().getString(R.string.update_setting_content))
-                .setStateMessage(str).setNegativeButton(getResources().getString(R.string.update_setting_btstart)).setPositiveButton(getResources().getString(R.string.update_setting_btstop));
-        canDialog.setOnCanBtnClickListener(new CanDialog.OnClickListener() {
-            @Override
-            public void onClickPositive() {
-                PreferencesUtils.putBoolean(mContext, "AUTO_UPDATE", true);
-                mAutoUpdate = true;
-                canDialog.dismiss();
-                mPresenter.getListSize();
-                mPresenter.autoUpdate(UpdateManagerActivity.this);
-            }
-
-            @Override
-            public void onClickNegative() {
-                PreferencesUtils.putBoolean(mContext, "AUTO_UPDATE", false);
-                mAutoUpdate = false;
-                canDialog.dismiss();
-                mReminder.setVisibility(View.INVISIBLE);
-            }
-        });
-        canDialog.show();
-    }
-
     protected void initData() {
         mPresenter.getSDInfo();
-        mPresenter.getInstallPkgList(mAutoUpdate);
+        mPresenter.getInstallPkgList();
         mPresenter.setNum(0);
         mUpdateList = mPresenter.getList();
     }
@@ -556,7 +482,6 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         mTotalnum = (TextView) findViewById(R.id.tv_update_totalnum);
         mCurrentnum = (TextView) findViewById(R.id.tv_update_currentnum);
         mDetectionButton = (TextView) findViewById(R.id.bt_update_detection);
-        mAutoButton = (TextView) findViewById(R.id.bt_update_auto);
         mRecyclerView = (CanRecyclerView) findViewById(R.id.rv_update_recyclerview);
         mReminder = (TextView) findViewById(R.id.tv_update_reminder);
         mSizeProgressBar = (TextProgressBar) findViewById(R.id.pb_update_progressbar);
@@ -643,10 +568,8 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         mRecyclerAdapter.notifyDataSetChanged();
         if (mDatas.size() > 0) {
             mDetectionButton.setNextFocusRightId(R.id.rv_update_recyclerview);
-            mAutoButton.setNextFocusRightId(R.id.rv_update_recyclerview);
         } else {
             mDetectionButton.setNextFocusRightId(R.id.bt_update_detection);
-            mAutoButton.setNextFocusRightId(R.id.bt_update_auto);
         }
     }
 
