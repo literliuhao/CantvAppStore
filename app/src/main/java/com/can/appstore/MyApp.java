@@ -5,6 +5,10 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.can.appstore.entity.TvInfoModel;
+import com.can.appstore.upgrade.MyUpgradeListener;
+import com.dataeye.sdk.api.app.DCAgent;
+import com.tencent.bugly.Bugly;
+import com.tencent.bugly.beta.Beta;
 
 /**
  * ================================================
@@ -23,11 +27,19 @@ public class MyApp extends Application {
     public void onCreate() {
         super.onCreate();
         INSTANCE = this;
-        getDataEyeChannelId();
+        initDataEye();
+        //初始化bugly
+        initBugly(true);
     }
 
     public static Context getContext() {
         return INSTANCE.getApplicationContext();
+    }
+
+    private void initDataEye() {
+        getDataEyeChannelId();
+        DCAgent.openAdTracking();//是否跟踪推广分析，默认是False，调用即为True.该接口必须在SDK初始化之前调用.
+        DCAgent.initWithAppIdAndChannelId(getApplicationContext(), AppConstants.DATAEYE_APPID, MyApp.DATAEYE_CHANNELID);
     }
 
     private void getDataEyeChannelId() {
@@ -44,6 +56,27 @@ public class MyApp extends Application {
         }
     }
 
+    /**
+     * Bugly实现自更新
+     *
+     * @param downloadSelf 是否自己下载apk
+     *                     自下载：可控制下载、安装
+     *                     Bugly下载：可控制下载，安装Bugly自行调用
+     */
+    private void initBugly(final boolean downloadSelf) {
+        try {
+            Beta.autoCheckUpgrade = false;
+            Beta.showInterruptedStrategy = false;
+            Beta.upgradeListener = new MyUpgradeListener(this, downloadSelf);
+            //测试使用key
+            //Bugly.init(getApplicationContext(), "900059606", false);
+            //正式版本发布使用key
+            Bugly.init(getApplicationContext(), "e3c3b1806e", false);
+            Beta.checkUpgrade(false, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     //    /**
     //     * 注册应用安装卸载的广播
