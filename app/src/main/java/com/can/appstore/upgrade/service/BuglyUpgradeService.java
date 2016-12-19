@@ -8,9 +8,9 @@ import android.os.Message;
 import android.util.Log;
 
 import com.can.appstore.R;
+import com.can.appstore.upgrade.UpgradeUtil;
 import com.can.appstore.upgrade.view.UpgradeFailDialog;
 import com.can.appstore.upgrade.view.UpgradeInFoDialog;
-import com.can.appstore.upgrade.UpgradeUtil;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
 import com.tencent.bugly.beta.download.DownloadListener;

@@ -23,7 +23,6 @@ import com.can.appstore.uninstallmanager.UninstallManagerActivity;
 import com.can.appstore.upgrade.InstallApkListener;
 import com.can.appstore.upgrade.UpgradeUtil;
 import com.can.appstore.upgrade.activity.UpgradeInfoActivity;
-import com.can.appstore.upgrade.view.UpgradeInFoDialog;
 
 import java.io.File;
 import java.io.FileOutputStream;

@@ -3,8 +3,8 @@ package com.can.appstore.api;
 import com.can.appstore.AppConstants;
 import com.can.appstore.entity.Ad;
 import com.can.appstore.entity.AdReportParam;
-import com.can.appstore.entity.CommonAdParam;
 import com.can.appstore.entity.ClassicResult;
+import com.can.appstore.entity.CommonAdParam;
 import com.can.appstore.http.CanCall;
 
 import java.util.List;
