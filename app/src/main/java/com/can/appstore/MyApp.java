@@ -41,7 +41,6 @@ public class MyApp extends DefaultApplicationLike {
         INSTANCE = this;
     }
 
-
     @Override
     public void onCreate() {
         super.onCreate();

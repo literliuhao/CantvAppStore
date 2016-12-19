@@ -33,6 +33,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import cn.can.downloadlib.utils.FileUtils;
 import cn.can.downloadlib.utils.SdcardUtils;
 import cn.can.downloadlib.utils.ShellUtils;
 import cn.can.downloadlib.utils.ToastUtils;
@@ -725,6 +726,8 @@ public class DownloadManager implements AppInstallListener {
             ToastUtils.showMessageLong(mContext, task.getFileName() + mContext.getResources().getString(R.string
                     .install_sucess));
             deleteTask(id);
+            FileUtils.deleteFile(task.getFilePath());
+
         }
         if (mAppInstallListeners != null) {
             Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();
