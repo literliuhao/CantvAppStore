@@ -81,6 +81,9 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
     public void refreshUI(int position, int number) {
         if (null == mView) return;
         View v = mView[position];
+        if (v == null) {
+            return;
+        }
         ImageView imageSize = (ImageView) v.findViewById(R.id.iv_manage_size);
         TextView textSize = (TextView) v.findViewById(R.id.tv_manage_text);
         if (number > 0) {
