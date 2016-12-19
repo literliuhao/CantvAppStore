@@ -3,7 +3,9 @@ package com.can.appstore.widgets;
 import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +19,7 @@ import com.can.appstore.R;
 
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
+import cn.can.tvlib.ui.util.BlurDialogEngine;
 
 /**
  * Created by Atangs on 2016/10/30.
@@ -37,6 +40,9 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
     private FocusMoveUtil mFocusMoveUtil;
     private View mCurrentView;
     private Handler mHandler = new Handler();
+
+    private BlurDialogEngine mBlurEngine;
+    private Activity mActivity;
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
@@ -69,6 +75,7 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
 
     public CanDialog(Activity context, int themeResId) {
         super(context, themeResId);
+        mActivity = context;
         mFocusMoveUtil = new FocusMoveUtil(context, getWindow().getDecorView(), R.mipmap.btn_focus);
         mFocusMoveUtil.hideFocusForShowDelay(500);
         initUI();
@@ -88,7 +95,7 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
         mMessageLayout = (RelativeLayout) dialogView.findViewById(R.id.rl_content);
 //        Drawable drawable = BitmapUtils.blurBitmap(mContext);
 //        dialogView.setBackground(drawable);
-        dialogView.setBackgroundResource(R.color.black_opa90);
+//        dialogView.setBackgroundResource(R.color.black_opa90);
     }
 
     public CanDialog setTitle(String title) {
@@ -199,5 +206,48 @@ public class CanDialog extends Dialog implements View.OnFocusChangeListener {
             mFocusMoveUtil.release();
             mFocusMoveUtil = null;
         }
+        mBlurEngine.onDestroy();
+    }
+
+    @Override
+    public void dismiss() {
+        super.dismiss();
+
+    }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (mBlurEngine != null) {
+            mBlurEngine.setAttachedToView(mActivity);
+        } else {
+            mBlurEngine = new BlurDialogEngine(mActivity);
+            mBlurEngine.setBlurRadius(5);
+            mBlurEngine.setDownScaleFactor(5);
+        }
+
+        mBlurEngine.onResume(true);
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mBlurEngine.onDismiss();
+    }
+
+    @Override
+    public void cancel() {
+        super.cancel();
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @NonNull
+    @Override
+    public Bundle onSaveInstanceState() {
+        return super.onSaveInstanceState();
     }
 }
