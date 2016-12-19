@@ -215,7 +215,8 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
      * 得到"大家都在搜"的数据
      */
     private void initData() {
-        showLoadingDialog();
+        // 添加偏移的loading框
+        showLoadingDialog(getResources().getDimensionPixelSize(R.dimen.px400));
 
         mGridLayoutManager = new GridLayoutManager(this, SEARCH_APP_SPANCOUNT, LinearLayoutManager.VERTICAL, false);
         mSearAppList_recycle.setLayoutManager(mGridLayoutManager);
