@@ -701,6 +701,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     @Override
     public void onBackPressed() {
+        mFocusUtils.hideFocus();  //  隐藏焦点框
         if (null == canDialog) {
             canDialog = new CanDialog(this);
             canDialog.setTitleToBottom(getResources().getString(R.string.index_exit_titile), R.dimen.dimen_32px);
