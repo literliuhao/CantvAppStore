@@ -26,10 +26,10 @@ public class SystemAppsRvAdapter extends CanRecyclerViewAdapter {
             R.drawable.index_item2_shape,
             R.drawable.index_item3_shape,
             R.drawable.index_item4_shape,
-            R.drawable.index_item6_shape,
             R.drawable.index_item7_shape,
-            R.drawable.index_item5_shape,
-            R.drawable.index_item8_shape
+            R.drawable.index_item8_shape,
+            R.drawable.index_item6_shape,
+            R.drawable.index_item5_shape
     };
 
     public SystemAppsRvAdapter(List datas) {

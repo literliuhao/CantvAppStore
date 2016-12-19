@@ -3,7 +3,6 @@ package com.can.appstore.update;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,8 +19,6 @@ import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
-import com.can.appstore.installpkg.InstallApkModel;
-import com.can.appstore.installpkg.utils.InstallPkgUtils;
 import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.update.model.UpdateApkInstallModel;
 import com.can.appstore.widgets.CanDialog;
@@ -126,6 +123,11 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
 
     @Override
     protected void onDestroy() {
+        if(canDialog != null){
+            canDialog.dismiss();
+            canDialog.release();
+            canDialog = null;
+        }
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         mPresenter.release();
@@ -524,6 +526,11 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
     }
 
     private void initDialog(String str) {
+        if(canDialog != null){
+            canDialog.dismiss();
+            canDialog.release();
+            canDialog = null;
+        }
         canDialog = new CanDialog(UpdateManagerActivity.this);
         canDialog.setTitle(getResources().getString(R.string.update_setting_title)).setTitleMessage(getResources().getString(R.string.update_setting_contenttop)).setContentMessage(getResources().getString(R.string.update_setting_content))
                 .setStateMessage(str).setNegativeButton(getResources().getString(R.string.update_setting_btstart)).setPositiveButton(getResources().getString(R.string.update_setting_btstop));
