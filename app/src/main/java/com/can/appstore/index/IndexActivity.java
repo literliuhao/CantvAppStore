@@ -2,6 +2,7 @@ package com.can.appstore.index;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -717,6 +718,12 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 public void onClickNegative() {
                     mFocusUtils.showFocus();
                     canDialog.dismiss();
+                }
+            });
+            canDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    mFocusUtils.showFocus();
                 }
             });
         }
