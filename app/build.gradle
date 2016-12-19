@@ -33,17 +33,6 @@ android {
 
     signingConfigs {
         debug {
-
-        }
-        release {
-            try {
-                storeFile file("./keystore/release.keystore")
-                storePassword "testres"
-                keyAlias "testres"
-                keyPassword "testres"
-            } catch (ex) {
-                throw new InvalidUserDataException(ex.toString())
-            }
         }
     }
 
@@ -52,7 +41,7 @@ android {
             debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release // 默认签名
+            signingConfig signingConfigs.debug // 默认签名
         }
         update {
             initWith(release)
