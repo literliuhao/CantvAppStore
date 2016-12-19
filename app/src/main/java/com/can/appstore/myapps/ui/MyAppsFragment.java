@@ -18,10 +18,10 @@ import android.widget.Button;
 
 import com.can.appstore.R;
 import com.can.appstore.index.IndexActivity;
+import com.can.appstore.index.entity.FragmentEnum;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.interfaces.IOnPagerKeyListener;
 import com.can.appstore.index.ui.BaseFragment;
-import com.can.appstore.index.entity.FragmentEnum;
 import com.can.appstore.myapps.adapter.MyAppsRvAdapter;
 import com.can.appstore.myapps.addappsview.AddAppsActivity;
 import com.can.appstore.myapps.allappsview.AllAppsActivity;

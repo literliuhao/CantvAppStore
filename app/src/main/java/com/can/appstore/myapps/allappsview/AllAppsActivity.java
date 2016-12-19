@@ -243,6 +243,11 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
         Drawable mIcon = app.appIcon;
         final String mName = app.appName;
         final String mPackName = app.packageName;
+        if(mCanDialog != null){
+            mCanDialog.dismiss();
+            mCanDialog.release();
+            mCanDialog = null;
+        }
         mCanDialog = new CanDialog(this);
         mCanDialog.setIcon(mIcon)
                 .setTitle(mName)
@@ -284,8 +289,10 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
 
     @Override
     protected void onHomeKeyDown() {
-        if (mCanDialog != null) {
+        if(mCanDialog != null){
             mCanDialog.dismiss();
+            mCanDialog.release();
+            mCanDialog = null;
         }
         super.onHomeKeyDown();
     }
@@ -321,6 +328,11 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
 
     @Override
     protected void onDestroy() {
+        if(mCanDialog != null){
+            mCanDialog.dismiss();
+            mCanDialog.release();
+            mCanDialog = null;
+        }
         focusMoveUtil.release();
         mAllAppsPresenter.release();
         super.onDestroy();

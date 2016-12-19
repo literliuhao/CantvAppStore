@@ -3,8 +3,6 @@ package com.can.appstore.entity;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
-import org.json.JSONObject;
-
 import java.util.List;
 
 /**

@@ -12,7 +12,6 @@ import com.can.appstore.http.CanCall;
 import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
-import com.can.appstore.installpkg.InstallApkModel;
 import com.can.appstore.installpkg.utils.InstallPkgUtils;
 import com.can.appstore.update.model.AppInfoBean;
 import com.can.appstore.update.model.UpdateApkInstallModel;
@@ -25,11 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.downloadlib.DownloadManager;
-import cn.can.downloadlib.DownloadTask;
-import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
 import cn.can.tvlib.utils.NetworkUtils;
-import cn.can.tvlib.utils.PreferencesUtils;
 import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.SystemUtil;
@@ -54,17 +50,12 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     }
 
     @Override
-    public void getInstallPkgList(boolean isAutoUpdate) {
+    public void getInstallPkgList() {
         mDatas.clear();
         AutoUpdate.getInstance().mUpdateNumDatas.clear();
         AutoUpdate.getInstance().mUpdateApkNumDatas.clear();
         mView.showInstallPkgList(mDatas);
         mView.hideNoData();
-        if (isAutoUpdate) {
-            mView.hideNoData();
-            mView.showStartAutoUpdate();
-            return;
-        }
         if (!NetworkUtils.isNetworkConnected(mContext)) {
             mView.showInternetError();
             PromptUtils.toast(mContext, MyApp.getContext().getResources().getString(R.string.no_network));
@@ -72,15 +63,15 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         }
         mView.showLoading();
         final List appList = UpdateUtils.getAppList();
-        //mAppInfoBeanList = UpdateUtils.getAppInfoBeanList();
-         /*AppInfo appInfo1 = new AppInfo();
-        appInfo1.setPackageName("cn.cibntv.ott");
-        appInfo1.setVersionCode(4);
-        AppInfo appInfo2 = new AppInfo();
-        appInfo2.setPackageName("打怪");
-        appInfo2.setVersionCode(4);
-        appList.add(appInfo1);
-        appList.add(appInfo2);*/
+//        //mAppInfoBeanList = UpdateUtils.getAppInfoBeanList();
+//         AppInfo appInfo1 = new AppInfo();
+//        appInfo1.setPackageName("cn.cibntv.ott");
+//        appInfo1.setVersionCode(4);
+//        AppInfo appInfo2 = new AppInfo();
+//        appInfo2.setPackageName("打怪");
+//        appInfo2.setVersionCode(4);
+//        appList.add(appInfo1);
+//        appList.add(appInfo2);
         //进行网络请求获取更新包信息
         CanCall<ListResult<AppInfo>> listResultCanCall = HttpManager.getApiService().checkUpdate(appList);
         listResultCanCall.enqueue(new CanCallback<ListResult<AppInfo>>() {
@@ -224,14 +215,14 @@ public class UpdatePresenter implements UpdateContract.Presenter {
 
         final List appList = UpdateUtils.getAppList();
         //mAppInfoBeanList = UpdateUtils.getAppInfoBeanList();
-        /*AppInfo appInfo1 = new AppInfo();
-        appInfo1.setPackageName("cn.cibntv.ott");
-        appInfo1.setVersionCode(4);
-        AppInfo appInfo2 = new AppInfo();
-        appInfo2.setPackageName("打怪");
-        appInfo2.setVersionCode(4);
-        appList.add(appInfo1);
-        appList.add(appInfo2);*/
+//        AppInfo appInfo1 = new AppInfo();
+//        appInfo1.setPackageName("cn.cibntv.ott");
+//        appInfo1.setVersionCode(4);
+//        AppInfo appInfo2 = new AppInfo();
+//        appInfo2.setPackageName("打怪");
+//        appInfo2.setVersionCode(4);
+//        appList.add(appInfo1);
+//        appList.add(appInfo2);
         final DownloadManager mDownloadManager = DownloadManager.getInstance(context);
         Log.i(TAG, "autoUpdate: " + appList.toString());
         CanCall<ListResult<AppInfo>> listResultCanCall = HttpManager.getApiService().checkUpdate(appList);
@@ -243,15 +234,6 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                 //发送数量
                 EventBus.getDefault().post(new UpdateApkModel(data.size()));
                 Log.i(TAG, "getUpdateApkNum: " + AutoUpdate.getInstance().mUpdateNumDatas.size());
-                //判断是否开启自动更新
-                boolean isAutoUpdate = PreferencesUtils.getBoolean(MyApp.getContext(), "AUTO_UPDATE", false);
-                if (isAutoUpdate == false) {
-                    return;
-                }
-                //添加队列
-                addAutoUpdateTask(mDownloadManager, data);
-                Log.i(TAG, "autoUpdate: " + data.size());
-                mView.refreshAll();
             }
 
             @Override
@@ -261,56 +243,6 @@ public class UpdatePresenter implements UpdateContract.Presenter {
         });
     }
 
-    //添加自动更新队列
-    private void addAutoUpdateTask(DownloadManager mDownloadManager, List<AppInfo> data) {
-        for (int i = 0; i < data.size(); i++) {
-            String downloadUrl = data.get(i).getUrl();
-            DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(downloadUrl));
-            if (downloadTask == null) {
-                downloadTask = new DownloadTask();
-                String md5 = MD5.MD5(downloadUrl);
-                downloadTask.setFileName(md5);
-                downloadTask.setId(md5);
-                downloadTask.setUrl(downloadUrl);
-                mDownloadManager.addDownloadTask(downloadTask, new DownloadTaskListener() {
-                    @Override
-                    public void onPrepare(DownloadTask downloadTask) {
-
-                    }
-
-                    @Override
-                    public void onStart(DownloadTask downloadTask) {
-
-                    }
-
-                    @Override
-                    public void onDownloading(DownloadTask downloadTask) {
-
-                    }
-
-                    @Override
-                    public void onPause(DownloadTask downloadTask) {
-
-                    }
-
-                    @Override
-                    public void onCancel(DownloadTask downloadTask) {
-
-                    }
-
-                    @Override
-                    public void onCompleted(DownloadTask downloadTask) {
-
-                    }
-
-                    @Override
-                    public void onError(DownloadTask downloadTask, int errorCode) {
-
-                    }
-                });
-            }
-        }
-    }
 
     /**
      * 获取可更新app数量

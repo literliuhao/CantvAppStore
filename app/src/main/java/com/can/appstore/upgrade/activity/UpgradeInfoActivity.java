@@ -1,7 +1,6 @@
 package com.can.appstore.upgrade.activity;
 
 import android.app.Activity;
-import android.app.usage.UsageEvents;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.upgrade.service.UpgradeService;
-import com.can.appstore.upgrade.view.UpgradeInFoDialog;
 import com.can.appstore.upgrade.widgets.UpgradeInfoNoticeCursor;
 import com.can.appstore.upgrade.widgets.UpgradeInfoScrollView;
 

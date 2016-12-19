@@ -113,6 +113,11 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
 
     @Override
     protected void onDestroy() {
+        if(canDialog != null){
+            canDialog.dismiss();
+            canDialog.release();
+            canDialog = null;
+        }
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         mPresenter.release();
@@ -422,6 +427,11 @@ public class InstallManagerActivity extends BaseActivity implements InstallContr
         startActivity(new Intent(this, UpdateManagerActivity.class));
     }*/
     private void initDialog(final View view, final int position) {
+        if(canDialog != null){
+            canDialog.dismiss();
+            canDialog.release();
+            canDialog = null;
+        }
         canDialog = new CanDialog(InstallManagerActivity.this);
         final AppInfoBean bean = mPresenter.getItem(position);
         if (bean != null && bean.getIsInstalling() && !bean.getInstalledFalse()) {

@@ -543,6 +543,11 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             mPairs.clear();
             mPairs = null;
         }
+        if(mCanDialog != null){
+            mCanDialog.dismiss();
+            mCanDialog.release();
+            mCanDialog = null;
+        }
         dismissIntroduceDialog();
         dismissInsufficientStorageSpaceDialog();
         unRegiestr();
@@ -569,6 +574,11 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         String title = mContext.getResources().getString(R.string.space_inequacy);
         String ok = mContext.getResources().getString(R.string.ok);
         String hint = mContext.getResources().getString(R.string.space_inequacy_hint);
+        if(mCanDialog != null){
+            mCanDialog.dismiss();
+            mCanDialog.release();
+            mCanDialog = null;
+        }
         mCanDialog = new CanDialog(mContext);
         mCanDialog.setTitle(title).setTitleMessage(hint).setPositiveButton(ok).setOnCanBtnClickListener(new CanDialog.OnClickListener() {
             @Override
@@ -582,7 +592,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     public void dismissInsufficientStorageSpaceDialog() {
         if (mCanDialog != null) {
-            mCanDialog.dismiss();
             mCanDialog.dismiss();
         }
     }

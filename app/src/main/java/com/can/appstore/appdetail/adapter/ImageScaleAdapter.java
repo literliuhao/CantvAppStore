@@ -6,17 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.target.Target;
 import com.can.appstore.R;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import cn.can.tvlib.imageloader.GlideLoadTask;
-import cn.can.tvlib.imageloader.ImageLoader;
-import cn.can.tvlib.imageloader.transformation.GlideRoundTransform;
 import cn.can.tvlib.ui.view.GlideRoundCornerImageView;
 
 

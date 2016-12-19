@@ -14,7 +14,6 @@ import android.renderscript.ScriptIntrinsicBlur;
 import android.support.v4.view.ViewPager;
 import android.view.Display;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
 
 import com.can.appstore.appdetail.custom.FixedSpeedScroller;

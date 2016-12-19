@@ -56,6 +56,8 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
         if (convertView == null) {
             if (position < 4) {
                 view = inflater.inflate(R.layout.manage_grid_item, null);
+            } else if (position == 4) {
+                view = inflater.inflate(R.layout.manage_grid_large_item, null);
             } else {
                 view = inflater.inflate(R.layout.manage_grid_mini_item, null);
             }
@@ -81,6 +83,9 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
     public void refreshUI(int position, int number) {
         if (null == mView) return;
         View v = mView[position];
+        if (v == null) {
+            return;
+        }
         ImageView imageSize = (ImageView) v.findViewById(R.id.iv_manage_size);
         TextView textSize = (TextView) v.findViewById(R.id.tv_manage_text);
         if (number > 0) {
@@ -103,7 +108,7 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
                 mView[i].setOnClickListener(this);
                 switch (i) {
                     case 0:
-                    case 4:
+                    case 5:
                         mView[i].setOnKeyListener(this);
                         break;
                 }

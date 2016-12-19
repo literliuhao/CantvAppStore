@@ -300,6 +300,11 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
         String ok = mContext.getResources().getString(R.string.ok);
         String cancle = mContext.getResources().getString(R.string.cancle);
         String makesureUninstall = mContext.getResources().getString(R.string.makesure_uninstall_apk);
+        if(mCanDialog != null){
+            mCanDialog.dismiss();
+            mCanDialog.release();
+            mCanDialog = null;
+        }
         mCanDialog = new CanDialog(mContext);
         mCanDialog.setIcon(drawable).setTitle(name).setTitleMessage(makesureUninstall).setNegativeButton(cancle)
                 .setPositiveButton(ok).setOnCanBtnClickListener(new CanDialog.OnClickListener() {
@@ -349,6 +354,11 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
 
     @Override
     public void release() {
+        if(mCanDialog != null){
+            mCanDialog.dismiss();
+            mCanDialog.release();
+            mCanDialog = null;
+        }
         if (mAppInfoList != null) {
             mAppInfoList.clear();
             mAppInfoList = null;

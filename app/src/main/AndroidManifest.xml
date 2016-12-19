@@ -23,7 +23,7 @@
 
 
     <application
-        android:name=".MyApp"
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -64,7 +64,7 @@
         <activity
             android:name=".index.IndexActivity"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            android:theme="@style/LaunchStyle">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION_INDEX"/>
 
@@ -162,6 +162,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+        <activity android:name=".about.AboutUsActivity"/>
         <activity
             android:name=".upgrade.activity.UpgradeInfoActivity"
             android:screenOrientation="landscape"

@@ -24,7 +24,6 @@ import android.widget.TextView;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.Target;
 import com.can.appstore.AppConstants;
-import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.entity.Ad;
 import com.can.appstore.entity.AdReportParam;
@@ -39,6 +38,7 @@ import com.can.appstore.http.CanCallback;
 import com.can.appstore.http.CanErrorWrapper;
 import com.can.appstore.http.HttpManager;
 import com.can.appstore.index.adapter.IndexPagerAdapter;
+import com.can.appstore.index.entity.FragmentEnum;
 import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.interfaces.IOnPagerKeyListener;
 import com.can.appstore.index.interfaces.IOnPagerListener;
@@ -49,7 +49,6 @@ import com.can.appstore.index.model.ShareData;
 import com.can.appstore.index.ui.BaseFragment;
 import com.can.appstore.index.ui.FixedScroller;
 import com.can.appstore.index.ui.FragmentBody;
-import com.can.appstore.index.entity.FragmentEnum;
 import com.can.appstore.index.ui.LiteText;
 import com.can.appstore.index.ui.ManagerFragment;
 import com.can.appstore.index.ui.TitleBar;
@@ -59,7 +58,6 @@ import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.update.AutoUpdate;
 import com.can.appstore.update.model.UpdateApkModel;
-import com.can.appstore.upgrade.MyUpgradeListener;
 import com.can.appstore.upgrade.service.UpgradeService;
 import com.can.appstore.upgrade.view.UpgradeInFoDialog;
 import com.can.appstore.widgets.CanDialog;
@@ -70,8 +68,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.tencent.bugly.Bugly;
-import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
 
 import org.greenrobot.eventbus.EventBus;
@@ -150,16 +146,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(R.style.AppTheme);
         setStyle();
-        initDataEye();
         initView();
         initFocus();
         getAD();
-    }
-
-    private void initDataEye() {
-        DCAgent.openAdTracking();//是否跟踪推广分析，默认是False，调用即为True.该接口必须在SDK初始化之前调用.
-        DCAgent.initWithAppIdAndChannelId(getApplicationContext(), AppConstants.DATAEYE_APPID, MyApp.DATAEYE_CHANNELID);
     }
 
     @Override
@@ -465,14 +456,12 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         //消息接口监听
         initMsgListener();
         //统计首页资源位曝光量
-        mDataEyeUtils = new HomeDataEyeUtils(MyApp.getContext());
+        mDataEyeUtils = new HomeDataEyeUtils(this.getApplicationContext());
         mDataEyeUtils.resourcesPositionExposure(0);
         //恢复下载任务。2016-11-29 11:47:23 xzl
         DownloadManager.getInstance(this).resumeAllTasks();
-        //初始化Bugly
+        //检测自升级是否已成功
         checkVersion();
-        //初始化bugly
-        initBugly(true);
     }
 
     @Override
@@ -520,10 +509,14 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             switch (msg.what) {
                 case INIT_FOCUS:
                     Log.i("IndexActivity", "mHandler....................... ");
-                    managerFragment.setAdapterFocus();
+                    if(managerFragment != null){
+                        managerFragment.setAdapterFocus();
+                    }
                     View first = mTitleBar.getFirstView();
-                    mFocusUtils.setFocusView(first, SCALE);
-                    first.requestFocus();
+                    if(first != null){
+                        mFocusUtils.setFocusView(first, SCALE);
+                        first.requestFocus();
+                    }
                     mFocusUtils.showFocus(100);
                     rlSearch.setFocusable(true);
                     rlMessage.setFocusable(true);
@@ -617,28 +610,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     }
 
     /**
-     * Bugly实现自更新
-     *
-     * @param downloadSelf 是否自己下载apk
-     *                     自下载：可控制下载、安装
-     *                     Bugly下载：可控制下载，安装Bugly自行调用
-     */
-    private void initBugly(final boolean downloadSelf) {
-        try {
-            Beta.autoCheckUpgrade = false;
-            Beta.showInterruptedStrategy = false;
-            Beta.upgradeListener = new MyUpgradeListener(IndexActivity.this, downloadSelf);
-            //测试使用key
-            //Bugly.init(getApplicationContext(), "900059606", false);
-            //正式版本发布使用key
-            Bugly.init(getApplicationContext(), "e3c3b1806e", false);
-            Beta.checkUpgrade(false, true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * 检测是否是刚升级的新版本,新版本弹出升级信息对话框
      */
     private void checkVersion() {
@@ -657,7 +628,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 }
                 SharedPreferences.Editor editor = sp.edit();
                 editor.clear();
-                editor.commit();
+                editor.apply();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -694,7 +665,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     @Override
     protected void onPause() {
-        DCAgent.pause(MyApp.getContext());
+        DCAgent.pause(this.getApplicationContext());
         DCPage.onExit(AppConstants.HOME_PAGE);//统计页面结束
         DCEvent.onEventDuration(AppConstants.HOME_PAGE, (System.currentTimeMillis() - mEnter) / 1000);
         super.onPause();
@@ -702,6 +673,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     @Override
     protected void onDestroy() {
+        if(canDialog != null){
+            canDialog.dismiss();
+            canDialog.release();
+            canDialog = null;
+        }
         stopTimer();
         EventBus.getDefault().unregister(this);
         if (mHandler != null) {
@@ -733,7 +709,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 @Override
                 public void onClickPositive() {
                     canDialog.dismiss();
-                    canDialog.release();
                     IndexActivity.this.finish();
                 }
 
