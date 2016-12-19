@@ -3,7 +3,6 @@ package com.can.appstore.update;
 import android.content.Context;
 import android.util.Log;
 
-import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.entity.AppInfo;
 import com.can.appstore.entity.ListResult;
@@ -60,7 +59,7 @@ public class AutoUpdate {
      *
      * @param context
      */
-    public void autoUpdate(Context context) {
+    public void autoUpdate(final Context context) {
 
         mUpdateNumDatas = new ArrayList<AppInfoBean>();
         mUpdateApkNumDatas = new ArrayList<AppInfoBean>();
@@ -69,7 +68,7 @@ public class AutoUpdate {
 
         //检测网络获取更新包数据
         if (!NetworkUtils.isNetworkConnected(context)) {
-            PromptUtils.toast(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.no_network));
+            PromptUtils.toast(context.getApplicationContext(), context.getApplicationContext().getResources().getString(R.string.no_network));
             EventBus.getDefault().post(new UpdateApkModel(0));
             return;
         }
@@ -92,7 +91,7 @@ public class AutoUpdate {
                 List<AppInfo> data = response.body().getData();
                 Log.i(TAG, "getUpdateApkNum: " + data.size());
                 //判断是否开启自动更新
-                boolean isAutoUpdate = PreferencesUtils.getBoolean(MyApp.getContext(), "AUTO_UPDATE", false);
+                boolean isAutoUpdate = PreferencesUtils.getBoolean(context.getApplicationContext(), "AUTO_UPDATE", false);
                 if (!isAutoUpdate) {
                     EventBus.getDefault().post(new UpdateApkModel(data.size()));
                     return;

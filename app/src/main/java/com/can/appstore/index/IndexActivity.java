@@ -24,7 +24,6 @@ import android.widget.TextView;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.Target;
 import com.can.appstore.AppConstants;
-import com.can.appstore.MyApp;
 import com.can.appstore.R;
 import com.can.appstore.entity.Ad;
 import com.can.appstore.entity.AdReportParam;
@@ -457,7 +456,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         //消息接口监听
         initMsgListener();
         //统计首页资源位曝光量
-        mDataEyeUtils = new HomeDataEyeUtils(MyApp.getContext());
+        mDataEyeUtils = new HomeDataEyeUtils(this.getApplicationContext());
         mDataEyeUtils.resourcesPositionExposure(0);
         //恢复下载任务。2016-11-29 11:47:23 xzl
         DownloadManager.getInstance(this).resumeAllTasks();
@@ -629,7 +628,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 }
                 SharedPreferences.Editor editor = sp.edit();
                 editor.clear();
-                editor.commit();
+                editor.apply();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -666,7 +665,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     @Override
     protected void onPause() {
-        DCAgent.pause(MyApp.getContext());
+        DCAgent.pause(this.getApplicationContext());
         DCPage.onExit(AppConstants.HOME_PAGE);//统计页面结束
         DCEvent.onEventDuration(AppConstants.HOME_PAGE, (System.currentTimeMillis() - mEnter) / 1000);
         super.onPause();

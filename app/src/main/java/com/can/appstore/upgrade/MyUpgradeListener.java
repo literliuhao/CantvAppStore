@@ -8,7 +8,6 @@ import com.can.appstore.upgrade.service.BuglyUpgradeService;
 import com.can.appstore.upgrade.service.UpgradeService;
 import com.tencent.bugly.beta.UpgradeInfo;
 import com.tencent.bugly.beta.upgrade.UpgradeListener;
-import com.tencent.bugly.proguard.aa;
 
 /**
  * Created by syl on 2016/12/7.
@@ -22,11 +21,6 @@ public class MyUpgradeListener implements UpgradeListener {
     public MyUpgradeListener(Context context, boolean downloadSelf) {
         mContext = context.getApplicationContext();
         mDownloadSelf = downloadSelf;
-    }
-
-    @Override
-    public boolean onUpgrade(aa aa, int i, String s) {
-        return false;
     }
 
     @Override

@@ -11,6 +11,8 @@ import android.support.multidex.MultiDex;
 import android.text.TextUtils;
 
 import com.can.appstore.entity.TvInfoModel;
+import com.can.appstore.upgrade.MyUpgradeListener;
+import com.dataeye.sdk.api.app.DCAgent;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.tinker.loader.app.DefaultApplicationLike;
@@ -26,8 +28,8 @@ import com.tencent.tinker.loader.app.DefaultApplicationLike;
  */
 public class MyApp extends DefaultApplicationLike {
 
-    public static final String TAG = "Tinker.SampleApplicationLike";
-    public static String DATAEYE_CHANNELID = "C42S-10002";//测试渠道,正式的默认渠道
+    private static final String TAG = "Tinker.SampleApplicationLike";
+    private String mDataeyeChannelId = "C42S-10002";//测试渠道,正式的默认渠道
     private static MyApp INSTANCE;
     public MyApp(Application application, int tinkerFlags,
                  boolean tinkerLoadVerifyFlag, long applicationStartElapsedTime,
@@ -43,14 +45,17 @@ public class MyApp extends DefaultApplicationLike {
     @Override
     public void onCreate() {
         super.onCreate();
-//        // 设置开发设备
-        Bugly.setIsDevelopmentDevice(getApplication(), true);
-        // 这里实现SDK初始化，appId替换成你的在Bugly平台申请的appId
-        Bugly.init(getApplication(), "e3c3b1806e", true);
-
-        getDataEyeChannelId();
+        initDataEye();
+        //初始化bugly
+        initBugly(true);
     }
 
+    private void initDataEye() {
+        getDataEyeChannelId();
+        DCAgent.openAdTracking();//是否跟踪推广分析，默认是False，调用即为True.该接口必须在SDK初始化之前调用.
+        DCAgent.initWithAppIdAndChannelId(getApplication().getApplicationContext(),
+                AppConstants.DATAEYE_APPID, mDataeyeChannelId);
+    }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     @Override
@@ -78,9 +83,32 @@ public class MyApp extends DefaultApplicationLike {
             channelId = channelId.substring(0, channelId.indexOf("|")).trim();
         }
         if (!TextUtils.isEmpty(modelName) && !TextUtils.isEmpty(channelId)) {
-            MyApp.DATAEYE_CHANNELID = modelName + "-" + channelId;
+            mDataeyeChannelId = modelName + "-" + channelId;
         } else if (!TextUtils.isEmpty(channelId)) {
-            MyApp.DATAEYE_CHANNELID = channelId;
+            mDataeyeChannelId = channelId;
+        }
+    }
+
+    /**
+     * Bugly实现自更新
+     *
+     * @param downloadSelf 是否自己下载apk
+     *                     自下载：可控制下载、安装
+     *                     Bugly下载：可控制下载，安装Bugly自行调用
+     */
+    private void initBugly(final boolean downloadSelf) {
+        try {
+            Beta.autoCheckUpgrade = false;
+            Beta.showInterruptedStrategy = false;
+            Beta.upgradeListener = new MyUpgradeListener(getApplication().getApplicationContext(),
+                    downloadSelf);
+            //测试使用key
+            //Bugly.init(getApplicationContext(), "900059606", false);
+            //正式版本发布使用key
+            Bugly.init(getApplication().getApplicationContext(), "e3c3b1806e", false);
+            Beta.checkUpgrade(false, true);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
