@@ -15,8 +15,8 @@ import java.util.List;
 public class AppConstants {
 
     public static final String BASE_URL = BuildConfig.DEBUG ? "http://172.16.11.32:8011/api/" : "http://appstore.can.cibntv.net/api/";
-//    public static final String AMS_BASE_URL = "http://ams.can.cibntv.net";
-    public static final String AMS_BASE_URL = "http://172.16.11.32:7006";//广告测试，正式发布删除此行
+    public static final String AMS_BASE_URL = "http://ams.can.cibntv.net";
+//    public static final String AMS_BASE_URL = "http://172.16.11.32:7006";//广告测试，正式发布删除此行
     public static final String AD_REPORT_URL = AMS_BASE_URL + "/api/ad/addadreport";
     public static final String AD_COMMON_GET_URL = AMS_BASE_URL + "/api/ad/getad";
     public static final String TMS_GET_MAC_URL = "http://tms.can.cibntv.net/api/sync/getInfoByMac";
