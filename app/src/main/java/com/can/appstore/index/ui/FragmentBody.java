@@ -20,6 +20,9 @@ import com.can.appstore.index.interfaces.IAddFocusListener;
 import com.can.appstore.index.interfaces.IOnPagerKeyListener;
 import com.can.appstore.index.model.ActionUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cn.can.tvlib.ui.view.GlideRoundCornerImageView;
 import cn.can.tvlib.utils.DisplayUtil;
 
@@ -36,6 +39,7 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
     private View lastView = null;
     private Float SEVICER_HEIGHT = 1080f;
     private Boolean isOnKeyListener = true;
+    public List<View> firstColumnViews = new ArrayList<>();
 
     public FragmentBody() {
     }
@@ -158,6 +162,11 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
             layoutParams.topMargin = childBean.getY();
             layoutParams.width = childBean.getWidth();
             layoutParams.height = childBean.getHeight();
+
+            if(layoutParams.leftMargin == 0){
+                firstColumnViews.add(imageFrame);
+            }
+
             imageFrame.setLayoutParams(layoutParams);
             markLastView(imageFrame);
             imageFrame.addView(myImageView);

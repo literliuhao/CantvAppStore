@@ -18,6 +18,7 @@ public class CustomPager extends ViewPager {
 
     public CustomPager(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setFocusable(false);
     }
 
     @Override

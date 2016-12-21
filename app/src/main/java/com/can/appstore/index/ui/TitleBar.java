@@ -11,6 +11,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
@@ -229,6 +230,8 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
                 } else if (oldFocus instanceof LiteText && !(newFocus instanceof LiteText)) {
                     if (null == oldFocus || null == newFocus) return;
                     highLightTextView(mCurrentIndex);
+                } else {
+                    Log.i("IndexActivity", "onGlobalFocusChanged: oldFocus = " + oldFocus.getClass().getSimpleName() + ", newFocus =" + newFocus.getClass().getSimpleName());
                 }
             }
         });
@@ -274,7 +277,26 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
                     mViewPager.setCurrentItem(j);
                 }
             });
+            view.setOnKeyListener(new OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if(onItemKeyEvent != null){
+                        return onItemKeyEvent.onKeyEvent(j, v, keyCode, event);
+                    }
+                    return false;
+                }
+            });
         }
+    }
+
+    private OnItemKeyEvent onItemKeyEvent;
+
+    public interface OnItemKeyEvent{
+        boolean onKeyEvent(int position, View v, int keyCode, KeyEvent event);
+    }
+
+    public void setOnItemKeyEvent(OnItemKeyEvent onItemKeyEvent) {
+        this.onItemKeyEvent = onItemKeyEvent;
     }
 
     /**

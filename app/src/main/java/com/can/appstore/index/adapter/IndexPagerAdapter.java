@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.can.appstore.index.interfaces.IOnPagerListener;
 import com.can.appstore.index.ui.BaseFragment;
+import com.can.appstore.index.ui.FragmentBody;
 
 import java.util.List;
 
@@ -68,7 +69,11 @@ public class IndexPagerAdapter extends PagerAdapter implements ViewPager.OnPageC
         if (null == fragment.getView().getParent()) {
             container.addView(fragment.getView()); // 为viewpager增加布局
         }
-
+        if(position == 0 && fragment instanceof FragmentBody){
+            for(View view : ((FragmentBody)fragment).firstColumnViews){
+                view.setNextFocusLeftId(view.getId());
+            }
+        }
         return fragment.getView();
     }
 

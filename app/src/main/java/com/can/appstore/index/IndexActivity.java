@@ -15,6 +15,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
@@ -101,7 +102,7 @@ import static com.can.appstore.index.entity.FragmentEnum.NORMAL;
 /**
  * Created by liuhao on 2016/10/15.
  */
-public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener, View.OnFocusChangeListener, IOnPagerKeyListener, IOnPagerListener, View.OnKeyListener {
+public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener, View.OnFocusChangeListener, IOnPagerKeyListener, IOnPagerListener, View.OnKeyListener, ViewPager.OnPageChangeListener {
     private CanCall<ListResult<Navigation>> mNavigationCall;
     private static final String TAG = "IndexActivity";
     private List<BaseFragment> mFragmentLists;
@@ -184,6 +185,17 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         //导航
         mTitleBar = (TitleBar) findViewById(R.id.id_indicator);
         mTitleBar.initTitle(this);
+        mTitleBar.setOnItemKeyEvent(new TitleBar.OnItemKeyEvent() {
+            @Override
+            public boolean onKeyEvent(int position, View v, int keyCode, KeyEvent event) {
+                if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_RIGHT &&
+                        position == mTitleBar.getChildCount() - 1){
+                    rlSearch.requestFocus();
+                    return true;
+                }
+                return false;
+            }
+        });
         mViewPager = (ViewPager) findViewById(R.id.id_custom_pager);
         //广告
         textTime = (TextView) this.findViewById(R.id.tv_ad_time);
@@ -193,6 +205,19 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         rlSearch = (RelativeLayout) this.findViewById(R.id.rl_search);
         rlSearch.setOnFocusChangeListener(this);
         rlSearch.setOnClickListener(this);
+        rlSearch.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT){
+                    View titleChildView = mTitleBar.getChildAt(mTitleBar.getChildCount() - 1);
+                    if(titleChildView != null){
+                        titleChildView.requestFocus();
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
         //消息
         rlMessage = (RelativeLayout) this.findViewById(R.id.rl_message);
         rlMessage.setOnFocusChangeListener(this);
@@ -443,6 +468,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mViewPager.setOffscreenPageLimit(SCREEN_PAGE_LIMIT);
         mViewPager.setCurrentItem(PAGER_CURRENT);
         mViewPager.setPageMargin((int) getResources().getDimension(R.dimen.px165));
+        mViewPager.addOnPageChangeListener(this);
         mTitleBar.setViewPager(mViewPager, PAGER_CURRENT);
         fixedScroll();
         if (!isShowAD) {
@@ -494,7 +520,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private void refreshUpdate(int number) {
         if (number > 0) {
             textUpdate.setText(number + getResources().getString(R.string.index_app_update));
-            textUpdate.setVisibility(View.VISIBLE);
+            if(mCurrentPage == 0){
+                textUpdate.setVisibility(View.VISIBLE);
+            }
         } else {
             textUpdate.setVisibility(View.GONE);
         }
@@ -547,6 +575,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         }
     };
 
+    private boolean mViewPageContainFocus;
+
     /**
      * 自定义onFocusChange接口，首页所有Fragment实现后都可以在此做统一焦点处理
      *
@@ -555,6 +585,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      */
     @Override
     public void addFocusListener(View v, boolean hasFocus, FragmentEnum sourceEnum) {
+        Log.i(TAG, "addFocusListener: v = " + v.getClass().getSimpleName() +"| id = " + v.getId() + ", hasFocus = " + hasFocus + ", enum = " + sourceEnum.name());
         if (hasFocus) {
             if (isIntercept) {
                 isIntercept = false;
@@ -564,6 +595,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             switch (sourceEnum) {
                 case INDEX:
                     v.bringToFront();
+                    mViewPageContainFocus = false;
                     mFocusUtils.setFocusRes(this, R.drawable.btn_circle_focus);
                     mFocusUtils.startMoveFocus(v);
                     break;
@@ -574,10 +606,12 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                         v.bringToFront();
                         mFocusScaleUtils.scaleToLarge(v);
                     }
+                    mViewPageContainFocus = false;
                     mFocusUtils.setFocusRes(this, R.drawable.btn_focus);
-                    mFocusUtils.startMoveFocus(v, SCALE);
+                    mFocusUtils.startMoveFocus(v);
                     break;
                 case RANK:
+                    mViewPageContainFocus = true;
                     v.bringToFront();
                     mFocusUtils.setFocusRes(this, R.drawable.btn_focus);
                     mFocusUtils.startMoveFocus(v);
@@ -585,6 +619,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 case NORMAL:
                 case MYAPP:
                 case MANAGE:
+                    mViewPageContainFocus = true;
                     v.bringToFront();
                     mFocusUtils.setFocusRes(this, R.drawable.btn_focus);
                     mFocusUtils.startMoveFocus(v, SCALE);
@@ -698,6 +733,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     @Override
     protected void onDestroy() {
+        if(mViewPager != null){
+            mViewPager.removeOnPageChangeListener(this);
+        }
         if(canDialog != null){
             canDialog.dismiss();
             canDialog.release();
@@ -768,7 +806,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     @Override
     public void onExtraPageSelected(int position) {
         mCurrentPage = position;
-        mFocusUtils.showFocus();
+//        mFocusUtils.showFocus();
         //统计首页资源位曝光量
         if (mDataEyeUtils != null) {
             mDataEyeUtils.resourcesPositionExposure(position);
@@ -785,34 +823,18 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 textUpdate.setVisibility(View.GONE);
                 break;
         }
-        if (state == SCROLLING) {
-            if (!(IndexActivity.this.getCurrentFocus() instanceof LiteText)) {
-                mFocusUtils.hideFocus();
-            }
-        } else if (state == SCROLLED) {
+        if (state == ViewPager.SCROLL_STATE_IDLE) {
             if (null == view) {
-                view = IndexActivity.this.getCurrentFocus();
-                if (!(view instanceof LiteText) && mCurrentPage == TOP_INDEX) {
-                    mFocusUtils.setFocusView(view);
-                    mFocusUtils.startMoveFocus(view);
-                } else {
-                    mFocusUtils.setFocusView(view, SCALE);
-                    mFocusUtils.startMoveFocus(view, SCALE);
-                }
-                mFocusUtils.showFocus();
                 return;
             }
             if (!(IndexActivity.this.getCurrentFocus() instanceof LiteText)) {
                 view.requestFocus();
                 if (mCurrentPage == TOP_INDEX) {
                     mFocusUtils.setFocusView(view);
-                    mFocusUtils.startMoveFocus(view);
                 } else {
                     mFocusUtils.setFocusView(view, SCALE);
-                    mFocusUtils.startMoveFocus(view, SCALE);
                 }
             }
-            mFocusUtils.showFocus();
         }
     }
 
@@ -820,4 +842,51 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     public boolean onKey(View view, int i, KeyEvent keyEvent) {
         return true;
     }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+        if(state == ViewPager.SCROLL_STATE_SETTLING){
+            if(mViewPageContainFocus){
+                mFocusUtils.hideFocus();
+            } else {
+                mViewPager.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+            }
+            mHandler.removeCallbacks(mShowFocusRunnable);
+            mHandler.removeCallbacks(mFindFocusRunnable);
+        } else if(state == ViewPager.SCROLL_STATE_IDLE){
+            mHandler.postDelayed(mFindFocusRunnable, 100);
+        }
+    }
+
+    private Runnable mShowFocusRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mFocusUtils.showFocus();
+        }
+    };
+
+    private Runnable mFindFocusRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mViewPager.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+            if(!mViewPageContainFocus){
+                return;
+            }
+            View focus = mViewPager.findFocus();
+            if(focus != null){
+                mFocusUtils.startMoveFocus(focus, mCurrentPage == 1 ? 1 : SCALE);
+                mHandler.postDelayed(mShowFocusRunnable, 200);
+            }
+        }
+    };
 }
