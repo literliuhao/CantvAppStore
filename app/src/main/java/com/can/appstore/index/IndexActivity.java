@@ -19,6 +19,7 @@ import android.view.Window;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -58,6 +59,7 @@ import com.can.appstore.message.manager.MessageDBManager;
 import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.search.SearchActivity;
 import com.can.appstore.update.AutoUpdate;
+import com.can.appstore.update.UpdateManagerActivity;
 import com.can.appstore.update.model.UpdateApkModel;
 import com.can.appstore.upgrade.service.UpgradeService;
 import com.can.appstore.upgrade.view.UpgradeInFoDialog;
@@ -94,6 +96,7 @@ import cn.can.tvlib.utils.PromptUtils;
 import retrofit2.Response;
 
 import static com.can.appstore.index.entity.FragmentEnum.INDEX;
+import static com.can.appstore.index.entity.FragmentEnum.NORMAL;
 
 /**
  * Created by liuhao on 2016/10/15.
@@ -108,6 +111,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private RelativeLayout rlMessage;
     private TextView textTime;
     private ImageView imageAD;
+    private LinearLayout adTimeLayout;
     private RelativeLayout rlSearch;
     private ViewPager mViewPager;
     private TitleBar mTitleBar;
@@ -184,7 +188,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         //广告
         textTime = (TextView) this.findViewById(R.id.tv_ad_time);
         imageAD = (ImageView) this.findViewById(R.id.iv_index_ad);
-        imageAD.setImageResource(R.drawable.app_store);
+        adTimeLayout = (LinearLayout) findViewById(R.id.ll_ad_time);
         //搜索
         rlSearch = (RelativeLayout) this.findViewById(R.id.rl_search);
         rlSearch.setOnFocusChangeListener(this);
@@ -197,6 +201,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         imageRed = (ImageView) this.findViewById(R.id.iv_mssage_red);
         //更新
         textUpdate = (TextView) findViewById(R.id.tv_update_number);
+        textUpdate.setOnFocusChangeListener(this);
+        textUpdate.setOnClickListener(this);
         messageDBManager = new MessageDBManager(this);
     }
 
@@ -235,7 +241,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                         @Override
                         public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             isShowAD = true;
-                            textTime.setVisibility(View.VISIBLE);
                             textTime.setText(String.valueOf(mShowTime));
                             imageAD.setImageDrawable(resource);
                             imageAD.setFocusable(true);
@@ -407,13 +412,23 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      */
     private void bindTtile(ListResult<Navigation> mPage) {
         List<String> mTitles = new ArrayList<>();
+        boolean hasRank = false;
+        String rankStr = getResources().getString(R.string.rank);
         for (int i = 0; i < mPage.getData().size(); i++) {
             Navigation navigation = mPage.getData().get(i);
-            mTitles.add(navigation.getTitle());
+            String title = navigation.getTitle();
+            if(rankStr.equals(title)){
+                hasRank = true;
+                continue;
+            }
+            mTitles.add(title);
         }
         //管理、我的应用不受服务器后台配置，因此手动干预位置
         mTitles.add(getResources().getString(R.string.index_manager));
         mTitles.add(getResources().getString(R.string.index_myapp));
+        if(hasRank){
+            mTitles.add(1, rankStr);
+        }
         mTitleBar.setTabItemTitles(mTitles);//设置导航栏Title
     }
 
@@ -521,7 +536,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                     mFocusUtils.showFocus(100);
                     rlSearch.setFocusable(true);
                     rlMessage.setFocusable(true);
-                    textTime.setVisibility(View.GONE);
+                    adTimeLayout.setVisibility(View.GONE);
                     imageAD.setVisibility(View.GONE);
                     reportAD();
                     break;
@@ -575,7 +590,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                     mFocusUtils.startMoveFocus(v, SCALE);
                     mFocusScaleUtils.scaleToLarge(v);
                     break;
-
             }
         } else {
             mFocusScaleUtils.scaleToNormal();
@@ -590,6 +604,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 break;
             case R.id.rl_message:
                 MessageActivity.actionStart(this);
+                break;
+            case R.id.tv_update_number:
+                UpdateManagerActivity.actionStart(this);
                 break;
         }
     }
@@ -607,7 +624,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
-        addFocusListener(view, hasFocus, INDEX);
+        if(view.getId() == textUpdate.getId()){
+            addFocusListener(view, hasFocus, NORMAL);
+        } else {
+            addFocusListener(view, hasFocus, INDEX);
+        }
     }
 
     /**
@@ -644,6 +665,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 @Override
                 public void run() {
                     textTime.setText(String.valueOf(mShowTime));
+                    if(adTimeLayout.getVisibility() != View.VISIBLE){
+                        adTimeLayout.setVisibility(View.VISIBLE);
+                    }
                 }
             });
             mShowTime--;

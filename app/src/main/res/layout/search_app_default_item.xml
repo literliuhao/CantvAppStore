@@ -12,15 +12,14 @@
               android:orientation="vertical">
     <!--android:background="@drawable/search_keyboard_shape"-->
 
+    <!--fixbug APPSTORE-99 热词字数限制在5个内 见jira上bug(APPSTORE-99) , 添加android:maxLength="5"  hk 20161221 -->
     <TextView
         android:id="@+id/default_name_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:ellipsize="end"
         android:gravity="center"
         android:marqueeRepeatLimit="marquee_forever"
-        android:singleLine="true"
-        android:text="分类app"
+        android:maxLength="5"
         android:textColor="@color/tr_20_white_color"
         android:textSize="@dimen/px32"/>
 </LinearLayout>
