@@ -33,6 +33,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import cn.can.downloadlib.utils.ApkUtils;
 import cn.can.downloadlib.utils.FileUtils;
 import cn.can.downloadlib.utils.SdcardUtils;
 import cn.can.downloadlib.utils.ShellUtils;
@@ -320,7 +321,7 @@ public class DownloadManager implements AppInstallListener {
         if (getDBTaskById(task.getId()) == null) {
             DownloadDBEntity dbEntity = new DownloadDBEntity(task.getId(), task.getTotalSize(),
                     task.getCompletedSize(), task.getUrl(), task.getSaveDirPath(), task
-                    .getFileName(), task.getDownloadStatus(), task.getIcon());
+                    .getFileName(), task.getDownloadStatus(), task.getIcon(), task.getAppId(),task.getPkg());
             mDownloadDao.insertOrReplace(dbEntity);
         }
         /**修复添加任务时，多个消息同时轮询问题 xzl 2016-11-30 16:20:33  start */
@@ -658,7 +659,7 @@ public class DownloadManager implements AppInstallListener {
         if (getDBTaskById(task.getId()) == null) {
             DownloadDBEntity dbEntity = new DownloadDBEntity(task.getId(), task.getTotalSize(),
                     task.getCompletedSize(), task.getUrl(), task.getSaveDirPath(), task
-                    .getFileName(), task.getDownloadStatus(), task.getIcon());
+                    .getFileName(), task.getDownloadStatus(), task.getIcon(), task.getAppId(),task.getPkg());
             mDownloadDao.insertOrReplace(dbEntity);
         }
         if (mSingleTaskMap.containsKey(task.getId())) {
@@ -725,6 +726,8 @@ public class DownloadManager implements AppInstallListener {
             Log.e(TAG, "***InstallSucess***" + task.getFileName());
             ToastUtils.showMessageLong(mContext, task.getFileName() + mContext.getResources().getString(R.string
                     .install_sucess));
+            String pkg = ApkUtils.getPkgNameFromApkFile(mContext, task.getFilePath());
+            task.setPkg(pkg);
             deleteTask(id);
             FileUtils.deleteFile(task.getFilePath());
 

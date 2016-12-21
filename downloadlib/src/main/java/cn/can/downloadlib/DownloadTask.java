@@ -43,6 +43,8 @@ public class DownloadTask implements Runnable {
     private long mDownloadedSize;
     private String mUrl;
     private String mIcon;
+    private String mAppId;
+    private String mPkg;
     private String mSaveDirPath = Environment.getExternalStorageDirectory().getAbsolutePath();
     private RandomAccessFile mRandomAccessFile;
     private int UPDATE_SIZE = 512 * 1024;    // 512k存储一次
@@ -100,7 +102,7 @@ public class DownloadTask implements Runnable {
                 mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_COMPLETED;
                 mTotalSize = mDownloadedSize = fileLength;
                 mDbEntity = new DownloadDBEntity(mId, mTotalSize, mTotalSize, mUrl, mSaveDirPath,
-                        mFileName, mDownloadStatus, mIcon);
+                        mFileName, mDownloadStatus, mIcon, mAppId, mPkg);
                 mDownloadDao.insertOrReplace(mDbEntity);
                 onCompleted();
                 return;
@@ -122,7 +124,7 @@ public class DownloadTask implements Runnable {
                         /** 下载过程中删除任务，此处mDbEntity为空 xingzl 2016-11-15 15:37:43 start*/
                         if (mDbEntity == null) {
                             mDbEntity = new DownloadDBEntity(mId, mTotalSize, mDownloadedSize, mUrl, mSaveDirPath,
-                                    mFileName, mDownloadStatus, mIcon);
+                                    mFileName, mDownloadStatus, mIcon, mAppId, mPkg);
                         } else {
                             mDbEntity.setTotalSize(mTotalSize);
                         }
@@ -145,7 +147,7 @@ public class DownloadTask implements Runnable {
                     int buffOffset = 0;
                     if (mDbEntity == null) {
                         mDbEntity = new DownloadDBEntity(mId, mTotalSize, 0L, mUrl, mSaveDirPath,
-                                mFileName, mDownloadStatus, mIcon);
+                                mFileName, mDownloadStatus, mIcon, mAppId, mPkg);
                         mDownloadDao.insertOrReplace(mDbEntity);
                     }
                     while ((length = bis.read(buffer)) > 0 && mDownloadStatus != DownloadStatus
@@ -338,6 +340,22 @@ public class DownloadTask implements Runnable {
 
     public void setIcon(String icon) {
         this.mIcon = icon;
+    }
+
+    public String getAppId() {
+        return mAppId;
+    }
+
+    public void setAppId(String mAppId) {
+        this.mAppId = mAppId;
+    }
+
+    public String getPkg() {
+        return mPkg;
+    }
+
+    public void setPkg(String mPkg) {
+        this.mPkg = mPkg;
     }
 
     /**

@@ -30,6 +30,8 @@ public class DownloadDao extends AbstractDao<DownloadDBEntity, String> {
         public final static Property FileName = new Property(5, String.class, "fileName", false, "FILE_NAME");
         public final static Property DownloadStatus = new Property(6, Integer.class, "downloadStatus", false, "DOWNLOAD_STATUS");
         public final static Property Icon = new Property(7, String.class, "icon", false, "ICON");
+        public final static Property AppId = new Property(8, String.class, "appId", false, "APP_ID");
+        public final static Property Pkg = new Property(9, String.class, "pkg", false, "PKG");
     };
 
 
@@ -52,7 +54,9 @@ public class DownloadDao extends AbstractDao<DownloadDBEntity, String> {
                 "\"SAVE_DIR_PATH\" TEXT," + // 4: saveDirPath
                 "\"FILE_NAME\" TEXT," + // 5: fileName
                 "\"DOWNLOAD_STATUS\" INTEGER," + // 6: downloadStatus
-                "\"ICON\" TEXT);"); // 7: icon
+                "\"ICON\" TEXT," + // 7: icon
+                "\"APP_ID\" TEXT," + // 8: appId
+                "\"PKG\" TEXT);"); // 9: pkg
     }
 
     /** Drops the underlying database table. */
@@ -104,6 +108,16 @@ public class DownloadDao extends AbstractDao<DownloadDBEntity, String> {
         if (icon != null) {
             stmt.bindString(8, icon);
         }
+ 
+        String appId = entity.getAppId();
+        if (appId != null) {
+            stmt.bindString(9, appId);
+        }
+ 
+        String pkg = entity.getPkg();
+        if (pkg != null) {
+            stmt.bindString(10, pkg);
+        }
     }
 
     @Override
@@ -149,6 +163,16 @@ public class DownloadDao extends AbstractDao<DownloadDBEntity, String> {
         if (icon != null) {
             stmt.bindString(8, icon);
         }
+ 
+        String appId = entity.getAppId();
+        if (appId != null) {
+            stmt.bindString(9, appId);
+        }
+ 
+        String pkg = entity.getPkg();
+        if (pkg != null) {
+            stmt.bindString(10, pkg);
+        }
     }
 
     @Override
@@ -166,7 +190,9 @@ public class DownloadDao extends AbstractDao<DownloadDBEntity, String> {
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // saveDirPath
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // fileName
             cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6), // downloadStatus
-            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7) // icon
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // icon
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // appId
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9) // pkg
         );
         return entity;
     }
@@ -181,6 +207,8 @@ public class DownloadDao extends AbstractDao<DownloadDBEntity, String> {
         entity.setFileName(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
         entity.setDownloadStatus(cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6));
         entity.setIcon(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
+        entity.setAppId(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setPkg(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
      }
     
     @Override
