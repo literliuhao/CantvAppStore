@@ -23,12 +23,13 @@ import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 public class AddAppsPresenter implements AddAppsContract.Presenter {
     public final static String TAG = "AddAppsPresenter";
+    public final static int ONR_ROW_SHOW_COUNT = 4;
     private AddAppsContract.View mView;
     private Context mContext;
     //数据
     private MyAppsListDataUtil mMyAppListData;
     private List<AppInfo> isShown;
-    private List<AppInfo> addShowList = new ArrayList<AppInfo>();
+    private List<AppInfo> addShowList = new ArrayList<>();
     private List<AppInfo> mAllAppList;
 
     private LoadingDialog mLoadingDialog;
@@ -58,7 +59,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
                 if (addShowList != null) {
                     addShowList.clear();
                 }
-                isShown = mMyAppListData.getShowList(isShown);
+                isShown = mMyAppListData.getShowList(isShown, null);
                 mAllAppList = PackageUtil.findAllThirdPartyAppsNoDelay(mContext, mAllAppList);
                 for (AppInfo app : mAllAppList) {
                     boolean inShown = false;
@@ -189,8 +190,8 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
      */
     public int calculateCurTotalRows() {
         int totalCount = addShowList.size();
-        int totalRows = totalCount / 4;
-        if (totalCount % 4 != 0) {
+        int totalRows = totalCount / ONR_ROW_SHOW_COUNT;
+        if (totalCount % ONR_ROW_SHOW_COUNT != 0) {
             totalRows = totalRows + 1;
         }
         return totalRows;
@@ -203,7 +204,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
      * @return
      */
     public int calculateCurRows(int position) {
-        return position / 4 + 1;
+        return position / ONR_ROW_SHOW_COUNT + 1;
     }
 
     /**

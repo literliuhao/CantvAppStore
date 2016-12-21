@@ -233,4 +233,6 @@
     <string name="if_clear_cache">是否要清理应用商城缓存数据？</string>
     <string name="confirm">确定</string>
     <string name="clear_cache_success">缓存清理成功</string>
+    <string name="all_apps">全部应用</string>
+    <string name="system_apps">系统应用</string>
 </resources>
