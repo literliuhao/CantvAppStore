@@ -24,6 +24,7 @@
 
     <!--首页排行榜-->
     <string name="rank_more_str">更多</string>
+    <string name="rank">排行</string>
     <!--首页导航-->
     <string name="index_top">排行</string>
     <string name="index_manager">管理</string>

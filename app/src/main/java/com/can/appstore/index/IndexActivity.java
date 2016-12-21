@@ -412,13 +412,23 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      */
     private void bindTtile(ListResult<Navigation> mPage) {
         List<String> mTitles = new ArrayList<>();
+        boolean hasRank = false;
+        String rankStr = getResources().getString(R.string.rank);
         for (int i = 0; i < mPage.getData().size(); i++) {
             Navigation navigation = mPage.getData().get(i);
-            mTitles.add(navigation.getTitle());
+            String title = navigation.getTitle();
+            if(rankStr.equals(title)){
+                hasRank = true;
+                continue;
+            }
+            mTitles.add(title);
         }
         //管理、我的应用不受服务器后台配置，因此手动干预位置
         mTitles.add(getResources().getString(R.string.index_manager));
         mTitles.add(getResources().getString(R.string.index_myapp));
+        if(hasRank){
+            mTitles.add(1, rankStr);
+        }
         mTitleBar.setTabItemTitles(mTitles);//设置导航栏Title
     }
 
