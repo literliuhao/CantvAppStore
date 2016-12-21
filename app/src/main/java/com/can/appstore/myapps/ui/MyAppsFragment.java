@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -27,7 +28,9 @@ import com.can.appstore.myapps.addappsview.AddAppsActivity;
 import com.can.appstore.myapps.allappsview.AllAppsActivity;
 import com.can.appstore.myapps.myappsfragmview.MyAppsFragPresenter;
 import com.can.appstore.myapps.myappsfragmview.MyAppsFramentContract;
+import com.can.appstore.myapps.utils.MyAppsListDataUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
@@ -44,7 +47,11 @@ import static android.app.Activity.RESULT_OK;
  */
 
 public class MyAppsFragment extends BaseFragment implements MyAppsFramentContract.View {
-    public static String TAG = "MyAppsFragment";
+    public static final String TAG = "MyAppsFragment";
+    public static final int LEAST_SHOW_COUNT = 2;//最少显示数量
+    public static final int AT_MOST_SHOW_COUNT = 18;//最多显示数量
+    public static final int ONE_ROW_SHOW_COUNT = 6;//一行显示数量
+    public static final int REQUEST_CODE = 2;//请求码
     private MyAppsFragPresenter mMyAppsFramPresenter;
     //表格布局
     private CanRecyclerView mAppsRecyclerView;
@@ -60,8 +67,10 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
     private Button mRemoveAppBtn;
     //显示的list数据
     private List<PackageUtil.AppInfo> mShowList;
+    public static boolean isShowAdd = false;
 
-    public MyAppsFragment(){}
+    public MyAppsFragment() {
+    }
 
     public MyAppsFragment(IndexActivity indexActivity) {
         this.mFocusListener = indexActivity;
@@ -72,9 +81,10 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "----onCreatView()");
         View view = inflater.inflate(R.layout.fragment_myapps, container, false);
+        int itemDecorationSize = getActivity().getResources().getDimensionPixelSize(R.dimen.px8);
         mAppsRecyclerView = (CanRecyclerView) view.findViewById(R.id.cr_myapps);
-        mAppsRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(getActivity(), 6, GridLayoutManager.VERTICAL, false));
-        mAppsRecyclerView.addItemDecoration(new CanRecyclerViewDivider(Color.TRANSPARENT, 8, 8));
+        mAppsRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(getActivity(), ONE_ROW_SHOW_COUNT, GridLayoutManager.VERTICAL, false));
+        mAppsRecyclerView.addItemDecoration(new CanRecyclerViewDivider(Color.TRANSPARENT, itemDecorationSize, itemDecorationSize));
 
         mMyAppsFramPresenter = new MyAppsFragPresenter(this, getContext());
         mMyAppsFramPresenter.startLoad();
@@ -90,10 +100,14 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
     }
 
     @Override
-    public void loadAppInfoSuccess(List<AppInfo> infoList, int myapplistsize) {
+    public void loadAppInfoSuccess(List<AppInfo> infoList, int mySppListSize) {
+        Log.d(TAG, "loadAppInfoSuccess: infoList : " + infoList.size() + "    mySppListSize : " + mySppListSize);
         mShowList = infoList;
-        if (infoList.size() - 2 < myapplistsize && infoList.size() < 18 && !infoList.get(infoList.size() - 1).appName.equals(getString(R.string.add_app))) {
+        isShowAdd = false;
+        if (infoList.size() - LEAST_SHOW_COUNT < mySppListSize && infoList.size() < AT_MOST_SHOW_COUNT
+                && !infoList.get(infoList.size() - 1).appName.equals(getString(R.string.add_app))) {
             infoList.add(new AppInfo(getResources().getString(R.string.add_app), getActivity().getResources().getDrawable(R.drawable.addapp_icon)));
+            isShowAdd = true;
         }
         if (mMyAppsRvAdapter == null) {
             mMyAppsRvAdapter = new MyAppsRvAdapter(infoList);
@@ -131,10 +145,10 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         mMyAppsRvAdapter.setItemKeyEventListener(new CanRecyclerViewAdapter.OnItemKeyEventListener() {
             @Override
             public boolean onItemKeyEvent(int position, View item, int keyCode, KeyEvent event) {
-                if (position % 6 == 0 && event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+                if (position % ONE_ROW_SHOW_COUNT == 0 && event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                     mOnPagerKeyListener.onKeyEvent(item, keyCode, event);
                 }
-                if (keyCode == KeyEvent.KEYCODE_MENU && !"".equals(mShowList.get(position).packageName) && event.getAction() == KeyEvent.ACTION_DOWN) {
+                if (keyCode == KeyEvent.KEYCODE_MENU && !TextUtils.isEmpty(mShowList.get(position).packageName) && event.getAction() == KeyEvent.ACTION_DOWN) {
                     showEditView(position, item);
                     return true;
                 }
@@ -158,12 +172,12 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
                     Intent intent = new Intent(getActivity(), SystemAppsActivity.class);
                     startActivity(intent);
                 } else {
-                    if ("".equals(mShowList.get(position).packageName)) {
+                    if (TextUtils.isEmpty(mShowList.get(position).packageName)) {
                         //添加更多
                         Intent i = new Intent(getActivity(), AddAppsActivity.class);
-                        int add = 16 - mShowList.size();
+                        int add = MyAppsListDataUtil.ATMOST_SHOW_THIRDAPP_COUNT - mShowList.size();
                         i.putExtra("add", add);
-                        startActivityForResult(i, 2);
+                        startActivityForResult(i, REQUEST_CODE);
                     } else {
                         Log.d(TAG, "OPENAPP__PACKAGENAME:" + mShowList.get(position).packageName);
                         try {
@@ -179,7 +193,7 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (2 == requestCode && resultCode == RESULT_OK) {
+        if (REQUEST_CODE == requestCode && resultCode == RESULT_OK) {
             Bundle bundle = data.getExtras();
             boolean isAdd = bundle.getBoolean("isAdd");
             if (isAdd) {
@@ -271,6 +285,7 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
             mMyAppsFramPresenter.unRegiestr();
             mMyAppsFramPresenter.release();
         }
+        isShowAdd = false;
         super.onDestroyView();
     }
 

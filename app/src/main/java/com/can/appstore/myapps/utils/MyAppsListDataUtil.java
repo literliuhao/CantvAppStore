@@ -2,6 +2,7 @@ package com.can.appstore.myapps.utils;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.can.appstore.AppConstants;
 import com.can.appstore.R;
@@ -21,7 +22,11 @@ import cn.can.tvlib.utils.PreferencesUtils;
  */
 
 public class MyAppsListDataUtil {
-
+    private static final String MY_APPS_SHOW_LIST = "myappsshowlist";
+    public static final int ATMOST_SHOW_THIRDAPP_COUNT = 16;
+    //隐藏应用
+    public static List<String> hideList = null;
+    private ShareData mShareData;
     private final Context context;
 
     public MyAppsListDataUtil(Context context) {
@@ -36,30 +41,31 @@ public class MyAppsListDataUtil {
      *
      * @return
      */
-    public List<PackageUtil.AppInfo> getShowList(List<AppInfo> mShowList) {
+    public List<PackageUtil.AppInfo> getShowList(List<AppInfo> mShowList, List<AppInfo> allAppsList) {
         if (mShowList == null) {
-            mShowList = new ArrayList<AppInfo>(18);
+            mShowList = new ArrayList<>();
         } else {
             mShowList.clear();
         }
-        List<AppInfo> allAppsList = new ArrayList<>();
-        allAppsList = PackageUtil.findAllThirdPartyAppsNoDelay(context, allAppsList);
-        if (!PreferencesUtils.getString(context, "myappsshowlist", "0").equals("0")) {
+        if (allAppsList == null) {
+            allAppsList = PackageUtil.findAllThirdPartyAppsNoDelay(context, allAppsList);
+        }
+        if (!PreferencesUtils.getString(context, MY_APPS_SHOW_LIST, "0").equals("0")) {
             //存在，证明我在本地已写过过文件
             mShowList = getList(mShowList);
         } else {
             //文件不存在，初次
-            if (allAppsList.size() <= 16) {
-                mShowList = allAppsList;
+            if (allAppsList.size() <= ATMOST_SHOW_THIRDAPP_COUNT) {
+                mShowList.addAll(allAppsList);
             } else {
-                for (int i = 0; i < 16; i++) {
+                for (int i = 0; i < ATMOST_SHOW_THIRDAPP_COUNT; i++) {
                     mShowList.add(allAppsList.get(i));
                 }
             }
             saveShowList(mShowList);
         }
-        mShowList.add(0, new AppInfo("全部应用", context.getResources().getDrawable(R.drawable.allapp)));
-        mShowList.add(1, new AppInfo("系统应用", context.getResources().getDrawable(R.drawable.ic_launcher)));
+        mShowList.add(0, new AppInfo(context.getString(R.string.all_apps), context.getResources().getDrawable(R.drawable.allapp)));
+        mShowList.add(1, new AppInfo(context.getString(R.string.system_apps), context.getResources().getDrawable(R.drawable.ic_launcher)));
         return mShowList;
     }
 
@@ -71,7 +77,7 @@ public class MyAppsListDataUtil {
      */
     public List<AppInfo> getAllAppList(List<AppInfo> allAppslist) {
         if (allAppslist == null) {
-            allAppslist = new ArrayList<AppInfo>();
+            allAppslist = new ArrayList<>();
         } else {
             allAppslist.clear();
         }
@@ -100,28 +106,27 @@ public class MyAppsListDataUtil {
             }
             string += ("&");
         }
-        PreferencesUtils.putString(context, "myappsshowlist", string);
+        PreferencesUtils.putString(context, MY_APPS_SHOW_LIST, string);
     }
 
     //获取本地存的我的应用也显示的应用集合
     public List<AppInfo> getList(List<AppInfo> list) {
         if (list == null) {
-            list = new ArrayList<AppInfo>();
+            list = new ArrayList<>();
         } else {
             list.clear();
         }
-        String listString = PreferencesUtils.getString(context, "myappsshowlist");
+        String listString = PreferencesUtils.getString(context, MY_APPS_SHOW_LIST);
         String[] split = listString.split("&");
 
         for (int i = 0; i < split.length; i++) {
             AppInfo info = PackageUtil.getAppInfo(context, split[i]);
-            if (info != null ) {
+            if (info != null) {
                 list.add(info);
             }
         }
         return list;
     }
-
 
 
     /**
@@ -131,7 +136,7 @@ public class MyAppsListDataUtil {
      */
     public List<AppInfo> getSystemApp(List<AppInfo> list) {
         if (list == null) {
-            list = new ArrayList<AppInfo>();
+            list = new ArrayList<>();
         } else {
             list.clear();
         }
@@ -144,9 +149,6 @@ public class MyAppsListDataUtil {
         }
         return list;
     }
-    //隐藏应用
-    public static List<String>  hideList = null;
-    private ShareData mShareData;
 
     /**
      * 从列表里删除隐藏应用
@@ -174,8 +176,5 @@ public class MyAppsListDataUtil {
         }
         return appList;
     }
-
-
-
 
 }

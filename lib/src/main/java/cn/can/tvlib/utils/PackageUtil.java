@@ -106,7 +106,7 @@ public class PackageUtil {
      *
      * @param packageName
      */
-    public static void openApp(Context context, String packageName, Bundle params) throws Exception{
+    public static void openApp(Context context, String packageName, Bundle params) throws Exception {
         PackageInfo pi;
         try {
             pi = context.getPackageManager().getPackageInfo(packageName, 0);
@@ -224,20 +224,6 @@ public class PackageUtil {
             app.appName = applicationInfo.loadLabel(pm).toString();
             // 是否是系统权限
             app.isSystemApp = (applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM;
-            // 应用占用空间大小
-            try {
-                Method method = PackageManager.class.getMethod("getPackageSizeInfo", String.class, IPackageStatsObserver.class);
-                method.setAccessible(true);
-                method.invoke(pm, app.packageName, new IPackageStatsObserver.Stub() {
-                    @Override
-                    public void onGetStatsCompleted(PackageStats pStats, boolean succeeded) throws RemoteException {
-                        app.size = pStats.codeSize + pStats.dataSize + pStats.cacheSize;
-                    }
-                });
-            } catch (Exception e) {
-                File apk = new File(applicationInfo.sourceDir);
-                app.size = apk.length();// apk包文件大小
-            }
             return app;
         }
         return null;
@@ -414,7 +400,9 @@ public class PackageUtil {
             }
         }
         return appList;
-    } /**
+    }
+
+    /**
      * 获取已安装的第三方应用信息
      *
      * @param context
@@ -446,21 +434,6 @@ public class PackageUtil {
             app.installPath = applicationInfo.sourceDir;
             app.appIcon = applicationInfo.loadIcon(pm);
             app.appName = applicationInfo.loadLabel(pm).toString();
-            // 应用占用空间大小
-            try {
-                Method method = PackageManager.class.getMethod("getPackageSizeInfo", String.class, IPackageStatsObserver.class);
-                method.setAccessible(true);
-                method.invoke(pm, app.packageName, new IPackageStatsObserver.Stub() {
-                    @Override
-                    public void onGetStatsCompleted(PackageStats pStats, boolean succeeded) throws RemoteException {
-                        app.size = pStats.codeSize + pStats.dataSize + pStats.cacheSize;
-                        int i = index.decrementAndGet();
-                    }
-                });
-            } catch (Exception e) {
-                File apk = new File(applicationInfo.sourceDir);
-                app.size = apk.length();// apk包文件大小
-            }
             appList.add(app);
         }
         return appList;
@@ -468,7 +441,6 @@ public class PackageUtil {
 
     /**
      * 获取处于白名单中的系统应用 + 第三方应用
-     *
      *
      * @param context
      * @return
@@ -489,8 +461,8 @@ public class PackageUtil {
             if (isSystemApp && !appWhiteList.contains(info.packageName)) {
                 continue;
             }
-            if(context.getPackageName().equals(info.packageName)){
-               continue;
+            if (context.getPackageName().equals(info.packageName)) {
+                continue;
             }
             index.incrementAndGet();
             final AppInfo app = new AppInfo();

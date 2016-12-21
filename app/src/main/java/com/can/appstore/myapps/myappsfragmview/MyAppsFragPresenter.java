@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
 
+import com.can.appstore.myapps.ui.MyAppsFragment;
 import com.can.appstore.myapps.utils.MyAppsListDataUtil;
 
 import java.util.ArrayList;
@@ -18,11 +19,14 @@ import java.util.List;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
+import static android.util.Config.LOGD;
+
 /**
  * Created by wei on 2016/11/9.
  */
 
 public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
+    private static final int SYSTEM_APPICON_PIC_COUNT = 6;//系统应用最多放置的图片数量
     public static String TAG = "MyAppsFragPresenter";
     private MyAppsFramentContract.View mView;
     private Context mContext;
@@ -30,11 +34,11 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
     private AppInstallReceiver mAppInstallReceiver;
 
     //主页显示的第三方应用
-    private List<AppInfo> mShowList = new ArrayList<AppInfo>(18);
+    private List<AppInfo> mShowList = new ArrayList<>();
     //系统应用
     List<AppInfo> systemApp;
     //系统应用的icon
-    private List<Drawable> mDrawables = new ArrayList<Drawable>();
+    private List<Drawable> mDrawables = new ArrayList<>();
     //内存维护的全局应用List
     public List<AppInfo> myAppList = new ArrayList<AppInfo>() {
     };
@@ -60,21 +64,20 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
                 mMyAppsListDataUtil = new MyAppsListDataUtil(mContext);
                 //所有的第三方应用
                 myAppList = PackageUtil.findAllThirdPartyAppsNoDelay(mContext, myAppList);
-                mShowList = mMyAppsListDataUtil.getShowList(mShowList);
                 systemApp = mMyAppsListDataUtil.getSystemApp(null);
-                mDrawables = sysAppInfo2Drawble(systemApp, mDrawables);
-                Log.i("MYSHOWLIST", "------" + mShowList.size());
+                Log.d("TAG", "doInBackground   mShowList : " + mShowList.size());
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid) {
+                mShowList = mMyAppsListDataUtil.getShowList(mShowList, myAppList);
+                mDrawables = sysAppInfo2Drawble(systemApp, mDrawables);
                 mView.loadAppInfoSuccess(mShowList, myAppList.size());
                 mView.loadCustomDataSuccess(mDrawables);
                 removeHideApps();
             }
         }.execute();
-
 
     }
 
@@ -89,12 +92,12 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
         if (mDrawablelist.size() != 0) {
             mDrawablelist.clear();
         }
-        if (list.size() < 7) {
+        if (list.size() <= SYSTEM_APPICON_PIC_COUNT) {
             for (int i = 0; i < list.size(); i++) {
                 mDrawablelist.add(list.get(i).appIcon);
             }
         } else {
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < SYSTEM_APPICON_PIC_COUNT; i++) {
                 mDrawablelist.add(list.get(i).appIcon);
             }
         }
@@ -125,10 +128,11 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
     class AppInstallReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "onReceive: 接受到应用安装的广播");
             // 接收广播：设备上新安装了一个应用程序包后自动启动新安装应用程序。
             if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)) {
                 String packageName = intent.getDataString().substring(8);
-                Log.d(TAG, "installapp" + packageName);
+                Log.d(TAG, "installapp    : " + packageName);
                 Boolean isContains = false;
                 for (int i = 0; i < myAppList.size(); i++) {
                     if (packageName.equals(myAppList.get(i).packageName)) {
@@ -136,13 +140,14 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
                         break;
                     }
                 }
-                if (mShowList.size() < 18 && !isContains) {
+                if (MyAppsFragment.isShowAdd && !isContains) {
                     mShowList.add(PackageUtil.getAppInfo(mContext, packageName));
                     mMyAppsListDataUtil.saveShowList(mShowList);
+                    Log.d(TAG, "onReceive: saveShowList_size : " + mShowList.size());
                 }
             } else if (intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)) {
                 String packageName = intent.getData().getSchemeSpecificPart();
-                Log.d(TAG, "uninstallapp" + packageName);
+                Log.d(TAG, "uninstallapp   " + packageName);
             }
             startLoad();
         }
