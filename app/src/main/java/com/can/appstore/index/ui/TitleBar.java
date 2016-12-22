@@ -230,8 +230,6 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
                 } else if (oldFocus instanceof LiteText && !(newFocus instanceof LiteText)) {
                     if (null == oldFocus || null == newFocus) return;
                     highLightTextView(mCurrentIndex);
-                } else {
-                    Log.i("IndexActivity", "onGlobalFocusChanged: oldFocus = " + oldFocus.getClass().getSimpleName() + ", newFocus =" + newFocus.getClass().getSimpleName());
                 }
             }
         });
