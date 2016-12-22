@@ -1,0 +1,81 @@
+// 本地签名配置
+if (file('keystore.properties').exists()) {
+    configSigningConfigs(file('keystore.properties'))
+}
+// 本地 debug 签名配置
+if (file('debugKeystore.properties').exists()) {
+    configSigningConfigs(file('debugKeystore.properties'), true, false)
+}
+// 本地 release 签名配置
+if (file('releaseKeystore.properties').exists()) {
+    configSigningConfigs(file('releaseKeystore.properties'), false, true)
+}
+
+// for jenkins
+if (!ext.SIGN_CONFIG_FILE.isEmpty() && project.hasProperty('sign_config_path')) {
+    if (ext.SIGN_CONFIG_FILE.size() == 1) {
+        println "找到配置文件：${ext.SIGN_CONFIG_FILE[0]}"
+        def file = new File(sign_config_path, ext.SIGN_CONFIG_FILE[0]);
+        if (file.exists()) {
+            println "正在配置签名：${ext.SIGN_CONFIG_FILE[0]}"
+            configSigningConfigs(file)
+        }
+    } else if (ext.SIGN_CONFIG_FILE.size() == android.productFlavors.size()) {
+        println "找到${SIGN_CONFIG_FILE.size()}个签名配置文件"
+        def i = 0;
+        for (flavor in android.productFlavors) {
+            def configFileName = ext.SIGN_CONFIG_FILE[i];
+            println "正在配置签名：${configFileName}"
+            def configFile = new File(sign_config_path, configFileName);
+            def config = createSigningConfig(configFile, configFileName.replaceAll("\\.[\\w\\d]{2,}\$", ""))
+            flavor.signingConfig = config
+            i++
+        }
+    } else {
+        System.err.println('配置文件数量与 productFlavors 数量不一致')
+    }
+    // 给 buildType 为 unsigned 的包使用
+    def defaultSignConfigFile = new File(sign_config_path,"sign_can.properties")
+    if(defaultSignConfigFile.exists()){
+        createSigningConfig(defaultSignConfigFile,"canDefault");
+    }
+}
+
+// 获取签名配置名
+def getSigningConfigName(boolean applyDebug, boolean applyRelease) {
+    if (applyDebug && applyRelease) {
+        return 'defaultConfig'
+    } else if (applyDebug) {
+        return 'debug'
+    } else if (applyRelease) {
+        return 'release'
+    }
+}
+/**
+ * 设置签名配置
+ * @param configFile 签名配置文件
+ * @param applyDebug 是否应用到Debug
+ * @param applyRelease 是否应用到Release
+ * @return
+ */
+def configSigningConfigs(File configFile, boolean applyDebug = true, boolean applyRelease = true) {
+    def signConfigName = getSigningConfigName(applyDebug, applyRelease);
+    def signingConfig = createSigningConfig(configFile, signConfigName)
+    if (applyDebug) {
+        android.buildTypes.release.signingConfig = signingConfig
+    }
+    if (applyRelease) {
+        android.buildTypes.debug.signingConfig = signingConfig
+    }
+}
+
+def createSigningConfig(File configFile, String signConfigName) {
+    def keystoreProperties = new Properties()
+    keystoreProperties.load(new FileInputStream(configFile))
+    def signingConfig = android.signingConfigs.maybeCreate(signConfigName);
+    signingConfig.keyAlias = keystoreProperties['keyAlias']
+    signingConfig.keyPassword = keystoreProperties['keyPassword']
+    signingConfig.storeFile = file(keystoreProperties['storeFile'])
+    signingConfig.storePassword = keystoreProperties['storePassword']
+    return signingConfig
+}
