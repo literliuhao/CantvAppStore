@@ -44,6 +44,10 @@ public class TaskManager {
         if (TextUtils.isEmpty(taskId) && mWorkTaskQueue != null) {
             // 从工作队列中取任务
             taskId = mWorkTaskQueue.poll();
+        } else {
+            if (mWorkTaskQueue.contains(taskId)) {
+                mWorkTaskQueue.remove(taskId);
+            }
         }
         if (taskId != null && mCurrentTaskMap != null) {
             // 从任务池中取任务

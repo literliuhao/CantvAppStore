@@ -16,8 +16,8 @@ import com.tencent.bugly.beta.UpgradeInfo;
 import java.io.File;
 
 import cn.can.downloadlib.DownloadManager;
-import cn.can.downloadlib.DownloadTask;
-import cn.can.downloadlib.DownloadTaskListener;
+import cn.can.downloadlib.UpgradeTask;
+import cn.can.downloadlib.UpgradeTaskListener;
 
 /**
  * Created by syl on 2016/11/2.
@@ -135,44 +135,44 @@ public class UpgradeService extends IntentService {
     private void downLoadApk(String url) {
         mManager = DownloadManager.getInstance(this);
         mManager.getDownloadPath();
-        DownloadTask task = new DownloadTask(url);
+        UpgradeTask task = new UpgradeTask(url);
         task.setFileName(mUpgradeInfo.versionCode + ".apk");
 
-        mManager.singleTask(task, new DownloadTaskListener() {
+        mManager.singleTask(task, new UpgradeTaskListener() {
             @Override
-            public void onPrepare(DownloadTask downloadTask) {
+            public void onPrepare(UpgradeTask downloadTask) {
                 Log.d(TAG, "DownloadManager=onPrepare");
             }
 
             @Override
-            public void onStart(DownloadTask downloadTask) {
+            public void onStart(UpgradeTask downloadTask) {
                 Log.d(TAG, "DownloadManager=onStart");
             }
 
             @Override
-            public void onDownloading(DownloadTask downloadTask) {
+            public void onDownloading(UpgradeTask downloadTask) {
                 Log.d(TAG, "DownloadManager=onDownloading----" + downloadTask.getPercent());
             }
 
             @Override
-            public void onPause(DownloadTask downloadTask) {
+            public void onPause(UpgradeTask downloadTask) {
                 Log.d(TAG, "DownloadManager=onPause");
             }
 
             @Override
-            public void onCancel(DownloadTask downloadTask) {
+            public void onCancel(UpgradeTask downloadTask) {
                 Log.d(TAG, "DownloadManager=onCancel");
             }
 
             @Override
-            public void onCompleted(DownloadTask downloadTask) {
+            public void onCompleted(UpgradeTask downloadTask) {
                 Log.d(TAG, "DownloadManager=onCompleted");
                 onLoadingCompleted();
-                mManager.deleteSigleTask(downloadTask.getId());
+//                mManager.deleteSigleTask(downloadTask.getId());
             }
 
             @Override
-            public void onError(DownloadTask downloadTask, int errorCode) {
+            public void onError(UpgradeTask downloadTask, int errorCode) {
                 Log.d(TAG, "DownloadManager=onError===" + errorCode);
             }
         }, mUpdatePath);
