@@ -26,6 +26,7 @@ import com.can.appstore.base.BaseActivity;
 import com.can.appstore.db.entity.MessageInfo;
 import com.can.appstore.message.adapter.MessageAdapter;
 import com.can.appstore.message.manager.MessageDBManager;
+import com.can.appstore.specialdetail.SpecialDetailActivity;
 import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
 
@@ -157,7 +158,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                     case ActionConstants.ACTION_TOPIC_DETAIL:
                         String topicActionData = msg.getActionData().trim();
                         if (NetworkUtils.isNetworkConnected(MessageActivity.this) && !TextUtils.isEmpty(topicActionData)) {
-                            AppDetailActivity.actionStart(MessageActivity.this, topicActionData);
+                            SpecialDetailActivity.actionStart(MessageActivity.this , topicActionData);
                             refreshMsgItemView(msg, position);
                         } else {
                             showToast(R.string.connect_net_fail);
