@@ -344,8 +344,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     }
 
+    private boolean reqNavigationSuccess;
+
     public void getNavigation() {
-        if (NetworkUtils.isNetworkConnected(this)) {
+        if (reqNavigationSuccess == false && NetworkUtils.isNetworkConnected(this)) {
             mNavigationCall = HttpManager.getApiService().getNavigations();
             mNavigationCall.enqueue(new CanCallback<ListResult<Navigation>>() {
                 @Override
@@ -376,6 +378,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             }
             DataUtils.getInstance(this).setIndexData(listResult);
             parseData(listResult);
+            reqNavigationSuccess = true;
         } catch (Exception e) {
             PromptUtils.toast(this, getResources().getString(R.string.index_data_error));
             DataUtils.getInstance(this).clearData();
