@@ -2,7 +2,6 @@ package cn.can.downloadlib;
 
 import android.os.Environment;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.dataeye.sdk.api.app.channel.DCResource;
 
@@ -109,7 +108,6 @@ public class DownloadTask implements Runnable {
             }
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_START;
             onStart();
-            Log.e(TAG,"*****onStart*****" +mUrl + "DownloadedSize:" + mDownloadedSize);
             Request request = new Request.Builder()
                     .url(mUrl)
                     .header("RANGE", "bytes=" + mDownloadedSize + "-")
@@ -179,25 +177,21 @@ public class DownloadTask implements Runnable {
             }
 
         } catch (FileNotFoundException e) {
-            Log.d(TAG, "*******FileNotFoundException*******");
             e.printStackTrace();
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
             onError(DownloadTaskListener.DOWNLOAD_ERROR_FILE_NOT_FOUND);
             return;
         } catch (SocketException e) {
-            Log.d(TAG, "*******SocketException*******");
             e.printStackTrace();
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
             onError(DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR);
             return;
         } catch (IOException e) {
-            Log.d(TAG, "*******IOException*******");
             e.printStackTrace();
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
             onError(DownloadTaskListener.DOWNLOAD_ERROR_IO_ERROR);
             return;
         } catch (Exception e) {
-            Log.d(TAG, "*******Exception*******");
             e.printStackTrace();
             mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_ERROR;
             onError(DownloadTaskListener.DOWNLOAD_ERROR_UNKONW_ERROR);

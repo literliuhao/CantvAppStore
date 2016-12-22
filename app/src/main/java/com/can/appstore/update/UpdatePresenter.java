@@ -79,8 +79,8 @@ public class UpdatePresenter implements UpdateContract.Presenter {
             public void onResponse(CanCall<ListResult<AppInfo>> call, Response<ListResult<AppInfo>> response) throws Exception {
                 List<AppInfo> data = response.body().getData();
                 mAppInfoBeanList = AppInfoBean.getAppInfoBeanList(data);
-                Log.i(TAG, data.size() + "");
-                Log.i(TAG, data.toString());
+                Log.d(TAG, data.size() + "");
+                Log.d(TAG, data.toString());
                 if (mAppInfoBeanList.size() < 1 || mAppInfoBeanList == null) {
                     mView.hideLoading();
                     new Handler().postDelayed(new Runnable() {
@@ -104,7 +104,6 @@ public class UpdatePresenter implements UpdateContract.Presenter {
 
             @Override
             public void onFailure(CanCall<ListResult<AppInfo>> call, CanErrorWrapper errorWrapper) {
-                Log.i(TAG, "onFailure");
                 mView.hideLoading();
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -224,7 +223,6 @@ public class UpdatePresenter implements UpdateContract.Presenter {
 //        appList.add(appInfo1);
 //        appList.add(appInfo2);
         final DownloadManager mDownloadManager = DownloadManager.getInstance(context);
-        Log.i(TAG, "autoUpdate: " + appList.toString());
         CanCall<ListResult<AppInfo>> listResultCanCall = HttpManager.getApiService().checkUpdate(appList);
         listResultCanCall.enqueue(new CanCallback<ListResult<AppInfo>>() {
             @Override
@@ -254,7 +252,6 @@ public class UpdatePresenter implements UpdateContract.Presenter {
             AutoUpdate.getInstance().mUpdateNumDatas.remove(0);
             //发送数量
             EventBus.getDefault().post(new UpdateApkModel(AutoUpdate.getInstance().mUpdateNumDatas.size()));
-            Log.i(TAG, "getUpdateApkNum: " + AutoUpdate.getInstance().mUpdateNumDatas.size());
         } catch (Exception e) {
             e.printStackTrace();
         }
