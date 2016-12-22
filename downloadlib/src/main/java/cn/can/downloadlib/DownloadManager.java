@@ -295,7 +295,7 @@ public class DownloadManager implements AppInstallListener {
             return false;
         }
 
-        long space = SdcardUtils.getSDCardAvailableSpace() / 1014 / 1024;
+        long space = mContext.getCacheDir().getUsableSpace() / 1014 / 1024;
         if (space < mLimitSpace) {
             ToastUtils.showMessageLong(mContext, R.string.error_msg);
             task.setDownloadStatus(DownloadStatus.SPACE_NOT_ENOUGH);
