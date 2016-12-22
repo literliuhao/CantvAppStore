@@ -652,6 +652,7 @@ public class DownloadManager implements AppInstallListener {
         task.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_PREPARE);
         task.addDownloadListener(listener);
         task.setSaveDirPath(downloadPath);
+        task.setHttpClient(mOkHttpClient);
 //        if (getDBTaskById(task.getId()) == null) {
 //            DownloadDBEntity dbEntity = new DownloadDBEntity(task.getId(), task.getTotalSize(),
 //                    task.getCompletedSize(), task.getUrl(), task.getSaveDirPath(), task
@@ -719,7 +720,7 @@ public class DownloadManager implements AppInstallListener {
         DownloadTask task = getCurrentTaskById(id);
         if (task != null) {
             task.setDownloadStatus(AppInstallListener.APP_INSTALL_SUCESS);
-            Log.e(TAG, "***InstallSucess***" + task.getFileName());
+            Log.i(TAG, "***InstallSucess***" + task.getFileName());
             ToastUtils.showMessageLong(mContext, task.getFileName() + mContext.getResources().getString(R.string
                     .install_sucess));
             String pkg = ApkUtils.getPkgNameFromApkFile(mContext, task.getFilePath());
@@ -742,7 +743,7 @@ public class DownloadManager implements AppInstallListener {
         DownloadTask task = getCurrentTaskById(id);
         if (task != null) {
             task.setDownloadStatus(AppInstallListener.APP_INSTALL_FAIL);
-            Log.e(TAG, "***InstallFail***" + task.getFileName());
+            Log.i(TAG, "***InstallFail***" + task.getFileName());
             ToastUtils.showMessageLong(mContext, task.getFileName() + mContext.getResources().getString(R.string
                     .error_install));
         }

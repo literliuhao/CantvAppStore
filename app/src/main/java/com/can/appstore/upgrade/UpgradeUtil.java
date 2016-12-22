@@ -146,7 +146,6 @@ public class UpgradeUtil {
                     .error_msg));
             return;
         }
-        Log.d("", "path: " + path);
         ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r " + path, false);
         Log.d("", "inStallApk: " + res.result + "----" + res.errorMsg);
         onInstallApkListener.onInstallFail(mContext.getResources().getString(cn.can.downloadlib.R.string
