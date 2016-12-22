@@ -70,7 +70,7 @@
     <string name="update_setting_content">应用需要更新时，自动开始下载安装</string>
     <string name="update_setting_btstart">关闭</string>
     <string name="update_setting_btstop">开启</string>
-    <string name="update_internet_error">网络连接异常，请检查网络。</string>
+    <string name="update_internet_error">网络连接异常，请检查网络!</string>
     <!-- 安装包管理 -->
     <string name="install_start_autoupdate">已开启自动更新</string>
     <string name="install_end_autoupdate">关闭自动更新</string>

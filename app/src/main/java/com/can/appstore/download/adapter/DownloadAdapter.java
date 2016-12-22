@@ -1,6 +1,7 @@
 package com.can.appstore.download.adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +26,9 @@ import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
+import cn.can.downloadlib.NetworkUtils;
 import cn.can.tvlib.ui.view.GlideRoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
-import cn.can.tvlib.utils.ApkUtils;
 import cn.can.tvlib.utils.FileUtils;
 import cn.can.tvlib.utils.LogUtil;
 import cn.can.tvlib.utils.PackageUtil;
@@ -321,6 +322,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     break;
                 case DownloadStatus.DOWNLOAD_STATUS_ERROR:
                 case DownloadStatus.SPACE_NOT_ENOUGH:
+                case DownloadStatus.DOWNLOAD_STATUS_CANCEL:
                     appDownloadStatusImgVi.setImageResource(R.mipmap.icon_download_fail);
                     appDownloadStatusTv.setText("失败");
                     break;
@@ -430,7 +432,6 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     mOnItemEventListener.onItemContentClick(v, holder.position, holder.downloadTask);
                 }
             } else if (v.getId() == holder.appControlBtn.getId()) {
-
                 switch (holder.downloadTask.getDownloadStatus()) {
                     case DownloadStatus.DOWNLOAD_STATUS_DOWNLOADING:
                     case DownloadStatus.DOWNLOAD_STATUS_INIT:
@@ -439,36 +440,24 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                         DownloadManager.getInstance(v.getContext()).pause(holder.downloadTask);
                         break;
                     case DownloadStatus.DOWNLOAD_STATUS_PAUSE:
+                        if (!NetworkUtils.isNetworkConnected(v.getContext())) {
+                            PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string.no_network));
+                            break;
+                        }
                         DownloadManager.getInstance(v.getContext()).resume(holder.downloadTask.getId());
                         break;
                     case DownloadStatus.DOWNLOAD_STATUS_ERROR:
+                    case DownloadStatus.DOWNLOAD_STATUS_CANCEL:
+                        if (!NetworkUtils.isNetworkConnected(v.getContext())) {
+                            PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string.no_network));
+                            break;
+                        }
                         holder.downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
                         DownloadManager.getInstance(v.getContext()).
                                 addDownloadTask(holder.downloadTask, holder.downloadListener);
                         break;
-                    case DownloadStatus.SPACE_NOT_ENOUGH:
-                        holder.downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_PAUSE);
-                        DownloadManager.getInstance(v.getContext()).resume(holder.downloadTask.getId());
-                        break;
-                    case AppInstallListener.APP_INSTALLING:
-                        //正在安装
-                        PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string.download_installing));
-                        break;
-                    case AppInstallListener.APP_INSTALL_SUCESS:
-                        String pacageName = ApkUtils.getPkgNameFromApkFile(v.getContext().getApplicationContext(),
-                                holder.downloadTask.getFilePath());
-
-                        try {
-                            PackageUtil.openApp(v.getContext(), pacageName);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string
-                                    .download_open_app_error));
-                        }
-
-                        break;
-                    case AppInstallListener.APP_INSTALL_FAIL:
                     case DownloadStatus.DOWNLOAD_STATUS_COMPLETED:
+                    case AppInstallListener.APP_INSTALL_FAIL:
                         //TODO 安装失败的重试 待改。
                         if (FileUtils.isFileExist(holder.downloadTask.getFilePath())) {
                             DownloadManager.getInstance(v.getContext()).install(holder
@@ -480,6 +469,28 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                             holder.downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
                             DownloadManager.getInstance(v.getContext()).addDownloadTask
                                     (holder.downloadTask, holder.downloadListener);
+                        }
+                        break;
+                    case DownloadStatus.SPACE_NOT_ENOUGH:
+                        holder.downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_PAUSE);
+                        DownloadManager.getInstance(v.getContext()).resume(holder.downloadTask.getId());
+                        break;
+                    case AppInstallListener.APP_INSTALLING:
+                        //正在安装
+                        PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string.download_installing));
+                        break;
+                    case AppInstallListener.APP_INSTALL_SUCESS:
+                        try {
+                            if (TextUtils.isEmpty(holder.downloadTask.getPkg())) {
+                                PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string
+                                        .download_open_app_error));
+                            } else {
+                                PackageUtil.openApp(v.getContext(), holder.downloadTask.getPkg());
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string
+                                    .download_open_app_error));
                         }
                         break;
                 }

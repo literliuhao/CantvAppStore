@@ -323,6 +323,9 @@ public class DownloadManager implements AppInstallListener {
                     .getFileName(), task.getDownloadStatus(), task.getIcon(), task.getAppId(),task.getPkg());
             mDownloadDao.insertOrReplace(dbEntity);
         }
+        if(mTaskCntListener!=null){
+            mTaskCntListener.getTaskCount(getCurrentTaskList().size());
+        }
         /**修复添加任务时，多个消息同时轮询问题 xzl 2016-11-30 16:20:33  start */
         mHander.removeMessages(MSG_SUBMIT_TASK);
         /**修复添加任务时，多个消息同时轮询问题 xzl 2016-11-30 16:20:33  end */
@@ -417,6 +420,9 @@ public class DownloadManager implements AppInstallListener {
     private void deleteTask(String id) {
         mTaskManager.remove(id);
         mDownloadDao.deleteByKey(id);
+        if(mTaskCntListener!=null){
+            mTaskCntListener.getTaskCount(getCurrentTaskList().size());
+        }
     }
 
     /**
@@ -429,14 +435,21 @@ public class DownloadManager implements AppInstallListener {
         task.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
         task.cancel();
         mDownloadDao.deleteByKey(task.getId());
+        if(mTaskCntListener!=null){
+            mTaskCntListener.getTaskCount(getCurrentTaskList().size());
+        }
     }
 
     /**
      * 取消所有任务
      */
     public void cancelAll() {
+
         mDownloadDao.deleteAll();
         mTaskManager.release();
+        if(mTaskCntListener!=null){
+            mTaskCntListener.getTaskCount(getCurrentTaskList().size());
+        }
         //        mHander.removeCallbacksAndMessages(null);
         mHander.removeMessages(MSG_SUBMIT_TASK);
     }
@@ -574,6 +587,9 @@ public class DownloadManager implements AppInstallListener {
                 task.setAppListener(this);
                 mTaskManager.put(task);
             }
+        }
+        if(mTaskCntListener!=null){
+            mTaskCntListener.getTaskCount(getCurrentTaskList().size());
         }
         /**读取数据库task，不轮询提交任务问题 xingzhaolei 2016-11-23 17:53:25 start*/
         if (list != null && list.size() > 0) {
@@ -808,9 +824,6 @@ public class DownloadManager implements AppInstallListener {
      */
     public void install(DownloadTask downloadTask) {
         /**添加叛空处理，xzl 2016-12-8 17:51:28*/
-        if(mTaskCntListener!=null){
-            mTaskCntListener.getTaskCount(getCurrentTaskList().size());
-        }
         downloadTask.setDownloadStatus(AppInstallListener.APP_INSTALLING);
         Message msg = Message.obtain();
         msg.what = MSG_APP_INSTALL;
@@ -835,7 +848,10 @@ public class DownloadManager implements AppInstallListener {
         mHander.sendMessage(msg);
     }
 
-    public void setmTaskCntListener(DownloadTaskCountListener listener) {
+    public void setTaskCntListener(DownloadTaskCountListener listener) {
         mTaskCntListener = listener;
+    }
+    public void removeTaskCntListener(){
+        mTaskCntListener=null;
     }
 }

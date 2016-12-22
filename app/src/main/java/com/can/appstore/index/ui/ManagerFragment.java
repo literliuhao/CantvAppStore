@@ -36,6 +36,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadTaskCountListener;
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.utils.PromptUtils;
@@ -63,7 +64,7 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
     private IAddFocusListener mFocusListener;
     private IOnPagerKeyListener mPagerKeyListener;
     private int UPDATE_INDEX = 1;
-    private int DOWNLOAD_INDEX = 7;
+    private int DOWNLOAD_INDEX = 8;
     private CanDialog mClearCacheConfirmDialog;
 
     public ManagerFragment() {
@@ -193,6 +194,20 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        DownloadManager downloadManager=DownloadManager.getInstance(getActivity());
+        downloadManager.setTaskCntListener(this);
+        gridAdapter.refreshUI(DOWNLOAD_INDEX, downloadManager.getCurrentTaskList().size());
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        DownloadManager.getInstance(getActivity()).removeTaskCntListener();
+    }
+
+    @Override
     public void onDestroy() {
         if (mClearCacheConfirmDialog != null) {
             mClearCacheConfirmDialog.dismiss();
@@ -209,9 +224,17 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
     }
 
     @Override
-    public void getTaskCount(int count) {
+    public void getTaskCount(final int count) {
         Log.i("ManagerFragment", "count " + count);
-        gridAdapter.refreshUI(DOWNLOAD_INDEX, count);
+        if(gridView!=null){
+            gridView.post(new Runnable() {
+                @Override
+                public void run() {
+                    gridAdapter.refreshUI(DOWNLOAD_INDEX, count);
+                }
+            });
+        }
+
     }
 
     private void showClearCacheConfirmDialog() {
@@ -266,4 +289,5 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
             }
         }.start();
     }
+
 }

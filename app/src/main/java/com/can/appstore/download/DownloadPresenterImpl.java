@@ -15,6 +15,7 @@ import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
+import cn.can.downloadlib.NetworkUtils;
 import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.SystemUtil;
@@ -145,6 +146,10 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
     public boolean resumeAllTasks() {
         if (mTasks == null || mTasks.size() == 0) {
             mView.showToast(R.string.download_no_task);
+            return false;
+        }
+        if(!NetworkUtils.isNetworkConnected(mView.getContext())){
+            mView.showToast(R.string.no_network);
             return false;
         }
         int pauseSize = 0;
