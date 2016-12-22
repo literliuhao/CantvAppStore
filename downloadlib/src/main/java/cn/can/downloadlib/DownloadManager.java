@@ -20,7 +20,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -68,7 +67,7 @@ public class DownloadManager implements AppInstallListener {
     private ExecutorService mExecutorService;
     private OkHttpClient mOkHttpClient;
     private List<AppInstallListener> mAppInstallListeners;
-    private Map<String, DownloadTask> mSingleTaskMap;
+//    private Map<String, DownloadTask> mSingleTaskMap;
 
     private TaskManager mTaskManager = new TaskManager();
 
@@ -643,57 +642,54 @@ public class DownloadManager implements AppInstallListener {
      * @param task
      * @param listener
      */
-    public void singleTask(DownloadTask task, DownloadTaskListener listener, String downloadPath) {
+    public void singleTask(UpgradeTask task, UpgradeTaskListener listener, String downloadPath) {
         if (!NetworkUtils.isNetworkConnected(mContext.getApplicationContext())) {
             return;
         }
-        if (mSingleTaskMap == null) {
-            mSingleTaskMap = new LinkedHashMap<>();
-        }
+//        if (mSingleTaskMap == null) {
+//            mSingleTaskMap = new LinkedHashMap<>();
+//        }
         task.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_PREPARE);
-        task.setDownloadDao(mDownloadDao);
-        task.setHttpClient(mOkHttpClient);
         task.addDownloadListener(listener);
-        task.setAppListener(this);
         task.setSaveDirPath(downloadPath);
-        if (getDBTaskById(task.getId()) == null) {
-            DownloadDBEntity dbEntity = new DownloadDBEntity(task.getId(), task.getTotalSize(),
-                    task.getCompletedSize(), task.getUrl(), task.getSaveDirPath(), task
-                    .getFileName(), task.getDownloadStatus(), task.getIcon(), task.getAppId(),task.getPkg());
-            mDownloadDao.insertOrReplace(dbEntity);
-        }
-        if (mSingleTaskMap.containsKey(task.getId())) {
-            mSingleTaskMap.remove(task.getId());
-        }
-        mSingleTaskMap.put(task.getId(), task);
+//        if (getDBTaskById(task.getId()) == null) {
+//            DownloadDBEntity dbEntity = new DownloadDBEntity(task.getId(), task.getTotalSize(),
+//                    task.getCompletedSize(), task.getUrl(), task.getSaveDirPath(), task
+//                    .getFileName(), task.getDownloadStatus(), task.getIcon(), task.getAppId(),task.getPkg());
+//            mDownloadDao.insertOrReplace(dbEntity);
+//        }
+//        if (mSingleTaskMap.containsKey(task.getId())) {
+//            mSingleTaskMap.remove(task.getId());
+//        }
+//        mSingleTaskMap.put(task.getId(), task);
         new Thread(task).start();
     }
 
-    public DownloadTask addSingleTaskListener(String taskId, DownloadTaskListener downloadTaskListener) {
-        if (mSingleTaskMap != null) {
-            DownloadTask task = mSingleTaskMap.get(taskId);
-            if (task == null) {
-                return null;
-            }
-            task.addDownloadListener(downloadTaskListener);
-            return task;
-        }
-        return null;
-    }
+//    public void addSingleTaskListener(String taskId, UpgradeTaskListener taskListener) {
+//        if (mSingleTaskMap != null) {
+//            DownloadTask task = mSingleTaskMap.get(taskId);
+//            if (task == null) {
+//                return null;
+//            }
+//            task.addDownloadListener(taskListener);
+//            return task;
+//        }
+//        return null;
+//    }
 
-    public DownloadTask getSigleTaskById(String taskId) {
-        if (mSingleTaskMap == null) {
-            return null;
-        }
-        return mSingleTaskMap.get(taskId);
-    }
+//    public DownloadTask getSigleTaskById(String taskId) {
+//        if (mSingleTaskMap == null) {
+//            return null;
+//        }
+//        return mSingleTaskMap.get(taskId);
+//    }
 
-    public void deleteSigleTask(String taskId) {
-        if (mSingleTaskMap != null && taskId != null) {
-            mSingleTaskMap.remove(taskId);
-            mDownloadDao.deleteByKey(taskId);
-        }
-    }
+//    public void deleteSigleTask(String taskId) {
+//        if (mSingleTaskMap != null && taskId != null) {
+//            mSingleTaskMap.remove(taskId);
+//            mDownloadDao.deleteByKey(taskId);
+//        }
+//    }
 
     public void setLimitSpace(int size) {
         mLimitSpace = size;
@@ -705,9 +701,9 @@ public class DownloadManager implements AppInstallListener {
 
     @Override
     public void onInstalling(DownloadTask downloadTask) {
-        if (mSingleTaskMap != null && mSingleTaskMap.containsKey(downloadTask.getId())) {
-            return;
-        }
+//        if (mSingleTaskMap != null && mSingleTaskMap.containsKey(downloadTask.getId())) {
+//            return;
+//        }
         install(downloadTask);
         if (mAppInstallListeners != null) {
             Iterator<AppInstallListener> iter = mAppInstallListeners.iterator();

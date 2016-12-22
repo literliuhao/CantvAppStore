@@ -31,7 +31,7 @@ import okhttp3.ResponseBody;
  * 修订历史：
  * ================================================
  */
-public class UpgradeTask extends DownloadTask {
+public class UpgradeTask implements Runnable {
     private static final String TAG = "UpgradeTask";
     private DownloadManager mDownloadManager;
     private OkHttpClient mOkHttpClient;
@@ -47,8 +47,7 @@ public class UpgradeTask extends DownloadTask {
     private int UPDATE_SIZE = 512 * 1024;    // 512k存储一次
     private int mDownloadStatus = DownloadStatus.DOWNLOAD_STATUS_INIT;
     private String mFileName;
-    private List<DownloadTaskListener> mDownloadlisteners = new ArrayList<>();
-    private AppInstallListener mAppListener;
+    private List<UpgradeTaskListener> mDownloadlisteners = new ArrayList<>();
 
     public UpgradeTask(String url) {
         mId = MD5.MD5(url);
@@ -197,39 +196,30 @@ public class UpgradeTask extends DownloadTask {
                 break;
         }
     }
-    @Override
     public String getId() {
         return mId;
     }
-    @Override
     public void setId(String id) {
         this.mId = id;
     }
-    @Override
     public float getPercent() {
         return mTotalSize == 0 ? 0 : mDownloadedSize * 100 / mTotalSize;
     }
-    @Override
     public long getTotalSize() {
         return mTotalSize;
     }
-    @Override
     public void setTotalSize(long toolSize) {
         this.mTotalSize = toolSize;
     }
-    @Override
     public long getCompletedSize() {
         return mDownloadedSize;
     }
-    @Override
     public void setCompletedSize(long completedSize) {
         this.mDownloadedSize = completedSize;
     }
-    @Override
     public String getSaveDirPath() {
         return mSaveDirPath;
     }
-    @Override
     public void setSaveDirPath(String saveDirPath) {
         File file = new File(saveDirPath);
         if (!file.exists()) {
@@ -237,59 +227,45 @@ public class UpgradeTask extends DownloadTask {
         }
         this.mSaveDirPath = saveDirPath;
     }
-    @Override
     public int getDownloadStatus() {
         return mDownloadStatus;
     }
-    @Override
     public void setDownloadStatus(int downloadStatus) {
         this.mDownloadStatus = downloadStatus;
     }
-    @Override
     public String getUrl() {
         return mUrl;
     }
-    @Override
     public void setUrl(String url) {
         this.mUrl = url;
     }
-    @Override
     public void setHttpClient(OkHttpClient client) {
         this.mOkHttpClient = client;
     }
-    @Override
     public String getFileName() {
         return mFileName;
     }
-    @Override
     public void setFileName(String fileName) {
         this.mFileName = fileName;
     }
-    @Override
     public String getFilePath() {
         return getSaveDirPath() + File.separator + getFileName();
     }
-    @Override
     public String getIcon() {
         return mIcon;
     }
-    @Override
     public void setIcon(String icon) {
         this.mIcon = icon;
     }
-    @Override
     public String getAppId() {
         return mAppId;
     }
-    @Override
     public void setAppId(String mAppId) {
         this.mAppId = mAppId;
     }
-    @Override
     public String getPkg() {
         return mPkg;
     }
-    @Override
     public void setPkg(String mPkg) {
         this.mPkg = mPkg;
     }
@@ -310,57 +286,52 @@ public class UpgradeTask extends DownloadTask {
     }
 
     private void onPrepare() {
-        for (DownloadTaskListener listener : mDownloadlisteners) {
+        for (UpgradeTaskListener listener : mDownloadlisteners) {
             listener.onPrepare(this);
         }
     }
 
     private void onStart() {
-        for (DownloadTaskListener listener : mDownloadlisteners) {
+        for (UpgradeTaskListener listener : mDownloadlisteners) {
             listener.onStart(this);
         }
     }
 
     private void onDownloading() {
-        for (DownloadTaskListener listener : mDownloadlisteners) {
+        for (UpgradeTaskListener listener : mDownloadlisteners) {
             listener.onDownloading(this);
         }
     }
 
     private void onCompleted() {
         ShellUtils.execCommand("chmod 666 " + mSaveDirPath + File.separator + mFileName, false);
-        for (DownloadTaskListener listener : mDownloadlisteners) {
+        for (UpgradeTaskListener listener : mDownloadlisteners) {
             DCResource.onDownloadSuccess(this.getFileName());
             listener.onCompleted(this);
         }
-        mAppListener.onInstalling(this);
     }
 
     private void onPause() {
-        for (DownloadTaskListener listener : mDownloadlisteners) {
+        for (UpgradeTaskListener listener : mDownloadlisteners) {
             listener.onPause(this);
         }
     }
 
     private void onCancel() {
-        for (DownloadTaskListener listener : mDownloadlisteners) {
+        for (UpgradeTaskListener listener : mDownloadlisteners) {
             listener.onCancel(this);
         }
     }
 
     private void onError(int errorCode) {
-        for (DownloadTaskListener listener : mDownloadlisteners) {
+        for (UpgradeTaskListener listener : mDownloadlisteners) {
             listener.onError(this, errorCode);
             if (DownloadTaskListener.DOWNLOAD_ERROR_NETWORK_ERROR == errorCode) {
             }
         }
     }
 
-    public void setAppListener(AppInstallListener listener) {
-        mAppListener = listener;
-    }
-
-    public void addDownloadListener(DownloadTaskListener listener) {
+    public void addDownloadListener(UpgradeTaskListener listener) {
         /**添加重复元素判断 xzl */
         if (!mDownloadlisteners.contains(listener)) {
             mDownloadlisteners.add(listener);
