@@ -57,7 +57,7 @@ public class AdReportParam {
     @SerializedName("adtfid")
     private String adtfId;
     @SerializedName("userid")
-    private int userId;
+    private String userId;
     @SerializedName("mac")
     private String mac;
     @SerializedName("member")
@@ -99,11 +99,11 @@ public class AdReportParam {
         this.adtfId = adtfId;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

@@ -6,7 +6,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -189,8 +191,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mTitleBar.setOnItemKeyEvent(new TitleBar.OnItemKeyEvent() {
             @Override
             public boolean onKeyEvent(int position, View v, int keyCode, KeyEvent event) {
-                if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_RIGHT &&
-                        position == mTitleBar.getChildCount() - 1){
+                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_RIGHT &&
+                        position == mTitleBar.getChildCount() - 1) {
                     rlSearch.requestFocus();
                     return true;
                 }
@@ -209,9 +211,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         rlSearch.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT){
+                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                     View titleChildView = mTitleBar.getChildAt(mTitleBar.getChildCount() - 1);
-                    if(titleChildView != null){
+                    if (titleChildView != null) {
                         titleChildView.requestFocus();
                         return true;
                     }
@@ -317,10 +319,27 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         });
     }
 
+    private String getUserId() {
+        String userid = "";
+        Cursor cursor = getContentResolver().query(Uri.parse("content://cn.cibntv.ott.custom.provider/user"), null, null, null, null);
+        if (cursor == null) {
+            return userid;
+        }
+        while (cursor.moveToNext()) {
+            userid = cursor.getString(cursor.getColumnIndex("userid"));
+        }
+        if (cursor != null) {
+            cursor.close();
+            cursor = null;
+        }
+        return userid;
+    }
+
     public void reportAD() {
         AdReportParam adReportParam = new AdReportParam();
         adReportParam.setAdPositionId(AD_POSITION_ID);
         adReportParam.setAdtfId(mAdtfid);
+        adReportParam.setUserId(getUserId());
         adReportParam.setMac(NetworkUtils.getMac());
         adReportParam.setModel(TvInfoModel.getInstance().getModelName());
         adReportParam.setChannel(TvInfoModel.getInstance().getChannelId() + "|");
@@ -446,7 +465,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         for (int i = 0; i < mPage.getData().size(); i++) {
             Navigation navigation = mPage.getData().get(i);
             String title = navigation.getTitle();
-            if(rankStr.equals(title)){
+            if (rankStr.equals(title)) {
                 hasRank = true;
                 continue;
             }
@@ -455,7 +474,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         //管理、我的应用不受服务器后台配置，因此手动干预位置
         mTitles.add(getResources().getString(R.string.index_manager));
         mTitles.add(getResources().getString(R.string.index_myapp));
-        if(hasRank){
+        if (hasRank) {
             mTitles.add(1, rankStr);
         }
         mTitleBar.setTabItemTitles(mTitles);//设置导航栏Title
@@ -526,7 +545,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private void refreshUpdate(int number) {
         if (number > 0) {
             textUpdate.setText(number + getResources().getString(R.string.index_app_update));
-            if(mCurrentPage == 0){
+            if (mCurrentPage == 0) {
                 textUpdate.setVisibility(View.VISIBLE);
             }
         } else {
@@ -559,11 +578,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             switch (msg.what) {
                 case INIT_FOCUS:
                     Log.i("IndexActivity", "mHandler....................... ");
-                    if(managerFragment != null){
+                    if (managerFragment != null) {
                         managerFragment.setAdapterFocus();
                     }
                     View first = mTitleBar.getFirstView();
-                    if(first != null){
+                    if (first != null) {
                         mFocusUtils.setFocusView(first, SCALE);
                         first.requestFocus();
                     }
@@ -591,7 +610,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      */
     @Override
     public void addFocusListener(View v, boolean hasFocus, FragmentEnum sourceEnum) {
-        Log.i(TAG, "addFocusListener: v = " + v.getClass().getSimpleName() +"| id = " + v.getId() + ", hasFocus = " + hasFocus + ", enum = " + sourceEnum.name());
+        Log.i(TAG, "addFocusListener: v = " + v.getClass().getSimpleName() + "| id = " + v.getId() + ", hasFocus = " + hasFocus + ", enum = " + sourceEnum.name());
         if (hasFocus) {
             if (isIntercept) {
                 isIntercept = false;
@@ -665,7 +684,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
-        if(view.getId() == textUpdate.getId()){
+        if (view.getId() == textUpdate.getId()) {
             addFocusListener(view, hasFocus, NORMAL);
         } else {
             addFocusListener(view, hasFocus, INDEX);
@@ -706,7 +725,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                 @Override
                 public void run() {
                     textTime.setText(String.valueOf(mShowTime));
-                    if(adTimeLayout.getVisibility() != View.VISIBLE){
+                    if (adTimeLayout.getVisibility() != View.VISIBLE) {
                         adTimeLayout.setVisibility(View.VISIBLE);
                     }
                 }
@@ -739,10 +758,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     @Override
     protected void onDestroy() {
-        if(mViewPager != null){
+        if (mViewPager != null) {
             mViewPager.removeOnPageChangeListener(this);
         }
-        if(canDialog != null){
+        if (canDialog != null) {
             canDialog.dismiss();
             canDialog.release();
             canDialog = null;
@@ -861,15 +880,15 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     @Override
     public void onPageScrollStateChanged(int state) {
-        if(state == ViewPager.SCROLL_STATE_SETTLING){
-            if(mViewPageContainFocus){
+        if (state == ViewPager.SCROLL_STATE_SETTLING) {
+            if (mViewPageContainFocus) {
                 mFocusUtils.hideFocus();
             } else {
                 mViewPager.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
             }
             mHandler.removeCallbacks(mShowFocusRunnable);
             mHandler.removeCallbacks(mFindFocusRunnable);
-        } else if(state == ViewPager.SCROLL_STATE_IDLE){
+        } else if (state == ViewPager.SCROLL_STATE_IDLE) {
             mHandler.postDelayed(mFindFocusRunnable, 100);
         }
     }
@@ -885,11 +904,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         @Override
         public void run() {
             mViewPager.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
-            if(!mViewPageContainFocus){
+            if (!mViewPageContainFocus) {
                 return;
             }
             View focus = mViewPager.findFocus();
-            if(focus != null){
+            if (focus != null) {
                 mFocusUtils.startMoveFocus(focus, mCurrentPage == 1 ? 1 : SCALE);
                 mHandler.postDelayed(mShowFocusRunnable, 200);
             }

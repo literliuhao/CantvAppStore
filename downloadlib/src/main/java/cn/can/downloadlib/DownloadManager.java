@@ -85,9 +85,6 @@ public class DownloadManager implements AppInstallListener {
                             DownloadTask task = mTaskManager.poll();
                             if (task != null) {
                                 Future future = mExecutorService.submit(task);
-                            } else {
-                                mHander.removeMessages(MSG_SUBMIT_TASK);
-                                break;
                             }
                         }
                     }
