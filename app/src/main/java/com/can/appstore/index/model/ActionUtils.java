@@ -97,7 +97,7 @@ public class ActionUtils {
                 break;
             //应用列表
             case ActionConstants.ACTION_APP_LIST:
-                AppListActivity.actionStart(mContext, AppListActivity.MSG_HIDE_MENU_TOP_SHADOW, "", actionData);
+                AppListActivity.actionStart(mContext, AppListActivity.PAGE_TYPE_APP_LIST, "", actionData);
                 break;
             //活动详情
             case ActionConstants.ACTION_ACTIVITY_DETAIL:
@@ -109,7 +109,7 @@ public class ActionUtils {
                     JSONObject jsonObject = new JSONObject(actionData);
                     String typeId = jsonObject.optString("typeId", "");
                     String topicId = jsonObject.optString("topicId", "");
-                    AppListActivity.actionStart(mContext, AppListActivity.MSG_HIDE_MENU_TOP_SHADOW, typeId, topicId);
+                    AppListActivity.actionStart(mContext, AppListActivity.PAGE_TYPE_APP_LIST, typeId, topicId);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

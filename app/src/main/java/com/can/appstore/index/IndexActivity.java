@@ -72,6 +72,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.UpgradeInfo;
 
 import org.greenrobot.eventbus.EventBus;
@@ -505,6 +506,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         mDataEyeUtils.resourcesPositionExposure(0);
         //恢复下载任务。2016-11-29 11:47:23 xzl
         DownloadManager.getInstance(this).resumeAllTasks();
+        //检测更新
+        Beta.checkUpgrade(false, true);
         //检测自升级是否已成功
         checkVersion();
     }

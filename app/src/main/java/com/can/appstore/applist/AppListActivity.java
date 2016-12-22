@@ -59,9 +59,9 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     public static final int MSG_HIDE_MENU_BOTTOM_SHADOW = 0x102;
     private final int HIDE_MENU_ITEM_BG = 0x103;
     // 页面类型
-    private static final int PAGE_TYPE_ILLEGAL = 0x100;//非法页面类型
-    public static final int PAGE_TYPE_APP_LIST = 0x101;//页面类型 （应用列表）
-    public static final int PAGE_TYPE_RANKING = 0x102;//页面类型  （排行榜）
+    private static final String PAGE_TYPE_ILLEGAL = "illegal";//非法页面类型
+    public static final String PAGE_TYPE_APP_LIST = "app";//页面类型 （应用列表）
+    public static final String PAGE_TYPE_RANKING = "rank";//页面类型  （排行榜）
     // menu相关
     public static final int MENU_DIVIDER_SIZE = 20; //menu列表行距
     public static float MENU_FOCUS_SCALE = 1.0f;  //菜单焦点放大倍数
@@ -110,7 +110,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     private FocusMoveUtil mFocusMoveUtil;
     private Handler mHandler;
     private Runnable mChangeAppBgRunnable;
-    private int mPageType;
+    private String mPageType;
     private String mTypeId;
     private String mTopicId;
     private int mLoadOffset;//应用列表显示的偏移量
@@ -135,8 +135,8 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     }
 
     private boolean pageTypeIllegal() {
-        int pageType = getIntent().getIntExtra(ENTRY_KEY_SRC_TYPE, PAGE_TYPE_ILLEGAL);
-        if (pageType == PAGE_TYPE_ILLEGAL) {
+        String pageType = getIntent().getStringExtra(ENTRY_KEY_SRC_TYPE);
+        if (pageType == null) {
             showToast(getContext().getResources().getString(R.string.illegal_page_type));
             return true;
         }
@@ -158,7 +158,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
 
         mTileTv = (TextView) findViewById(R.id.tv_type_name);
         mLineNumTv = (TextView) findViewById(R.id.tv_app_list_line);
-        if (mPageType == PAGE_TYPE_APP_LIST) {
+        if (PAGE_TYPE_APP_LIST.equals(mPageType)) {
             // 应用列表页，显示搜索按钮
             mSearchBtn = (TextView) findViewById(R.id.tv_app_list_search);
             mSearchBtn.setVisibility(View.INVISIBLE);//不能删除，测量位置大小的时候起占位功能
@@ -262,7 +262,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                     // 取消屏蔽menu焦点
                     mMenu.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
                     // 分页加载,目前只有应用列表页面有分页加载
-                    if (mPageType != PAGE_TYPE_APP_LIST) {
+                    if (!PAGE_TYPE_APP_LIST.equals(mPageType)) {
                         return;
                     }
                     //判断应用列表是否滑到了低端
@@ -544,7 +544,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                         mSelectedMenuChild.setBackgroundResource(R.drawable.shap_app_list_menu);
                     }
 
-                } else if (direction == View.FOCUS_UP && mPageType == PAGE_TYPE_APP_LIST) {
+                } else if (direction == View.FOCUS_UP && PAGE_TYPE_APP_LIST.equals(mPageType)) {
                     if (mSelectedMenuChild != null) {
                         mHandler.removeMessages(HIDE_MENU_ITEM_BG);
                         mSelectedMenuChild.setBackgroundResource(R.drawable.shap_app_list_menu);
@@ -816,10 +816,10 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     @Override
     protected void onResume() {
         super.onResume();
-        if (mPageType == PAGE_TYPE_APP_LIST) {
+        if (PAGE_TYPE_APP_LIST.equals(mPageType)) {
             DCPage.onEntry(AppConstants.APP_LIST);
             DCEvent.onEvent(AppConstants.APP_LIST);
-        } else if (mPageType == PAGE_TYPE_RANKING) {
+        } else if (PAGE_TYPE_RANKING.equals(mPageType)) {
             DCPage.onEntry(AppConstants.CHARTS);
             DCEvent.onEvent(AppConstants.CHARTS);
         }
@@ -828,10 +828,10 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
     @Override
     protected void onPause() {
         super.onPause();
-        if (mPageType == PAGE_TYPE_APP_LIST) {
+        if (PAGE_TYPE_APP_LIST.equals(mPageType)) {
             DCPage.onExit(AppConstants.APP_LIST);
             DCEvent.onEventDuration(AppConstants.APP_LIST, mDuration);
-        } else if (mPageType == PAGE_TYPE_RANKING) {
+        } else if (PAGE_TYPE_RANKING.equals(mPageType)) {
             DCPage.onExit(AppConstants.CHARTS);
             DCEvent.onEventDuration(AppConstants.CHARTS, mDuration);
         }
@@ -850,7 +850,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
         super.onDestroy();
     }
 
-    public static void actionStart(Context context, int pageType, String typeId, String topicId) {
+    public static void actionStart(Context context, String pageType, String typeId, String topicId) {
         Intent intent = new Intent(context, AppListActivity.class);
         intent.putExtra(AppListActivity.ENTRY_KEY_SRC_TYPE, pageType);
         intent.putExtra(AppListActivity.ENTRY_KEY_TYPE_ID, typeId);

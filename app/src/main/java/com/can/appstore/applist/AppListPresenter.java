@@ -47,7 +47,7 @@ public class AppListPresenter implements AppListContract.Presenter {
     private CanCall<Result<AppInfoContainer>> mAppListInfoCall;
     private CanCall<Result<AppInfoContainer>> mAppsRanking;
     //页面数据
-    private int mPageType;//当前页类型
+    private String mPageType;//当前页类型
     private String mTypeId;//页面类型id
     private long mRecentLoadingTime;//最近一次loading框显示的时间
     private int mLoadOffset;
@@ -69,7 +69,7 @@ public class AppListPresenter implements AppListContract.Presenter {
     private Context mContext;
 
 
-    public AppListPresenter(AppListContract.View view, int pageType, String typeId, String topicId) {
+    public AppListPresenter(AppListContract.View view, String pageType, String typeId, String topicId) {
         mView = view;
         mContext = view.getContext();
         mPageType = pageType;
@@ -156,7 +156,7 @@ public class AppListPresenter implements AppListContract.Presenter {
                 mTopics.addAll(topics);
                 mMenuDataPosition = findMenuFocusPosition();//第一次加载完数据，找到需要获取焦点的位置
                 mAppInfos.addAll(appInfos);
-                if (mPageType == AppListActivity.PAGE_TYPE_APP_LIST) {
+                if (AppListActivity.PAGE_TYPE_APP_LIST.equals(mPageType)) {
                     mView.showSearchView();
                 }
                 mView.refreshTypeName(typeName);
@@ -190,7 +190,7 @@ public class AppListPresenter implements AppListContract.Presenter {
         };
 
         //根据不同页面请求数据
-        if (mPageType == AppListActivity.PAGE_TYPE_APP_LIST) {
+        if (AppListActivity.PAGE_TYPE_APP_LIST.equals(mPageType)) {
             mAppListInfoCall = HttpManager.getApiService().getAppinfos(mTopicId, mTypeId, mPage, PAGE_SIZE);
             mAppListInfoCall.enqueue(canCallback);
         } else {
@@ -255,7 +255,7 @@ public class AppListPresenter implements AppListContract.Presenter {
                 isLoadFail = true;
                 mHandler.sendEmptyMessageDelayed(HIDE_LOADING, delayTime);
                 mHandler.sendEmptyMessageDelayed(SHOW_LOAD_FAIL_UI, delayTime);
-                if (mPageType == AppListActivity.PAGE_TYPE_RANKING) {
+                if (AppListActivity.PAGE_TYPE_RANKING.equals(mPageType)) {
                     mHandler.sendMessageDelayed(Message.obtain(mHandler, REFRESH_TYPE_NAME, mTopics.get
                                     (mMenuDataPosition).getName() + mContext.getResources().getString(R.string
                                     .ranking)),
@@ -266,7 +266,7 @@ public class AppListPresenter implements AppListContract.Presenter {
         };
 
         cancelCall();
-        if (mPageType == AppListActivity.PAGE_TYPE_APP_LIST) {
+        if (AppListActivity.PAGE_TYPE_APP_LIST.equals(mPageType)) {
             mAppListInfoCall = HttpManager.getApiService().getAppinfos(topicId, mTypeId, mPage, PAGE_SIZE);
             mAppListInfoCall.enqueue(canCallback);
         } else {
@@ -391,7 +391,7 @@ public class AppListPresenter implements AppListContract.Presenter {
      * 取消网络请求
      */
     private void cancelCall() {
-        if (mPageType == AppListActivity.PAGE_TYPE_APP_LIST) {
+        if (AppListActivity.PAGE_TYPE_APP_LIST.equals(mPageType)) {
             if (mAppListInfoCall != null) {
                 mAppListInfoCall.cancel();
             }

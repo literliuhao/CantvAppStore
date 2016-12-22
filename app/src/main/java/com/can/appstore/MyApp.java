@@ -102,10 +102,9 @@ public class MyApp extends DefaultApplicationLike {
             Beta.upgradeListener = new MyUpgradeListener(getApplication().getApplicationContext(),
                     downloadSelf);
             //测试使用key
-//            Bugly.init(getApplication().getApplicationContext(), "900059606", false);
+            //Bugly.init(getApplication().getApplicationContext(), "900059606", false);
             //正式版本发布使用key
             Bugly.init(getApplication().getApplicationContext(), "e3c3b1806e", false);
-            Beta.checkUpgrade(false, true);
         } catch (Exception e) {
             e.printStackTrace();
         }
