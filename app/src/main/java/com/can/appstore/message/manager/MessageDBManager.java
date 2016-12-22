@@ -86,8 +86,8 @@ public class MessageDBManager {
         msgDao.deleteByKeyInTx(_id);
     }
 
-    public void setMsgRead(String msgId) {
-        MessageInfo msg = msgDao.queryBuilder().where(MessageInfoDao.Properties.Id.eq(msgId)).build().unique();
+    public void setMsgRead(long _id) {
+        MessageInfo msg = msgDao.queryBuilder().where(MessageInfoDao.Properties._id.eq(_id)).build().unique();
         if (msg != null) {
             msg.setStatus(true);
             msgDao.update(msg);
@@ -122,6 +122,19 @@ public class MessageDBManager {
      * 请求服务器消息数据
      */
     public void requestMsgData(Context context) {
+        //假数据
+        /*List<MessageInfo> msgList = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            MessageInfo msg = new MessageInfo();
+            msg.setAction(ActionConstants.ACTION_TOPIC_DETAIL);
+            msg.setActionData("1");
+            msg.setDate("2016-12-22");
+            msg.setExpires(1484970022);
+            msg.setId("123");
+            msg.setTitle("测试BUG");
+            msgList.add(msg);
+        }
+        insertMsgList(msgList);*/
         if (NetworkUtils.isNetworkConnected(context)) {
             CanCall<Result<MessageContainer>> mMessageContainer = HttpManager.getApiService().getMessages();
             mMessageContainer.enqueue(new CanCallback<Result<MessageContainer>>() {

@@ -158,7 +158,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
                     case ActionConstants.ACTION_TOPIC_DETAIL:
                         String topicActionData = msg.getActionData().trim();
                         if (NetworkUtils.isNetworkConnected(MessageActivity.this) && !TextUtils.isEmpty(topicActionData)) {
-                            SpecialDetailActivity.actionStart(MessageActivity.this , topicActionData);
+                            SpecialDetailActivity.actionStart(MessageActivity.this, topicActionData);
                             refreshMsgItemView(msg, position);
                         } else {
                             showToast(R.string.connect_net_fail);
@@ -253,7 +253,7 @@ public class MessageActivity extends BaseActivity implements View.OnClickListene
             msg.setStatus(true);
             msgList.set(position, msg);
             mAdapter.notifyItemChanged(position);
-            mMessageDBManager.setMsgRead(msg.getId());
+            mMessageDBManager.setMsgRead(msg.get_id());
         }
     }
 
