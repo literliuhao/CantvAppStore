@@ -14,6 +14,8 @@ import com.can.appstore.db.entity.MessageInfo;
 
 import java.util.List;
 
+import cn.can.tvlib.utils.DateUtil;
+
 /**
  * Created by HEKANG on 2016/11/14.
  */
@@ -76,7 +78,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
             holder.msgTitle.getPaint().setFakeBoldText(true);
         }
         holder.msgTitle.setText(messageInfo.getTitle());
-        holder.msgDate.setText(messageInfo.getDate());
+        holder.msgDate.setText(DateUtil.format(Long.valueOf(messageInfo.getDate())*1000 ,DateUtil.FORMAT_YEAR_MONTH_DAY));
         holder.msgDelete.setVisibility(View.INVISIBLE);
     }
 
