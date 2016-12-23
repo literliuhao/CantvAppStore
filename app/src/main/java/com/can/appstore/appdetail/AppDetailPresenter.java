@@ -223,8 +223,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
             } else if (downloadStatus == AppInstallListener.APP_INSTALL_FAIL) {//安装失败  重试
                 mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, DOWNLOAD_FINISH_PROGRESS);
-                addDownlaodListener();
             }
+            addDownlaodListener();
         } else {
             mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_UPDATE, DOWNLOAD_INIT_PROGRESS);
         }
