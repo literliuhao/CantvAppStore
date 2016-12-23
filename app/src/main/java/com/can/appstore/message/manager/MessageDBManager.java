@@ -124,14 +124,14 @@ public class MessageDBManager {
     public void requestMsgData(Context context) {
         //假数据
         /*List<MessageInfo> msgList = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 3; i++) {
             MessageInfo msg = new MessageInfo();
             msg.setAction(ActionConstants.ACTION_TOPIC_DETAIL);
             msg.setActionData("1");
-            msg.setDate("2016-12-22");
-            msg.setExpires(1484970022);
+            msg.setDate(1482480855+i+"");
+            msg.setExpires(1485074460);
             msg.setId("123");
-            msg.setTitle("测试BUG");
+            msg.setTitle("啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊阿萨德飞凤飞飞凤飞飞凤飞飞凤飞飞凤飞飞凤飞飞凤飞飞凤飞飞凤飞飞凤飞飞凤飞");
             msgList.add(msg);
         }
         insertMsgList(msgList);*/
