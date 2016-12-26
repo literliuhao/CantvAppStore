@@ -62,7 +62,7 @@ public class DownloadManager implements AppInstallListener {
     private static DownloadDao mDownloadDao;
     private Context mContext;
     private int mPoolSize = 3;//Runtime.getRuntime().availableProcessors();
-    private int mLimitSpace = 50;
+    private int mLimitSpace = 150;
     private String mDownloadPath;
     private ExecutorService mExecutorService;
     private OkHttpClient mOkHttpClient;
@@ -100,7 +100,8 @@ public class DownloadManager implements AppInstallListener {
                     String path = bundle.getString("path");
                     String id = bundle.getString("id");
                     ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r " + path, false);
-                    if (res.result == 0) {
+                    /**修复安装成功result==0 未安装成功问题，添加res.successMsg  判断 2016-12-26 10:53:00 xzl*/
+                    if (res.result == 0&&!TextUtils.isEmpty(res.successMsg)&&res.successMsg.equals("Success")) {
                         onInstallSucess(id);
                     } else {
                         onInstallFail(id);
