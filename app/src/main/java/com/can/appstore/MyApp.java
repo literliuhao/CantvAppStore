@@ -75,7 +75,7 @@ public class MyApp extends DefaultApplicationLike {
     }
 
     private void getDataEyeChannelId() {
-        TvInfoModel.getInstance().init(getApplication());
+//        TvInfoModel.getInstance().init(getApplication());
         String channelId = TvInfoModel.getInstance().getChannelId();
         String modelName = TvInfoModel.getInstance().getModelName();
         if (channelId != null && channelId.contains("|")) {
