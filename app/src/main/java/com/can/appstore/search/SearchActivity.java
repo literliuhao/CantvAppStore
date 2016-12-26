@@ -173,12 +173,12 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                 mHandler.removeMessages(START_SEARCH);
                 mHandler.removeCallbacks(searchRunner);
                 if (s.length() > 0) {
-                    if (s.length() > 8) {
-                        mSearch_con_view.setText(s.toString().substring(0, 8));
-                    } else {
+//                    if (s.length() > 8) {
+//                        mSearch_con_view.setText(s.toString().substring(0, 8));
+//                    } else {
                         mSerch_icon.setVisibility(View.GONE);
                         mHandler.postDelayed(searchRunner, 2000);
-                    }
+//                    }
                 } else {
                     mSerch_icon.setVisibility(View.VISIBLE);
                 }
