@@ -380,12 +380,12 @@ public class DownloadManager implements AppInstallListener {
                 || downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_ERROR
                 || downloadTask.getDownloadStatus() == DownloadStatus.SPACE_NOT_ENOUGH) {
             downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
+            mTaskManager.put(downloadTask);
         }
         /**修复暂停恢复任务无法继续下载问题xzl 2016-11-30 16:20:33  start */
-        mTaskManager.put(downloadTask);
         mHander.removeMessages(MSG_SUBMIT_TASK);
-        /**修复暂停恢复任务无法继续下载问题xzl 2016-11-30 16:20:33  end */
         mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
+        /**修复暂停恢复任务无法继续下载问题xzl 2016-11-30 16:20:33  end */
         return downloadTask;
     }
 
