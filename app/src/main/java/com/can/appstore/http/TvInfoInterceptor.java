@@ -1,7 +1,6 @@
 package com.can.appstore.http;
 
 import com.can.appstore.AppConstants;
-import com.can.appstore.MyApp;
 import com.can.appstore.entity.ClassicResult;
 import com.can.appstore.entity.TvInfoModel;
 
@@ -19,8 +18,7 @@ public class TvInfoInterceptor implements Interceptor {
         Request request = chain.request();
         String url = request.url().toString();
         if (!TvInfoModel.getInstance().alreadyInit() &&
-                !url.startsWith(AppConstants.TMS_GET_MAC_URL) &&
-                !TvInfoModel.getInstance().init(MyApp.getContext())) {
+                !url.startsWith(AppConstants.TMS_GET_MAC_URL)) {
             retrofit2.Response<ClassicResult<TvInfoModel>> response = HttpManager.getTmsService().getTvInfo(NetworkUtils.getMac()).execute();
             if (response.isSuccessful()) {
                 ClassicResult<TvInfoModel> body = response.body();
