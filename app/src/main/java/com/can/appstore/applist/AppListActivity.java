@@ -379,7 +379,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                 listRect.set(location[0], location[1] + mAppList.getPaddingTop(), location[0] + mAppList
                         .getMeasuredWidth(), location[1] + mAppList.getMeasuredHeight() - mAppList.getPaddingBottom()
                         - APP_LIST_DIVIDER_SIZE);
-                mAppList.setVisibility(View.INVISIBLE);
+                //mAppList.setVisibility(View.INVISIBLE);
             }
         });
     }

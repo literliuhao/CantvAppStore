@@ -23,7 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:ellipsize="none"
+            android:ellipsize="end"
             android:gravity="center_vertical"
             android:singleLine="true"
             android:textColor="@android:color/white"
