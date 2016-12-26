@@ -28,8 +28,8 @@ public class RequestParamsInterceptor implements Interceptor {
 //                    .addQueryParameter("versionId", "1")
                     // <-- Test
                     .addQueryParameter("channelId", TvInfoModel.getInstance().getChannelId())
-                    .addQueryParameter("internalModel", TvInfoModel.getInstance().getInternalmodelName())
-                    .addQueryParameter("model", TvInfoModel.getInstance().getModelName())
+                    .addQueryParameter("internalModel", TvInfoModel.getInstance().getInternalmodelId())
+                    .addQueryParameter("model", TvInfoModel.getInstance().getModelId())
                     .addQueryParameter("versionId", String.valueOf(BuildConfig.VERSION_CODE))
                     .addQueryParameter("mac", NetworkUtils.getMac())
                     .build();
