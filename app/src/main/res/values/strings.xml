@@ -61,6 +61,7 @@
     <string name="update_app_size">12.5M</string>
     <string name="update_setting_start">已开启</string>
     <string name="update_setting_stop">已关闭</string>
+    <string name="update_already_updated">已更新</string>
     <string name="update_download_waitting">等待中</string>
     <string name="update_download_installing">安装中</string>
     <string name="update_download_installfalse">安装失败</string>
