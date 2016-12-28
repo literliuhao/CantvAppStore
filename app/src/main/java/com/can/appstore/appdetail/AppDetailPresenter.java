@@ -40,6 +40,7 @@ import cn.can.tvlib.utils.MD5Util;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtils;
+import cn.can.tvlib.utils.SystemUtil;
 import retrofit2.Response;
 
 /**
@@ -301,7 +302,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             Task.setId(fileName);
             Task.setUrl(Url);
             Task.setIcon(mAppInfo.getIcon());
-            if(mAppInfo.getSize()>mView.getContext().getCacheDir().getUsableSpace()-100*1024*1024){
+            if(mAppInfo.getSize()> SystemUtil.getInternalAvailableSpace(mContext)-100*1024*1024){
                 mView.showToast(R.string.error_msg);
                 return;
             }

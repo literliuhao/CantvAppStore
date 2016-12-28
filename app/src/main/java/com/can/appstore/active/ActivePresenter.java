@@ -27,6 +27,7 @@ import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.StringUtils;
+import cn.can.tvlib.utils.SystemUtil;
 import retrofit2.Response;
 
 /**
@@ -179,7 +180,7 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
             downloadTask.setFileName(mAppInfo.getName());
             downloadTask.setId(md5);
             downloadTask.setUrl(downloadUrl);
-            if(mAppInfo.getSize()>mContext.getCacheDir().getUsableSpace()-100*1024*1024){
+            if(mAppInfo.getSize()> SystemUtil.getInternalAvailableSpace(mContext)-100*1024*1024){
                 PromptUtils.toastShort(mContext,mContext.getString(R.string.error_msg));
                 return;
             }

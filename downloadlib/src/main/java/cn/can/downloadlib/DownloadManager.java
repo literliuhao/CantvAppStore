@@ -96,7 +96,7 @@ public class DownloadManager implements AppInstallListener {
                     DownloadTask downloadtask=getCurrentTaskById(id);
                     if(downloadtask!=null){
                         /**添加安装空间的判断*/
-                        long space = mContext.getCacheDir().getUsableSpace();
+                        long space = mContext.getFilesDir().getUsableSpace();
                         if (space < downloadtask.getTotalSize()*1.5) {
                             ToastUtils.showMessageLong(mContext.getApplicationContext(), R.string.error_install_space_not_enough);
                             onInstallFail(id);
@@ -250,7 +250,7 @@ public class DownloadManager implements AppInstallListener {
      */
     private void init(InputStream in, OkHttpClient okHttpClient) {
         if (TextUtils.isEmpty(mDownloadPath)) {
-            mDownloadPath = mContext.getCacheDir().getPath() + File.separator + "download";
+            mDownloadPath = mContext.getFilesDir().getAbsolutePath() + File.separator + "download";
             File dir = new File(mDownloadPath);
             dir.mkdirs();
             dir.setWritable(true, false);
@@ -297,7 +297,7 @@ public class DownloadManager implements AppInstallListener {
             return false;
         }
 
-        long space = mContext.getCacheDir().getUsableSpace() / 1024 / 1024;
+        long space = mContext.getFilesDir().getUsableSpace() / 1024 / 1024;
         if (space < mLimitSpace) {
             ToastUtils.showMessageLong(mContext, R.string.error_msg);
             task.setDownloadStatus(DownloadStatus.SPACE_NOT_ENOUGH);
