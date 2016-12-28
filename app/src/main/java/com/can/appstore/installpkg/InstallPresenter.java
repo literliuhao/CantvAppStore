@@ -93,8 +93,12 @@ public class InstallPresenter implements InstallContract.Presenter {
     @Override
     public void getSDInfo() {
         long freeSize = SystemUtil.getInternalAvailableSpace(mContext);
-        long totalSize = SystemUtil.getInternalTotalSpace(mContext);
+        /**预留100M空间 2016-12-28 11:30:36 xzl*/
+        long totalSize = SystemUtil.getInternalTotalSpace(mContext)-100*1024*1024;
         int progress = (int) (((totalSize - freeSize) * 100) / totalSize);
+        if(progress<0){
+            progress=0;
+        }
         String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + StringUtils.formatFileSize(freeSize, false);
         mView.showSDProgressbar(progress, freeStorage);
     }

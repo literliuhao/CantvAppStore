@@ -34,7 +34,6 @@ import javax.net.ssl.TrustManagerFactory;
 
 import cn.can.downloadlib.utils.ApkUtils;
 import cn.can.downloadlib.utils.FileUtils;
-import cn.can.downloadlib.utils.SdcardUtils;
 import cn.can.downloadlib.utils.ShellUtils;
 import cn.can.downloadlib.utils.ToastUtils;
 import okhttp3.OkHttpClient;
@@ -62,7 +61,7 @@ public class DownloadManager implements AppInstallListener {
     private static DownloadDao mDownloadDao;
     private Context mContext;
     private int mPoolSize = 3;//Runtime.getRuntime().availableProcessors();
-    private int mLimitSpace = 150;
+    private int mLimitSpace = 100;
     private String mDownloadPath;
     private ExecutorService mExecutorService;
     private OkHttpClient mOkHttpClient;
@@ -91,14 +90,18 @@ public class DownloadManager implements AppInstallListener {
                     mHander.sendEmptyMessageDelayed(MSG_SUBMIT_TASK, DELAY_TIME);
                     break;
                 case MSG_APP_INSTALL:
-                    long space = SdcardUtils.getSDCardAvailableSpace() / 1014 / 1024;
-                    if (space < mLimitSpace) {
-                        ToastUtils.showMessageLong(mContext.getApplicationContext(), R.string.error_msg);
-                        return false;
-                    }
                     Bundle bundle = msg.getData();
                     String path = bundle.getString("path");
                     String id = bundle.getString("id");
+                    DownloadTask downloadtask=getCurrentTaskById(id);
+                    if(downloadtask!=null){
+                        long space = mContext.getCacheDir().getUsableSpace()/1024/1024;
+                        if (space < downloadtask.getTotalSize()) {
+                            ToastUtils.showMessageLong(mContext.getApplicationContext(), R.string.error_install_space_not_enough);
+                            onInstallFail(id);
+                            return false;
+                        }
+                    }
                     ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r " + path, false);
                     /**修复安装成功result==0 未安装成功问题，添加res.successMsg  判断 2016-12-26 10:53:00 xzl*/
                     if (res.result == 0&&!TextUtils.isEmpty(res.successMsg)&&res.successMsg.equals("Success")) {
@@ -293,7 +296,7 @@ public class DownloadManager implements AppInstallListener {
             return false;
         }
 
-        long space = mContext.getCacheDir().getUsableSpace() / 1014 / 1024;
+        long space = mContext.getCacheDir().getUsableSpace() / 1024 / 1024;
         if (space < mLimitSpace) {
             ToastUtils.showMessageLong(mContext, R.string.error_msg);
             task.setDownloadStatus(DownloadStatus.SPACE_NOT_ENOUGH);
