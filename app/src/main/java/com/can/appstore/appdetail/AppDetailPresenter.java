@@ -158,6 +158,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     private void initDownloadButtonStatus() {
         DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(mTaskId);
+
         if (ApkUtils.isAvailable(mContext, mPackageName)) {
             mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_RUN, DOWNLOAD_INIT_PROGRESS);
             return;
@@ -300,6 +301,10 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             Task.setId(fileName);
             Task.setUrl(Url);
             Task.setIcon(mAppInfo.getIcon());
+            if(mAppInfo.getSize()>mView.getContext().getCacheDir().getUsableSpace()-100*1024*1024){
+                mView.showToast(R.string.error_msg);
+                return;
+            }
             mDownloadManager.addDownloadTask(Task, AppDetailPresenter.this);
             clickRefreshButtonStatus(isClickUpdateButton, per);
             downloadCount();
