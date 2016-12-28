@@ -399,7 +399,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         mTvDeveloper.setText(String.format(getResources().getString(R.string.detail_developer), mAppinfo.getDeveloper()));
         String updateLog = mAppinfo.getUpdateLog();
         if (!TextUtils.isEmpty(updateLog)) {
-            updateLog = mAppinfo.getUpdateLog().replaceAll("\\r\\n", "  ");
+            updateLog = mAppinfo.getUpdateLog().replaceAll("[\\n\\r]", "  ");
             mTvAddFuntion.setText(getResources().getString(R.string.add_funtion) + updateLog);
         } else {
             mTvAddFuntion.setVisibility(View.INVISIBLE);
