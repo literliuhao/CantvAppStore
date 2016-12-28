@@ -67,7 +67,6 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
     private Button mRemoveAppBtn;
     //显示的list数据
     private List<PackageUtil.AppInfo> mShowList;
-    public static boolean isShowAdd = false;
 
     public MyAppsFragment() {
     }
@@ -103,11 +102,9 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
     public void loadAppInfoSuccess(List<AppInfo> infoList, int mySppListSize) {
         Log.d(TAG, "loadAppInfoSuccess: infoList : " + infoList.size() + "    mySppListSize : " + mySppListSize);
         mShowList = infoList;
-        isShowAdd = false;
         if (infoList.size() - LEAST_SHOW_COUNT < mySppListSize && infoList.size() < AT_MOST_SHOW_COUNT
                 && !infoList.get(infoList.size() - 1).appName.equals(getString(R.string.add_app))) {
             infoList.add(new AppInfo(getResources().getString(R.string.add_app), getActivity().getResources().getDrawable(R.drawable.addapp_icon)));
-            isShowAdd = true;
         }
         if (mMyAppsRvAdapter == null) {
             mMyAppsRvAdapter = new MyAppsRvAdapter(infoList);
@@ -285,7 +282,6 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
             mMyAppsFramPresenter.unRegiestr();
             mMyAppsFramPresenter.release();
         }
-        isShowAdd = false;
         super.onDestroyView();
     }
 

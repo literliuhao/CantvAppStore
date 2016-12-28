@@ -65,13 +65,13 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
                 //所有的第三方应用
                 myAppList = PackageUtil.findAllThirdPartyAppsNoDelay(mContext, myAppList);
                 systemApp = mMyAppsListDataUtil.getSystemApp(null);
+                mShowList = mMyAppsListDataUtil.getShowList(mShowList, myAppList);
                 Log.d("TAG", "doInBackground   mShowList : " + mShowList.size());
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                mShowList = mMyAppsListDataUtil.getShowList(mShowList, myAppList);
                 mDrawables = sysAppInfo2Drawble(systemApp, mDrawables);
                 mView.loadAppInfoSuccess(mShowList, myAppList.size());
                 mView.loadCustomDataSuccess(mDrawables);
@@ -140,7 +140,7 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
                         break;
                     }
                 }
-                if (MyAppsFragment.isShowAdd && !isContains) {
+                if (mShowList.size() < MyAppsFragment.AT_MOST_SHOW_COUNT && !isContains) {
                     mShowList.add(PackageUtil.getAppInfo(mContext, packageName));
                     mMyAppsListDataUtil.saveShowList(mShowList);
                     Log.d(TAG, "onReceive: saveShowList_size : " + mShowList.size());
