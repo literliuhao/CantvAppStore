@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">看尚应用商城</string>
+    <string name="app_name">看尚应用商店</string>
     <!-- custom -->
     <string name="loading">加载中,请稍后…</string>
 
@@ -32,7 +32,7 @@
     <string name="index_app_update">个应用可更新</string>
     <string name="index_data_error">数据格式异常请重启应用商店</string>
     <string name="index_nofind">未找到相关应用</string>
-    <string name="index_exit_titile">确定要退出应用商城吗</string>
+    <string name="index_exit_titile">确定要退出应用商店吗</string>
     <string name="index_exit">退出</string>
     <string name="index_cancel">取消</string>
     <!--首页管理-->
@@ -232,7 +232,7 @@
     <string name="contact_us">联系我们</string>
 
     <!-- 清理缓存 -->
-    <string name="if_clear_cache">是否要清理应用商城缓存数据？</string>
+    <string name="if_clear_cache">是否要清理应用商店缓存数据？</string>
     <string name="confirm">确定</string>
     <string name="clear_cache_success">缓存清理成功</string>
     <string name="all_apps">全部应用</string>
