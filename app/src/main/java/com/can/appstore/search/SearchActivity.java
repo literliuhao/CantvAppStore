@@ -14,6 +14,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -457,6 +458,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         //默认状态
         if (tag == TAG_SHOW_TOP_BOTTOM) {
             mTopView.setVisibility(View.VISIBLE); //"大家都在搜"
+            mSearAppList_recycle.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
             mSearAppList_recycle.setVisibility(View.VISIBLE);   //搜索结果对应的布局
             mBottom_re_ll.setVisibility(View.VISIBLE);  //热门推荐
             mSearch_null.setVisibility(View.GONE);  //没有到结果对应的布局
@@ -467,6 +469,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         //没有搜到内容
         if (tag == TAG_S_NULLAPP_G_TOP_APPLIST) {
             mTopView.setVisibility(View.GONE); //"大家都在搜"
+            mSearAppList_recycle.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
             mSearAppList_recycle.setVisibility(View.GONE);   //搜索结果对应的布局
             mSearch_null.setVisibility(View.VISIBLE);
             mBottom_re_ll.setVisibility(View.VISIBLE);  //热门推荐
@@ -477,6 +480,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         //搜到内容
         if (tag == TAG_S_TOP_APPLIST_G_BOTTOM) {
             mTopView.setVisibility(View.VISIBLE); //"大家都在搜"
+            mSearAppList_recycle.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
             mSearAppList_recycle.setVisibility(View.VISIBLE);   //搜索结果对应的布局
             mSearch_null.setVisibility(View.GONE);
             mBottom_re_ll.setVisibility(View.GONE);  //热门推荐
