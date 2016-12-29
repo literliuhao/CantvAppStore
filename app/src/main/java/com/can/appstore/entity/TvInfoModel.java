@@ -121,7 +121,7 @@ public class TvInfoModel {
     }
 
     public void saveToSp(Context context) {
-        if (context == null || !alreadyInit()) {
+        if (context == null) {
             return;
         }
         Gson gson = new Gson();

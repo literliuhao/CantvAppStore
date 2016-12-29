@@ -21,6 +21,10 @@ public class AppConstants {
     public static final String AD_COMMON_GET_URL = AMS_BASE_URL + "/api/ad/getad";
     public static final String TMS_GET_MAC_URL = "http://tms.can.cibntv.net/api/sync/getInfoByMac";
 
+
+    public static final String SYSTEM_PROVIDER_KEY_CHANNELID = "setting_channelid_key";
+    public static final String SYSTEM_PROVIDER_KEY_MODEL = "setting_model";
+
     public final static List<String> PRE_APPS = new ArrayList<String>() {
         {
             add("com.cantv.wechatphoto");
