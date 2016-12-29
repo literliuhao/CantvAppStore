@@ -23,7 +23,6 @@ public class AppConstants {
 
 
     public static final String SYSTEM_PROVIDER_KEY_CHANNELID = "setting_channelid_key";
-    public static final String SYSTEM_PROVIDER_KEY_INTERNAL_MODEL = "setting_hardware_internal_model";
     public static final String SYSTEM_PROVIDER_KEY_MODEL = "setting_model";
 
     public final static List<String> PRE_APPS = new ArrayList<String>() {

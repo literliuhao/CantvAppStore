@@ -2,13 +2,16 @@ package com.can.appstore;
 
 import android.annotation.TargetApi;
 import android.app.Application;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.multidex.MultiDex;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.can.appstore.entity.TvInfoModel;
 import com.can.appstore.upgrade.MyUpgradeListener;
@@ -54,6 +57,7 @@ public class MyApp extends DefaultApplicationLike {
         DCAgent.openAdTracking();//是否跟踪推广分析，默认是False，调用即为True.该接口必须在SDK初始化之前调用.
         DCAgent.initWithAppIdAndChannelId(getApplication().getApplicationContext(),
                 AppConstants.DATAEYE_APPID, mDataeyeChannelId);
+        Log.d("DataEye", "DataEye渠道号: "+mDataeyeChannelId);
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -75,12 +79,22 @@ public class MyApp extends DefaultApplicationLike {
     }
 
     private void getDataEyeChannelId() {
-//        TvInfoModel.getInstance().init(getApplication());
+        // 从缓存中取
+        TvInfoModel.getInstance().init(getApplication());
         String channelId = TvInfoModel.getInstance().getChannelId();
         String modelName = TvInfoModel.getInstance().getModelName();
+
+        if(channelId == null){
+            // 从系统中取
+            ContentResolver contentResolver = getContext().getContentResolver();
+            channelId = Settings.System.getString(contentResolver, AppConstants.SYSTEM_PROVIDER_KEY_CHANNELID);
+            modelName = Settings.System.getString(contentResolver, AppConstants.SYSTEM_PROVIDER_KEY_MODEL);
+        }
+
         if (channelId != null && channelId.contains("|")) {
             channelId = channelId.substring(0, channelId.indexOf("|")).trim();
         }
+
         if (!TextUtils.isEmpty(modelName) && !TextUtils.isEmpty(channelId)) {
             mDataeyeChannelId = modelName + "-" + channelId;
         } else if (!TextUtils.isEmpty(channelId)) {
