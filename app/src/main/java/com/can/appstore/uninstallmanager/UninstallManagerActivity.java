@@ -190,6 +190,10 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+        Log.d(TAG, "dispatchKeyEvent: isRefreshComplete: " + mPresenter.isRefreshComplete);
+        if (event.getAction() == KeyEvent.ACTION_DOWN && !mPresenter.isRefreshComplete) {
+            return true;
+        }
         if (event.getAction() == KeyEvent.ACTION_DOWN && keyCodeEffectInterval != KEYCODE_EFFECT_INTERVAL_UNLIMIT) {
             long time = System.currentTimeMillis();
             if (mLastKeyCodeTimePoint == 0) {
@@ -394,7 +398,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             @Override
             public void onClick(View view, int position, Object data) {
                 PackageUtil.AppInfo info = (PackageUtil.AppInfo) data;
-                mPresenter.showUninstallDialog(info.appIcon, info.appName, info.packageName, false);
+                mPresenter.showUninstallDialog(info.appIcon, info.appName, info.packageName, false, position);
             }
         });
 

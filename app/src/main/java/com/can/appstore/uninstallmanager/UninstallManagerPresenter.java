@@ -49,6 +49,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     public boolean isFirstIntoRefresh = true;  //是否是第一次进入
     private boolean isClickBatchUninstall = false;  //是否是点击批量卸载
     private boolean isAppInstallRefresh = false;  // 是否应用安装刷新页面
+    public boolean isRefreshComplete = true; // 卸载最后一个页面是否刷新完成
 
     public UninstallManagerPresenter(UninstallManagerContract.View view, Context context) {
         this.mView = view;
@@ -94,10 +95,10 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     void calculateCurStoragePropgress() {
         long freeSize = SystemUtil.getInternalAvailableSpace(mContext);
         /**预留100M空间 2016-12-28 11:30:36 xzl*/
-        long totalSize = SystemUtil.getInternalTotalSpace(mContext)-100*1024*1024;
+        long totalSize = SystemUtil.getInternalTotalSpace(mContext) - 100 * 1024 * 1024;
         int progress = (int) (((totalSize - freeSize) * 100) / totalSize);
-        if(progress<0){
-            progress=0;
+        if (progress < 0) {
+            progress = 0;
         }
         String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + StringUtils.formatFileSize(freeSize, false);
         mView.showCurStorageProgress(progress, freeStorage);
@@ -200,6 +201,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     public void onUninstallSucess(String id) {
         Log.d(TAG, "onUninstallSucess: " + mCurUninstallApkName);
         mView.showToast(mCurUninstallApkName + mContext.getResources().getString(R.string.uninstall_success));
+        isRefreshComplete = true;
     }
 
     @Override
@@ -293,18 +295,18 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
         PackageUtil.AppInfo appInfo = mAppInfoList.get(curUninstallPosition);
         Log.d(TAG, "startUninstall: curUninstallPosition : " + curUninstallPosition + "  info : " + appInfo);
         dismissUninstallDialog();
-        showUninstallDialog(appInfo.appIcon, appInfo.appName, appInfo.packageName, isClickbatchUninstall);
+        showUninstallDialog(appInfo.appIcon, appInfo.appName, appInfo.packageName, isClickbatchUninstall, -1);
     }
 
     /**
      * 显示卸载对话框
      */
-    public void showUninstallDialog(Drawable drawable, final String name, final String packName, final boolean isClickbatchUninstall) {
+    public void showUninstallDialog(Drawable drawable, final String name, final String packName, final boolean isClickbatchUninstall, final int position) {
         this.isClickBatchUninstall = isClickbatchUninstall;
         String ok = mContext.getResources().getString(R.string.ok);
         String cancle = mContext.getResources().getString(R.string.cancle);
         String makesureUninstall = mContext.getResources().getString(R.string.makesure_uninstall_apk);
-        if(mCanDialog != null){
+        if (mCanDialog != null) {
             mCanDialog.dismiss();
             mCanDialog.release();
             mCanDialog = null;
@@ -315,6 +317,9 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
             @Override
             public void onClickPositive() {
                 silentUninstall(name, packName);
+                if (mAppInfoList.size() - 1 == position) {
+                    isRefreshComplete = false;
+                }
                 dismissUninstallDialog();
             }
 
@@ -358,7 +363,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
 
     @Override
     public void release() {
-        if(mCanDialog != null){
+        if (mCanDialog != null) {
             mCanDialog.dismiss();
             mCanDialog.release();
             mCanDialog = null;
