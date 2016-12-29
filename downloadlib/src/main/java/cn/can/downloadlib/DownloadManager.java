@@ -98,11 +98,12 @@ public class DownloadManager implements AppInstallListener {
                         /**添加安装空间的判断*/
                         long space = mContext.getFilesDir().getUsableSpace();
                         if (space < downloadtask.getTotalSize()*1.5) {
-                            ToastUtils.showMessageLong(mContext.getApplicationContext(), R.string.error_install_space_not_enough);
                             onInstallFail(id);
+                            ToastUtils.showMessageLong(mContext.getApplicationContext(), R.string.error_install_space_not_enough);
                             return false;
                         }
                     }
+                    ShellUtils.execCommand("chmod 777 "+mContext.getFilesDir(),false);
                     ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r " + path, false);
                     /**修复安装成功result==0 未安装成功问题，添加res.successMsg  判断 2016-12-26 10:53:00 xzl*/
                     if (res.result == 0&&!TextUtils.isEmpty(res.successMsg)&&res.successMsg.equals("Success")) {
