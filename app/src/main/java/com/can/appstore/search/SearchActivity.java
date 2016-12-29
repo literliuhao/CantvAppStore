@@ -14,6 +14,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import com.can.appstore.AppConstants;
 import com.can.appstore.R;
 import com.can.appstore.base.BaseActivity;
+import com.can.appstore.search.adapter.HotKeyAdapter;
 import com.can.appstore.search.adapter.HotRecommendAdapter;
 import com.can.appstore.search.adapter.KeyboardAdapter;
 import com.can.appstore.search.adapter.SearchAppListAdapter;
@@ -86,11 +88,14 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
     private View mRLNoNetworkView;
     private List mHotRomList = new ArrayList();
     private List mSearchList = new ArrayList();
+    private List mHotKeyList = new ArrayList();
     private View mSerch_icon;
     private int mCurrLineNumber;
     private int mTotalLineCount;
     private int mSearchTotal;
     private View mRightView;
+    private RecyclerView mHotkeyRecycle;
+    private HotKeyAdapter mHotKeyAdapter;
 
     public static void startAc(Context context) {
         Intent intent = new Intent(context, SearchActivity.class);
@@ -134,6 +139,9 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         mTopView = (RelativeLayout) findViewById(R.id.top_view);
         mleft_top = (TextView) findViewById(R.id.left_top_view);
         mright_top = (TextView) findViewById(R.id.right_top_view);
+        //热词
+        mHotkeyRecycle = (RecyclerView) findViewById(R.id.hotkey_recycle);
+        //搜索结果
         mSearAppList_recycle = (RecyclerView) findViewById(R.id.applist_recycle);
         //设置焦点框可以显示的范围
         mSearAppList_recycle.post(new Runnable() {
@@ -176,8 +184,8 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
 //                    if (s.length() > 8) {
 //                        mSearch_con_view.setText(s.toString().substring(0, 8));
 //                    } else {
-                        mSerch_icon.setVisibility(View.GONE);
-                        mHandler.postDelayed(searchRunner, 2000);
+                    mSerch_icon.setVisibility(View.GONE);
+                    mHandler.postDelayed(searchRunner, 2000);
 //                    }
                 } else {
                     mSerch_icon.setVisibility(View.VISIBLE);
@@ -190,6 +198,9 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
             }
         });
 
+        //热词
+        mHotKeyAdapter = new HotKeyAdapter(mHotKeyList, this);
+        mHotkeyRecycle.setAdapter(mHotKeyAdapter);
         //搜索内容
         mAppListAdapter = new SearchAppListAdapter(mSearchList, this);
         mSearAppList_recycle.setAdapter(mAppListAdapter);
@@ -206,7 +217,34 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         myFocusRunnable = new MyFocusRunnable();
         mContent_cl_view.setOnFocusChangeListener(mScaleFocusChangeListener);
         mContent_del_view.setOnFocusChangeListener(mScaleFocusChangeListener);
+        mHotKeyAdapter.setMyOnFocusChangeListener(mScaleFocusChangeListener);
         mKeyboardAdapter.setMyOnFocusChangeListener(mScaleFocusChangeListener);
+
+        //对显示行号的处理
+        mAppListAdapter.setOnFocusChangeListener(new SearchAppListAdapter.YOnFocusChangeListener() {
+
+            @Override
+            public void onItemFocusChanged(View view, int position, boolean hasFocus) {
+                if (hasFocus) {
+                    //显示出行数View
+                    mright_top.setVisibility(View.VISIBLE);
+                    //行数
+                    mCurrLineNumber = position / SEARCH_APP_SPANCOUNT + 1;
+//                        int totalItemCount = mSearAppList_recycle.getLayoutManager().getItemCount();
+                    //计算总行数
+                    mTotalLineCount = mSearchTotal / SEARCH_APP_SPANCOUNT + (mSearchTotal % SEARCH_APP_SPANCOUNT > 0 ? 1 : 0);
+                    //列数
+//                        int colNumber = (position + 1) % SEARCH_APP_SPANCOUNT == 0 ? SEARCH_APP_SPANCOUNT : (position + 1) % SEARCH_APP_SPANCOUNT;
+//                        mright_top.setText(colNumber + "/" + lineNumber + "行");
+                    mright_top.setText(mCurrLineNumber + "/" + mTotalLineCount + "行");
+                    mFocusedListChild = view;
+                    view.postDelayed(myFocusRunnable, 50);
+                } else {
+                    mright_top.setText(1 + "/" + mTotalLineCount + "行");
+                }
+                view.setSelected(hasFocus);
+            }
+        });
 
     }
 
@@ -218,9 +256,11 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         // 添加偏移的loading框
         showLoadingDialog(getResources().getDimensionPixelSize(R.dimen.px400));
 
+        //大家都在搜
+        mHotkeyRecycle.setLayoutManager(new GridLayoutManager(this, SEARCH_APP_SPANCOUNT, LinearLayoutManager.VERTICAL, false));
+        //搜索结果
         mGridLayoutManager = new GridLayoutManager(this, SEARCH_APP_SPANCOUNT, LinearLayoutManager.VERTICAL, false);
         mSearAppList_recycle.setLayoutManager(mGridLayoutManager);
-
         mSearAppList_recycle.addOnScrollListener(getOnBottomListener());
 
         mBottom_re_recycle.setLayoutManager(new GridLayoutManager(this, SEARCH_APP_SPANCOUNT, LinearLayoutManager.VERTICAL, false));
@@ -328,8 +368,8 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
     @Override
     public void getHotKeyList(List list) {
         //"大家都在搜"数据
-        mAppListAdapter.setDefaultApplist(list);
-        mAppListAdapter.setOnInitialsListener(new SearchAppListAdapter.OnInitialsListener() {
+        mHotKeyAdapter.refresh(list);
+        mHotKeyAdapter.setOnInitialsListener(new HotKeyAdapter.OnInitialsListener() {
             @Override
             public void onInitials(String con) {
                 getInitials(con);
@@ -338,33 +378,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
 
         showGoneView(TAG_SHOW_TOP_BOTTOM);
 
-        //对显示行号的处理
-        mAppListAdapter.setOnFocusChangeListener(new SearchAppListAdapter.YOnFocusChangeListener() {
 
-            @Override
-            public void onItemFocusChanged(View view, int position, boolean hasFocus) {
-                if (hasFocus) {
-                    if (mAppListAdapter.SEARCH_APPLIST_TYPE == mAppListAdapter.getItemViewType(position)) {
-                        //显示出行数View
-                        mright_top.setVisibility(View.VISIBLE);
-                        //行数
-                        mCurrLineNumber = position / SEARCH_APP_SPANCOUNT + 1;
-//                        int totalItemCount = mSearAppList_recycle.getLayoutManager().getItemCount();
-                        //计算总行数
-                        mTotalLineCount = mSearchTotal / SEARCH_APP_SPANCOUNT + (mSearchTotal % SEARCH_APP_SPANCOUNT > 0 ? 1 : 0);
-                        //列数
-//                        int colNumber = (position + 1) % SEARCH_APP_SPANCOUNT == 0 ? SEARCH_APP_SPANCOUNT : (position + 1) % SEARCH_APP_SPANCOUNT;
-//                        mright_top.setText(colNumber + "/" + lineNumber + "行");
-                        mright_top.setText(mCurrLineNumber + "/" + mTotalLineCount + "行");
-                    }
-                    mFocusedListChild = view;
-                    view.postDelayed(myFocusRunnable, 50);
-                } else {
-                    mright_top.setText(1 + "/" + mTotalLineCount + "行");
-                }
-                view.setSelected(hasFocus);
-            }
-        });
         if (!setRightNextFocus) {
             setRNextFocus();
         }
@@ -408,8 +422,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
     public void resetDefaultList() {
         mleft_top.setText(getResources().getText(R.string.search_left_top_prompt1));
         //热词/热门推荐都有数据时不再重新请求,否则要重新请求数据
-        if (mAppListAdapter.mDefaultList.size() > 0 && mHotRecommendAdapter.mDataList.size() > 0) {
-            mAppListAdapter.setDefaultApplist();
+        if (mHotKeyAdapter.mDataList.size() > 0) {
             showGoneView(TAG_SHOW_TOP_BOTTOM);
         } else {
             mSearchPresenter.getDefaultList();
@@ -457,7 +470,11 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         //默认状态
         if (tag == TAG_SHOW_TOP_BOTTOM) {
             mTopView.setVisibility(View.VISIBLE); //"大家都在搜"
-            mSearAppList_recycle.setVisibility(View.VISIBLE);   //搜索结果对应的布局
+            mSearAppList_recycle.setVisibility(View.GONE);
+            mHotkeyRecycle.setVisibility(View.VISIBLE);
+            mHotkeyRecycle.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+//            mSearAppList_recycle.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+//            mSearAppList_recycle.setVisibility(View.VISIBLE);   //搜索结果对应的布局
             mBottom_re_ll.setVisibility(View.VISIBLE);  //热门推荐
             mSearch_null.setVisibility(View.GONE);  //没有到结果对应的布局
             mright_top.setVisibility(View.GONE);
@@ -467,6 +484,9 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         //没有搜到内容
         if (tag == TAG_S_NULLAPP_G_TOP_APPLIST) {
             mTopView.setVisibility(View.GONE); //"大家都在搜"
+            mHotkeyRecycle.setVisibility(View.GONE);
+            mHotkeyRecycle.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+            mSearAppList_recycle.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
             mSearAppList_recycle.setVisibility(View.GONE);   //搜索结果对应的布局
             mSearch_null.setVisibility(View.VISIBLE);
             mBottom_re_ll.setVisibility(View.VISIBLE);  //热门推荐
@@ -477,6 +497,8 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         //搜到内容
         if (tag == TAG_S_TOP_APPLIST_G_BOTTOM) {
             mTopView.setVisibility(View.VISIBLE); //"大家都在搜"
+            mHotkeyRecycle.setVisibility(View.GONE);
+            mSearAppList_recycle.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
             mSearAppList_recycle.setVisibility(View.VISIBLE);   //搜索结果对应的布局
             mSearch_null.setVisibility(View.GONE);
             mBottom_re_ll.setVisibility(View.GONE);  //热门推荐
@@ -589,7 +611,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         }
         if (null != mAppListAdapter && null != mHotRecommendAdapter) {
             //热词(大家都在搜)
-            List<View> hotKeyViewList = mAppListAdapter.mHotKeyViewList;
+            List<View> hotKeyViewList = mHotKeyAdapter.mHotKeyViewList;
             //热门推荐
             List<View> hotRecomViewList = mHotRecommendAdapter.mViewList;
 

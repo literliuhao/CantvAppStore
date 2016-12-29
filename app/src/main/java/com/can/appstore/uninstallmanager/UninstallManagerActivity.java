@@ -30,6 +30,8 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PackageUtil;
 
+import static cn.can.tvlib.ui.view.recyclerview.CanRecyclerView.KEYCODE_EFFECT_INTERVAL_UNLIMIT;
+
 /**
  * 本地卸载管理页面
  * Created by JasonF on 2016/10/13.
@@ -55,6 +57,10 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     private boolean isSelect;
     private boolean isLastRemove = false;
     private CanRecyclerView.CanGridLayoutManager mLayoutManager;
+    public static final int KEYCODE_EFFECT_INTERVAL_UNLIMIT = 0;
+    public static final int KEYCODE_EFFECT_INTERVAL_NORMAL = 200;
+    private long mLastKeyCodeTimePoint;
+    private int keyCodeEffectInterval = KEYCODE_EFFECT_INTERVAL_NORMAL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,6 +186,26 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
                 }
             }
         });
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        Log.d(TAG, "dispatchKeyEvent: isRefreshComplete: " + mPresenter.isRefreshComplete);
+        if (event.getAction() == KeyEvent.ACTION_DOWN && !mPresenter.isRefreshComplete) {
+            return true;
+        }
+        if (event.getAction() == KeyEvent.ACTION_DOWN && keyCodeEffectInterval != KEYCODE_EFFECT_INTERVAL_UNLIMIT) {
+            long time = System.currentTimeMillis();
+            if (mLastKeyCodeTimePoint == 0) {
+                mLastKeyCodeTimePoint = System.currentTimeMillis();
+                return super.dispatchKeyEvent(event);
+            } else if (time - mLastKeyCodeTimePoint < keyCodeEffectInterval) {
+                return true;
+            } else {
+                mLastKeyCodeTimePoint = System.currentTimeMillis();
+            }
+        }
+        return super.dispatchKeyEvent(event);
     }
 
     @Override
@@ -372,7 +398,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             @Override
             public void onClick(View view, int position, Object data) {
                 PackageUtil.AppInfo info = (PackageUtil.AppInfo) data;
-                mPresenter.showUninstallDialog(info.appIcon, info.appName, info.packageName, false);
+                mPresenter.showUninstallDialog(info.appIcon, info.appName, info.packageName, false, position);
             }
         });
 

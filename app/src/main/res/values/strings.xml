@@ -148,6 +148,7 @@
     <string name="download_faild_memory_lack">内存不足%s下载失败</string>
     <string name="install_faild_memory_lack">安装内存不足%s安装失败</string>
     <string name="install_apk_fail">安装失败</string>
+    <string name="install_apk_exception">安装包异常</string>
     <string name="network_connection_error">网络连接异常</string>
     <string name="unkonw_error">发生未知错误</string>
     <string name="network_connection_disconnect">网络连接已断开</string>
