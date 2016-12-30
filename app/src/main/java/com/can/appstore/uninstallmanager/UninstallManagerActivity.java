@@ -30,8 +30,6 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 import cn.can.tvlib.utils.PackageUtil;
 
-import static cn.can.tvlib.ui.view.recyclerview.CanRecyclerView.KEYCODE_EFFECT_INTERVAL_UNLIMIT;
-
 /**
  * 本地卸载管理页面
  * Created by JasonF on 2016/10/13.
@@ -76,6 +74,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     public void initFocus() {
         mFocusMoveUtil = new FocusMoveUtil(UninstallManagerActivity.this, getWindow().getDecorView(), R.mipmap.btn_focus);
         measureFocusActiveRegion();
+        mFocusMoveUtil.hideFocus();
         mListFocusMoveRunnable = new ListFocusMoveRunnable();
     }
 
@@ -127,6 +126,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         mBtBatchUninstall.post(new Runnable() {
             @Override
             public void run() {
+                mFocusMoveUtil.showFocus();
                 mBtBatchUninstall.setFocusable(true);
                 mBtBatchUninstall.requestFocus();
             }
@@ -244,6 +244,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
 
     @Override
     public void loadAllAppInfoSuccess(List<PackageUtil.AppInfo> infoList) {
+        mFocusMoveUtil.showFocus();
         Log.d(TAG, "loadAllAppInfoSuccess: infoList : " + infoList);
         if (infoList.size() == 0) {
             mNotUninstallApp.setVisibility(View.VISIBLE);
