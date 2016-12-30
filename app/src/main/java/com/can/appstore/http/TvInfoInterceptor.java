@@ -4,6 +4,7 @@ import com.can.appstore.AppConstants;
 import com.can.appstore.MyApp;
 import com.can.appstore.entity.ClassicResult;
 import com.can.appstore.entity.TvInfoModel;
+import com.can.appstore.utils.DataEyeUtil;
 
 import java.io.IOException;
 
@@ -30,6 +31,7 @@ public class TvInfoInterceptor implements Interceptor {
                     TvInfoModel.getInstance().copyFrom(body.getData());
                     TvInfoModel.getInstance().saveToSp(MyApp.getContext());
                     tvInfoModelUpdated = true;
+                    DataEyeUtil.updateDataEyeChannel(MyApp.getContext());
                 }
             }
         }

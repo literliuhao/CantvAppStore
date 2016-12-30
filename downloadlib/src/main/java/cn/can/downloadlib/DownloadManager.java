@@ -298,12 +298,13 @@ public class DownloadManager implements AppInstallListener {
             return false;
         }
 
-        long space = mContext.getFilesDir().getUsableSpace() / 1024 / 1024;
-        if (space < mLimitSpace) {
-            ToastUtils.showMessageLong(mContext, R.string.error_msg);
-            task.setDownloadStatus(DownloadStatus.SPACE_NOT_ENOUGH);
-            return false;
-        }
+        /**上层已检测空间大小，故此暂时注掉，避免显示空间够用，却下载不了*/
+//        long space = mContext.getFilesDir().getUsableSpace() >>20;
+//        if (space < mLimitSpace) {
+//            ToastUtils.showMessageLong(mContext, R.string.error_msg);
+//            task.setDownloadStatus(DownloadStatus.SPACE_NOT_ENOUGH);
+//            return false;
+//        }
 
         DownloadTask downloadTask = mTaskManager.get(task.getId());
         if (null != downloadTask && downloadTask.getDownloadStatus() != DownloadStatus
