@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Build;
@@ -32,7 +33,7 @@ import com.tencent.tinker.loader.app.DefaultApplicationLike;
 public class MyApp extends DefaultApplicationLike {
 
     private static final String TAG = "Tinker.SampleApplicationLike";
-    private String mDataeyeChannelId = "C42S-10002";//测试渠道,正式的默认渠道
+    private String mDataeyeChannelId = AppConstants.DATAEYE_DEFAULT_CHANNEL;//测试渠道,正式的默认渠道
     private static MyApp INSTANCE;
     public MyApp(Application application, int tinkerFlags,
                  boolean tinkerLoadVerifyFlag, long applicationStartElapsedTime,
@@ -55,6 +56,14 @@ public class MyApp extends DefaultApplicationLike {
     private void initDataEye() {
         getDataEyeChannelId();
         DCAgent.openAdTracking();//是否跟踪推广分析，默认是False，调用即为True.该接口必须在SDK初始化之前调用.
+
+        // 当取到渠道信息时，删除DataEye缓存的渠道信息
+        if (!AppConstants.DATAEYE_DEFAULT_CHANNEL.equals(mDataeyeChannelId)) {
+            String dataEyeSpName = String.format("dc.%1$s.preferences",AppConstants.DATAEYE_APPID);
+            SharedPreferences sharedPreferences = getContext().getSharedPreferences(dataEyeSpName, Context.MODE_PRIVATE);
+            sharedPreferences.edit().remove("DC_CHANNEL").apply();
+        }
+
         DCAgent.initWithAppIdAndChannelId(getApplication().getApplicationContext(),
                 AppConstants.DATAEYE_APPID, mDataeyeChannelId);
         Log.d("DataEye", "DataEye渠道号: "+mDataeyeChannelId);
