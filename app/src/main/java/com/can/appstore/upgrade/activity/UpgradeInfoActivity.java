@@ -60,7 +60,7 @@ public class UpgradeInfoActivity extends Activity {
                 intent.putExtra(UpgradeService.FILE_NAME,mFileName);
                 intent.putExtra(UpgradeService.UPGRADE_SIZE,mUpgradeSize);
                 intent.putExtra(UpgradeService.FILE_PATH,mFilePath);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 UpgradeInfoActivity.this.startActivity(intent);
                 finish();
             }

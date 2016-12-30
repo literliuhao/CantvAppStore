@@ -55,7 +55,7 @@ public class ProgressActivity extends Activity {
                     break;
                 case FINISH:
                     mView.setVisibility(View.INVISIBLE);
-                    mHandler.sendEmptyMessageDelayed(INSTALL,1000);
+                    mHandler.sendEmptyMessageDelayed(INSTALL,100);
                     Intent intent = new Intent(ProgressActivity.this, IndexActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     ProgressActivity.this.startActivity(intent);
