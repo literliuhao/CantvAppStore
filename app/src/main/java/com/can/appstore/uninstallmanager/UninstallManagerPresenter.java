@@ -94,12 +94,8 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
      */
     void calculateCurStoragePropgress() {
         long freeSize = SystemUtil.getInternalAvailableSpace(mContext);
-        /**预留100M空间 2016-12-28 11:30:36 xzl*/
-        long totalSize = SystemUtil.getInternalTotalSpace(mContext) - 100 * 1024 * 1024;
+        long totalSize = SystemUtil.getInternalTotalSpace(mContext) ;
         int progress = (int) (((totalSize - freeSize) * 100) / totalSize);
-        if (progress < 0) {
-            progress = 0;
-        }
         String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + StringUtils.formatFileSize(freeSize, false);
         mView.showCurStorageProgress(progress, freeStorage);
     }

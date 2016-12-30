@@ -453,7 +453,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                             PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string.no_network));
                             break;
                         }
-                        if(holder.downloadTask.getTotalSize()> SystemUtil.getInternalAvailableSpace(v.getContext())-100*1024*1024){
+                        if(holder.downloadTask.getTotalSize()> SystemUtil.getInternalAvailableSpace(v.getContext())){
                             PromptUtils.toastShort(v.getContext(),v.getContext().getString(R.string.error_msg));
                             break;
                         }
