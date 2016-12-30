@@ -2,20 +2,16 @@ package com.can.appstore;
 
 import android.annotation.TargetApi;
 import android.app.Application;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Build;
-import android.provider.Settings;
 import android.support.multidex.MultiDex;
-import android.text.TextUtils;
 import android.util.Log;
 
-import com.can.appstore.entity.TvInfoModel;
 import com.can.appstore.upgrade.MyUpgradeListener;
+import com.can.appstore.utils.DataEyeUtil;
 import com.dataeye.sdk.api.app.DCAgent;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
@@ -33,8 +29,8 @@ import com.tencent.tinker.loader.app.DefaultApplicationLike;
 public class MyApp extends DefaultApplicationLike {
 
     private static final String TAG = "Tinker.SampleApplicationLike";
-    private String mDataeyeChannelId = AppConstants.DATAEYE_DEFAULT_CHANNEL;//测试渠道,正式的默认渠道
     private static MyApp INSTANCE;
+
     public MyApp(Application application, int tinkerFlags,
                  boolean tinkerLoadVerifyFlag, long applicationStartElapsedTime,
                  long applicationStartMillisTime, Intent tinkerResultIntent, Resources[] resources,
@@ -54,19 +50,12 @@ public class MyApp extends DefaultApplicationLike {
     }
 
     private void initDataEye() {
-        getDataEyeChannelId();
+        String dataEyeChannelId = DataEyeUtil.getDataEyeChannel(getContext());
         DCAgent.openAdTracking();//是否跟踪推广分析，默认是False，调用即为True.该接口必须在SDK初始化之前调用.
 
-        // 当取到渠道信息时，删除DataEye缓存的渠道信息
-        if (!AppConstants.DATAEYE_DEFAULT_CHANNEL.equals(mDataeyeChannelId)) {
-            String dataEyeSpName = String.format("dc.%1$s.preferences",AppConstants.DATAEYE_APPID);
-            SharedPreferences sharedPreferences = getContext().getSharedPreferences(dataEyeSpName, Context.MODE_PRIVATE);
-            sharedPreferences.edit().remove("DC_CHANNEL").apply();
-        }
-
         DCAgent.initWithAppIdAndChannelId(getApplication().getApplicationContext(),
-                AppConstants.DATAEYE_APPID, mDataeyeChannelId);
-        Log.d("DataEye", "DataEye渠道号: "+mDataeyeChannelId);
+                AppConstants.DATAEYE_APPID, dataEyeChannelId);
+        Log.d("DataEye", "DataEye渠道号: " + dataEyeChannelId);
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -85,30 +74,6 @@ public class MyApp extends DefaultApplicationLike {
 
     public static Context getContext() {
         return INSTANCE.getApplication().getApplicationContext();
-    }
-
-    private void getDataEyeChannelId() {
-        // 从缓存中取
-        TvInfoModel.getInstance().init(getApplication());
-        String channelId = TvInfoModel.getInstance().getChannelId();
-        String modelName = TvInfoModel.getInstance().getModelName();
-
-        if(channelId == null){
-            // 从系统中取
-            ContentResolver contentResolver = getContext().getContentResolver();
-            channelId = Settings.System.getString(contentResolver, AppConstants.SYSTEM_PROVIDER_KEY_CHANNELID);
-            modelName = Settings.System.getString(contentResolver, AppConstants.SYSTEM_PROVIDER_KEY_MODEL);
-        }
-
-        if (channelId != null && channelId.contains("|")) {
-            channelId = channelId.substring(0, channelId.indexOf("|")).trim();
-        }
-
-        if (!TextUtils.isEmpty(modelName) && !TextUtils.isEmpty(channelId)) {
-            mDataeyeChannelId = modelName + "-" + channelId;
-        } else if (!TextUtils.isEmpty(channelId)) {
-            mDataeyeChannelId = channelId;
-        }
     }
 
     /**
