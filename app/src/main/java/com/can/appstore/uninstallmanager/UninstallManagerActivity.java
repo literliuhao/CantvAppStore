@@ -126,9 +126,9 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         mBtBatchUninstall.post(new Runnable() {
             @Override
             public void run() {
-                mFocusMoveUtil.showFocus();
                 mBtBatchUninstall.setFocusable(true);
-                mBtBatchUninstall.requestFocus();
+                mFocusMoveUtil.showFocus();
+                mFocusMoveUtil.setFocusView(mBtBatchUninstall);
             }
         });
     }
