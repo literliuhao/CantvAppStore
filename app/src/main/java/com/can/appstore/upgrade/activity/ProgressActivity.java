@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.can.appstore.R;
+import com.can.appstore.index.IndexActivity;
 import com.can.appstore.upgrade.InstallApkListener;
 import com.can.appstore.upgrade.UpgradeUtil;
 import com.can.appstore.upgrade.service.UpgradeService;
@@ -35,7 +36,8 @@ public class ProgressActivity extends Activity {
     public static final int INSTALL_DELAY = 200;
     //message.what
     public static final int REFRESH_PROGRESS = 1;
-    public static final int INSTALL = 2;
+    public static final int FINISH = 2;
+    public static final int INSTALL = 3;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -48,12 +50,19 @@ public class ProgressActivity extends Activity {
                     if (mProgress <= PROGRESS_MAX) {
                         mHandler.sendEmptyMessageDelayed(REFRESH_PROGRESS, 10);
                     } else {
-                        mHandler.sendEmptyMessageDelayed(INSTALL, INSTALL_DELAY);
+                        mHandler.sendEmptyMessageDelayed(FINISH, INSTALL_DELAY);
                     }
+                    break;
+                case FINISH:
+                    mView.setVisibility(View.INVISIBLE);
+                    mHandler.sendEmptyMessageDelayed(INSTALL,100);
+                    Intent intent = new Intent(ProgressActivity.this, IndexActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    ProgressActivity.this.startActivity(intent);
+                    finish();
                     break;
                 case INSTALL:
                     Log.d(TAG, "handleMessage: " + (System.currentTimeMillis() - mTime));
-                    mView.setVisibility(View.INVISIBLE);
                     install();
                     break;
             }

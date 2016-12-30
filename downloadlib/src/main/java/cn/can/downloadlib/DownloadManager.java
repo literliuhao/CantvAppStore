@@ -34,7 +34,6 @@ import javax.net.ssl.TrustManagerFactory;
 
 import cn.can.downloadlib.utils.ApkUtils;
 import cn.can.downloadlib.utils.FileUtils;
-import cn.can.downloadlib.utils.SdcardUtils;
 import cn.can.downloadlib.utils.ShellUtils;
 import cn.can.downloadlib.utils.ToastUtils;
 import okhttp3.OkHttpClient;
@@ -62,7 +61,7 @@ public class DownloadManager implements AppInstallListener {
     private static DownloadDao mDownloadDao;
     private Context mContext;
     private int mPoolSize = 3;//Runtime.getRuntime().availableProcessors();
-    private int mLimitSpace = 50;
+    private int mLimitSpace = 100;
     private String mDownloadPath;
     private ExecutorService mExecutorService;
     private OkHttpClient mOkHttpClient;
@@ -85,25 +84,29 @@ public class DownloadManager implements AppInstallListener {
                             DownloadTask task = mTaskManager.poll();
                             if (task != null) {
                                 Future future = mExecutorService.submit(task);
-                            } else {
-                                mHander.removeMessages(MSG_SUBMIT_TASK);
-                                break;
                             }
                         }
                     }
                     mHander.sendEmptyMessageDelayed(MSG_SUBMIT_TASK, DELAY_TIME);
                     break;
                 case MSG_APP_INSTALL:
-                    long space = SdcardUtils.getSDCardAvailableSpace() / 1014 / 1024;
-                    if (space < mLimitSpace) {
-                        ToastUtils.showMessageLong(mContext.getApplicationContext(), R.string.error_msg);
-                        return false;
-                    }
                     Bundle bundle = msg.getData();
                     String path = bundle.getString("path");
                     String id = bundle.getString("id");
+                    DownloadTask downloadtask=getCurrentTaskById(id);
+                    if(downloadtask!=null){
+                        /**添加安装空间的判断*/
+                        long space = mContext.getFilesDir().getUsableSpace();
+                        if (space < downloadtask.getTotalSize()*1.5) {
+                            onInstallFail(id);
+                            ToastUtils.showMessageLong(mContext.getApplicationContext(), R.string.error_install_space_not_enough);
+                            return false;
+                        }
+                    }
+                    ShellUtils.execCommand("chmod 777 "+mContext.getFilesDir(),false);
                     ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r " + path, false);
-                    if (res.result == 0) {
+                    /**修复安装成功result==0 未安装成功问题，添加res.successMsg  判断 2016-12-26 10:53:00 xzl*/
+                    if (res.result == 0&&!TextUtils.isEmpty(res.successMsg)&&res.successMsg.equals("Success")) {
                         onInstallSucess(id);
                     } else {
                         onInstallFail(id);
@@ -248,7 +251,7 @@ public class DownloadManager implements AppInstallListener {
      */
     private void init(InputStream in, OkHttpClient okHttpClient) {
         if (TextUtils.isEmpty(mDownloadPath)) {
-            mDownloadPath = mContext.getCacheDir().getPath() + File.separator + "download";
+            mDownloadPath = mContext.getFilesDir().getAbsolutePath() + File.separator + "download";
             File dir = new File(mDownloadPath);
             dir.mkdirs();
             dir.setWritable(true, false);
@@ -295,12 +298,13 @@ public class DownloadManager implements AppInstallListener {
             return false;
         }
 
-        long space = mContext.getCacheDir().getUsableSpace() / 1014 / 1024;
-        if (space < mLimitSpace) {
-            ToastUtils.showMessageLong(mContext, R.string.error_msg);
-            task.setDownloadStatus(DownloadStatus.SPACE_NOT_ENOUGH);
-            return false;
-        }
+        /**上层已检测空间大小，故此暂时注掉，避免显示空间够用，却下载不了*/
+//        long space = mContext.getFilesDir().getUsableSpace() >>20;
+//        if (space < mLimitSpace) {
+//            ToastUtils.showMessageLong(mContext, R.string.error_msg);
+//            task.setDownloadStatus(DownloadStatus.SPACE_NOT_ENOUGH);
+//            return false;
+//        }
 
         DownloadTask downloadTask = mTaskManager.get(task.getId());
         if (null != downloadTask && downloadTask.getDownloadStatus() != DownloadStatus
@@ -382,12 +386,12 @@ public class DownloadManager implements AppInstallListener {
                 || downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_ERROR
                 || downloadTask.getDownloadStatus() == DownloadStatus.SPACE_NOT_ENOUGH) {
             downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_INIT);
+            mTaskManager.put(downloadTask);
         }
         /**修复暂停恢复任务无法继续下载问题xzl 2016-11-30 16:20:33  start */
-        mTaskManager.put(downloadTask);
         mHander.removeMessages(MSG_SUBMIT_TASK);
-        /**修复暂停恢复任务无法继续下载问题xzl 2016-11-30 16:20:33  end */
         mHander.sendEmptyMessage(MSG_SUBMIT_TASK);
+        /**修复暂停恢复任务无法继续下载问题xzl 2016-11-30 16:20:33  end */
         return downloadTask;
     }
 

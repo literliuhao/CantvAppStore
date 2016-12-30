@@ -4,6 +4,7 @@ import com.can.appstore.AppConstants;
 import com.can.appstore.MyApp;
 import com.can.appstore.entity.ClassicResult;
 import com.can.appstore.entity.TvInfoModel;
+import com.can.appstore.utils.DataEyeUtil;
 
 import java.io.IOException;
 
@@ -13,19 +14,24 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class TvInfoInterceptor implements Interceptor {
+    private boolean tvInfoModelUpdated = false; //用于更新SP中的数据
 
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
         String url = request.url().toString();
-        if (!TvInfoModel.getInstance().alreadyInit() &&
-                !url.startsWith(AppConstants.TMS_GET_MAC_URL) &&
-                !TvInfoModel.getInstance().init(MyApp.getContext())) {
+        if (!url.startsWith(AppConstants.TMS_GET_MAC_URL) &&
+                (!tvInfoModelUpdated ||
+                !TvInfoModel.getInstance().alreadyInit() &&
+                !TvInfoModel.getInstance().init(MyApp.getContext()))) {
             retrofit2.Response<ClassicResult<TvInfoModel>> response = HttpManager.getTmsService().getTvInfo(NetworkUtils.getMac()).execute();
             if (response.isSuccessful()) {
                 ClassicResult<TvInfoModel> body = response.body();
                 if (body != null && body.isSuccessful()) {
                     TvInfoModel.getInstance().copyFrom(body.getData());
+                    TvInfoModel.getInstance().saveToSp(MyApp.getContext());
+                    tvInfoModelUpdated = true;
+                    DataEyeUtil.updateDataEyeChannel(MyApp.getContext());
                 }
             }
         }

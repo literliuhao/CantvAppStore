@@ -1,6 +1,7 @@
 package com.can.appstore.download;
 
 
+import cn.can.downloadlib.BuildConfig;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.tvlib.utils.LogUtil;
@@ -15,37 +16,49 @@ public abstract class DownloadListener implements DownloadTaskListener {
 
     @Override
     public void onPrepare(DownloadTask downloadTask) {
-        LogUtil.d(TAG, "onPrepare:" + downloadTask.toString());
+        if(BuildConfig.DEBUG){
+            LogUtil.d(TAG, "onPrepare:" + downloadTask.toString());
+        }
         onDownloadStatusUpdate(downloadTask);
     }
 
     @Override
     public void onStart(DownloadTask downloadTask) {
-        LogUtil.d(TAG, "onStart:" + downloadTask.toString());
+        if(BuildConfig.DEBUG){
+            LogUtil.d(TAG, "onPrepare:" + downloadTask.toString());
+        }
         onDownloadStatusUpdate(downloadTask);
     }
 
     @Override
     public void onDownloading(DownloadTask downloadTask) {
-        LogUtil.d(TAG, "onDownloading:" + downloadTask.toString());
+        if(BuildConfig.DEBUG){
+            LogUtil.d(TAG, "onPrepare:" + downloadTask.toString());
+        }
         onDownloadStatusUpdate(downloadTask);
     }
 
     @Override
     public void onPause(DownloadTask downloadTask) {
-        LogUtil.d(TAG, "onPause:" + downloadTask.toString());
+        if(BuildConfig.DEBUG){
+            LogUtil.d(TAG, "onPrepare:" + downloadTask.toString());
+        }
         onDownloadStatusUpdate(downloadTask);
     }
 
     @Override
     public void onCancel(DownloadTask downloadTask) {
-        LogUtil.d(TAG, "onCancel:" + downloadTask.toString());
+        if(BuildConfig.DEBUG){
+            LogUtil.d(TAG, "onPrepare:" + downloadTask.toString());
+        }
         onDownloadStatusUpdate(downloadTask);
     }
 
     @Override
     public void onCompleted(DownloadTask downloadTask) {
-        LogUtil.d(TAG, "onCompleted:" + downloadTask.toString());
+        if(BuildConfig.DEBUG){
+            LogUtil.d(TAG, "onPrepare:" + downloadTask.toString());
+        }
         onDownloadStatusUpdate(downloadTask);
     }
 

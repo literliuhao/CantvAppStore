@@ -23,7 +23,6 @@ public class AppConstants {
 
 
     public static final String SYSTEM_PROVIDER_KEY_CHANNELID = "setting_channelid_key";
-    public static final String SYSTEM_PROVIDER_KEY_INTERNAL_MODEL = "setting_hardware_internal_model";
     public static final String SYSTEM_PROVIDER_KEY_MODEL = "setting_model";
 
     public final static List<String> PRE_APPS = new ArrayList<String>() {
@@ -38,6 +37,7 @@ public class AppConstants {
     //正式发包的appid : C6D2811D3790106B15A89CE9B5C477B2B
     //    public static final String DATAEYE_APPID = "C6D2811D3790106B15A89CE9B5C477B2B";//正式appid  发布正式上线包时需要将此打开
     public static final String DATAEYE_APPID = "C79A5CBE3FDFBDA429B11ED6E79FDD19A";//测试appid
+    public static final String DATAEYE_DEFAULT_CHANNEL = "C42S-10002";
     //页面埋点的事件ID
     public static final String RESOURCES_POSITION = "resources_position"; //资源位
     public static final String HOME_PAGE = "homepage"; //首页

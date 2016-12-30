@@ -20,7 +20,7 @@ public class DateUtil {
     public static final String FORMAT_HOUR_MINUTE_SECOND = "HH:mm:ss";
     public static final String FORMAT_24HOURS  = "HH:mm";
     public static final String FORMAT_12HOURS  = "hh:mm";
-    public static final String FORMAT_YEAR_MONTH_DAY = "yy-MM-dd";
+    public static final String FORMAT_YEAR_MONTH_DAY = "yyyy-MM-dd";
     public static final String FORMAT_DATE_TIME = "yy-MM-dd HH:mm";
 
     public static final String PREFIX_AM = "上午  ";
