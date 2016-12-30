@@ -79,7 +79,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     private CustomDialog mCustomDialog;
     private int mLimitInstallSace = 50 * 1024 * 1024;
     private String mInstallApkFileMD5 = "";
-    private String mInstallApkPath = "";
     private boolean isInstalling = false;
     private CanDialog mCanDialog;
     private String mFromPage;
@@ -163,10 +162,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_RUN, DOWNLOAD_INIT_PROGRESS);
             return;
         }
-        mInstallApkPath = downloadPath + "/" + mAppInfo.getName();
-        if (new File(mInstallApkPath).exists()) {
-            mInstallApkFileMD5 = MD5Util.getFileMD5(mInstallApkPath);
-        }
         if (downloadTask != null) {
             int downloadStatus = downloadTask.getDownloadStatus();
             long completedSize = downloadTask.getCompletedSize();
@@ -198,10 +193,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     private void initUpdateButtonStatus() {
         DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(mTaskId);
-        mInstallApkPath = downloadPath + "/" + mAppInfo.getName();
-        if (new File(mInstallApkPath).exists()) {
-            mInstallApkFileMD5 = MD5Util.getFileMD5(mInstallApkPath);
-        }
         if (downloadTask != null) {
             int downloadStatus = downloadTask.getDownloadStatus();
             long completedSize = downloadTask.getCompletedSize();
@@ -284,16 +275,9 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             clickRefreshButtonStatus(isClickUpdateButton, DOWNLOAD_INIT_PROGRESS);
             return;
         } else if (downloadStatus == AppInstallListener.APP_INSTALL_FAIL) {   //安装失败,可能内存不足，安装包出现问题,删除安装包重新下载
-            if (mInstallApkFileMD5.equals(mAppInfo.getMd5())) {  // MD5值相同  安装
-                silentInstall(mAppInfo.getName());
-                refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
-                return;
-            } else {
-                mView.showToast(R.string.install_apk_exception);
-                //                mDownloadManager.removeTask(mTaskId);  // 应该需要从任务中移除
-                //                downloadStatus = DownloadStatus.DOWNLOAD_STATUS_INIT;
-                return;
-            }
+            silentInstall(mAppInfo.getName());
+            refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
+            return;
         }
 
         if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_INIT || downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PREPARE) {
