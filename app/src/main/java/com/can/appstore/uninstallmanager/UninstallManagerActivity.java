@@ -112,6 +112,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         mBtBatchUninstall = (TextView) findViewById(R.id.bt_batch_uninstall);
         mTvItemCurRows = (TextView) findViewById(R.id.tv_cur_rows);
         mProgressStorage = (TextProgressBar) findViewById(R.id.progress_stroage);
+        mProgressStorage.setTextSize(getResources().getDimensionPixelSize(R.dimen.dimen_18px));
         mSelectCount = (TextView) findViewById(R.id.tv_select_count);
         mNotUninstallApp = (TextView) findViewById(R.id.tv_no_data);
         mLinearLayoutSelectApp = (LinearLayout) findViewById(R.id.ll_select_app);
@@ -282,8 +283,8 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
 
     @Override
     public void showCurStorageProgress(int progress, String storage) {
+        Log.d(TAG, "showCurStorageProgress: progress : " + progress + "  storage : " + storage);
         mProgressStorage.setProgress(progress);
-        mProgressStorage.setTextSize(getResources().getDimensionPixelSize(R.dimen.dimen_18px));
         mProgressStorage.setText(storage);
     }
 

@@ -95,7 +95,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     void calculateCurStoragePropgress() {
         long freeSize = SystemUtil.getInternalAvailableSpace(mContext);
         long totalSize = SystemUtil.getInternalTotalSpace(mContext) ;
-        int progress = (int) (((totalSize - freeSize) * 100) / totalSize);
+        int progress = (int) ((totalSize - freeSize) * 100 / totalSize);
         String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + StringUtils.formatFileSize(freeSize, false);
         mView.showCurStorageProgress(progress, freeStorage);
     }
@@ -216,6 +216,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
                 Log.d(TAG, "install packageName : " + packageName);
                 isAppInstallRefresh = true;
                 mLoaderManager.restartLoader(LOADER_ID, null, UninstallManagerPresenter.this);
+                calculateCurStoragePropgress();
             } else if (intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)) {
                 String packageName = intent.getData().getSchemeSpecificPart();
                 Log.d(TAG, "uninstall packageName : " + packageName);
