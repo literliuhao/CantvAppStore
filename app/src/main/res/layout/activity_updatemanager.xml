@@ -15,7 +15,7 @@
         android:nextFocusUp="@id/bt_update_detection"
         android:text="@string/update_bt_detection"
         android:textColor="#ccffffff"
-        android:textSize="35px"
+        android:textSize="@dimen/px34"
         android:visibility="visible"/>
 
     <!--<TextView-->

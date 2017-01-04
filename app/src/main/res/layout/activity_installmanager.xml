@@ -16,7 +16,7 @@
         android:nextFocusUp="@id/bt_install_deleteall"
         android:text="@string/install_bt_deleteall"
         android:textColor="#ccffffff"
-        android:textSize="35px"
+        android:textSize="@dimen/px34"
         android:visibility="visible"/>
 
     <TextView
@@ -35,7 +35,7 @@
         android:nextFocusUp="@id/bt_install_deleteall"
         android:text="@string/install_bt_deleteinstall"
         android:textColor="#ccffffff"
-        android:textSize="35px"
+        android:textSize="@dimen/px34"
         android:visibility="visible"/>
 
     <!--<Button
