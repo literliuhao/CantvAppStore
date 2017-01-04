@@ -231,7 +231,6 @@ public class UpdatePresenter implements UpdateContract.Presenter {
 
                 //发送数量
                 EventBus.getDefault().post(new UpdateApkModel(data.size()));
-                Log.i(TAG, "getUpdateApkNum: " + AutoUpdate.getInstance().mUpdateNumDatas.size());
             }
 
             @Override
