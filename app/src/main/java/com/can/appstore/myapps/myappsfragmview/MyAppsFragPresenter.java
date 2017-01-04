@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.can.appstore.myapps.ui.MyAppsFragment;
@@ -141,6 +142,11 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
                     }
                 }
                 if (mShowList.size() < MyAppsFragment.AT_MOST_SHOW_COUNT && !isContains) {
+                    mShowList.add(PackageUtil.getAppInfo(mContext, packageName));
+                    mMyAppsListDataUtil.saveShowList(mShowList);
+                    Log.d(TAG, "onReceive: saveShowList_size : " + mShowList.size());
+                } else if (mShowList.size() == MyAppsFragment.AT_MOST_SHOW_COUNT &&
+                        TextUtils.isEmpty(mShowList.get(mShowList.size() - 1).packageName) && !isContains) {
                     mShowList.add(PackageUtil.getAppInfo(mContext, packageName));
                     mMyAppsListDataUtil.saveShowList(mShowList);
                     Log.d(TAG, "onReceive: saveShowList_size : " + mShowList.size());
