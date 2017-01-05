@@ -42,6 +42,7 @@ public class InstallPkgUtils {
     private static int INSTALLED = 0; // 表示已经安装，且跟现在这个apk文件是一个版本
     private static int UNINSTALLED = 1; // 表示未安装
     private static int INSTALLED_UPDATE = 2; // 表示已经安装，版本比现在这个版本要低
+    private final static int LIMIT_INSTALL_SAPCE = 50 * 1024 * 1024; //
     public static List<AppInfoBean> myFiles = new ArrayList<AppInfoBean>();//安装包集合
 
     /**
