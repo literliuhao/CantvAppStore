@@ -77,7 +77,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     private String downloadPath = "";
     private String mPackageName = "";
     private CustomDialog mCustomDialog;
-    private int mLimitInstallSace = 50 * 1024 * 1024;
+    private long mLimitInstallSace = 50 * 1024 * 1024;
     private String mInstallApkFileMD5 = "";
     private boolean isInstalling = false;
     private CanDialog mCanDialog;
@@ -276,7 +276,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             return;
         } else if (downloadStatus == AppInstallListener.APP_INSTALL_FAIL) {   //安装失败,可能内存不足，安装包出现问题,删除安装包重新下载
             silentInstall(mAppInfo.getName());
-            refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
             return;
         }
 
@@ -394,7 +393,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public void onInstalling(DownloadTask downloadTask) {
         if (downloadTask.getId().equalsIgnoreCase(mTaskId)) {
             Log.d(TAG, "onInstalling: " + downloadTask);
-            refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
+            //            refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
         }
     }
 
@@ -405,8 +404,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     @Override
     public void onInstallFail(String id) {
-        Log.d(TAG, "onInstallFail: " + id);
         if (id.equalsIgnoreCase(mTaskId)) {
+            Log.d(TAG, "onInstallFail: " + id);
             isInstalling = false;
             refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, DOWNLOAD_FINISH_PROGRESS);
         }
@@ -548,7 +547,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
      */
     private void silentInstall(String appName) {
         Log.d(TAG, "silentInstall ");
-        if (SdcardUtils.getApkInstallDirSzie(mContext) <= (mLimitInstallSace + mAppInfo.getSize() * 1.5)) {  // 安装内存不足
+        if (mContext.getFilesDir().getUsableSpace() <= (mLimitInstallSace + mAppInfo.getSize() * 1.5)) {  // 安装内存不足
             showInsufficientStorageSpaceDialog();
             return;
         }
