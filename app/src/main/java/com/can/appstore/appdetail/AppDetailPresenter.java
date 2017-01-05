@@ -286,6 +286,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             Task.setId(fileName);
             Task.setUrl(Url);
             Task.setIcon(mAppInfo.getIcon());
+            Task.setPkg(mAppInfo.getPackageName());
             if (mAppInfo.getSize() > SystemUtil.getInternalAvailableSpace(mContext)) {
                 mView.showToast(R.string.error_msg);
                 return;
