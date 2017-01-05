@@ -233,7 +233,7 @@ public class InstallPkgUtils {
         if (res.result == 0&& !TextUtils.isEmpty(res.successMsg) && res.successMsg.equals("Success")) {
             return 0;
         } else {
-            return res.result;
+            return 1;
         }
     }
 
