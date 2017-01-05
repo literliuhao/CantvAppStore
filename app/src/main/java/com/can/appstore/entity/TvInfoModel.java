@@ -1,13 +1,13 @@
 package com.can.appstore.entity;
 
-import android.content.ContentResolver;
 import android.content.Context;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.can.appstore.AppConstants;
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+
+import cn.can.tvlib.utils.PreferencesUtils;
 
 /**
  * TMS机型信息
@@ -15,6 +15,7 @@ import com.google.gson.annotations.SerializedName;
  * @author 陈建
  */
 public class TvInfoModel {
+    public static final String TAG = "TvInfoModel";
     private static final TvInfoModel instance = new TvInfoModel();
 
     /**
@@ -107,24 +108,25 @@ public class TvInfoModel {
         this.vendorId = that.vendorId;
     }
 
-//    public boolean init(Context context) {
-//        if (alreadyInit()) return true;
-//        try {
-//            ContentResolver contentResolver = context.getApplicationContext().getContentResolver();
-//            this.channelId = Settings.System.getString(contentResolver, AppConstants.SYSTEM_PROVIDER_KEY_CHANNELID);
-//            this.internalmodelName = Settings.System.getString(contentResolver, AppConstants.SYSTEM_PROVIDER_KEY_INTERNAL_MODEL);
-//            this.modelName = Settings.System.getString(contentResolver, AppConstants.SYSTEM_PROVIDER_KEY_MODEL);
-//            if (channelId != null) {
-//                int i = channelId.indexOf('|');
-//                if (i >= 0) {
-//                    channelId = channelId.substring(0, i).trim();
-//                }
-//            } else {
-//                return false;
-//            }
-//        } catch (Exception ignore) {
-//            Log.d("TvInfoModel", "init from local failed");
-//        }
-//        return alreadyInit();
-//    }
+    public boolean init(Context context) {
+        if (alreadyInit()) return true;
+        String sp_key = PreferencesUtils.getString(context, TAG, null);
+        if (sp_key == null) {
+            return false;
+        }
+        Gson gson = new Gson();
+        TvInfoModel tvInfoModel = gson.fromJson(sp_key, TvInfoModel.class);
+        copyFrom(tvInfoModel);
+        return alreadyInit();
+    }
+
+    public void saveToSp(Context context) {
+        if (context == null) {
+            return;
+        }
+        Gson gson = new Gson();
+        String json = gson.toJson(this);
+        PreferencesUtils.putString(context, TAG, json);
+        Log.d(TAG, "saveToSp");
+    }
 }

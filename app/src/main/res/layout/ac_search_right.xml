@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/right_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/right_view"
                 android:background="#252930">
 
     <!--显示行数-->
@@ -44,6 +44,18 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/applist_recycle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/px70"
+            android:layout_marginRight="@dimen/px110"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/px40"
+            android:paddingTop="@dimen/px20"
+            android:visibility="gone"
+            />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/hotkey_recycle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/px70"

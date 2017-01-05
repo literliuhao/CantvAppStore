@@ -55,6 +55,10 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     private boolean isSelect;
     private boolean isLastRemove = false;
     private CanRecyclerView.CanGridLayoutManager mLayoutManager;
+    public static final int KEYCODE_EFFECT_INTERVAL_UNLIMIT = 0;
+    public static final int KEYCODE_EFFECT_INTERVAL_NORMAL = 200;
+    private long mLastKeyCodeTimePoint;
+    private int keyCodeEffectInterval = KEYCODE_EFFECT_INTERVAL_NORMAL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +74,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     public void initFocus() {
         mFocusMoveUtil = new FocusMoveUtil(UninstallManagerActivity.this, getWindow().getDecorView(), R.mipmap.btn_focus);
         measureFocusActiveRegion();
+        mFocusMoveUtil.hideFocus();
         mListFocusMoveRunnable = new ListFocusMoveRunnable();
     }
 
@@ -107,6 +112,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         mBtBatchUninstall = (TextView) findViewById(R.id.bt_batch_uninstall);
         mTvItemCurRows = (TextView) findViewById(R.id.tv_cur_rows);
         mProgressStorage = (TextProgressBar) findViewById(R.id.progress_stroage);
+        mProgressStorage.setTextSize(getResources().getDimensionPixelSize(R.dimen.dimen_18px));
         mSelectCount = (TextView) findViewById(R.id.tv_select_count);
         mNotUninstallApp = (TextView) findViewById(R.id.tv_no_data);
         mLinearLayoutSelectApp = (LinearLayout) findViewById(R.id.ll_select_app);
@@ -122,7 +128,8 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             @Override
             public void run() {
                 mBtBatchUninstall.setFocusable(true);
-                mBtBatchUninstall.requestFocus();
+                mFocusMoveUtil.showFocus();
+                mFocusMoveUtil.setFocusView(mBtBatchUninstall);
             }
         });
     }
@@ -183,6 +190,26 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     }
 
     @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        Log.d(TAG, "dispatchKeyEvent: isRefreshComplete: " + mPresenter.isRefreshComplete);
+        if (event.getAction() == KeyEvent.ACTION_DOWN && !mPresenter.isRefreshComplete) {
+            return true;
+        }
+        if (event.getAction() == KeyEvent.ACTION_DOWN && keyCodeEffectInterval != KEYCODE_EFFECT_INTERVAL_UNLIMIT) {
+            long time = System.currentTimeMillis();
+            if (mLastKeyCodeTimePoint == 0) {
+                mLastKeyCodeTimePoint = System.currentTimeMillis();
+                return super.dispatchKeyEvent(event);
+            } else if (time - mLastKeyCodeTimePoint < keyCodeEffectInterval) {
+                return true;
+            } else {
+                mLastKeyCodeTimePoint = System.currentTimeMillis();
+            }
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Log.d(TAG, "onKeyDow : " + keyCode);
         if (mUninstallManagerAdapter != null && mUninstallManagerAdapter.getItemCount() > 0) {
@@ -218,6 +245,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
 
     @Override
     public void loadAllAppInfoSuccess(List<PackageUtil.AppInfo> infoList) {
+        mFocusMoveUtil.showFocus();
         Log.d(TAG, "loadAllAppInfoSuccess: infoList : " + infoList);
         if (infoList.size() == 0) {
             mNotUninstallApp.setVisibility(View.VISIBLE);
@@ -255,8 +283,8 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
 
     @Override
     public void showCurStorageProgress(int progress, String storage) {
+        Log.d(TAG, "showCurStorageProgress: progress : " + progress + "  storage : " + storage);
         mProgressStorage.setProgress(progress);
-        mProgressStorage.setTextSize(getResources().getDimensionPixelSize(R.dimen.dimen_18px));
         mProgressStorage.setText(storage);
     }
 
@@ -372,7 +400,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             @Override
             public void onClick(View view, int position, Object data) {
                 PackageUtil.AppInfo info = (PackageUtil.AppInfo) data;
-                mPresenter.showUninstallDialog(info.appIcon, info.appName, info.packageName, false);
+                mPresenter.showUninstallDialog(info.appIcon, info.appName, info.packageName, false, position);
             }
         });
 

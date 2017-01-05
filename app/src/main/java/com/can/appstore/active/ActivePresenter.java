@@ -25,7 +25,9 @@ import cn.can.downloadlib.MD5;
 import cn.can.tvlib.utils.ApkUtils;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PackageUtil;
+import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.StringUtils;
+import cn.can.tvlib.utils.SystemUtil;
 import retrofit2.Response;
 
 /**
@@ -178,6 +180,10 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
             downloadTask.setFileName(mAppInfo.getName());
             downloadTask.setId(md5);
             downloadTask.setUrl(downloadUrl);
+            if(mAppInfo.getSize()> SystemUtil.getInternalAvailableSpace(mContext)){
+                PromptUtils.toastShort(mContext,mContext.getString(R.string.error_msg));
+                return;
+            }
             mDownloadManger.addDownloadTask(downloadTask, ActivePresenter.this);
             mDownloadManger.setAppInstallListener(ActivePresenter.this);
 

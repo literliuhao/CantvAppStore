@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">看尚应用商城</string>
+    <string name="app_name">看尚应用商店</string>
     <!-- custom -->
     <string name="loading">加载中,请稍后…</string>
 
@@ -32,7 +32,7 @@
     <string name="index_app_update">个应用可更新</string>
     <string name="index_data_error">数据格式异常请重启应用商店</string>
     <string name="index_nofind">未找到相关应用</string>
-    <string name="index_exit_titile">确定要退出应用商城吗</string>
+    <string name="index_exit_titile">确定要退出应用商店吗</string>
     <string name="index_exit">退出</string>
     <string name="index_cancel">取消</string>
     <!--首页管理-->
@@ -61,6 +61,7 @@
     <string name="update_app_size">12.5M</string>
     <string name="update_setting_start">已开启</string>
     <string name="update_setting_stop">已关闭</string>
+    <string name="update_already_updated">已更新</string>
     <string name="update_download_waitting">等待中</string>
     <string name="update_download_installing">安装中</string>
     <string name="update_download_installfalse">安装失败</string>
@@ -147,6 +148,7 @@
     <string name="download_faild_memory_lack">内存不足%s下载失败</string>
     <string name="install_faild_memory_lack">安装内存不足%s安装失败</string>
     <string name="install_apk_fail">安装失败</string>
+    <string name="install_apk_exception">安装包异常</string>
     <string name="network_connection_error">网络连接异常</string>
     <string name="unkonw_error">发生未知错误</string>
     <string name="network_connection_disconnect">网络连接已断开</string>
@@ -230,7 +232,7 @@
     <string name="contact_us">联系我们</string>
 
     <!-- 清理缓存 -->
-    <string name="if_clear_cache">是否要清理应用商城缓存数据？</string>
+    <string name="if_clear_cache">是否要清理应用商店缓存数据？</string>
     <string name="confirm">确定</string>
     <string name="clear_cache_success">缓存清理成功</string>
     <string name="all_apps">全部应用</string>

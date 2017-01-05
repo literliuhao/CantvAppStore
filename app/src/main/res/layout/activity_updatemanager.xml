@@ -15,7 +15,7 @@
         android:nextFocusUp="@id/bt_update_detection"
         android:text="@string/update_bt_detection"
         android:textColor="#ccffffff"
-        android:textSize="35px"
+        android:textSize="@dimen/px34"
         android:visibility="visible"/>
 
     <!--<TextView-->
@@ -122,5 +122,5 @@
         android:layout_marginTop="@dimen/px80"
         android:layout_toLeftOf="@id/tv_update_totalnum"
         android:textColor="#ccffffff"
-        android:textSize="32px"/>
+        android:textSize="@dimen/px32"/>
 </RelativeLayout>

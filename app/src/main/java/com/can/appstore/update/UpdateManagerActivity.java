@@ -229,6 +229,10 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                     showToast(getResources().getString(R.string.no_network));
                     return;
                 }
+                if(mUpdateList.get(position).getUpdated()){
+                    showToast(R.string.update_already_updated);
+                    return;
+                }
                 String downloadUrl = mUpdateList.get(position).getDownloadUrl();
 
                 final ProgressBar progress = (ProgressBar) view.findViewById(R.id.pb_updateapp_progressbar);
@@ -249,7 +253,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                 } else {
                     downloadTask = new DownloadTask();
                     String md5 = MD5.MD5(downloadUrl);
-                    downloadTask.setFileName(mUpdateList.get(position).getAppName() + "1");
+                    downloadTask.setFileName(mUpdateList.get(position).getAppName());
                     downloadTask.setId(md5);
                     downloadTask.setUrl(downloadUrl);
                     status.setText(getResources().getString(R.string.update_download_waitting));
@@ -349,6 +353,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                         @Override
                         public void onInstallSucess(String id) {
                             int itemPosition = mPresenter.getItemPosition(id);
+                            mUpdateList.get(itemPosition).setUpdated(true);
                             View childAt = mRecyclerView.getChildAt(itemPosition);
                             final TextView status = (TextView) childAt.findViewById(R.id.tv_updateapp_downloading);
                             final ImageView updatedicon = (ImageView) childAt.findViewById(R.id.iv_updateapp_updatedicon);

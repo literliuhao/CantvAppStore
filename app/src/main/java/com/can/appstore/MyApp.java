@@ -8,10 +8,10 @@ import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Build;
 import android.support.multidex.MultiDex;
-import android.text.TextUtils;
+import android.util.Log;
 
-import com.can.appstore.entity.TvInfoModel;
 import com.can.appstore.upgrade.MyUpgradeListener;
+import com.can.appstore.utils.DataEyeUtil;
 import com.dataeye.sdk.api.app.DCAgent;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
@@ -29,8 +29,8 @@ import com.tencent.tinker.loader.app.DefaultApplicationLike;
 public class MyApp extends DefaultApplicationLike {
 
     private static final String TAG = "Tinker.SampleApplicationLike";
-    private String mDataeyeChannelId = "C42S-10002";//测试渠道,正式的默认渠道
     private static MyApp INSTANCE;
+
     public MyApp(Application application, int tinkerFlags,
                  boolean tinkerLoadVerifyFlag, long applicationStartElapsedTime,
                  long applicationStartMillisTime, Intent tinkerResultIntent, Resources[] resources,
@@ -50,10 +50,12 @@ public class MyApp extends DefaultApplicationLike {
     }
 
     private void initDataEye() {
-        getDataEyeChannelId();
+        String dataEyeChannelId = DataEyeUtil.getDataEyeChannel(getContext());
         DCAgent.openAdTracking();//是否跟踪推广分析，默认是False，调用即为True.该接口必须在SDK初始化之前调用.
+
         DCAgent.initWithAppIdAndChannelId(getApplication().getApplicationContext(),
-                AppConstants.DATAEYE_APPID, mDataeyeChannelId);
+                AppConstants.DATAEYE_APPID, dataEyeChannelId);
+        Log.d("DataEye", "DataEye渠道号: " + dataEyeChannelId);
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -72,20 +74,6 @@ public class MyApp extends DefaultApplicationLike {
 
     public static Context getContext() {
         return INSTANCE.getApplication().getApplicationContext();
-    }
-
-    private void getDataEyeChannelId() {
-//        TvInfoModel.getInstance().init(getApplication());
-        String channelId = TvInfoModel.getInstance().getChannelId();
-        String modelName = TvInfoModel.getInstance().getModelName();
-        if (channelId != null && channelId.contains("|")) {
-            channelId = channelId.substring(0, channelId.indexOf("|")).trim();
-        }
-        if (!TextUtils.isEmpty(modelName) && !TextUtils.isEmpty(channelId)) {
-            mDataeyeChannelId = modelName + "-" + channelId;
-        } else if (!TextUtils.isEmpty(channelId)) {
-            mDataeyeChannelId = channelId;
-        }
     }
 
     /**

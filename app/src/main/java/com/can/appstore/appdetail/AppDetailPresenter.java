@@ -40,6 +40,7 @@ import cn.can.tvlib.utils.MD5Util;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtils;
+import cn.can.tvlib.utils.SystemUtil;
 import retrofit2.Response;
 
 /**
@@ -61,7 +62,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public final static String ARGUMENT_TOPICID = "topicid";
     public final static String ARGUMENT_FROMPAGE = "fromPage";
     public final static String ARGUMENT_FROMPAGE_SEND_VALUE = "value";
-    public int downlaodErrorCode = 0;//下载错误
     private Activity mContext;
     private AppDetailContract.View mView;
     private DownloadManager mDownloadManager;
@@ -77,9 +77,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     private String downloadPath = "";
     private String mPackageName = "";
     private CustomDialog mCustomDialog;
-    private int mLimitInstallSace = 50 * 1024 * 1024;
+    private long mLimitInstallSace = 50 * 1024 * 1024;
     private String mInstallApkFileMD5 = "";
-    private String mInstallApkPath = "";
     private boolean isInstalling = false;
     private CanDialog mCanDialog;
     private String mFromPage;
@@ -158,13 +157,10 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     private void initDownloadButtonStatus() {
         DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(mTaskId);
+
         if (ApkUtils.isAvailable(mContext, mPackageName)) {
             mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_RUN, DOWNLOAD_INIT_PROGRESS);
             return;
-        }
-        mInstallApkPath = downloadPath + mTaskId;
-        if (new File(mInstallApkPath).exists()) {
-            mInstallApkFileMD5 = MD5Util.getFileMD5(mInstallApkPath);
         }
         if (downloadTask != null) {
             int downloadStatus = downloadTask.getDownloadStatus();
@@ -197,10 +193,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     private void initUpdateButtonStatus() {
         DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(mTaskId);
-        mInstallApkPath = downloadPath + mTaskId;
-        if (new File(mInstallApkPath).exists()) {
-            mInstallApkFileMD5 = MD5Util.getFileMD5(mInstallApkPath);
-        }
         if (downloadTask != null) {
             int downloadStatus = downloadTask.getDownloadStatus();
             long completedSize = downloadTask.getCompletedSize();
@@ -241,6 +233,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     private void initDownloadManager() {
         mDownloadManager = DownloadManager.getInstance(mContext.getApplicationContext());
         downloadPath = mDownloadManager.getDownloadPath();
+        mDownloadManager.setAppInstallListener(AppDetailPresenter.this);
     }
 
     @Override
@@ -282,15 +275,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             clickRefreshButtonStatus(isClickUpdateButton, DOWNLOAD_INIT_PROGRESS);
             return;
         } else if (downloadStatus == AppInstallListener.APP_INSTALL_FAIL) {   //安装失败,可能内存不足，安装包出现问题,删除安装包重新下载
-            if (mInstallApkFileMD5.equals(mAppInfo.getMd5())) {  // MD5值相同  安装
-                silentInstall(mAppInfo.getName());
-                return;
-            } else {
-                mView.showToast(R.string.install_apk_fail);
-                //                mDownloadManager.removeTask(mTaskId);  // 应该需要从任务中移除
-                //                downloadStatus = DownloadStatus.DOWNLOAD_STATUS_INIT;
-                return;
-            }
+            silentInstall(mAppInfo.getName());
+            return;
         }
 
         if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_INIT || downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PREPARE) {
@@ -300,6 +286,10 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             Task.setId(fileName);
             Task.setUrl(Url);
             Task.setIcon(mAppInfo.getIcon());
+            if (mAppInfo.getSize() > SystemUtil.getInternalAvailableSpace(mContext)) {
+                mView.showToast(R.string.error_msg);
+                return;
+            }
             mDownloadManager.addDownloadTask(Task, AppDetailPresenter.this);
             clickRefreshButtonStatus(isClickUpdateButton, per);
             downloadCount();
@@ -343,7 +333,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(mTaskId);
         if (downloadTask != null) {
             mDownloadManager.addDownloadListener(downloadTask, AppDetailPresenter.this);
-            mDownloadManager.setAppInstallListener(AppDetailPresenter.this);
         }
     }
 
@@ -404,7 +393,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public void onInstalling(DownloadTask downloadTask) {
         if (downloadTask.getId().equalsIgnoreCase(mTaskId)) {
             Log.d(TAG, "onInstalling: " + downloadTask);
-            refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
+            //            refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_INSTALLING, DOWNLOAD_FINISH_PROGRESS);
         }
     }
 
@@ -415,8 +404,9 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     @Override
     public void onInstallFail(String id) {
-        Log.d(TAG, "onInstallFail: " + id);
         if (id.equalsIgnoreCase(mTaskId)) {
+            Log.d(TAG, "onInstallFail: " + id);
+            isInstalling = false;
             refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, DOWNLOAD_FINISH_PROGRESS);
         }
     }
@@ -433,7 +423,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     public void onError(DownloadTask downloadTask, int errorCode) {
         if (downloadTask.getId().equalsIgnoreCase(mTaskId)) {
             Log.d(TAG, "onError CompletedSize: " + downloadTask.getCompletedSize() + " errorCode:" + errorCode);
-            downlaodErrorCode = errorCode;
             float per = calculatorPercent(downloadTask.getCompletedSize(), downloadTask.getTotalSize());
             if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_FILE_NOT_FOUND) {
                 mView.showToast(R.string.downlaod_error);
@@ -543,7 +532,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             mPairs.clear();
             mPairs = null;
         }
-        if(mCanDialog != null){
+        if (mCanDialog != null) {
             mCanDialog.dismiss();
             mCanDialog.release();
             mCanDialog = null;
@@ -558,7 +547,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
      */
     private void silentInstall(String appName) {
         Log.d(TAG, "silentInstall ");
-        if (SdcardUtils.getApkInstallDirSzie(mContext) <= (mLimitInstallSace + mAppInfo.getSize() * 1.5)) {  // 安装内存不足
+        if (mContext.getFilesDir().getUsableSpace() <= (mLimitInstallSace + mAppInfo.getSize() * 1.5)) {  // 安装内存不足
             showInsufficientStorageSpaceDialog();
             return;
         }
@@ -574,7 +563,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
         String title = mContext.getResources().getString(R.string.space_inequacy);
         String ok = mContext.getResources().getString(R.string.ok);
         String hint = mContext.getResources().getString(R.string.space_inequacy_hint);
-        if(mCanDialog != null){
+        if (mCanDialog != null) {
             mCanDialog.dismiss();
             mCanDialog.release();
             mCanDialog = null;

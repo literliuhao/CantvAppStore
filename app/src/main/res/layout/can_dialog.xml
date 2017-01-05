@@ -19,11 +19,11 @@
             android:paddingBottom="@dimen/dimen_15px"
             android:gravity="center">
 
-            <ImageView
+            <cn.can.tvlib.ui.view.RoundCornerImageView
                 android:id="@+id/iv_dialog_icon"
                 android:layout_width="@dimen/px60"
                 android:layout_height="@dimen/px60"
-                android:scaleType="centerCrop"
+                android:scaleType="fitXY"
                 android:visibility="gone"/>
 
             <TextView

@@ -30,7 +30,6 @@ import com.can.appstore.myapps.myappsfragmview.MyAppsFragPresenter;
 import com.can.appstore.myapps.myappsfragmview.MyAppsFramentContract;
 import com.can.appstore.myapps.utils.MyAppsListDataUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
@@ -67,7 +66,6 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
     private Button mRemoveAppBtn;
     //显示的list数据
     private List<PackageUtil.AppInfo> mShowList;
-    public static boolean isShowAdd = false;
 
     public MyAppsFragment() {
     }
@@ -103,11 +101,9 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
     public void loadAppInfoSuccess(List<AppInfo> infoList, int mySppListSize) {
         Log.d(TAG, "loadAppInfoSuccess: infoList : " + infoList.size() + "    mySppListSize : " + mySppListSize);
         mShowList = infoList;
-        isShowAdd = false;
         if (infoList.size() - LEAST_SHOW_COUNT < mySppListSize && infoList.size() < AT_MOST_SHOW_COUNT
                 && !infoList.get(infoList.size() - 1).appName.equals(getString(R.string.add_app))) {
             infoList.add(new AppInfo(getResources().getString(R.string.add_app), getActivity().getResources().getDrawable(R.drawable.addapp_icon)));
-            isShowAdd = true;
         }
         if (mMyAppsRvAdapter == null) {
             mMyAppsRvAdapter = new MyAppsRvAdapter(infoList);
@@ -150,6 +146,12 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
                 }
                 if (keyCode == KeyEvent.KEYCODE_MENU && !TextUtils.isEmpty(mShowList.get(position).packageName) && event.getAction() == KeyEvent.ACTION_DOWN) {
                     showEditView(position, item);
+                    return true;
+                }
+                /**bugfix jira APPSTORE-216 当我的应用item小于6个是，在其他导航长按右键移动焦点，页面移至“我的应用”后焦点框消失  xzl 2016-12-29 16:46:03*/
+                if (position == mMyAppsRvAdapter.getItemCount() - 1
+                        && KeyEvent.KEYCODE_DPAD_RIGHT == keyCode
+                       &&mShowList.size()<6 ) {
                     return true;
                 }
                 return false;
@@ -285,7 +287,6 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
             mMyAppsFramPresenter.unRegiestr();
             mMyAppsFramPresenter.release();
         }
-        isShowAdd = false;
         super.onDestroyView();
     }
 

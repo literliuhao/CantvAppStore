@@ -280,6 +280,9 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
                 DataUtils.getInstance(MyApp.getContext()).clearData();
                 // 清理数据库
                 new MessageDBManager(activity).clearAllMsg();
+
+                DownloadManager.getInstance(activity).cancelAll();
+
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {

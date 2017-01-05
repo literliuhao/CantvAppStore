@@ -34,6 +34,7 @@ import cn.can.tvlib.utils.LogUtil;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PromptUtils;
 import cn.can.tvlib.utils.StringUtils;
+import cn.can.tvlib.utils.SystemUtil;
 
 /**
  * Created by laiforg on 2016/10/31.
@@ -452,9 +453,14 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                             PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string.no_network));
                             break;
                         }
+                        if(holder.downloadTask.getTotalSize()> SystemUtil.getInternalAvailableSpace(v.getContext())){
+                            PromptUtils.toastShort(v.getContext(),v.getContext().getString(R.string.error_msg));
+                            break;
+                        }
                         holder.downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
                         DownloadManager.getInstance(v.getContext()).
                                 addDownloadTask(holder.downloadTask, holder.downloadListener);
+
                         break;
                     case DownloadStatus.DOWNLOAD_STATUS_COMPLETED:
                     case AppInstallListener.APP_INSTALL_FAIL:
@@ -505,8 +511,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string.download_installing));
                     return;
                 }
-                if (AppInstallListener.APP_INSTALL_SUCESS != holder.downloadTask.getDownloadStatus()
-                        && AppInstallListener.APP_INSTALL_FAIL != holder.downloadTask.getDownloadStatus()) {
+                if (AppInstallListener.APP_INSTALL_SUCESS != holder.downloadTask.getDownloadStatus()) {
                     DownloadManager.getInstance(v.getContext().getApplicationContext()).cancel(holder.downloadTask);
                 }
                 if (mOnItemEventListener != null) {
