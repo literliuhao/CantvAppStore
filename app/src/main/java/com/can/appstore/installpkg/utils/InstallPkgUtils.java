@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.can.appstore.MyApp;
@@ -229,7 +230,7 @@ public class InstallPkgUtils {
         ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r" + path, false);
         Log.i("installPkgUtils", "installApp: " + res.result);
         //成功
-        if (res.result == 0) {
+        if (res.result == 0&& !TextUtils.isEmpty(res.successMsg) && res.successMsg.equals("Success")) {
             return 0;
         } else {
             return res.result;
