@@ -96,7 +96,7 @@ public class DownloadManager implements AppInstallListener {
                     DownloadTask downloadtask = getCurrentTaskById(id);
                     if (downloadtask != null) {
                         /**添加安装空间的判断*/
-                        if (ApkUtils.isEnoughInstallSpaceSize(downloadtask.getTotalSize())) {
+                        if (!ApkUtils.isEnoughInstallSpaceSize(downloadtask.getTotalSize())) {
                             onInstallFail(id);
                             ToastUtils.showMessageLong(mContext.getApplicationContext(), R.string.error_install_space_not_enough);
                             return false;
