@@ -420,7 +420,7 @@ public class DownloadManager implements AppInstallListener {
      *
      * @param id
      */
-    private void deleteTask(String id) {
+    public void deleteTask(String id) {
         mTaskManager.remove(id);
         mDownloadDao.deleteByKey(id);
         if (mTaskCntListener != null) {

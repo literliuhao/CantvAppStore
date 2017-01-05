@@ -18,7 +18,8 @@ public class AppInfoBean {
     private String packageName;
     private String appName;
     private String iconUrl;//图标，url
-    private String appSize;
+    private int appSize;
+    private String appSizeStr;
     private String versionCode;
     private String downloadUrl;
     private int progress;
@@ -130,12 +131,20 @@ public class AppInfoBean {
         this.iconUrl = iconUrl;
     }
 
-    public String getAppSize() {
+    public int getAppSize() {
         return appSize;
     }
 
-    public void setAppSize(String appSize) {
+    public void setAppSize(int appSize) {
         this.appSize = appSize;
+    }
+
+    public String getAppSizeStr() {
+        return appSizeStr;
+    }
+
+    public void setAppSizeStr(String appSizeStr) {
+        this.appSizeStr = appSizeStr;
     }
 
     public String getVersionCode() {
@@ -191,7 +200,8 @@ public class AppInfoBean {
             appInfo.setMd5(bean.getMd5());
             appInfo.setVersionName(bean.getVersionName());
             appInfo.setUrl(bean.getDownloadUrl());
-            appInfo.setSizeStr(bean.getAppSize());
+            appInfo.setSize(bean.getAppSize());
+            appInfo.setSizeStr(bean.getAppSizeStr());
             return appInfo;
         } else {
             return null;
@@ -214,7 +224,8 @@ public class AppInfoBean {
             appInfoBean.setMd5(bean.getMd5());//MD5值
             appInfoBean.setVersionName(bean.getVersionName());//版本名
             appInfoBean.setDownloadUrl(bean.getUrl());//下载地址
-            appInfoBean.setAppSize(bean.getSizeStr());//apk大小
+            appInfoBean.setAppSize(bean.getSize());//apk大小
+            appInfoBean.setAppSizeStr(bean.getSizeStr());
             return appInfoBean;
         } else {
             return null;
@@ -239,7 +250,8 @@ public class AppInfoBean {
             appInfoBean.setMd5(bean.getMd5());//MD5值
             appInfoBean.setVersionName(bean.getVersionName());//版本名
             appInfoBean.setDownloadUrl(bean.getUrl());//下载地址
-            appInfoBean.setAppSize(bean.getSizeStr());//apk大小
+            appInfoBean.setAppSize(bean.getSize());//apk大小
+            appInfoBean.setAppSizeStr(bean.getSizeStr());
             mAppInfoBeanList.add(appInfoBean);
         }
         return mAppInfoBeanList;
@@ -262,4 +274,5 @@ public class AppInfoBean {
         }
         return mAppInfoList;
     }
+
 }

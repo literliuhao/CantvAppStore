@@ -61,7 +61,7 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
         String downloadUrl = mDatas.get(position).getDownloadUrl();
         DownloadTask curDownloadTask = mDownloadManager.getCurrentTaskById(MD5.MD5(downloadUrl));
         updateHolder.appName.setText(date.getAppName());
-        updateHolder.appSize.setText(date.getAppSize());
+        updateHolder.appSize.setText(date.getAppSizeStr());
         updateHolder.appVersioncode.setText(mDatas.get(position).getVersionName());
         updateHolder.appIcon.load(mDatas.get(position).getIconUrl());
         updateHolder.updatedIcon.setVisibility(mDatas.get(position).getUpdated() ? View.VISIBLE : View.INVISIBLE);
@@ -245,7 +245,7 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
         }
 
     private void getInstallStatus(DownloadTask downloadTask, UpdateViewHolder updateHolder) {
-        int result = InstallPkgUtils.installApp(downloadTask.getSaveDirPath());
+        int result = InstallPkgUtils.installApp(downloadTask.getSaveDirPath(),downloadTask.getTotalSize());
         if (result == 0) {
             updateHolder.downloading.setVisibility(View.INVISIBLE);
             //updateHolder.downloading.setText("安装成功");

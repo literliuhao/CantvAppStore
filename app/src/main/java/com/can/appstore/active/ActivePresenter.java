@@ -180,8 +180,9 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
             downloadTask.setFileName(mAppInfo.getName());
             downloadTask.setId(md5);
             downloadTask.setUrl(downloadUrl);
-            if(mAppInfo.getSize()> SystemUtil.getInternalAvailableSpace(mContext)){
-                PromptUtils.toastShort(mContext,mContext.getString(R.string.error_msg));
+            downloadTask.setPkg(mAppInfo.getPackageName());
+            if(!cn.can.downloadlib.utils.ApkUtils.isEnoughInstallSpaceSize(mAppInfo.getSize())){
+                PromptUtils.toastShort(mContext,mContext.getString(R.string.space_inequacy));
                 return;
             }
             mDownloadManger.addDownloadTask(downloadTask, ActivePresenter.this);
