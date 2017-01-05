@@ -228,7 +228,7 @@ public class InstallPkgUtils {
     public static int installApp(String path,long apkSize) {
         if (ApkUtils.isEnoughInstallSpaceSize(apkSize)) {
             ToastUtils.showMessageLong(MyApp.getContext(), cn.can.downloadlib.R.string.error_msg);
-            return 50;
+            return 1;
         }
         ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r" + path, false);
         Log.i("installPkgUtils", "installApp: " + res.result);

@@ -230,7 +230,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                     showToast(getResources().getString(R.string.no_network));
                     return;
                 }
-                if(mUpdateList.get(position).getUpdated()){
+                if (mUpdateList.get(position).getUpdated()) {
                     showToast(R.string.update_already_updated);
                     return;
                 }
@@ -249,11 +249,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                     if (taskstatus == AppInstallListener.APP_INSTALL_FAIL) {
                         status.setText(getResources().getString(R.string.update_download_installing));
                         status.setVisibility(View.VISIBLE);
-                        if(ApkUtils.isEnoughInstallSpaceSize(downloadTask.getTotalSize())){
-                            installUpdateApk(progress, status, updatedIcon, saveDirPath, position, downloadTask.getUrl());
-                        }else{
-                            showToast(cn.can.downloadlib.R.string.error_install_space_not_enough);
-                        }
+                        installUpdateApk(progress, status, updatedIcon, saveDirPath, position, downloadTask.getUrl());
                     }
                 } else {
                     downloadTask = new DownloadTask();
@@ -482,6 +478,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                 break;
         }
     }
+
     protected void initData() {
         mPresenter.getSDInfo();
         mPresenter.getInstallPkgList();
@@ -680,16 +677,16 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         View childAt = mRecyclerView.getChildAt(itemPosition);
         final TextView status = (TextView) childAt.findViewById(R.id.tv_updateapp_downloading);
         final ImageView updateIcon = (ImageView) childAt.findViewById(R.id.iv_updateapp_updatedicon);
-        if(number == 0){
+        if (number == 0) {
             status.setVisibility(View.INVISIBLE);
             updateIcon.setVisibility(View.VISIBLE);
             mPresenter.getUpdateApkNum(itemPosition);
-            showToast(model.getAppname()+getResources().getString(R.string.install_success));
-        }else if(number == 1){
+            showToast(model.getAppname() + getResources().getString(R.string.install_success));
+        } else if (number == 1) {
             status.setVisibility(View.VISIBLE);
             status.setText(getResources().getString(R.string.update_download_installfalse));
             updateIcon.setVisibility(View.INVISIBLE);
-            showToast(model.getAppname()+getResources().getString(R.string.install_fail));
+            showToast(model.getAppname() + getResources().getString(R.string.install_fail));
         }
     }
 }
