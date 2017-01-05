@@ -129,7 +129,7 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
     class AppInstallReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive: 接受到应用安装的广播");
+            Log.d(TAG, "onReceive: " + intent.getAction());
             // 接收广播：设备上新安装了一个应用程序包后自动启动新安装应用程序。
             if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)) {
                 String packageName = intent.getDataString().substring(8);
@@ -141,15 +141,19 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
                         break;
                     }
                 }
+                for (int i = 0; i < mShowList.size(); i++) {
+                    if (packageName.equals(mShowList.get(i).packageName)) {
+                        isContains = true;
+                        break;
+                    }
+                }
                 if (mShowList.size() < MyAppsFragment.AT_MOST_SHOW_COUNT && !isContains) {
                     mShowList.add(PackageUtil.getAppInfo(mContext, packageName));
                     mMyAppsListDataUtil.saveShowList(mShowList);
-                    Log.d(TAG, "onReceive: saveShowList_size : " + mShowList.size());
                 } else if (mShowList.size() == MyAppsFragment.AT_MOST_SHOW_COUNT &&
                         TextUtils.isEmpty(mShowList.get(mShowList.size() - 1).packageName) && !isContains) {
                     mShowList.add(PackageUtil.getAppInfo(mContext, packageName));
                     mMyAppsListDataUtil.saveShowList(mShowList);
-                    Log.d(TAG, "onReceive: saveShowList_size : " + mShowList.size());
                 }
             } else if (intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)) {
                 String packageName = intent.getData().getSchemeSpecificPart();
