@@ -39,7 +39,7 @@ public class InstallManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
     protected void bindContentData(AppInfoBean data, RecyclerView.ViewHolder holder, int position) {
         InstallViewHolder Installholder = (InstallViewHolder) holder;
         Installholder.appName.setText(mDatas.get(position).getAppName());
-        Installholder.appSize.setText(mDatas.get(position).getAppSize());
+        Installholder.appSize.setText(mDatas.get(position).getAppSizeStr());
         Installholder.appVersioncode.setText(mDatas.get(position).getVersionName());
         Installholder.appIcon.setImageDrawable(mDatas.get(position).getIcon());
         Installholder.installIcon.setVisibility(mDatas.get(position).getInstall() ? View.VISIBLE : View.INVISIBLE);

@@ -19,6 +19,7 @@ import java.util.Map;
 
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadTask;
+import cn.can.tvlib.utils.ApkUtils;
 import cn.can.tvlib.utils.StringUtils;
 import cn.can.tvlib.utils.SystemUtil;
 
@@ -263,7 +264,7 @@ public class InstallPresenter implements InstallContract.Presenter {
         AppInfoBean appInfoBean = getItem(position);
         appInfoBean.setInstalling(true);//开始安装
         try {
-            int result = InstallPkgUtils.installApp2(appInfoBean.getFliePath(), appInfoBean.getFliePath().length());
+            int result = InstallPkgUtils.installApp2(appInfoBean.getFliePath(),appInfoBean.getAppSize());
             if (result == 0) {
                 appInfoBean.setInstalling(false);
                 appInfoBean.setInstall(true);

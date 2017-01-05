@@ -82,7 +82,9 @@ public class InstallPkgUtils {
                     bean.setPackageName(packageName);
                     /** apk的绝对路劲 */
                     bean.setFliePath(file.getAbsolutePath());
-                    bean.setAppSize(new File(file.getAbsolutePath()).length() / 1024 / 1024 + "M");
+                    int size = (int) (new File(file.getAbsolutePath()).length() / 1024 / 1024);
+                    bean.setAppSize(size);
+                    bean.setAppSizeStr(size + "M");
                     /**获取文件名*/
                     //bean.setAppName(getFileNameNoEx(new File(file.getAbsolutePath()).getName()));
                     /**由包名获取应用名*/
@@ -223,10 +225,8 @@ public class InstallPkgUtils {
     /**
      * 更新管理静默安装1
      */
-    public static int installApp(String path) {
-
-        long space = SdcardUtils.getSDCardAvailableSpace() / 1014 / 1024;
-        if (space < 50) {
+    public static int installApp(String path,long apkSize) {
+        if (ApkUtils.isEnoughInstallSpaceSize(apkSize)) {
             ToastUtils.showMessageLong(MyApp.getContext(), cn.can.downloadlib.R.string.error_msg);
             return 50;
         }

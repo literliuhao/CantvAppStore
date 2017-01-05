@@ -192,7 +192,8 @@ public class UpdateUtils {
                 //info.setVersionCode(String.valueOf(versionCode));
                 String versionName = packageInfo.versionName;
                 info.setVersionName(versionName);
-                info.setAppSize(i + "M");
+                info.setAppSize(i);
+                info.setAppSizeStr(i + "M");
                 Drawable drawable = packageInfo.applicationInfo.loadIcon(pm);
                 info.setIcon(drawable);
                 if (i == 31) {
