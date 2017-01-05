@@ -145,7 +145,7 @@ public class InstallPkgUtils {
      */
     public static void deleteApkPkg(String path) {
         File deleteFile = new File(path);
-        if (deleteFile != null && deleteFile.exists()) {
+        if (deleteFile.exists()) {
             deleteFile.delete();
         }
     }

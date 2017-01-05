@@ -110,8 +110,6 @@ public class InstallPresenter implements InstallContract.Presenter {
     @Override
     public void deleteAll() {
         for (int i = mDatas.size() - 1; i >= 0; i--) {
-            AppInfoBean bean = mDatas.get(i);
-            cancleDownloadTask(mDatas.get(i).getPackageName());
             InstallPkgUtils.deleteApkPkg(mDatas.get(i).getFliePath());//可以删除安装包
             mDatas.remove(i);
         }
@@ -128,9 +126,7 @@ public class InstallPresenter implements InstallContract.Presenter {
     @Override
     public void deleteInstall() {
         for (int i = mDatas.size() - 1; i >= 0; i--) {
-            AppInfoBean bean = mDatas.get(i);
-            if (bean.getInstall()) {
-                cancleDownloadTask(mDatas.get(i).getPackageName());
+            if (mDatas.get(i).getInstall()) {
                 InstallPkgUtils.deleteApkPkg(mDatas.get(i).getFliePath());//可以删除安装包
                 mDatas.remove(i);
             }
@@ -150,7 +146,6 @@ public class InstallPresenter implements InstallContract.Presenter {
      */
     @Override
     public void deleteOne(int position) {
-        cancleDownloadTask(mDatas.get(position).getPackageName());
         InstallPkgUtils.deleteApkPkg(mDatas.get(position).getFliePath());//可以删除安装包
         mDatas.remove(position);
         mView.refreshAll();
@@ -272,7 +267,7 @@ public class InstallPresenter implements InstallContract.Presenter {
             if (result == 0) {
                 appInfoBean.setInstalling(false);
                 appInfoBean.setInstall(true);
-                cancleDownloadTask(appInfoBean.getPackageName());
+                deleteDownloadTask(appInfoBean.getPackageName());
                 EventBus.getDefault().post(new InstallApkModel(appInfoBean.getAppName(), 0));
             } else {
                 appInfoBean.setInstalling(true);
@@ -286,19 +281,20 @@ public class InstallPresenter implements InstallContract.Presenter {
         }
     }
 
-    private void cancleDownloadTask(String pkgName) {
+    private boolean deleteDownloadTask(String pkgName) {
         DownloadManager downloadManager = DownloadManager.getInstance(mContext.getApplicationContext());
         Map<String, DownloadTask> currentTaskMap = downloadManager.getCurrentTaskList();
         List<DownloadTask> currentList = new ArrayList<>();
         if (currentTaskMap != null) {
             currentList.addAll(currentTaskMap.values());
             for (DownloadTask task : currentList) {
-                if(task.getPkg().equalsIgnoreCase(pkgName)){
-                    downloadManager.cancel(task);
+                if (task.getPkg().equalsIgnoreCase(pkgName)) {
+                    downloadManager.deleteTask(task.getId());
+                    return true;
                 }
             }
         }
-
+        return false;
     }
 
     /**
