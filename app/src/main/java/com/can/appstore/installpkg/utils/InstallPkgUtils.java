@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.can.appstore.MyApp;
+import com.can.appstore.R;
 import com.can.appstore.update.model.AppInfoBean;
 
 import java.io.ByteArrayOutputStream;
@@ -40,6 +41,7 @@ public class InstallPkgUtils {
     private static int INSTALLED = 0; // 表示已经安装，且跟现在这个apk文件是一个版本
     private static int UNINSTALLED = 1; // 表示未安装
     private static int INSTALLED_UPDATE = 2; // 表示已经安装，版本比现在这个版本要低
+    private final static int LIMIT_INSTALL_SAPCE = 50 * 1024 * 1024; //
     public static List<AppInfoBean> myFiles = new ArrayList<AppInfoBean>();//安装包集合
 
     /**
@@ -253,19 +255,19 @@ public class InstallPkgUtils {
      * 安装包管理静默安装
      */
     //final String path = Environment.getExternalStorageDirectory() + File.separator + "baidu"+File.separator + "360MobileSa
-    public static int installApp2(String path) {
-
-        long space = SdcardUtils.getSDCardAvailableSpace() / 1014 / 1024;
-        if (space < 50) {
-            ToastUtils.showMessageLong(MyApp.getContext(), cn.can.downloadlib.R.string.error_msg);
-            return 50;
+    public static int installApp2(String path,long appSize) {
+        long size = (long) (1.5 * appSize + LIMIT_INSTALL_SAPCE);
+        long space = MyApp.getContext().getFilesDir().getUsableSpace();
+        if (space <= size) {
+            ToastUtils.showMessageLong(MyApp.getContext(), R.string.space_inequacy);
+            return -1;
         }
 
         String result = execCommand("pm", "install", "-r", path);
         if (result.contains("Success")) {
             return 0;
         } else {
-            return 1;
+            return -1;
         }
     }
 
