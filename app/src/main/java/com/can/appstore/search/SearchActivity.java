@@ -325,6 +325,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
     @Override
     public void getAppList(List list, int total, boolean... isFirstSearch) {
         mSearchTotal = total;
+        mright_top.setVisibility(View.INVISIBLE);
         mleft_top.setText(R.string.search_left_top_prompt2);
         if (null != list && list.size() > 0) {
             showGoneView(TAG_S_TOP_APPLIST_G_BOTTOM);
