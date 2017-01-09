@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.text.SpannableStringBuilder;
@@ -92,12 +93,17 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     /**
      * 计算当前的内存进度
      */
-    void calculateCurStoragePropgress() {
-        long freeSize = SystemUtil.getInternalAvailableSpace(mContext);
-        long totalSize = SystemUtil.getInternalTotalSpace(mContext) ;
-        int progress = (int) ((totalSize - freeSize) * 100 / totalSize);
-        String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + StringUtils.formatFileSize(freeSize, false);
-        mView.showCurStorageProgress(progress, freeStorage);
+    void calculateCurStoragePropgress(int delay) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                long freeSize = SystemUtil.getInternalAvailableSpace(mContext);
+                long totalSize = SystemUtil.getInternalTotalSpace(mContext);
+                int progress = (int) ((totalSize - freeSize) * 100 / totalSize);
+                String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + StringUtils.formatFileSize(freeSize, false);
+                mView.showCurStorageProgress(progress, freeStorage);
+            }
+        }, delay);
     }
 
     @Override
@@ -216,11 +222,11 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
                 Log.d(TAG, "install packageName : " + packageName);
                 isAppInstallRefresh = true;
                 mLoaderManager.restartLoader(LOADER_ID, null, UninstallManagerPresenter.this);
-                calculateCurStoragePropgress();
+                calculateCurStoragePropgress(1000);
             } else if (intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)) {
                 String packageName = intent.getData().getSchemeSpecificPart();
                 Log.d(TAG, "uninstall packageName : " + packageName);
-                calculateCurStoragePropgress();
+                calculateCurStoragePropgress(1000);
                 if (!isClickBatchUninstall) {
                     refreshLastFocus(packageName);
                 }

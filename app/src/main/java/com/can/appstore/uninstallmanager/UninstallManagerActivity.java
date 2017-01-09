@@ -119,7 +119,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         mLayoutManager = new CanRecyclerView.CanGridLayoutManager(UninstallManagerActivity.this, 3, CanRecyclerView.CanGridLayoutManager.VERTICAL, false);
         mCanRecyclerView.setLayoutManager(mLayoutManager);
         mCanRecyclerView.setKeyCodeEffectInterval(CanRecyclerView.KEYCODE_EFFECT_INTERVAL_NORMAL);
-        mPresenter.calculateCurStoragePropgress();
+        mPresenter.calculateCurStoragePropgress(0);
         addBatchUninstallListener();
     }
 
