@@ -93,20 +93,19 @@ public class DownloadManager implements AppInstallListener {
                     Bundle bundle = msg.getData();
                     String path = bundle.getString("path");
                     String id = bundle.getString("id");
-                    DownloadTask downloadtask=getCurrentTaskById(id);
-                    if(downloadtask!=null){
+                    DownloadTask downloadtask = getCurrentTaskById(id);
+                    if (downloadtask != null) {
                         /**添加安装空间的判断*/
-                        long space = mContext.getFilesDir().getUsableSpace();
-                        if (space < downloadtask.getTotalSize()*1.5) {
+                        if (!ApkUtils.isEnoughInstallSpaceSize(downloadtask.getTotalSize())) {
                             onInstallFail(id);
                             ToastUtils.showMessageLong(mContext.getApplicationContext(), R.string.error_install_space_not_enough);
                             return false;
                         }
                     }
-                    ShellUtils.execCommand("chmod 777 "+mContext.getFilesDir(),false);
+                    ShellUtils.execCommand("chmod 777 " + mContext.getFilesDir(), false);
                     ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r " + path, false);
                     /**修复安装成功result==0 未安装成功问题，添加res.successMsg  判断 2016-12-26 10:53:00 xzl*/
-                    if (res.result == 0&&!TextUtils.isEmpty(res.successMsg)&&res.successMsg.equals("Success")) {
+                    if (res.result == 0 && !TextUtils.isEmpty(res.successMsg) && res.successMsg.equals("Success")) {
                         onInstallSucess(id);
                     } else {
                         onInstallFail(id);
@@ -324,10 +323,10 @@ public class DownloadManager implements AppInstallListener {
         if (getDBTaskById(task.getId()) == null) {
             DownloadDBEntity dbEntity = new DownloadDBEntity(task.getId(), task.getTotalSize(),
                     task.getCompletedSize(), task.getUrl(), task.getSaveDirPath(), task
-                    .getFileName(), task.getDownloadStatus(), task.getIcon(), task.getAppId(),task.getPkg());
+                    .getFileName(), task.getDownloadStatus(), task.getIcon(), task.getAppId(), task.getPkg());
             mDownloadDao.insertOrReplace(dbEntity);
         }
-        if(mTaskCntListener!=null){
+        if (mTaskCntListener != null) {
             mTaskCntListener.getTaskCount(getCurrentTaskList().size());
         }
         /**修复添加任务时，多个消息同时轮询问题 xzl 2016-11-30 16:20:33  start */
@@ -421,10 +420,10 @@ public class DownloadManager implements AppInstallListener {
      *
      * @param id
      */
-    private void deleteTask(String id) {
+    public void deleteTask(String id) {
         mTaskManager.remove(id);
         mDownloadDao.deleteByKey(id);
-        if(mTaskCntListener!=null){
+        if (mTaskCntListener != null) {
             mTaskCntListener.getTaskCount(getCurrentTaskList().size());
         }
     }
@@ -439,7 +438,7 @@ public class DownloadManager implements AppInstallListener {
         task.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_CANCEL);
         task.cancel();
         mDownloadDao.deleteByKey(task.getId());
-        if(mTaskCntListener!=null){
+        if (mTaskCntListener != null) {
             mTaskCntListener.getTaskCount(getCurrentTaskList().size());
         }
     }
@@ -451,7 +450,7 @@ public class DownloadManager implements AppInstallListener {
 
         mDownloadDao.deleteAll();
         mTaskManager.release();
-        if(mTaskCntListener!=null){
+        if (mTaskCntListener != null) {
             mTaskCntListener.getTaskCount(getCurrentTaskList().size());
         }
         //        mHander.removeCallbacksAndMessages(null);
@@ -592,7 +591,7 @@ public class DownloadManager implements AppInstallListener {
                 mTaskManager.put(task);
             }
         }
-        if(mTaskCntListener!=null){
+        if (mTaskCntListener != null) {
             mTaskCntListener.getTaskCount(getCurrentTaskList().size());
         }
         /**读取数据库task，不轮询提交任务问题 xingzhaolei 2016-11-23 17:53:25 start*/
@@ -855,7 +854,8 @@ public class DownloadManager implements AppInstallListener {
     public void setTaskCntListener(DownloadTaskCountListener listener) {
         mTaskCntListener = listener;
     }
-    public void removeTaskCntListener(){
-        mTaskCntListener=null;
+
+    public void removeTaskCntListener() {
+        mTaskCntListener = null;
     }
 }

@@ -24,7 +24,6 @@ import com.dataeye.sdk.api.app.channel.DCResource;
 import com.dataeye.sdk.api.app.channel.DCResourceLocation;
 import com.dataeye.sdk.api.app.channel.DCResourcePair;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -34,9 +33,7 @@ import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
-import cn.can.downloadlib.utils.SdcardUtils;
-import cn.can.tvlib.utils.ApkUtils;
-import cn.can.tvlib.utils.MD5Util;
+import cn.can.downloadlib.utils.ApkUtils;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtils;
@@ -286,6 +283,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             Task.setId(fileName);
             Task.setUrl(Url);
             Task.setIcon(mAppInfo.getIcon());
+            Task.setPkg(mAppInfo.getPackageName());
             if (mAppInfo.getSize() > SystemUtil.getInternalAvailableSpace(mContext)) {
                 mView.showToast(R.string.error_msg);
                 return;
@@ -547,7 +545,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
      */
     private void silentInstall(String appName) {
         Log.d(TAG, "silentInstall ");
-        if (mContext.getFilesDir().getUsableSpace() <= (mLimitInstallSace + mAppInfo.getSize() * 1.5)) {  // 安装内存不足
+        if (!ApkUtils.isEnoughInstallSpaceSize(mAppInfo.getSize())) {  // 安装内存不足
             showInsufficientStorageSpaceDialog();
             return;
         }

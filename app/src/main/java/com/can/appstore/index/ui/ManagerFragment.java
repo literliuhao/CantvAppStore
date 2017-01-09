@@ -117,7 +117,7 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
                         break;
                     //电视助手
                     case 3:
-                        PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
+                        startAc("com.cantv.action.TV_HELPER");
                         break;
                     //关于
                     case 4:

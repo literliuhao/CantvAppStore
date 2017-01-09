@@ -283,7 +283,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     public void installApp(String saveDirPath,int position,String url) {
         mDatas.get(position).setInstalling(true);//开始安装
         String fliePath = mDatas.get(position).getFliePath();
-        int result = InstallPkgUtils.installApp(saveDirPath);
+        int result = InstallPkgUtils.installApp(saveDirPath,mDatas.get(position).getAppSize());
         if (result == 0) {
             EventBus.getDefault().post(new UpdateApkInstallModel(0,mDatas.get(position).getAppName(),url));
         } else {
