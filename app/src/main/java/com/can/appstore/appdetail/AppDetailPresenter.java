@@ -34,6 +34,7 @@ import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
 import cn.can.downloadlib.utils.ApkUtils;
+import cn.can.tvlib.utils.FileUtils;
 import cn.can.tvlib.utils.NetworkUtils;
 import cn.can.tvlib.utils.PackageUtil;
 import cn.can.tvlib.utils.PackageUtils;
@@ -74,7 +75,6 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     private String downloadPath = "";
     private String mPackageName = "";
     private CustomDialog mCustomDialog;
-    private long mLimitInstallSace = 50 * 1024 * 1024;
     private String mInstallApkFileMD5 = "";
     private boolean isInstalling = false;
     private CanDialog mCanDialog;
@@ -272,7 +272,14 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             clickRefreshButtonStatus(isClickUpdateButton, DOWNLOAD_INIT_PROGRESS);
             return;
         } else if (downloadStatus == AppInstallListener.APP_INSTALL_FAIL) {   //安装失败,可能内存不足，安装包出现问题,删除安装包重新下载
-            silentInstall(mAppInfo.getName());
+            if (FileUtils.isFileExist(downloadTask.getFilePath())) {
+                silentInstall(mAppInfo.getName());
+            } else {
+                //如果文件被删除，重新下载。
+                mView.showToast(R.string.download_file_error);
+                mDownloadManager.cancel(downloadTask);
+                refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, DOWNLOAD_INIT_PROGRESS);
+            }
             return;
         }
 
