@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.can.appstore.message.MessageHomeActivity">
+
+    <ImageView
+        android:id="@+id/btn_iv_msg"
+        android:layout_width="@dimen/px65"
+        android:layout_height="@dimen/px65"
+        android:scaleType="centerCrop"
+        android:src="@drawable/msg_icon"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="88dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"/>
+
+    <ImageView
+        android:id="@+id/iv_dot_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/red_dote"
+        android:visibility="invisible"
+        android:layout_alignTop="@+id/btn_iv_msg"
+        android:layout_alignEnd="@+id/btn_iv_msg"/>
+</RelativeLayout>

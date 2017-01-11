@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HorizontalScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_id"
+            android:focusable="true"
+            android:layout_width="300px"
+            android:layout_height="410px"
+            android:layout_marginLeft="10px"
+            android:layout_marginTop="0px"
+            android:text="推荐海报"/>
+
+        <Button
+            android:layout_width="300px"
+            android:layout_height="200px"
+            android:layout_marginLeft="320px"
+            android:layout_marginTop="0px"
+            android:text="专题1"/>
+
+        <Button
+            android:layout_width="300px"
+            android:layout_height="200px"
+            android:layout_marginLeft="320px"
+            android:layout_marginTop="210px"
+            android:text="专题2"/>
+
+        <Button
+            android:layout_width="610px"
+            android:layout_height="200px"
+            android:layout_marginLeft="10px"
+            android:layout_marginTop="420px"
+            android:text="广告"/>
+
+        <Button
+            android:layout_width="300px"
+            android:layout_height="410px"
+            android:layout_marginLeft="630px"
+            android:layout_marginTop="0dp"
+            android:text="活动页"/>
+
+        <Button
+            android:layout_width="300px"
+            android:layout_height="200px"
+            android:layout_marginLeft="630px"
+            android:layout_marginTop="420px"
+            android:text="应用"/>
+
+        <Button
+            android:layout_width="300px"
+            android:layout_height="100px"
+            android:layout_marginLeft="940px"
+            android:layout_marginTop="0px"
+            android:text="应用"/>
+
+        <Button
+            android:layout_width="300px"
+            android:layout_height="200px"
+            android:layout_marginLeft="940px"
+            android:layout_marginTop="110px"
+            android:text="应用"/>
+
+        <Button
+            android:layout_width="300px"
+            android:layout_height="200px"
+            android:layout_marginLeft="940px"
+            android:layout_marginTop="320px"
+            android:text="应用"/>
+
+        <Button
+            android:layout_width="300px"
+            android:layout_height="100px"
+            android:layout_marginLeft="940px"
+            android:layout_marginTop="530px"
+            android:text="应用"/>
+
+        <Button
+            android:layout_width="300px"
+            android:layout_height="630px"
+            android:layout_marginLeft="1250px"
+            android:layout_marginTop="0dp"
+            android:text="11"/>
+
+
+    </FrameLayout>
+
+</HorizontalScrollView>
+
+

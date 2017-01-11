@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:custom="http://schemas.Android.com/apk/res-auto"
+              android:id="@+id/ll_view"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:clipChildren="false"
+              android:gravity="center_horizontal"
+              android:orientation="vertical"
+    >
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_616px"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginEnd="@dimen/dimen_460px"
+        android:layout_marginStart="@dimen/dimen_460px"
+        android:layout_marginTop="@dimen/dimen_230px"
+        android:clipChildren="false">
+    </android.support.v4.view.ViewPager>
+
+    <LinearLayout
+        android:id="@+id/ll_point"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen_36px"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        >
+
+        <com.can.appstore.appdetail.custom.PointView
+            android:id="@+id/point_view"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dimen_16px"
+            custom:pointradius="@dimen/dimen_16px"
+            custom:pointspace="@dimen/dimen_16px"
+            custom:selectcolor="@color/tv_cur_rows_color"
+            custom:unselectcolor="@color/app_introduce_color"/>
+
+    </LinearLayout>
+</LinearLayout>

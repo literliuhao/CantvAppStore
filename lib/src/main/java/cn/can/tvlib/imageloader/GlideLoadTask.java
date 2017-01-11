@@ -119,6 +119,10 @@ public class GlideLoadTask {
         private SuccessCallback loadSuccessCallback;
         private FailCallback loadFailCallback;
 
+        public void start(Context context){
+            build().start(context);
+        }
+
         public GlideLoadTask build() {
             GlideLoadTask task = new GlideLoadTask();
             task.imgView = this.imgView;

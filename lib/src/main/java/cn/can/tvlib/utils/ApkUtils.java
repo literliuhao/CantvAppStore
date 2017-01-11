@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import cn.can.tvlib.model.AppInfo;
+
 /**
  * ================================================
  * 作    者：
@@ -49,6 +51,8 @@ public class ApkUtils {
         Uri packageURI = Uri.parse("package:" + packageName);
         //创建Intent意图
         Intent intent = new Intent(Intent.ACTION_DELETE, packageURI);
+
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         //执行卸载程序
         context.startActivity(intent);
     }
@@ -167,4 +171,48 @@ public class ApkUtils {
         }
         return "";
     }
+
+    /**
+     * 获取已安装的所有apk信息
+     * @param context
+     * @return
+     */
+    public static List<AppInfo> findAllInstallApkInfo(Context context) {
+        // 创建集合
+        List<AppInfo> list = new ArrayList<AppInfo>();
+        // 包管理 所有已经安装的apk
+        PackageManager pm = context.getPackageManager();
+        // 所有已经安装的apk
+        List<PackageInfo> pList = pm.getInstalledPackages(0);
+        for (PackageInfo info : pList) {
+            AppInfo bean = new AppInfo();
+            bean.packageName = info.packageName;
+            // ApplicationInfo application标签
+            ApplicationInfo applicationInfo = info.applicationInfo;
+            bean.installApkpath = applicationInfo.sourceDir;
+            // 图标
+            bean.appIcon = applicationInfo.loadIcon(pm);
+            // 名称
+            bean.appName = applicationInfo.loadLabel(pm).toString();
+            // 版本名称
+            bean.versionName = info.versionName;
+            // 版本号
+            bean.versionCode = info.versionCode;
+            // 大小
+            File apk = new File(applicationInfo.sourceDir);
+            bean.size = apk.length();// apk包文件大小
+
+            // 是否是系统权限
+            if ((applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM) {
+                bean.isSystemApp = true;
+            } else {
+                bean.isSystemApp = false;
+            }
+            list.add(bean);
+
+        }
+        return list;
+    }
+
+
 }

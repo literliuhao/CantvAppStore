@@ -1,17 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.can.appstore.MainActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center_horizontal"
+              android:orientation="vertical"
+              tools:context="com.can.appstore.MainActivity">
 
     <TextView
+        android:id="@+id/tv_joke_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"/>
-</RelativeLayout>
+        android:textColor="@color/black_opa85"
+        android:textSize="@dimen/px30"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_joke"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black_opa60"
+                android:textSize="@dimen/px26"/>
+
+            <Button
+                android:id="@+id/btn_index"
+                android:layout_width="@dimen/px300"
+                android:layout_height="wrap_content"
+                android:text="首 页"
+                android:textSize="@dimen/px32"/>
+
+            <Button
+                android:id="@+id/btn_search"
+                android:layout_width="@dimen/px300"
+                android:layout_height="wrap_content"
+                android:text="搜 索"
+                android:textSize="@dimen/px32"/>
+
+
+            <Button
+                android:id="@+id/bt_specail_detail"
+                android:layout_width="@dimen/px300"
+                android:layout_height="wrap_content"
+                android:text="专题详情"
+                android:textSize="@dimen/px32"/>
+
+            <Button
+                android:id="@+id/bt_install"
+                android:layout_width="@dimen/px300"
+                android:layout_height="wrap_content"
+                android:text="安装包管理"
+                android:textSize="@dimen/px32"/>
+
+
+            <Button
+                android:id="@+id/bt_active"
+                android:layout_width="@dimen/px300"
+                android:layout_height="wrap_content"
+                android:text="活动页"
+                android:textSize="@dimen/px32"/>
+
+            <!-- -->
+            <Button
+                android:id="@+id/bt_downloader"
+                android:layout_width="@dimen/px300"
+                android:layout_height="wrap_content"
+                android:text="下载管理"
+                android:textSize="@dimen/px32"/>
+
+            <Button
+                android:id="@+id/bt_topics"
+                android:layout_width="@dimen/px300"
+                android:layout_height="wrap_content"
+                android:text="专题列表"
+                android:textSize="@dimen/px32"/>
+
+            <Button
+                android:id="@+id/bt_apps"
+                android:layout_width="@dimen/px300"
+                android:layout_height="wrap_content"
+                android:text="应用列表"
+                android:textSize="@dimen/px32"/>
+
+            <Button
+                android:id="@+id/bt_rank_list"
+                android:layout_width="@dimen/px300"
+                android:layout_height="wrap_content"
+                android:text="排行榜列表"
+                android:textSize="@dimen/px32"/>
+
+            <Button
+                android:id="@+id/bt_msgs"
+                android:layout_width="@dimen/px300"
+                android:layout_height="wrap_content"
+                android:text="消息列表"
+                android:textSize="@dimen/px32"/>
+
+            <Button
+                android:id="@+id/bt_app_detail"
+                android:layout_width="@dimen/px300"
+                android:layout_height="wrap_content"
+                android:text="应用详情"
+                android:textSize="@dimen/px32"/>
+
+            <Button
+                android:id="@+id/bt_uninstall_manager"
+                android:layout_width="@dimen/px300"
+                android:layout_height="wrap_content"
+                android:text="卸载管理"
+                android:textSize="@dimen/px32"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

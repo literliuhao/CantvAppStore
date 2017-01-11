@@ -1,0 +1,50 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.can.appstore.homerank.HomeRankFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/px160"
+        android:paddingRight="@dimen/px100"
+        android:paddingTop="@dimen/px31">
+
+        <HorizontalScrollView
+            android:id="@+id/homeran_scrollview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/ll_par_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <include layout="@layout/homerank_item"/>
+
+                <include layout="@layout/homerank_item"/>
+
+                <include layout="@layout/homerank_item"/>
+
+                <include layout="@layout/homerank_item"/>
+
+                <include layout="@layout/homerank_item"/>
+
+                <include layout="@layout/homerank_item"/>
+
+                <include layout="@layout/homerank_item"/>
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <include layout="@layout/search_no_network"/>
+
+    </LinearLayout>
+
+</FrameLayout>

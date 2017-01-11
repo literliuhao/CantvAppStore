@@ -10,6 +10,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -82,8 +83,9 @@ public class PackageUtils {
         List<ResolveInfo> apps = context.getPackageManager()
                 .queryIntentActivities(resolveIntent, 0);
 
-        ResolveInfo ri = apps.iterator().next();
-        if (ri != null) {
+        Iterator<ResolveInfo> infoIterator = apps.iterator();
+        if (infoIterator.hasNext()) {
+            ResolveInfo ri = infoIterator.next();
             String className = ri.activityInfo.name;
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -94,7 +96,7 @@ public class PackageUtils {
             intent.setComponent(cn);
             context.startActivity(intent);
         } else {
-            L.v(packageName, "指定包名的程序并未安装...");
+            LogUtil.v(packageName, "指定包名的程序并未安装...");
         }
     }
 
@@ -127,6 +129,19 @@ public class PackageUtils {
             return null;
         }
     }
+
+    /**
+     * 根据包名获取当前应用的版本号
+     */
+    public static int getVersionCode(Context context, String packageName) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_CONFIGURATIONS);
+            return packageInfo.versionCode;
+        } catch (NameNotFoundException e) {
+            return -1;
+        }
+    }
+
 
     /**
      * if not found return -1

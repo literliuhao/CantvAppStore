@@ -361,7 +361,7 @@ public class StringUtils {
 	}
 
 	private static DecimalFormat fileIntegerFormat = new DecimalFormat("#0");
-	private static DecimalFormat fileDecimalFormat = new DecimalFormat("#0.#");
+	private static DecimalFormat fileDecimalFormat = new DecimalFormat("#0.0");
 
 	/**
 	 * 单位换算

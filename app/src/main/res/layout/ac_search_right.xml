@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/right_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#252930">
+
+    <!--显示行数-->
+    <RelativeLayout
+        android:id="@+id/top_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/px82"
+        android:layout_marginRight="@dimen/px120"
+        android:layout_marginTop="@dimen/px120">
+
+        <TextView
+            android:id="@+id/left_top_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/search_left_top_prompt1"
+            android:textColor="@color/tr_20_white_color"
+            android:textSize="@dimen/px32"/>
+
+        <TextView
+            android:id="@+id/right_top_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:text="1/5行"
+            android:textColor="@color/tr_20_white_color"
+            android:textSize="@dimen/px32"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+
+    <!--搜索结果-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/top_view">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/applist_recycle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/px70"
+            android:layout_marginRight="@dimen/px110"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/px40"
+            android:paddingTop="@dimen/px20"
+            android:visibility="gone"
+            />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/hotkey_recycle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/px70"
+            android:layout_marginRight="@dimen/px110"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/px40"
+            android:paddingTop="@dimen/px20"
+            />
+
+    </RelativeLayout>
+
+    <!--热门推荐-->
+    <LinearLayout
+        android:id="@+id/ll_recommed"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/px620"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/px82"
+            android:text="@string/search_bottom_recommend_st"
+            android:textColor="@color/tr_20_white_color"
+            android:textSize="@dimen/px32"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recommend_app_recycle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/px70"
+            android:layout_marginRight="@dimen/px110"/>
+
+    </LinearLayout>
+
+
+    <!--没搜索到内容-->
+    <LinearLayout
+        android:id="@+id/search_null"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/px246"
+        android:focusable="false"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/noapp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/px16"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/null_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/search_null"
+                android:textColor="@color/tr_20_white_color"
+                android:textSize="@dimen/px36"/>
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/search_null1"
+                android:textColor="@color/tr_50_white_color"
+                android:textSize="@dimen/px30"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <include layout="@layout/search_no_network"/>
+
+</RelativeLayout>

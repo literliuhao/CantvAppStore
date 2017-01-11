@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:scrollbar="http://schemas.android.com/apk/res-auto"
+                android:layout_width="@dimen/px1056"
+                android:layout_height="@dimen/px856"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/px26"
+                android:background="#2d313a"
+    >
+
+    <TextView
+        android:id="@+id/tv_upgrade_title"
+        style="@style/NormalText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/px88"
+        android:gravity="center"
+        android:includeFontPadding="true"
+        android:textColor="@color/white_opa80"
+        android:textSize="40px"
+        />
+
+    <com.can.appstore.upgrade.widgets.UpgradeInfoScrollView
+        android:id="@+id/sv_upgrade_info"
+        android:layout_width="@dimen/px800"
+        android:layout_height="@dimen/px430"
+        android:layout_marginLeft="@dimen/px100"
+        android:layout_marginRight="@dimen/px100"
+        android:layout_marginTop="@dimen/px185"
+        android:background="@color/black_opa10"
+        android:orientation="horizontal"
+        android:padding="@dimen/px32"
+        android:scrollbars="none"
+        android:clickable="true"
+        android:focusable="true"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="left"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/tv_upgrade_info_version"
+                style="@style/NormalText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:includeFontPadding="true"
+                android:textSize="@dimen/px34"
+                />
+
+            <TextView
+                android:id="@+id/tv_upgrade_info_subtitle"
+                style="@style/NormalText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/px30"
+                android:gravity="left"
+                android:includeFontPadding="true"
+                android:text="@string/version_describe"
+                android:textSize="@dimen/px34"
+                />
+
+            <TextView
+                android:id="@+id/tv_upgrade_info_content"
+                style="@style/NormalText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/px18"
+                android:gravity="left"
+                android:includeFontPadding="true"
+                android:lineSpacingExtra="@dimen/px18"
+                android:textSize="@dimen/px34"
+                />
+        </LinearLayout>
+    </com.can.appstore.upgrade.widgets.UpgradeInfoScrollView>
+
+    <com.can.appstore.upgrade.widgets.UpgradeInfoNoticeCursor
+        android:id="@+id/user_notice_cursor"
+        android:layout_width="@dimen/px9"
+        android:layout_height="@dimen/px430"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="center"
+        android:layout_marginRight="@dimen/px76"
+        android:layout_marginTop="@dimen/px185"
+        android:gravity="center_horizontal|top"
+        scrollbar:cursorWidth="@dimen/px9"
+        scrollbar:cursorHeight="@dimen/px90"
+        scrollbar:roundedCorner="@dimen/px5"
+        scrollbar:cursorColor="@color/white_opa80"
+        scrollbar:barColor="@color/white_opa65"
+        >
+    </com.can.appstore.upgrade.widgets.UpgradeInfoNoticeCursor>
+
+
+    <TextView
+        android:id="@+id/tv_upgrade_install"
+        style="@style/NormalText"
+        android:layout_width="@dimen/px800"
+        android:layout_height="@dimen/px80"
+        android:layout_below="@id/sv_upgrade_info"
+        android:layout_marginLeft="@dimen/px100"
+        android:layout_marginTop="@dimen/px60"
+        android:gravity="center"
+        android:includeFontPadding="true"
+        android:textColor="@color/white_opa80"
+        android:textSize="@dimen/px34"
+        />
+
+</RelativeLayout>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.can.appstore.index.ui.GridManager
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/manage_grid"
+    android:layout_width="@dimen/px1920"
+    android:layout_height="@dimen/px1080"
+    android:cacheColorHint="#00000000"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:columnWidth="@dimen/px270"
+    android:focusable="false"
+    android:horizontalSpacing="@dimen/px10"
+    android:listSelector="#00000000"
+    android:numColumns="5"
+    android:paddingBottom="@dimen/px50"
+    android:paddingLeft="@dimen/px160"
+    android:paddingRight="@dimen/px370"
+    android:paddingTop="@dimen/px30"
+    android:scrollbars="none"
+    android:verticalSpacing="@dimen/px10">
+
+</com.can.appstore.index.ui.GridManager>
+
+

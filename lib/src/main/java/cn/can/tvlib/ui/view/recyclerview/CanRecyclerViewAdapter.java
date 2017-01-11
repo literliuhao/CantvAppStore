@@ -25,14 +25,14 @@ import static android.view.View.FOCUS_UP;
  * 创建日期：2016.10.12
  * 描    述：RecyclerView.Adapter封装
  * 修订历史：
- *
+ * <p>
  * 1.0  zhangbingyuan
  * 1. 添加header、footer支持
  * 2. 封装选择模式
  * 3. 提供分页加载回调
  * 4. 封装item点击、焦点变化、KeyEvent事件回调
  * 5. 增加焦点移出RecyclerView边界回调（header和footer如果为viewGroup，则其焦点移出边界情况需自己处理）
- *
+ * <p>
  * ps：如果有新的用功能可以封装 或者 出现任何问题，请及时沟通
  * ================================================
  */
@@ -50,6 +50,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
     protected List<DataType> mDatas;
     private RecyclerView mAttachedView;
     private ViewTreeObserver.OnGlobalFocusChangeListener mGlobalFocusChangeListener;
+    private boolean mHasComplexItemView;//处理当itemView中childView获取焦点时，是否将整个itemView滑动到可见区域
 
     public CanRecyclerViewAdapter(List<DataType> datas) {
         mDatas = datas;
@@ -113,15 +114,14 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
     @Override
     final public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         int itemViewType = getItemViewType(position);
-        if(itemViewType == VIEW_TYPE_HEADER || itemViewType == VIEW_TYPE_FOOTER){
+        if (itemViewType == VIEW_TYPE_HEADER || itemViewType == VIEW_TYPE_FOOTER) {
             resolveStaggeredLayoutItemView(holder, position);
             return;
         }
-        int actualPosi = getActualItemPosition(position);
-        initViewHolder(holder, actualPosi);
-        setupItemClickListener(holder, actualPosi);
-        setupItemFocusChangeListener(holder, actualPosi);
-        setupItemKeyEventListener(holder, actualPosi);
+        initViewHolder(holder, getActualItemPosition(position));
+        setupItemClickListener(holder);
+        setupItemFocusChangeListener(holder);
+        setupItemKeyEventListener(holder);
     }
 
     private void initViewHolder(RecyclerView.ViewHolder holder, int position) {
@@ -133,9 +133,9 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         if (holder instanceof TagViewHolder) {
             TagViewHolder mHolder = (TagViewHolder) holder;
             mHolder.tagView.setTag(String.format(TAG_VIEW_FLAG, position));
-            if(mSelectMode == MODE_NORMAL){
+            if (mSelectMode == MODE_NORMAL) {
                 mHolder.hideTagView(false);
-            } else if(mSelectMode == MODE_SELECT){
+            } else if (mSelectMode == MODE_SELECT) {
                 mHolder.showTagView(false);
                 mHolder.refreshTagViewOnSelectChanged(isItemSelected(position));
             }
@@ -175,9 +175,14 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                 } else {
                     hasFocusMoveOut = false;
                 }
-                View containingItemView = mAttachedView.findContainingItemView(newFocus);
-                if (containingItemView != null) {
-                    mAttachedView.smoothScrollToPosition(mAttachedView.getChildAdapterPosition(containingItemView));
+                if(mHasComplexItemView){
+                    View containingItemView = mAttachedView.findContainingItemView(newFocus);
+                    if (containingItemView != null) {
+                        int itemViewPosi = mAttachedView.getChildAdapterPosition(containingItemView);
+                        if(itemViewPosi != RecyclerView.NO_POSITION){
+                            mAttachedView.smoothScrollToPosition(itemViewPosi);
+                        }
+                    }
                 }
             }
         };
@@ -190,8 +195,16 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         super.onDetachedFromRecyclerView(recyclerView);
     }
 
-    private boolean hasAttachedToView() {
+    protected boolean hasAttachedToView() {
         return mAttachedView != null;
+    }
+
+    protected RecyclerView getAttachedView() {
+        return mAttachedView;
+    }
+
+    public void setHasComplexItemView(boolean flag){
+        mHasComplexItemView = flag;
     }
 
     //----------------------------   子类需要复写的方法   ----------------------------
@@ -254,10 +267,11 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         RecyclerView.LayoutManager layoutManager = mAttachedView.getLayoutManager();
         if (layoutManager instanceof GridLayoutManager) {
             final GridLayoutManager glm = (GridLayoutManager) layoutManager;
+            final GridLayoutManager.SpanSizeLookup spanSizeLookup = glm.getSpanSizeLookup();
             glm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override
                 public int getSpanSize(int position) {
-                    return isHeader(position) || isFooter(position) ? glm.getSpanCount() : 1;
+                    return isHeader(position) || isFooter(position) ? glm.getSpanCount() : spanSizeLookup.getSpanSize(position);
                 }
             });
         }
@@ -299,6 +313,9 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         return hasHeader() ? dataCount + 1 : dataCount;
     }
 
+    public int getCurrentSelectMode(){
+        return mSelectMode;
+    }
 
     //----------------------------   支持选择模式   ----------------------------
     public static final int MODE_NORMAL = 0x001;//正常模式
@@ -331,20 +348,21 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
 
         protected abstract int specifyTagViewId();
 
-        public View getTagView(){
+        public View getTagView() {
             return tagView;
         }
 
         /**
          * 当item选中状态改变时回调
+         *
          * @param selected
          * @throws IllegalStateException
          */
-        public void refreshTagViewOnSelectChanged(boolean selected) throws IllegalStateException{
+        public void refreshTagViewOnSelectChanged(boolean selected) throws IllegalStateException {
             if (getTagView() == null) {
                 throw new IllegalStateException("The tagView in TagViewHolder didn't found.");
             }
-            if(selected){
+            if (selected) {
                 showTagView(true);
             } else {
                 hideTagView(true);
@@ -353,6 +371,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
 
         /**
          * 显示tagView
+         *
          * @param anim
          */
         public void showTagView(boolean anim) {
@@ -364,6 +383,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
 
         /**
          * 隐藏tagView
+         *
          * @param anim
          */
         public void hideTagView(boolean anim) {
@@ -378,7 +398,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         /**
          * @param position content 列表中的位置（不包括header、footer）
          */
-        public abstract void onSelectChanged(int position, boolean selected, Object data);
+        public abstract boolean onSelectChanged(int position, boolean selected, Object data);
     }
 
     final public void setOnItemSelectListener(OnItemSelectChangeListener listener) {
@@ -430,18 +450,30 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         if (mSelectMode == MODE_NORMAL || !hasData() || position < 0 || position >= getDataCount()) {
             return;
         }
+        boolean handle = false;
+        if (mItemSelectListener != null) {
+            handle = mItemSelectListener.onSelectChanged(position, true, mDatas.get(position));
+        }
+        if(handle){
+            return;
+        }
         DataType data = mDatas.get(position);
         if (data != null && data instanceof Selectable) {
             ((Selectable) data).setSelected(true);
         }
         refreshTagViewSelectStatus(position, true);
-        if (mItemSelectListener != null) {
-            mItemSelectListener.onSelectChanged(position, true, mDatas.get(position));
-        }
+
     }
 
     public void setItemUnselected(int position) {
         if (mSelectMode == MODE_NORMAL || !hasData() || position < 0 || position >= getDataCount()) {
+            return;
+        }
+        boolean handle = false;
+        if (mItemSelectListener != null) {
+            handle = mItemSelectListener.onSelectChanged(position, false, mDatas.get(position));
+        }
+        if(handle){
             return;
         }
         DataType data = mDatas.get(position);
@@ -449,23 +481,20 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
             ((Selectable) data).setSelected(false);
         }
         refreshTagViewSelectStatus(position, false);
-        if (mItemSelectListener != null) {
-            mItemSelectListener.onSelectChanged(position, false, mDatas.get(position));
-        }
     }
 
     private void refreshTagViewSelectStatus(int position, boolean selected) {
-        if(!hasAttachedToView()){
+        if (!hasAttachedToView()) {
             return;
         }
         View tagView = findTagView(position);
-        if(tagView == null){
+        if (tagView == null) {
             return;
         }
         RecyclerView.ViewHolder viewHolder = mAttachedView.findContainingViewHolder(tagView);
-        if(viewHolder != null && viewHolder instanceof TagViewHolder){
+        if (viewHolder != null && viewHolder instanceof TagViewHolder) {
             TagViewHolder holder = (TagViewHolder) viewHolder;
-            if(tagView.getVisibility() != View.VISIBLE){
+            if (tagView.getVisibility() != View.VISIBLE) {
                 tagView.setVisibility(View.VISIBLE);
             }
             holder.refreshTagViewOnSelectChanged(selected);
@@ -511,7 +540,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                 }
                 if (firstVisiblePosi >= 0 && lastVisiblePosi >= 0) {
                     for (int i = firstVisiblePosi; i <= lastVisiblePosi; i++) {
-                        if(isHeader(i) || isFooter(i)){
+                        if (isHeader(i) || isFooter(i)) {
                             continue;
                         }
                         int posi = getActualItemPosition(i);
@@ -526,16 +555,16 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                 int[] firstVisiblePosis = lm.findFirstVisibleItemPositions(null);
                 int[] lastVisiblePosis = lm.findLastVisibleItemPositions(null);
                 int firstVisiblePosi = -1;
-                for(int i = 0; i < firstVisiblePosis.length; i++){
+                for (int i = 0; i < firstVisiblePosis.length; i++) {
                     firstVisiblePosi = Math.min(firstVisiblePosi, firstVisiblePosis[i]);
                 }
                 int lastVisiblePosi = -1;
-                for(int i = 0; i < lastVisiblePosis.length; i++){
+                for (int i = 0; i < lastVisiblePosis.length; i++) {
                     lastVisiblePosi = Math.max(lastVisiblePosi, lastVisiblePosis[i]);
                 }
                 if (firstVisiblePosi >= 0 && lastVisiblePosi >= 0) {
                     for (int i = firstVisiblePosi; i <= lastVisiblePosi; i++) {
-                        if(isHeader(i) || isFooter(i)){
+                        if (isHeader(i) || isFooter(i)) {
                             continue;
                         }
                         int posi = getActualItemPosition(i);
@@ -549,17 +578,17 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
     }
 
     private void changeTagViewVisible(int position, boolean visbile, boolean selected) {
-        if(!hasAttachedToView()){
+        if (!hasAttachedToView()) {
             return;
         }
         View tagView = findTagView(position);
-        if(tagView == null){
+        if (tagView == null) {
             return;
         }
         RecyclerView.ViewHolder viewHolder = mAttachedView.findContainingViewHolder(tagView);
-        if(viewHolder != null && viewHolder instanceof TagViewHolder){
+        if (viewHolder != null && viewHolder instanceof TagViewHolder) {
             TagViewHolder holder = (TagViewHolder) viewHolder;
-            if(visbile){
+            if (visbile) {
                 holder.refreshTagViewOnSelectChanged(selected);
                 holder.showTagView(true);
             } else {
@@ -660,12 +689,12 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                             mPageLoadCallback.onLoadMore();
                         }
 
-                    } else if(layoutManager instanceof StaggeredGridLayoutManager) {
+                    } else if (layoutManager instanceof StaggeredGridLayoutManager) {
                         StaggeredGridLayoutManager sglm = (StaggeredGridLayoutManager) layoutManager;
                         int spanCount = sglm.getSpanCount();
                         int[] lastVisiblePosis = sglm.findLastVisibleItemPositions(null);
                         int lastVisiblePosi = -1;
-                        for(int i = 0; i < lastVisiblePosis.length; i++){
+                        for (int i = 0; i < lastVisiblePosis.length; i++) {
                             lastVisiblePosi = Math.max(lastVisiblePosi, lastVisiblePosis[i]);
                         }
                         if (getActualItemPosition(lastVisiblePosi) == mDatas.size()) {
@@ -688,12 +717,18 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         boolean onItemKeyEvent(int position, View v, int keyCode, KeyEvent event);
     }
 
+
     public abstract static class OnFocusChangeListener {
+        /**
+         * @param currFocus 焦点失去的时候的最后一个获取焦点的位置
+         * @param direction 焦点移动的方向  如左边 View.FOCUS_RIGHT
+         * @return
+         */
         public boolean onFocusMoveOutside(int currFocus, int direction){
             return false;
         }
 
-        public abstract void onItemFocusChanged(View view, int position, boolean hasFocus, Object dataType);
+        public abstract void onItemFocusChanged(View view, int position, boolean hasFocus);
     }
 
     private OnItemClickListener mItemClickListener;
@@ -716,28 +751,31 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         this.mItemKeyEventListener = listener;
     }
 
-    private void setupItemClickListener(final RecyclerView.ViewHolder holder, final int position) {
+    private void setupItemClickListener(final RecyclerView.ViewHolder holder) {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int posi = mAttachedView.getChildAdapterPosition(v);
+                int actualPosi = getActualItemPosition(posi);
                 if (mSelectMode == MODE_SELECT) {
-                    if (isItemSelected(position)) {
-                        setItemUnselected(position);
+                    if (isItemSelected(actualPosi)) {
+                        setItemUnselected(actualPosi);
                     } else {
-                        setItemSelected(position);
+                        setItemSelected(actualPosi);
                     }
-                } else if (mSelectMode == MODE_NORMAL && mItemClickListener != null){
-                    mItemClickListener.onClick(v, position, mDatas.get(position));
+                } else if (mSelectMode == MODE_NORMAL && mItemClickListener != null) {
+                    mItemClickListener.onClick(v, actualPosi, mDatas.get(actualPosi));
                 }
             }
         });
     }
 
-    private void setupItemFocusChangeListener(RecyclerView.ViewHolder holder, final int position) {
+    private void setupItemFocusChangeListener(final RecyclerView.ViewHolder holder) {
         holder.itemView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
+                    holder.itemView.bringToFront();
                     if (mOldFocus != null) {
                         mOldFocus = mCurrFocus;
                     }
@@ -748,20 +786,23 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                     }
                 }
                 if (mFocusChangeListener != null) {
-                    mFocusChangeListener.onItemFocusChanged(v, position, hasFocus, mDatas.get(position));
+                    int posi = mAttachedView.getChildAdapterPosition(v);
+                    mFocusChangeListener.onItemFocusChanged(v, getActualItemPosition(posi), hasFocus);
                 }
             }
         });
     }
 
-    private void setupItemKeyEventListener(RecyclerView.ViewHolder holder, final int position) {
+    private void setupItemKeyEventListener(RecyclerView.ViewHolder holder) {
         holder.itemView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (mItemKeyEventListener != null && handleFocusMoveOut(position, v, keyCode, event)) {
+                int posi = mAttachedView.getChildAdapterPosition(v);
+                int actualPosi = getActualItemPosition(posi);
+                if (mFocusChangeListener != null && handleFocusMoveOut(actualPosi, v, keyCode, event)) {
                     return true;
                 }
-                if (mItemKeyEventListener != null && mItemKeyEventListener.onItemKeyEvent(getActualItemPosition(position), v, keyCode, event)) {
+                if (mItemKeyEventListener != null && mItemKeyEventListener.onItemKeyEvent(actualPosi, v, keyCode, event)) {
                     return true;
                 }
                 return false;
@@ -799,10 +840,16 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
 
             } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
                 if (layoutDirection == GridLayoutManager.VERTICAL && (posi + 1) % spanCount == 0) {
-                        return callbackFocusMoveOutSide(position, FOCUS_RIGHT);
+                    return callbackFocusMoveOutSide(position, FOCUS_RIGHT);
                 } else if (layoutDirection == GridLayoutManager.HORIZONTAL) {
                     int itemCount = getItemCount();
-                    if (posi >= (itemCount - itemCount % spanCount)) {
+                    int range = itemCount % spanCount;
+                    if (range == 0) {
+                        range = itemCount - spanCount;
+                    } else {
+                        range = itemCount - range;
+                    }
+                    if (posi >= range) {
                         if (isLoading) {
                             return true;
                         }
@@ -814,8 +861,8 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                 if (layoutDirection == GridLayoutManager.VERTICAL) {
                     int itemCount = getItemCount();
                     int range = itemCount % spanCount;
-                    if(range == 0){
-                        range = itemCount- spanCount;
+                    if (range == 0) {
+                        range = itemCount - spanCount;
                     } else {
                         range = itemCount - range;
                     }
@@ -833,7 +880,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         } else if (layoutManager instanceof LinearLayoutManager) {
 
             LinearLayoutManager lm = (LinearLayoutManager) layoutManager;
-            int layoutOrientation = lm.getLayoutDirection();
+            int layoutOrientation = lm.getOrientation();
 
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                 if (layoutOrientation == LinearLayoutManager.VERTICAL || layoutOrientation == LinearLayoutManager.HORIZONTAL && position == 0) {
@@ -857,8 +904,8 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
                     }
                 }
 
-            } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && position == getItemCount()) {
-                if (layoutOrientation == LinearLayoutManager.HORIZONTAL) {
+            } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                if (layoutOrientation == LinearLayoutManager.HORIZONTAL && position == getItemCount()- 1) {
                     return mFocusChangeListener.onFocusMoveOutside(position, FOCUS_DOWN);
                 } else if (layoutOrientation == LinearLayoutManager.VERTICAL) {
                     if (isLoading) {
@@ -929,7 +976,7 @@ public abstract class CanRecyclerViewAdapter<DataType> extends RecyclerView.Adap
         return mFocusChangeListener.onFocusMoveOutside(position, direction);
     }
 
-    public static class DefaultViewHolder extends RecyclerView.ViewHolder{
+    public static class DefaultViewHolder extends RecyclerView.ViewHolder {
 
         public DefaultViewHolder(View itemView) {
             super(itemView);

@@ -1,27 +1,356 @@
-apply plugin: 'com.android.application'
+import java.text.SimpleDateFormat
 
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'org.greenrobot.greendao'
+ext.SIGN_CONFIG_FILE = ["sign_828.properties"]
+apply from: 'sign.gradle'
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
 
+    // recommend
+    dexOptions {
+        jumboMode = true
+    }
+
     defaultConfig {
         applicationId "com.can.appstore"
         minSdkVersion 19
-        targetSdkVersion 24
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion 19
+        versionCode 106
+        versionName "v1.0.6_201701101500"
+
+        // 开启multidex
+        multiDexEnabled true
+        // 以Proguard的方式手动加入要放到Main.dex中的类
+         multiDexKeepProguard file("keep_in_main_dex.txt")
+
+        // ndk 配置
+        // ndk {
+        //   abiFilters 'armeabi' // 'x86' , 'armeabi-v7a' , 'armeabi-v8a'
+        // }
     }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+
+    signingConfigs {
+        debug {
+        }
+    }
+
     buildTypes {
         release {
+            debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        update {
+            initWith(release)
+        }
+        debug {
+            debuggable true
+            minifyEnabled false
+        }
+    }
+
+    applicationVariants.all { variant ->
+        //为升级包配置versionCode、versionName
+        if (variant.buildType.name == 'update') {
+            def newVersionCode = variant.versionCode + 1
+            variant.mergedFlavor.versionCode = newVersionCode
+            variant.mergedFlavor.versionName = "${getDate()}_v${newVersionCode.toString().getChars().join('.')}"
+        }
+        //修改生成的apk名字
+        variant.outputs.each { output ->
+            def oldFile = output.outputFile
+            if (variant.buildType.name in ['release', 'update']) {
+                def releaseApkName = "AppStore_V${variant.versionCode}_${getDateTime()}.apk";
+                if (project.hasProperty("appReleaseDir")) {
+                    File releasePath = new File(project.property("appReleaseDir"), "AppStore/"+getDate());
+                    output.outputFile = new File(releasePath, releaseApkName);
+                } else {
+                    output.outputFile = new File(oldFile.parent, releaseApkName)
+                }
+            }
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+}
+
+def getDate() {
+    return new SimpleDateFormat("yyyyMMdd").format(new Date());
+}
+
+def getDateTime() {
+    return new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+}
+
+apt {
+    arguments {
+        eventBusIndex "com.example.myapp.MyEventBusIndex"
+    }
+}
+
+/*************** tinker配置 ******************/
+def gitSha() {
+    try {
+        String gitRev = 'git rev-parse --short HEAD'.execute(null, project.rootDir).text.trim()
+        if (gitRev == null) {
+            throw new GradleException("can't get git rev, you should add git to system path or just input test value, such as 'testTinkerId'")
+        }
+        return gitRev
+    } catch (Exception e) {
+        throw new GradleException("can't get git rev, you should add git to system path or just input test value, such as 'testTinkerId'")
+    }
+}
+
+def bakPath = file("${buildDir}/bakApk/")
+
+/**
+ * you can use assembleRelease to build you base apk
+ * use tinkerPatchRelease -POLD_APK=  -PAPPLY_MAPPING=  -PAPPLY_RESOURCE= to build patch
+ * add apk from the build/bakApk
+ */
+ext {
+    // for some reason, you may want to ignore tinkerBuild, such as instant run debug build?
+    tinkerEnabled = true
+    // for normal build
+    // old apk file to build patch apk
+    tinkerOldApkPath = "${bakPath}/AppStore_V106_20170110145248.apk"
+    // proguard mapping file to build patch apk
+    tinkerApplyMappingPath = "${bakPath}/app-release-1208-14-48-35-mapping.txt"
+    // resource R.txt to build patch apk, must input if there is resource changed
+    tinkerApplyResourcePath = "${bakPath}/app-release-0110-14-52-48-R.txt"
+    // only use for build all flavor, if not, just ignore this field
+    tinkerBuildFlavorDirectory = "${bakPath}/app-release-1208-14-48-35"
+}
+greendao {
+    schemaVersion 1
+    daoPackage 'com.can.appstore.db.msgdao'
+    targetGenDir 'src/main/java'
+}
+
+def getOldApkPath() {
+    return hasProperty("OLD_APK") ? OLD_APK : ext.tinkerOldApkPath
+}
+
+def getApplyMappingPath() {
+    return hasProperty("APPLY_MAPPING") ? APPLY_MAPPING : ext.tinkerApplyMappingPath
+}
+
+def getApplyResourceMappingPath() {
+    return hasProperty("APPLY_RESOURCE") ? APPLY_RESOURCE : ext.tinkerApplyResourcePath
+}
+
+def getTinkerIdValue() {
+    return hasProperty("TINKER_ID") ? TINKER_ID : gitSha()
+}
+
+def buildWithTinker() {
+    return hasProperty("TINKER_ENABLE") ? TINKER_ENABLE : ext.tinkerEnabled
+}
+
+def getTinkerBuildFlavorDirectory() {
+    return ext.tinkerBuildFlavorDirectory
+}
+
+if (buildWithTinker()) {
+    apply plugin: 'com.tencent.tinker.patch'
+    apply plugin: 'com.tencent.bugly.tinker-support'
+
+    tinkerSupport {
+//        // 开启tinker-support插件，默认值true
+//        enable = true
+//        // 是否编译完成后，归档apk到指定目录，默认值false
+//        autoBackupApk = false
+//        // 指定归档目录，默认值当前module的子目录tinker
+//        // backupApkDir = 'tinker'
+//        // 是否启用覆盖tinkerPatch配置功能，默认值false
+//        // 开启后tinkerPatch配置不生效，即无需添加tinkerPatch
+//        overrideTinkerPatchConfiguration = false
+//        // 编译补丁包时，必需指定基线版本的apk，默认值为空
+//        // 如果为空，则表示不是进行补丁包的编译
+//        // @{link tinkerPatch.oldApk }
+//        baseApk = "YOUR_OLD_APK"
+//        // 对应tinker插件applyMapping
+//        baseApkProguardMapping = "YOUR_OLD_APK_PROGUARD_FILE"
+//        // 对应tinker插件applyResourceMapping
+//        baseApkResourceMapping = "YOUR_OLD_APK_RES_MAPPING"
+//        tinkerId = "YOUR_TINKER_ID"
+////        patchSigning = true
+    }
+
+    // 全局信息相关配置项
+    tinkerPatch {
+        oldApk = getOldApkPath() //必选， 基准包路径
+        ignoreWarning = false // 可选，默认false
+        useSign = true // 可选，默认true， 验证基准apk和patch签名是否一致
+        // 编译相关配置项
+        buildConfig {
+//            applyMapping = getApplyMappingPath() //  可选，设置mapping文件，建议保持旧apk的proguard混淆方式
+//            applyResourceMapping = getApplyResourceMappingPath() // 可选，设置R.txt文件，通过旧apk文件保持ResId的分配
+//            tinkerId = gitSha() // 必选，默认为null
+            tinkerId = "v1.0.6_201701101500"
+        }
+
+        // dex相关配置项
+        dex {
+            dexMode = "jar" // 可选，默认为jar
+            usePreGeneratedPatchDex = true // 可选，默认为false
+            pattern = ["classes*.dex", "assets/secondary-dex-?.jar"]
+            // 必选
+            loader = ["com.tencent.tinker.loader.*", "com.can.appstore.MyApplication",
+            ]
+        }
+
+        // lib相关的配置项
+        lib {
+            pattern = ["lib/armeabi/*.so"]
+        }
+
+        // res相关的配置项
+        res {
+            pattern = ["res/*", "assets/*", "resources.arsc", "AndroidManifest.xml"]
+            ignoreChange = ["assets/sample_meta.txt"]
+            largeModSize = 100
+        }
+
+        // 用于生成补丁包中的'package_meta.txt'文件
+        packageConfig {
+            configField("patchMessage", "tinker is sample to use")
+
+            configField("platform", "all")
+
+            configField("patchVersion", "1.0")
+        }
+
+        // 7zip路径配置项，执行前提是useSign为true
+        sevenZip {
+            zipArtifact = "com.tencent.mm:SevenZip:1.1.10" // optional
+            //  path = "/usr/local/bin/7za" // optional
+        }
+    }
+
+    List<String> flavors = new ArrayList<>();
+    project.android.productFlavors.each { flavor ->
+        flavors.add(flavor.name)
+    }
+    boolean hasFlavors = flavors.size() > 0
+    /**
+     * bak apk and mapping
+     */
+    android.applicationVariants.all { variant ->
+        /**
+         * task type, you want to bak
+         */
+        def taskName = variant.name
+        def date = new Date().format("MMdd-HH-mm-ss")
+
+        tasks.all {
+            if ("assemble${taskName.capitalize()}".equalsIgnoreCase(it.name)) {
+
+                it.doLast {
+                    copy {
+                        def fileNamePrefix = "${project.name}-${variant.baseName}"
+                        def newFileNamePrefix = hasFlavors ? "${fileNamePrefix}" : "${fileNamePrefix}-${date}"
+
+                        def destPath = hasFlavors ? file("${bakPath}/${project.name}-${date}/${variant.flavorName}") : bakPath
+                        from variant.outputs.outputFile
+                        into destPath
+                        rename { String fileName ->
+                            fileName.replace("${fileNamePrefix}.apk", "${newFileNamePrefix}.apk")
+                        }
+
+                        from "${buildDir}/outputs/mapping/${variant.dirName}/mapping.txt"
+                        into destPath
+                        rename { String fileName ->
+                            fileName.replace("mapping.txt", "${newFileNamePrefix}-mapping.txt")
+                        }
+
+                        from "${buildDir}/intermediates/symbols/${variant.dirName}/R.txt"
+                        into destPath
+                        rename { String fileName ->
+                            fileName.replace("R.txt", "${newFileNamePrefix}-R.txt")
+                        }
+                    }
+                }
+            }
+        }
+    }
+    project.afterEvaluate {
+        //sample use for build all flavor for one time
+        if (hasFlavors) {
+            task(tinkerPatchAllFlavorRelease) {
+                group = 'tinker'
+                def originOldPath = getTinkerBuildFlavorDirectory()
+                for (String flavor : flavors) {
+                    def tinkerTask = tasks.getByName("tinkerPatch${flavor.capitalize()}Release")
+                    dependsOn tinkerTask
+                    def preAssembleTask = tasks.getByName("process${flavor.capitalize()}ReleaseManifest")
+                    preAssembleTask.doFirst {
+                        String flavorName = preAssembleTask.name.substring(7, 8).toLowerCase() + preAssembleTask.name.substring(8, preAssembleTask.name.length() - 15)
+                        project.tinkerPatch.oldApk = "${originOldPath}/${flavorName}/${project.name}-${flavorName}-release.apk"
+                        project.tinkerPatch.buildConfig.applyMapping = "${originOldPath}/${flavorName}/${project.name}-${flavorName}-release-mapping.txt"
+                        project.tinkerPatch.buildConfig.applyResourceMapping = "${originOldPath}/${flavorName}/${project.name}-${flavorName}-release-R.txt"
+
+                    }
+
+                }
+            }
+
+            task(tinkerPatchAllFlavorDebug) {
+                group = 'tinker'
+                def originOldPath = getTinkerBuildFlavorDirectory()
+                for (String flavor : flavors) {
+                    def tinkerTask = tasks.getByName("tinkerPatch${flavor.capitalize()}Debug")
+                    dependsOn tinkerTask
+                    def preAssembleTask = tasks.getByName("process${flavor.capitalize()}DebugManifest")
+                    preAssembleTask.doFirst {
+                        String flavorName = preAssembleTask.name.substring(7, 8).toLowerCase() + preAssembleTask.name.substring(8, preAssembleTask.name.length() - 13)
+                        project.tinkerPatch.oldApk = "${originOldPath}/${flavorName}/${project.name}-${flavorName}-debug.apk"
+                        project.tinkerPatch.buildConfig.applyMapping = "${originOldPath}/${flavorName}/${project.name}-${flavorName}-debug-mapping.txt"
+                        project.tinkerPatch.buildConfig.applyResourceMapping = "${originOldPath}/${flavorName}/${project.name}-${flavorName}-debug-R.txt"
+                    }
+
+                }
+            }
         }
     }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:recyclerview-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
+    testCompile 'junit:junit:4.12'
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+    compile 'org.greenrobot:greendao:3.0.1'
+    compile 'org.greenrobot:greendao-generator:3.0.0'
     compile project(':lib')
+    compile project(':downloadlib')
+    compile 'org.greenrobot:eventbus:3.0.0'
+    apt 'org.greenrobot:eventbus-annotation-processor:3.0.1'
+    // 多dex配置
+    compile "com.android.support:multidex:1.0.1"
+//    compile(name: 'bugly_crashreport_upgrade-1.2.0', ext: 'aar')
+    compile "com.tencent.bugly:crashreport_upgrade:latest.release"
+//    compile 'com.tencent.bugly:nativecrashreport:latest.release' //其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.2.0
 }

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="horizontal"
+              android:gravity="center"
+              android:background="@color/black_opa10"
+    >
+
+    <LinearLayout
+        android:layout_width="@dimen/px1000"
+        android:layout_height="@dimen/px640"
+        android:orientation="vertical"
+        android:background="@color/color_2D313A"
+        android:gravity="center_horizontal"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/px65"
+            android:textColor="@color/white_opa80"
+            android:textSize="36px"
+            android:includeFontPadding="true"
+            />
+        <LinearLayout
+            android:layout_width="@dimen/px800"
+            android:layout_height="@dimen/px270"
+            android:layout_marginTop="@dimen/px62"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:background="@color/black_opa10"
+            >
+            <ImageView
+                android:layout_width="@dimen/px36"
+                android:layout_height="@dimen/px36"
+                android:background="@mipmap/upgrade_fail"
+                />
+            <TextView
+                android:id="@+id/tv_fail_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/px16"
+                android:textSize="@dimen/px34"
+                android:textColor="@color/white_opa80"
+                android:includeFontPadding="true"
+                />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_upgrade_fail_back"
+            android:layout_width="@dimen/px800"
+            android:layout_height="@dimen/px88"
+            android:layout_marginTop="@dimen/px54"
+            style="@style/NormalText"
+            android:textColor="@color/white_opa80"
+            android:textSize="@dimen/px30"
+            android:text="@string/back"
+            android:includeFontPadding="true"
+            android:clickable="true"
+            android:focusable="true"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

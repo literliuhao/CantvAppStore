@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/color_2D313A">
+
+    <WebView
+        android:id="@+id/active_webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/color_2D313A"
+        android:visibility="gone"/>
+
+    <RelativeLayout
+        android:id="@+id/active_native_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/active_native_imgbg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"/>
+
+        <LinearLayout
+            android:id="@+id/active_focus_layout"
+            android:layout_width="@dimen/px352"
+            android:layout_height="@dimen/px142"
+            android:background="@mipmap/active_participate"
+            android:visibility="gone"
+            android:padding="@dimen/dimen_26px"
+            android:layout_marginStart="@dimen/px340"
+            android:layout_marginTop="@dimen/px815">
+
+            <com.can.appstore.widgets.TextProgressBar
+                android:id="@+id/active_textprogressbar"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="@dimen/px300"
+                android:layout_height="@dimen/px90"
+                android:focusable="true"
+                android:max="100"
+                android:progressDrawable="@drawable/active_layer_list_text_progressbar"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

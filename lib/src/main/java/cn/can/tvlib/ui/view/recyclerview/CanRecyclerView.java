@@ -3,8 +3,10 @@ package cn.can.tvlib.ui.view.recyclerview;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.View;
 
 /**
@@ -21,7 +23,12 @@ import android.view.View;
  */
 public class CanRecyclerView extends RecyclerView {
 
-    private LayoutManager mLayoutManager;
+    public static final int KEYCODE_EFFECT_INTERVAL_UNLIMIT = 0;
+    public static final int KEYCODE_EFFECT_INTERVAL_NORMAL = 150;
+
+    private CanGridLayoutManager mCanGridLayoutManager;
+    private long mLastKeyCodeTimePoint;
+    private int keyCodeEffectInterval = KEYCODE_EFFECT_INTERVAL_UNLIMIT;
 
     public interface OnFocusSearchCallback {
 
@@ -41,6 +48,11 @@ public class CanRecyclerView extends RecyclerView {
     public CanRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         setChildrenDrawingOrderEnabled(true);
+    }
+
+    @Override
+    public void setOnFocusChangeListener(OnFocusChangeListener l) {
+        super.setOnFocusChangeListener(l);
     }
 
     @Override
@@ -68,9 +80,9 @@ public class CanRecyclerView extends RecyclerView {
         return focusIndex;
     }
 
-    public void setLayoutManager(LayoutManager layout, OnFocusSearchCallback callback) {
+    public void setLayoutManager(CanGridLayoutManager layout, OnFocusSearchCallback callback) {
         layout.setOnFocusSearchFailCallback(callback);
-        mLayoutManager = layout;
+        mCanGridLayoutManager = layout;
         super.setLayoutManager(layout);
     }
 
@@ -78,7 +90,27 @@ public class CanRecyclerView extends RecyclerView {
         super.setAdapter(adapter);
     }
 
-    public static class LayoutManager extends GridLayoutManager {
+    public void setKeyCodeEffectInterval(int keyCodeEffectInterval) {
+        this.keyCodeEffectInterval = keyCodeEffectInterval;
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN && keyCodeEffectInterval != KEYCODE_EFFECT_INTERVAL_UNLIMIT) {
+            long time = System.currentTimeMillis();
+            if (mLastKeyCodeTimePoint == 0) {
+                mLastKeyCodeTimePoint = System.currentTimeMillis();
+                return super.dispatchKeyEvent(event);
+            } else if (time - mLastKeyCodeTimePoint < keyCodeEffectInterval) {
+                return true;
+            } else {
+                mLastKeyCodeTimePoint = System.currentTimeMillis();
+            }
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
+    public static class CanGridLayoutManager extends GridLayoutManager {
 
         private OnFocusSearchCallback mFocusSearchCallback;
 
@@ -86,15 +118,15 @@ public class CanRecyclerView extends RecyclerView {
             mFocusSearchCallback = callback;
         }
 
-        public LayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        public CanGridLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
             super(context, attrs, defStyleAttr, defStyleRes);
         }
 
-        public LayoutManager(Context context, int spanCount) {
+        public CanGridLayoutManager(Context context, int spanCount) {
             super(context, spanCount);
         }
 
-        public LayoutManager(Context context, int spanCount, int orientation, boolean reverseLayout) {
+        public CanGridLayoutManager(Context context, int spanCount, int orientation, boolean reverseLayout) {
             super(context, spanCount, orientation, reverseLayout);
         }
 
@@ -109,6 +141,51 @@ public class CanRecyclerView extends RecyclerView {
                 }
             }
             return view;
+        }
+    }
+
+    public static class CanLinearLayoutManager extends LinearLayoutManager {
+
+        private OnFocusSearchCallback mFocusSearchCallback;
+
+        public CanLinearLayoutManager(Context context) {
+            super(context);
+        }
+
+        public CanLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
+            super(context, orientation, reverseLayout);
+        }
+
+        public CanLinearLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+            super(context, attrs, defStyleAttr, defStyleRes);
+        }
+
+        public void setOnFocusSearchFailCallback(OnFocusSearchCallback callback) {
+            mFocusSearchCallback = callback;
+        }
+
+        @Override
+        public View onFocusSearchFailed(View focused, int focusDirection, Recycler recycler, State state) {
+            View view = super.onFocusSearchFailed(focused, focusDirection, recycler, state);
+            if (mFocusSearchCallback != null) {
+                if (view != null) {
+                    mFocusSearchCallback.onSuccess(view, focused, focusDirection, recycler, state);
+                } else {
+                    mFocusSearchCallback.onFail(focused, focusDirection, recycler, state);
+                }
+            }
+            return view;
+        }
+
+        @Override
+        public void onLayoutChildren(Recycler recycler, State state) {
+            try {
+                //notifyitemremove 时报RecyclerView: java.lang.IndexOutOfBoundsException: Inconsistency detected. Invalid item position
+                //未测试会不会引起其他坑
+                super.onLayoutChildren(recycler, state);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

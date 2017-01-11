@@ -14,8 +14,8 @@
 
     <style name="common_dialog_fade_in_out" parent="common_dialog">
         <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowAnimationStyle">@style/anim_fade_in</item>
-        <item name="android:windowBackground">@color/black_opa20</item>
     </style>
 
     <style name="anim_zoom_in_out">

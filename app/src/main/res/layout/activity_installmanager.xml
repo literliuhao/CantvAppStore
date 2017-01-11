@@ -1,0 +1,145 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/bt_install_deleteall"
+        android:layout_width="@dimen/px200"
+        android:layout_height="@dimen/px72"
+        android:layout_marginLeft="@dimen/px160"
+        android:layout_marginTop="@dimen/px150"
+        android:background="@drawable/selector_updateitem"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:nextFocusLeft="@id/bt_install_deleteall"
+        android:nextFocusUp="@id/bt_install_deleteall"
+        android:text="@string/install_bt_deleteall"
+        android:textColor="#ccffffff"
+        android:textSize="@dimen/px34"
+        android:visibility="visible"/>
+
+    <TextView
+        android:id="@+id/bt_install_delete"
+        android:layout_width="@dimen/px200"
+        android:layout_height="@dimen/px72"
+        android:layout_below="@id/bt_install_deleteall"
+        android:layout_marginLeft="@dimen/px160"
+        android:layout_marginTop="@dimen/px24"
+        android:background="@drawable/selector_updateitem"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:nextFocusDown="@id/bt_install_delete"
+        android:nextFocusLeft="@id/bt_install_delete"
+        android:nextFocusUp="@id/bt_install_deleteall"
+        android:text="@string/install_bt_deleteinstall"
+        android:textColor="#ccffffff"
+        android:textSize="@dimen/px34"
+        android:visibility="visible"/>
+
+    <!--<Button
+        android:id="@+id/bt_install_update"
+        android:layout_width="@dimen/px200"
+        android:layout_height="@dimen/px72"
+        android:layout_below="@id/bt_install_delete"
+        android:layout_marginLeft="@dimen/px160"
+        android:layout_marginTop="@dimen/px24"
+        android:background="@drawable/selector_updateitem"
+        android:focusable="true"
+        android:onClick="intoUpdate"
+        android:text="更新管理"
+        android:textColor="#ccffffff"
+        android:textSize="35px"
+        android:nextFocusDown="@id/bt_install_update"
+        android:visibility="visible" />-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/px80"
+        android:layout_toRightOf="@+id/bt_install_deleteall"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/px65"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_install_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="@dimen/px20"
+                android:drawableStart="@mipmap/title_line"
+                android:text="@string/install_title"
+                android:textColor="#ccffffff"
+                android:textSize="@dimen/px38"/>
+
+            <com.can.appstore.appdetail.custom.TextProgressBar
+                android:id="@+id/pb_install_progressbar"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="@dimen/px340"
+                android:layout_height="@dimen/px24"
+                android:layout_marginStart="@dimen/px40"
+                android:layout_marginTop="@dimen/px5"
+                android:max="100"
+                android:progressDrawable="@drawable/layer_list_progress_drawable"/>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/bt_batch_uninstall">
+
+            <TextView
+                android:id="@+id/tv_install_reminder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/install_updateall"
+                android:textColor="@color/uninstall_app_name_color"
+                android:textSize="@dimen/px36"
+                android:textStyle="bold"
+                android:visibility="gone"/>
+
+            <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
+                android:id="@+id/rv_install_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/px142"
+                android:layout_marginStart="@dimen/px42"
+                android:layout_marginTop="-7px"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:paddingBottom="@dimen/px1"
+                android:paddingLeft="@dimen/px23"
+                android:paddingRight="@dimen/px1"
+                android:paddingTop="@dimen/px23"/>
+        </FrameLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_install_totalnum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/px168"
+        android:layout_marginTop="@dimen/px80"
+        android:textColor="#80ffffff"
+        android:textSize="32px"/>
+
+    <TextView
+        android:id="@+id/tv_install_currentnum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/px3"
+        android:layout_marginTop="@dimen/px80"
+        android:layout_toLeftOf="@id/tv_install_totalnum"
+        android:textColor="#ccffffff"
+        android:textSize="@dimen/px32"/>
+
+</RelativeLayout>

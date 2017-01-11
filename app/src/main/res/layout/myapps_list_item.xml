@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="@dimen/px270"
+                android:layout_height="@dimen/px180"
+                android:descendantFocusability="beforeDescendants"
+                android:focusable="true"
+    >
+
+    <LinearLayout
+        android:id="@+id/myapps_item_rlbg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        >
+
+        <ImageView
+            android:id="@+id/myapp_ivicon"
+            android:layout_width="@dimen/px80"
+            android:layout_height="@dimen/px80"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/px5"
+            />
+
+        <TextView
+            android:id="@+id/myapp_tvname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/px10"
+            android:gravity="center"
+            android:text="APP-NAME"
+            android:textColor="@color/app_name_color"
+            android:textSize="@dimen/fontsize_32"
+            android:singleLine="true"
+            android:ellipsize="end"
+            />
+    </LinearLayout>
+
+
+</RelativeLayout>

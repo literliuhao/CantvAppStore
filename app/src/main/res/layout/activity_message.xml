@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+    >
+
+    <Button
+        android:id="@+id/btn_tag"
+        android:layout_width="@dimen/px200"
+        android:layout_height="@dimen/px72"
+        android:layout_marginStart="@dimen/px160"
+        android:layout_marginTop="@dimen/px150"
+        android:background="@drawable/msg_btn_rect_gray"
+        android:text="@string/btn_tag_msg"
+        android:textColor="@color/msg_white_80"
+        android:textSize="@dimen/fontsize_34"
+        />
+
+    <Button
+        android:id="@+id/btn_clear"
+        android:layout_width="@dimen/px200"
+        android:layout_height="@dimen/px72"
+        android:layout_alignEnd="@+id/btn_tag"
+        android:layout_below="@+id/btn_tag"
+        android:layout_marginTop="@dimen/px24"
+        android:background="@drawable/msg_btn_rect_gray"
+        android:text="@string/btn_clear_msg"
+        android:textColor="@color/msg_white_80"
+        android:textSize="@dimen/fontsize_34"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tv_title_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/px64"
+        android:layout_marginTop="@dimen/px80"
+        android:layout_toEndOf="@+id/btn_tag"
+        android:drawablePadding="@dimen/px20"
+        android:drawableStart="@drawable/msg_rect_yellow"
+        android:includeFontPadding="false"
+        android:text="@string/title_msg"
+        android:textColor="@color/msg_white_80"
+        android:textSize="@dimen/fontsize_38"
+        />
+
+    <TextView
+        android:id="@+id/tv_msg_list_line"
+        android:layout_width="@dimen/px220"
+        android:layout_height="@dimen/px50"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/px165"
+        android:layout_marginTop="@dimen/px86"
+        android:textColor="@color/msg_white_50"
+        android:textSize="@dimen/fontsize_32"
+        android:gravity="right"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tv_empty_msg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignStart="@+id/tv_title_msg"
+        android:layout_alignTop="@+id/btn_tag"
+        android:layout_marginBottom="@dimen/px64"
+        android:layout_marginEnd="@dimen/px160"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/txt_empty_msg"
+        android:textColor="@color/msg_white_80"
+        android:textSize="@dimen/fontsize_36"
+        android:textStyle="bold"
+        android:visibility="gone"
+        />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_msg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignStart="@+id/tv_title_msg"
+        android:layout_alignTop="@+id/btn_tag"
+        android:layout_marginEnd="@dimen/px160"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/px119"
+        android:scrollbarStyle="insideInset"
+        android:scrollbars="vertical"
+        android:visibility="gone"
+        />
+
+    <ImageView
+        android:id="@+id/iv_bottom_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/px150"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/msg_bottom_shadow"/>
+</RelativeLayout>

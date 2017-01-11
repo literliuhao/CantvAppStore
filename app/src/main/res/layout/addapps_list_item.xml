@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="@dimen/px270"
+              android:layout_height="@dimen/px180"
+              android:focusable="true"
+    >
+
+    <LinearLayout
+        android:id="@+id/addapps_llbg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        >
+        <ImageView
+            android:layout_width="@dimen/px80"
+            android:layout_height="@dimen/px80"
+            android:id="@+id/addapps_item_ivicon"
+            android:layout_marginTop="@dimen/px22"
+            android:layout_gravity="center"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/addapps_item_tvname"
+            android:layout_marginTop="@dimen/px12"
+            android:textColor="@color/app_name_color"
+            android:textSize="@dimen/fontsize_32"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:gravity="center"
+            />
+
+</LinearLayout>
+
+    <ImageView
+        android:id="@+id/addapps_iv_check"
+        android:layout_width="@dimen/px36"
+        android:layout_height="@dimen/px36"
+        android:layout_marginStart="@dimen/px4"
+        android:layout_marginTop="@dimen/px4"
+        android:src="@drawable/unselect"/>
+</RelativeLayout>

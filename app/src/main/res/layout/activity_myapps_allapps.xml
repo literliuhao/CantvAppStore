@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/allapps_main_page"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+    >
+
+    <LinearLayout
+        android:id="@+id/allapps_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/px161"
+        android:layout_marginStart="@dimen/px161"
+        android:layout_marginTop="@dimen/px80"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:layout_width="@dimen/px7"
+            android:layout_height="@dimen/px38"
+            android:layout_marginEnd="@dimen/px20"
+            android:background="@mipmap/title_line"
+            android:layout_gravity="center_vertical"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="@string/all_app"
+            android:textColor="@color/tv_cur_rows_color"
+            android:textSize="@dimen/fontsize_38"/>
+
+        <ImageView
+            android:layout_width="@dimen/px32"
+            android:layout_height="@dimen/px32"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/px40"
+            android:background="@drawable/menu_icon"/>
+
+        <TextView
+            android:id="@+id/allapps_Num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/menu_get_more_function"
+            android:textColor="@color/tv_total_rows_color"
+            android:textSize="@dimen/fontsize_32"
+            />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="@dimen/px130"
+        android:layout_height="@dimen/px36"
+        android:layout_alignParentEnd="true"
+        android:gravity="end"
+        android:layout_marginEnd="@dimen/px190"
+        android:layout_marginTop="@dimen/px80">
+
+        <TextView
+            android:id="@+id/allapps_tv_currows"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tv_cur_rows_color"
+            android:textSize="@dimen/fontsize_32"/>
+
+        <TextView
+            android:id="@+id/allapps_tv_totalrows"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tv_total_rows_color"
+            android:textSize="@dimen/fontsize_32"/>
+
+    </LinearLayout>
+
+    <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
+        android:id="@+id/allapps_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/allapps_title"
+        android:layout_marginEnd="@dimen/px130"
+        android:layout_marginStart="@dimen/px140"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:paddingStart="@dimen/px23"
+        android:paddingTop="@dimen/px23"/>
+</RelativeLayout>

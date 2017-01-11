@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/bg_btn_candialog_shape" android:state_pressed="true"/>
+    <item android:drawable="@drawable/bg_btn_candialog_shape" android:state_focused="true"/>
+    <item>
+        <shape>
+            <solid android:color="@color/white_opa10"/>
+            <corners android:radius="@dimen/dimen_12px"/>
+        </shape>
+    </item>
+</selector>

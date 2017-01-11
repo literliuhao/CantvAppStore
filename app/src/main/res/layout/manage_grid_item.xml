@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/px270"
+    android:layout_height="@dimen/px368"
+    android:layout_centerHorizontal="true">
+
+    <ImageView
+        android:id="@+id/iv_manage_color"
+        android:layout_width="@dimen/px270"
+        android:layout_height="@dimen/px368"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
+
+    <ImageView
+        android:id="@+id/iv_manage_icon"
+        style="@style/index_manager_icon_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"/>
+
+    <ImageView
+        android:id="@+id/iv_manage_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/index_manager_new"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tv_manage_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/px8"
+        android:layout_marginTop="@dimen/px8"
+        android:rotation="-45"
+        android:textColor="#ffffff"
+        android:textSize="@dimen/px26"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tv_manage_name"
+        style="@style/index_manager_textstyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"/>
+
+</RelativeLayout>

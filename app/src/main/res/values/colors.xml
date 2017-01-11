@@ -3,4 +3,102 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="focus_light_yellow">#fef102</color>
+    <color name="testColor">#FF0081</color>
+
+    <!--首页管理色块-->
+    <color name="manager_008fc3">#008fc3</color>
+    <color name="manager_cb8123">#cb8123</color>
+    <color name="manager_039979">#039979</color>
+    <color name="manager_c45341">#c45341</color>
+    <color name="manager_c45241">#c45241</color>
+    <color name="manager_448c15">#448c15</color>
+    <color name="manager_7a5be0">#7a5be0</color>
+    <color name="manager_069597">#069597</color>
+
+
+    <!--专题详情页面 FW-->
+    <color name="color_80_ffffff">#CCffffff</color>
+    <color name="color_50_ffffff">#80ffffff</color>
+    <color name="color_10_ffffff">#1Affffff</color>
+    <color name="color_F0D625">#F0D625</color>
+    <color name="color_E0E0E0">#E0E0E0</color>
+    <color name="color_EAEAEA">#EAEAEA</color>
+    <color name="color_96989D">#96989D</color>
+    <color name="color_2D313A">#2D313A</color>
+    <color name="color_42464E">#42464E</color>
+    <color name="color_4C4F57">#4C4F57</color>
+    <color name="color_383C44">#383C44</color>
+    <color name="color_5E6268">#5E6268</color>
+    <color name="color_FF0B90C0">#FF0B90C0</color>
+    <color name="color_800B90C0">#800B90C0</color>
+
+    <!--卸载管理页面|-->
+    <color name="bt_batch_uninstall_bg">#42464E</color>
+    <color name="bt_bg">#19ffffff</color>
+    <color name="bt_batch_uninstall_focus_bg">#0376A0</color>
+    <!--<color name="tv_cur_rows_color">#CCFFFFFF</color>
+    <color name="tv_total_rows_color">#7FFFFFFF</color>-->
+    <color name="uninstall_app_name_color">#CCFFFFFF</color>
+    <color name="tv_app_version_color">#7fFFFFFF</color>
+    <color name="progress_storage_bg">#2D313A</color>
+    <color name="progress_storage_fg">#0A87B5</color>
+    <!--<color name="select_app_count">#CCfdf352</color>-->
+    <color name="stroage_line_bg">#19ffffff</color>
+    <color name="stroage_bg">#21019dd4</color>
+    <color name="stroage_text_color">#CCFFFFFF</color>
+
+    <!--应用详情页-->
+    <!--<color name="app_name_color">#CCFFFFFF</color>-->
+    <color name="app_introduce_three_bg">#19000000</color>
+    <color name="app_size_color">#7fFFFFFF</color>
+    <color name="app_introduce_color">#33FFFFFF</color>
+    <!--<color name="two_page_bg">#2D313A</color>-->
+    <color name="download_button_bg">#0376a0</color>
+    <color name="tabline_show_color">#F2F2F2</color>
+    <color name="update_button_bg">#42474B</color>
+    <color name="download_progress_bg">#438b14</color>
+    <color name="introduce_one_bg">#B2000000</color>
+    <color name="image_scale_bg">#E5000000</color>
+    <color name="color_TRANSPARENT">#00000000</color>
+    <color name="colorYellow">#efd624</color>
+    <color name="color_CC088DBD">#cc088dbd</color>
+
+
+    <!--我的应用相关页面-->
+    <color name="bt_batch_addapps_bg">#42464E</color>
+    <color name="bt_batch_addapps_focus_bg">#0376A0</color>
+    <color name="app_name_color">#ccFFFFFF</color>
+    <color name="select_app_count">#CCfdf352</color>
+    <color name="two_page_bg">#2d313a</color>
+    <color name="tv_cur_rows_color">#CCFFFFFF</color>
+    <color name="tv_total_rows_color">#7FFFFFFF</color>
+    <color name="tv_menu_guanli_color">#80FFFFFF</color>
+    <color name="myapps_custom_item_textbg">#E6CB8021</color>
+    <color name="myapps_custom_item_iconsbg">#99FFFFFF</color>
+    <!--消息中心色值-->
+    <color name="msg_yellow">#F0D625</color>
+    <color name="msg_rect_gray">#42464E</color>
+    <color name="msg_white_80">#CCFFFFFF</color>
+    <color name="msg_white_50">#80FFFFFF</color>
+
+    <!--首页排行榜颜色-->
+    <color name="h_rank_tiem_bg1">#069597</color>
+    <color name="h_rank_tiem_bg2">#c47714</color>
+    <color name="h_rank_tiem_bg3">#448914</color>
+    <color name="h_rank_tiem_bg4">#6e53ca</color>
+    <color name="h_rank_tiem_bg5">#c45241</color>
+    <!--半透明文字-->
+    <color name="h_rank_tiem_text_gray">#56f5f5f5</color>
+    <!--首页排行榜透明颜色-->
+    <color name="h_rank_transulcent">#16262626</color>
+    <!--搜索页-->
+    <!--白色透明20%-->
+    <color name="tr_20_white_color">#ccffffff</color>
+    <!--白色透明50%-->
+    <color name="tr_50_white_color">#80ffffff</color>
+    <!--金色透明20%-->
+    <color name="tr_20_gold_color">#ccfdf352</color>
+
+
 </resources>

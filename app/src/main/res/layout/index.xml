@@ -1,0 +1,111 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/index_bj"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:focusable="false">
+
+    <!--最顶层CIBN-->
+    <include
+        android:id="@+id/layout_top"
+        layout="@layout/index_top"/>
+
+    <!--导航页面-->
+    <com.can.appstore.index.ui.TitleBar
+        android:id="@+id/id_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/px80"
+        android:layout_below="@id/layout_top"
+        android:layout_marginLeft="@dimen/px100"
+        android:layout_marginTop="@dimen/px30"
+        android:focusable="false"
+        android:orientation="horizontal">
+    </com.can.appstore.index.ui.TitleBar>
+
+    <!--主体Pager页-->
+    <com.can.appstore.index.ui.CustomPager
+        android:id="@+id/id_custom_pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/id_indicator"
+        android:focusable="false"
+        android:scrollbars="none">
+    </com.can.appstore.index.ui.CustomPager>
+
+    <!--可更新提示-->
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/px130"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:layout_marginLeft="@dimen/px160">
+
+        <include
+            layout="@layout/index_app_update"/>
+    </RelativeLayout>
+
+
+    <!--广告-->
+    <RelativeLayout
+        android:id="@+id/rl_content_ad"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/iv_index_ad"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:nextFocusDown="@id/iv_index_ad"
+            android:nextFocusForward="@id/iv_index_ad"
+            android:nextFocusLeft="@id/iv_index_ad"
+            android:nextFocusRight="@id/iv_index_ad"
+            android:nextFocusUp="@id/iv_index_ad"
+            android:background="@drawable/app_store"
+            android:scaleType="centerCrop"/>
+
+        <LinearLayout
+            android:id="@+id/ll_ad_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="@dimen/px70"
+            android:layout_marginRight="@dimen/px80"
+            android:visibility="gone"
+            >
+            <TextView
+                android:id="@+id/tv_ad_tips1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white_opa80"
+                android:text="@string/ad_count_down_time_left"
+                android:textSize="@dimen/px34"/>
+            <TextView
+                android:id="@+id/tv_ad_time"
+                android:layout_width="@dimen/px60"
+                android:layout_height="@dimen/px60"
+                android:background="@drawable/bg_time"
+                android:gravity="center"
+                android:textColor="@color/white_opa80"
+                android:textSize="@dimen/px34"
+                android:layout_marginLeft="@dimen/px8"
+                android:layout_marginRight="@dimen/px8"
+                />
+            <TextView
+                android:id="@+id/tv_ad_tips2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white_opa80"
+                android:text="@string/second"
+                android:textSize="@dimen/px34"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

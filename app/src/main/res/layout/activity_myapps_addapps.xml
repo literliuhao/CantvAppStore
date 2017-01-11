@@ -1,0 +1,131 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/bt_batch_addapps"
+        android:layout_width="@dimen/px200"
+        android:layout_height="@dimen/px72"
+        android:layout_marginStart="@dimen/px160"
+        android:layout_marginTop="@dimen/px150"
+        android:background="@drawable/shape_bg_app_detail_item_focus"
+        android:focusable="true"
+        android:gravity="center"
+        android:text="@string/make_sure_add"
+        android:textColor="@color/app_name_color"
+        android:textSize="@dimen/fontsize_34"/>
+
+    <LinearLayout
+        android:id="@+id/ll_select_app"
+        android:layout_width="@dimen/px200"
+        android:layout_height="@dimen/px128"
+        android:layout_alignEnd="@+id/bt_batch_addapps"
+        android:layout_alignStart="@+id/bt_batch_addapps"
+        android:layout_below="@+id/bt_batch_addapps"
+        android:layout_marginTop="@dimen/px10"
+        android:background="@drawable/bjs"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/px20"
+            android:text="已选择应用数"
+            android:textColor="@color/app_name_color"
+            android:textSize="@dimen/fontsize_26"/>
+
+
+        <TextView
+            android:id="@+id/tv_addselect_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="@color/select_app_count"
+            android:textSize="@dimen/fontsize_44"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/px80"
+        android:layout_toEndOf="@+id/bt_batch_addapps"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/px65"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/px7"
+                android:layout_height="@dimen/px38"
+                android:layout_marginEnd="@dimen/px20"
+                android:background="@mipmap/title_line"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="添加应用"
+                android:textColor="@color/tv_cur_rows_color"
+                android:textSize="@dimen/fontsize_38"/>
+
+            <TextView
+                android:id="@+id/tv_canadd_cut"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/px40"
+                android:textColor="#ffffff"
+                android:textSize="@dimen/fontsize_32"
+                />
+
+
+        </LinearLayout>
+
+        <cn.can.tvlib.ui.view.recyclerview.CanRecyclerView
+            android:id="@+id/addapps_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/px142"
+            android:layout_marginStart="@dimen/px42"
+            android:layout_marginTop="@dimen/px_minus_7"
+            android:layout_toEndOf="@+id/bt_batch_addapps"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:paddingStart="@dimen/px23"
+            android:paddingTop="@dimen/px23"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="@dimen/px130"
+        android:layout_height="@dimen/px36"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/px210"
+        android:layout_marginTop="@dimen/px86"
+        android:gravity="end">
+
+        <TextView
+            android:id="@+id/addapps_tv_currows"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tv_cur_rows_color"
+            android:textSize="@dimen/fontsize_32"/>
+
+        <TextView
+            android:id="@+id/addapps_tv_totalrows"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tv_total_rows_color"
+            android:textSize="@dimen/fontsize_32"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

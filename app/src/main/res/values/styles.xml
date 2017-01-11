@@ -1,11 +1,164 @@
 <resources>
 
+
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+    <style name="AppTheme.Translucent.FadeIn" parent="@style/AppTheme">
+        <item name="android:windowAnimationStyle">@style/anim_fade_in</item>
+    </style>
+    
+    <style name="common_page_style" parent="@style/AppTheme.Translucent.FadeIn">
+        <item name="android:windowBackground">@color/color_2D313A</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="commen_textview">
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:marqueeRepeatLimit">marquee_forever</item>
+    </style>
+    <style name="NormalText">
+        <item name="android:textColor">@color/white_opa90</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="upgradeDialogStyle">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+    <style name="progress_horizontal">
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:progressDrawable">@drawable/progress_horizontal</item>
+        <item name="android:indeterminateDrawable">@android:drawable/progress_indeterminate_horizontal</item>
+        <item name="android:minHeight">@dimen/px20</item>
+        <item name="android:maxHeight">@dimen/px20</item>
+    </style>
+
+    <style name="index_manager_textstyle">
+
+        <item name="android:textColor">@color/white_opa80</item>
+        <item name="android:textSize">@dimen/px32</item>
+        <item name="android:layout_marginTop">@dimen/px220</item>
+    </style>
+
+    <style name="index_manager_padding">
+        <item name="android:padding">@dimen/px5</item>
+        <item name="android:layout_marginTop">@dimen/px5</item>
+    </style>
+
+    <style name="index_manager_icon_top">
+        <item name="android:layout_marginTop">@dimen/px90</item>
+    </style>
+
+    <style name="index_manager_icon_mini_top">
+        <item name="android:layout_marginTop">@dimen/px20</item>
+    </style>
+
+    <style name="index_manager_mini_text">
+        <item name="android:textColor">@color/white_opa80</item>
+        <item name="android:textSize">@dimen/px32</item>
+        <item name="android:layout_marginTop">@dimen/px115</item>
+    </style>
+	<!-- 自定义loading dialog -->
+    <style name="loading_dialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+    </style>
+
+    <style name="LoadingProgressDialog" parent="@style/loading_dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="MyEditDialogStyle" parent="@android:style/Theme.Dialog">
+                <item name="android:windowFrame">@null</item>
+                <item name="android:windowIsFloating">true</item>
+                <item name="android:windowIsTranslucent">true</item>
+                <item name="android:windowNoTitle">true</item>
+                <item name="android:background">@android:color/transparent</item>
+                <item name="android:windowBackground">@android:color/transparent</item>
+                <item name="android:backgroundDimEnabled">false</item>
+             <!--   <item name="android:backgroundDimAmount">0.6</item>-->
+            </style>
+
+    <style name="Iintroduce_Dialog_Transparent">
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@style/animFadeIn</item>
+    </style>
+
+    <style name="Image_Scale_Transparent">
+        <item name="android:windowBackground">@color/black_opa90</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@style/animFadeIn</item>
+    </style>
+
+    <style name="App_Detail_Text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textColor">@color/app_size_color</item>
+        <item name="android:textSize">@dimen/dimen_32px</item>
+    </style>
+
+    <style name="CanDialog">
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@style/animFadeIn</item>
+    </style>
+
+    <style name="animFadeIn" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
+
+    <style name="CanDialog_Button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">@dimen/px80</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/bg_btn_candialog_selector</item>
+        <item name="android:textColor">@color/white_opa80</item>
+        <item name="android:textSize">@dimen/px34</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="DialogTransparent" parent="@android:style/Theme.Translucent">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="LaunchStyle" parent="AppTheme">
+        <!--<item name="android:windowIsTranslucent">true</item>-->
+        <!--<item name="android:windowNoTitle">true</item>-->
+        <item name="android:windowBackground">@drawable/launch</item>
+    </style>
+
+    <style name="TransparentBular" parent="@style/AppTheme.Translucent.FadeIn">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:colorForeground">#fff</item>
+    </style>
 </resources>
