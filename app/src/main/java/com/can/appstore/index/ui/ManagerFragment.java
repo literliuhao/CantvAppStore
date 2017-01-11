@@ -117,7 +117,13 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
                         break;
                     //电视助手
                     case 3:
-                        startAc("com.cantv.action.TV_HELPER");
+                        boolean success = startAc("com.cantv.action.TV_HELPER", false);
+                        if (!success) {
+                            success = startAc("com.cantv.wechatphoto.activity.QRCodePushActivity", false);
+                        }
+                        if (!success) {
+                            PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
+                        }
                         break;
                     //关于
                     case 4:
@@ -159,15 +165,24 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
         }
     }
 
-    public void startAc(String action) {
+    public boolean startAc(String action, boolean tips) {
+        boolean success = false;
         Intent intent = new Intent();
         intent.setAction(action);
         try {
             startActivity(intent);
+            success = true;
         } catch (Exception e) {
-            PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
+            if (tips) {
+                PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
+            }
             e.printStackTrace();
         }
+        return success;
+    }
+
+    public boolean startAc(String action) {
+        return startAc(action, true);
     }
 
     public void startAc(String packageName, String className) {
@@ -196,7 +211,7 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
     @Override
     public void onResume() {
         super.onResume();
-        DownloadManager downloadManager=DownloadManager.getInstance(getActivity());
+        DownloadManager downloadManager = DownloadManager.getInstance(getActivity());
         downloadManager.setTaskCntListener(this);
         gridAdapter.refreshUI(DOWNLOAD_INDEX, downloadManager.getCurrentTaskList().size());
     }
@@ -226,7 +241,7 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
     @Override
     public void getTaskCount(final int count) {
         Log.i("ManagerFragment", "count " + count);
-        if(gridView!=null){
+        if (gridView != null) {
             gridView.post(new Runnable() {
                 @Override
                 public void run() {
