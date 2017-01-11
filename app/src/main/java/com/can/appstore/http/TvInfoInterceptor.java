@@ -8,7 +8,7 @@ import com.can.appstore.utils.DataEyeUtil;
 
 import java.io.IOException;
 
-import cn.can.tvlib.utils.NetworkUtils;
+import cn.can.downloadlib.NetworkUtils;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;

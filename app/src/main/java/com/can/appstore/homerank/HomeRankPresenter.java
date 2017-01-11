@@ -12,7 +12,7 @@ import com.can.appstore.http.HttpManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.can.tvlib.utils.NetworkUtils;
+import cn.can.tvlib.common.network.NetworkUtil;
 import retrofit2.Response;
 
 /**
@@ -28,7 +28,7 @@ public class HomeRankPresenter implements HomeRankContract.Presenter {
 
     @Override
     public void loadingData() {
-        if (!NetworkUtils.isNetworkConnected(MyApp.getContext())) {
+        if (!NetworkUtil.isNetworkConnected(MyApp.getContext())) {
 //            mView.noNetWork();
             mView.getData(getDefaultList());
             return;

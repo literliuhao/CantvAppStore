@@ -13,9 +13,9 @@ import com.can.appstore.myapps.utils.MyAppsListDataUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.common.pm.PackageUtil;
+import cn.can.tvlib.common.pm.PackageUtil.AppInfo;
 import cn.can.tvlib.ui.widgets.LoadingDialog;
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 /**
  * Created by wei on 2016/11/3.
@@ -28,13 +28,13 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
     private Context mContext;
     //数据
     private MyAppsListDataUtil mMyAppListData;
-    private List<AppInfo> isShown;
-    private List<AppInfo> addShowList = new ArrayList<>();
-    private List<AppInfo> mAllAppList;
+    private List<PackageUtil.AppInfo> isShown;
+    private List<PackageUtil.AppInfo> addShowList = new ArrayList<>();
+    private List<PackageUtil.AppInfo> mAllAppList;
 
     private LoadingDialog mLoadingDialog;
     //当前被选择的应用
-    public List<AppInfo> mSelectAppInfo = new ArrayList<>();
+    public List<PackageUtil.AppInfo> mSelectAppInfo = new ArrayList<>();
 
     private AddAppsPresenter.AppInstallReceiver mAppInstallReceiver;
 
@@ -61,9 +61,9 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
                 }
                 isShown = mMyAppListData.getShowList(isShown, null);
                 mAllAppList = PackageUtil.findAllThirdPartyAppsNoDelay(mContext, mAllAppList);
-                for (AppInfo app : mAllAppList) {
+                for (PackageUtil.AppInfo app : mAllAppList) {
                     boolean inShown = false;
-                    for (AppInfo appInfo : isShown) {
+                    for (PackageUtil.AppInfo appInfo : isShown) {
                         if (app.packageName.equals(appInfo.packageName)) {
                             inShown = true;
                             break;

@@ -22,12 +22,11 @@ import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
-import cn.can.tvlib.utils.ApkUtils;
-import cn.can.tvlib.utils.NetworkUtils;
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.PromptUtils;
-import cn.can.tvlib.utils.StringUtils;
-import cn.can.tvlib.utils.SystemUtil;
+import cn.can.downloadlib.NetworkUtils;
+import cn.can.tvlib.common.apk.ApkUtils;
+import cn.can.tvlib.common.pm.PackageUtil;
+import cn.can.tvlib.common.text.StringUtils;
+import cn.can.tvlib.ui.PromptUtils;
 import retrofit2.Response;
 
 /**

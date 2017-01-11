@@ -18,8 +18,8 @@ import android.widget.TextView;
 import com.can.appstore.R;
 
 import cn.can.tvlib.imageloader.ImageLoader;
+import cn.can.tvlib.ui.blur.BlurDialogEngine;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
-import cn.can.tvlib.ui.util.BlurDialogEngine;
 
 /**
  * Created by Atangs on 2016/10/30.

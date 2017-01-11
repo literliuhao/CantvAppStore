@@ -13,10 +13,10 @@ import com.can.appstore.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.common.pm.PackageUtil;
+import cn.can.tvlib.common.text.StringUtils;
 import cn.can.tvlib.ui.view.RoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.StringUtils;
 
 /**
  * Created by JasonF on 2016/10/13.

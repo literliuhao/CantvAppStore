@@ -8,7 +8,7 @@ import android.widget.TextView;
 import com.can.appstore.R;
 import com.can.appstore.base.BaseActivity;
 
-import cn.can.tvlib.utils.PackageUtil;
+import cn.can.tvlib.common.pm.PackageUtil;
 
 /**
  * Created by zhangbingyuan on 2016/12/19.
@@ -32,7 +32,6 @@ public class AboutUsActivity extends BaseActivity {
         mVerionNameTv = (TextView) findViewById(R.id.tv_version_name);
         mEmailTv = (TextView) findViewById(R.id.tv_email);
         mPhoneTv = (TextView) findViewById(R.id.tv_phone);
-
         String version = PackageUtil.getMyVersionName(this);
         mVerionNameTv.setText(String.format(getString(R.string.current_app_version_template), version));
 

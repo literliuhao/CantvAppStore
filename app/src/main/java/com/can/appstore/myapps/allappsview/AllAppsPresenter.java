@@ -15,9 +15,9 @@ import java.util.List;
 import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadTask;
+import cn.can.tvlib.common.pm.PackageUtil;
+import cn.can.tvlib.ui.PromptUtils;
 import cn.can.tvlib.ui.widgets.LoadingDialog;
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.PromptUtils;
 
 
 /**

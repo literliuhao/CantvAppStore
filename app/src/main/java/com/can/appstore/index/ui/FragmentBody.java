@@ -23,8 +23,8 @@ import com.can.appstore.index.model.ActionUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.common.system.DisplayUtil;
 import cn.can.tvlib.ui.view.GlideRoundCornerImageView;
-import cn.can.tvlib.utils.DisplayUtil;
 
 /**
  * Created by liuhao on 2016/10/17.

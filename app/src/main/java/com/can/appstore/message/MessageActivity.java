@@ -32,8 +32,8 @@ import com.dataeye.sdk.api.app.channel.DCPage;
 
 import java.util.List;
 
+import cn.can.downloadlib.NetworkUtils;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
-import cn.can.tvlib.utils.NetworkUtils;
 
 /**
  * 消息主页面

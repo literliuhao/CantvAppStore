@@ -90,13 +90,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import cn.can.downloadlib.DownloadManager;
+import cn.can.downloadlib.NetworkUtils;
+import cn.can.tvlib.common.pm.PackageUtil;
 import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
+import cn.can.tvlib.ui.PromptUtils;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
-import cn.can.tvlib.utils.NetworkUtils;
-import cn.can.tvlib.utils.PackageUtils;
-import cn.can.tvlib.utils.PromptUtils;
 import retrofit2.Response;
 
 import static com.can.appstore.index.entity.FragmentEnum.INDEX;
@@ -253,7 +253,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         CommonAdParam commonAdParam = new CommonAdParam();
         commonAdParam.setAdPositionId(AD_POSITION_ID);
         commonAdParam.setMac(NetworkUtils.getMac());
-        commonAdParam.setVersionId(PackageUtils.getVersionName(mContext));
+        commonAdParam.setVersionId(PackageUtil.getMyVersionName(mContext));
         CanCall<ClassicResult<List<Ad>>> listAD = HttpManager.getAdService().getCommonAd(commonAdParam.toMap());
         listAD.enqueue(new CanCallback<ClassicResult<List<Ad>>>() {
             @Override
@@ -343,7 +343,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         adReportParam.setMac(NetworkUtils.getMac());
         adReportParam.setModel(TvInfoModel.getInstance().getModelName());
         adReportParam.setChannel(TvInfoModel.getInstance().getChannelId() + "|");
-        adReportParam.setVersionId(PackageUtils.getVersionName(mContext));
+        adReportParam.setVersionId(PackageUtil.getMyVersionName(mContext));
         adReportParam.setUserAction(mClickCount);
         adReportParam.setMaterialId(materialId);
         adReportParam.setDuration(mDefaultTime);

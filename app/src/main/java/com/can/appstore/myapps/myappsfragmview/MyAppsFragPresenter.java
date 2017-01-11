@@ -17,10 +17,9 @@ import com.can.appstore.myapps.utils.MyAppsListDataUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.PackageUtil.AppInfo;
+import cn.can.tvlib.common.pm.PackageUtil;
+import cn.can.tvlib.common.pm.PackageUtil.AppInfo;
 
-import static android.util.Config.LOGD;
 
 /**
  * Created by wei on 2016/11/9.
@@ -64,7 +63,7 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
                 //初始化数据
                 mMyAppsListDataUtil = new MyAppsListDataUtil(mContext);
                 //所有的第三方应用
-                myAppList = PackageUtil.findAllThirdPartyAppsNoDelay(mContext, myAppList);
+                myAppList = PackageUtil.findAllThirdPartyApps(mContext, myAppList);
                 systemApp = mMyAppsListDataUtil.getSystemApp(null);
                 mShowList = mMyAppsListDataUtil.getShowList(mShowList, myAppList);
                 Log.d("TAG", "doInBackground   mShowList : " + mShowList.size());

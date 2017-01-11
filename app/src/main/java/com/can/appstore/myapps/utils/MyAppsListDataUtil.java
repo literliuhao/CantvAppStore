@@ -2,7 +2,6 @@ package com.can.appstore.myapps.utils;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.can.appstore.AppConstants;
 import com.can.appstore.R;
@@ -12,9 +11,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.PackageUtil.AppInfo;
-import cn.can.tvlib.utils.PreferencesUtils;
+import cn.can.tvlib.common.pm.PackageUtil;
+import cn.can.tvlib.common.pm.PackageUtil.AppInfo;
+import cn.can.tvlib.common.storage.PreferencesUtils;
 
 
 /**
@@ -48,7 +47,7 @@ public class MyAppsListDataUtil {
             mShowList.clear();
         }
         if (allAppsList == null) {
-            allAppsList = PackageUtil.findAllThirdPartyAppsNoDelay(context, allAppsList);
+            allAppsList = PackageUtil.findAllThirdPartyApps(context, allAppsList);
         }
         if (!PreferencesUtils.getString(context, MY_APPS_SHOW_LIST, "0").equals("0")) {
             //存在，证明我在本地已写过过文件

@@ -33,12 +33,11 @@ import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
+import cn.can.downloadlib.NetworkUtils;
 import cn.can.downloadlib.utils.ApkUtils;
-import cn.can.tvlib.utils.FileUtils;
-import cn.can.tvlib.utils.NetworkUtils;
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.PackageUtils;
-import cn.can.tvlib.utils.SystemUtil;
+import cn.can.downloadlib.utils.FileUtils;
+import cn.can.tvlib.common.pm.PackageUtil;
+import cn.can.tvlib.common.system.SystemUtil;
 import retrofit2.Response;
 
 /**
@@ -130,7 +129,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                         Url = mAppInfo.getUrl();
                         mTaskId = MD5.MD5(Url);
                         initDownloadButtonStatus();
-                        if (mAppInfo.getVersionCode() > PackageUtils.getVersionCode(mContext, mPackageName) && ApkUtils.isAvailable(mContext, mPackageName)) {
+                        if (mAppInfo.getVersionCode() > PackageUtil.getMyVersionCode(mContext) && ApkUtils.isAvailable(mContext, mPackageName)) {
                             isShowUpdateButton = true;
                             initUpdateButtonStatus();
                             mView.refreshUpdateButton(true);
@@ -291,7 +290,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             Task.setUrl(Url);
             Task.setIcon(mAppInfo.getIcon());
             Task.setPkg(mAppInfo.getPackageName());
-            if (mAppInfo.getSize() > SystemUtil.getInternalAvailableSpace(mContext)) {
+            if (mAppInfo.getSize() > SystemUtil.getInternalAvailableSpace()) {
                 mView.showToast(R.string.error_msg);
                 return;
             }

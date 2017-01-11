@@ -5,7 +5,7 @@ import com.can.appstore.entity.TvInfoModel;
 
 import java.io.IOException;
 
-import cn.can.tvlib.utils.MD5Util;
+import cn.can.tvlib.common.crypto.MD5Util;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;

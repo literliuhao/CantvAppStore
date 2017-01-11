@@ -27,12 +27,12 @@ import com.dataeye.sdk.api.app.channel.DCPage;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.downloadlib.NetworkUtils;
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
-import cn.can.tvlib.utils.NetworkUtils;
 import retrofit2.Response;
 
 /**

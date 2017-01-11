@@ -2,7 +2,7 @@ package com.can.appstore.myapps.utils;
 
 import java.util.Comparator;
 
-import cn.can.tvlib.utils.PackageUtil;
+import cn.can.tvlib.common.pm.PackageUtil;
 
 /**
  * Created by wei on 2016/11/22.

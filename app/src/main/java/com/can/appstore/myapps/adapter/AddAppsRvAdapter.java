@@ -12,9 +12,8 @@ import com.can.appstore.R;
 
 import java.util.List;
 
+import cn.can.tvlib.common.pm.PackageUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 /**
  * Created by wei on 2016/10/31.
@@ -48,7 +47,7 @@ public class AddAppsRvAdapter extends CanRecyclerViewAdapter {
     @Override
     protected void bindContentData(Object mDatas, RecyclerView.ViewHolder holder, int position) {
         MyViewHolder myViewHolder = (MyViewHolder) holder;
-        AppInfo app = data.get(position);
+        PackageUtil.AppInfo app = data.get(position);
         myViewHolder.imgIcon.setImageDrawable(app.appIcon);
         myViewHolder.tvName.setText(app.appName);
         myViewHolder.llbg.setBackgroundResource(COLORS[position % 8]);

@@ -1,4 +1,4 @@
-package cn.can.tvlib.ui.view.tmp;
+package com.can.appstore.widgets;
 
 import android.content.Context;
 import android.content.res.TypedArray;

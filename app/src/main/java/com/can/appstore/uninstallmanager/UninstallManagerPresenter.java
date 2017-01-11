@@ -26,9 +26,9 @@ import java.util.List;
 import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadTask;
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.StringUtils;
-import cn.can.tvlib.utils.SystemUtil;
+import cn.can.tvlib.common.pm.PackageUtil;
+import cn.can.tvlib.common.system.SystemUtil;
+import cn.can.tvlib.common.text.StringUtils;
 
 /**
  * Created by JasonF on 2016/10/17.
@@ -97,8 +97,8 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                long freeSize = SystemUtil.getInternalAvailableSpace(mContext);
-                long totalSize = SystemUtil.getInternalTotalSpace(mContext);
+                long freeSize = SystemUtil.getInternalAvailableSpace();
+                long totalSize = SystemUtil.getInternalTotalSpace();
                 int progress = (int) ((totalSize - freeSize) * 100 / totalSize);
                 String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + StringUtils.formatFileSize(freeSize, false);
                 mView.showCurStorageProgress(progress, freeStorage);

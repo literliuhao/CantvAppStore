@@ -27,14 +27,14 @@ import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.NetworkUtils;
+import cn.can.downloadlib.utils.FileUtils;
+import cn.can.tvlib.common.log.LogUtil;
+import cn.can.tvlib.common.pm.PackageUtil;
+import cn.can.tvlib.common.system.SystemUtil;
+import cn.can.tvlib.common.text.StringUtils;
+import cn.can.tvlib.ui.PromptUtils;
 import cn.can.tvlib.ui.view.GlideRoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
-import cn.can.tvlib.utils.FileUtils;
-import cn.can.tvlib.utils.LogUtil;
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.PromptUtils;
-import cn.can.tvlib.utils.StringUtils;
-import cn.can.tvlib.utils.SystemUtil;
 
 /**
  * Created by laiforg on 2016/10/31.
@@ -453,7 +453,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                             PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string.no_network));
                             break;
                         }
-                        if(holder.downloadTask.getTotalSize()> SystemUtil.getInternalAvailableSpace(v.getContext())){
+                        if(holder.downloadTask.getTotalSize()> SystemUtil.getInternalAvailableSpace()){
                             PromptUtils.toastShort(v.getContext(),v.getContext().getString(R.string.error_msg));
                             break;
                         }

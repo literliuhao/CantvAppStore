@@ -15,7 +15,7 @@ import com.can.appstore.http.HttpManager;
 
 import java.util.List;
 
-import cn.can.tvlib.utils.NetworkUtils;
+import cn.can.downloadlib.NetworkUtils;
 import retrofit2.Response;
 
 /**

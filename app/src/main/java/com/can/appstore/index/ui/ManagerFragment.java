@@ -39,7 +39,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadTaskCountListener;
 import cn.can.tvlib.imageloader.ImageLoader;
-import cn.can.tvlib.utils.PromptUtils;
+import cn.can.tvlib.ui.PromptUtils;
 
 /**
  * Created by liuhao on 2016/10/21.

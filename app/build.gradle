@@ -344,13 +344,14 @@ dependencies {
     compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
     compile 'org.greenrobot:greendao:3.0.1'
     compile 'org.greenrobot:greendao-generator:3.0.0'
-    compile project(':lib')
     compile project(':downloadlib')
     compile 'org.greenrobot:eventbus:3.0.0'
     apt 'org.greenrobot:eventbus-annotation-processor:3.0.1'
     // 多dex配置
-    compile "com.android.support:multidex:1.0.1"
-//    compile(name: 'bugly_crashreport_upgrade-1.2.0', ext: 'aar')
-    compile "com.tencent.bugly:crashreport_upgrade:latest.release"
-//    compile 'com.tencent.bugly:nativecrashreport:latest.release' //其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.2.0
+    compile 'com.android.support:multidex:1.0.1'
+    //    compile(name: 'bugly_crashreport_upgrade-1.2.0', ext: 'aar')
+    compile 'com.tencent.bugly:crashreport_upgrade:latest.release'
+    //    compile 'com.tencent.bugly:nativecrashreport:latest.release' //其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.2.0
+    compile 'cn.can.tvlib:libCantv:1.0.5'
+    compile 'cn.can.tvlib:common:1.0.1-SNAPSHOT'
 }

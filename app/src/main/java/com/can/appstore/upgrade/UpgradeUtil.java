@@ -11,8 +11,8 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 
 import cn.can.downloadlib.utils.SdcardUtils;
-import cn.can.tvlib.utils.ShellUtils;
-import cn.can.tvlib.utils.StringUtils;
+import cn.can.tvlib.common.shell.ShellUtils;
+import cn.can.tvlib.common.text.StringUtils;
 
 /**
  * Created by syl on 2016/11/3.
