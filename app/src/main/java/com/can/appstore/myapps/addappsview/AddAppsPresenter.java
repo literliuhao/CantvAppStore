@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.can.appstore.R;
+import com.can.appstore.entity.SelectedAppInfo;
 import com.can.appstore.myapps.utils.MyAppsListDataUtil;
 
 import java.util.ArrayList;
@@ -34,9 +35,10 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
 
     private LoadingDialog mLoadingDialog;
     //当前被选择的应用
-    public List<PackageUtil.AppInfo> mSelectAppInfo = new ArrayList<>();
+    public List<SelectedAppInfo> mSelectAppInfo = new ArrayList<>();
 
     private AddAppsPresenter.AppInstallReceiver mAppInstallReceiver;
+    private ArrayList<SelectedAppInfo> mAddShowList;
 
     public AddAppsPresenter(AddAppsContract.View view, Context context) {
         this.mView = view;
@@ -74,6 +76,10 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
                     }
                 }
 
+                mAddShowList = new ArrayList<>();
+                for (PackageUtil.AppInfo appInfo : addShowList) {
+                    mAddShowList.add(SelectedAppInfo.wrap(appInfo));
+                }
                 return null;
             }
 
@@ -81,7 +87,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
             @Override
             protected void onPostExecute(Void aVoid) {
                 Log.d(TAG, "onPostExecute");
-                mView.loadAddAppInfoSuccess(addShowList);
+                mView.loadAddAppInfoSuccess(mAddShowList);
                 mView.hideLoadingDialog();
             }
         }.execute();
@@ -148,7 +154,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
         for (int j = 0; j < addShowList.size(); j++) {
             if (packageName.equals(addShowList.get(j).packageName)) {
                 addShowList.remove(j);
-                mView.loadAddAppInfoSuccess(addShowList);
+                mView.loadAddAppInfoSuccess(mAddShowList);
             }
         }
     }
@@ -217,7 +223,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
     }
 
 
-    public void saveSelectlist(List<AppInfo> list) {
+    public void saveSelectlist(List<SelectedAppInfo> list) {
         isShown.addAll(list);
         mMyAppListData.saveShowList(isShown);
     }
