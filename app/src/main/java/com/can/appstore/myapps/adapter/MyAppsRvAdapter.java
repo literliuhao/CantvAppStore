@@ -15,9 +15,9 @@ import com.can.appstore.myapps.ui.CustomFolderIcon;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.common.pm.PackageUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.PackageUtil.AppInfo;
+
 
 /**
  * Created by wei on 2016/10/17.
@@ -25,7 +25,7 @@ import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 public class MyAppsRvAdapter extends CanRecyclerViewAdapter<PackageUtil.AppInfo> {
 
-    private List<AppInfo> mList = null;
+    private List<PackageUtil.AppInfo> mList = null;
     private List<Drawable> mCustomSys = null;
     private final int[] COLORS = {
             R.drawable.index_item1_shape,
@@ -43,7 +43,7 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<PackageUtil.AppInfo>
     private int NOMAL_TYPE = 0X001;
     private int CUSTOM_TYPE = 0X002;
 
-    public MyAppsRvAdapter(List<AppInfo> datas) {
+    public MyAppsRvAdapter(List<PackageUtil.AppInfo> datas) {
         super(datas);
         mList = datas;
     }
@@ -77,7 +77,7 @@ public class MyAppsRvAdapter extends CanRecyclerViewAdapter<PackageUtil.AppInfo>
     }
 
     @Override
-    protected void bindContentData(final AppInfo mDatas, RecyclerView.ViewHolder holder, final int position) {
+    protected void bindContentData(final PackageUtil.AppInfo mDatas, RecyclerView.ViewHolder holder, final int position) {
         if (position == 1) {
             MyCustomViewHolder mMyCustomViewHolder = (MyCustomViewHolder) holder;
             mMyCustomViewHolder.mCustomFolderIcon.addMyIcon(mCustomSys);

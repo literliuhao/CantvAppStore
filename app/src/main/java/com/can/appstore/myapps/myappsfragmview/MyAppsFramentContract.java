@@ -6,7 +6,8 @@ import android.graphics.drawable.Drawable;
 
 import java.util.List;
 
-import cn.can.tvlib.utils.PackageUtil.AppInfo;
+import cn.can.tvlib.common.pm.PackageUtil;
+
 
 /**
  * Created by wei on 2016/11/9.
@@ -22,7 +23,7 @@ public interface MyAppsFramentContract {
     }
 
     interface View {
-        void loadAppInfoSuccess(List<AppInfo> infoList,int myapplistsize);
+        void loadAppInfoSuccess(List<PackageUtil.AppInfo> infoList, int myapplistsize);
 
         void loadCustomDataSuccess( List<Drawable> mDrawbleList);
 

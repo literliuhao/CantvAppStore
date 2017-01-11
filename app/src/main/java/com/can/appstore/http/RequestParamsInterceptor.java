@@ -6,7 +6,7 @@ import com.can.appstore.entity.TvInfoModel;
 
 import java.io.IOException;
 
-import cn.can.tvlib.utils.NetworkUtils;
+import cn.can.downloadlib.NetworkUtils;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.Request;

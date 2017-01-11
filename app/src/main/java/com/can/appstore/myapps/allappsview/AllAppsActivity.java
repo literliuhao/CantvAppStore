@@ -20,11 +20,11 @@ import com.can.appstore.widgets.CanDialog;
 
 import java.util.List;
 
+import cn.can.tvlib.common.pm.PackageUtil.AppInfo;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
-import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 
 /**

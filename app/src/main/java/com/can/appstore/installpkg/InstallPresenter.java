@@ -3,7 +3,6 @@ package com.can.appstore.installpkg;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.text.TextUtils;
 
 import com.can.appstore.R;
 import com.can.appstore.installpkg.utils.InstallPkgUtils;
@@ -19,9 +18,8 @@ import java.util.Map;
 
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadTask;
-import cn.can.tvlib.utils.ApkUtils;
-import cn.can.tvlib.utils.StringUtils;
-import cn.can.tvlib.utils.SystemUtil;
+import cn.can.tvlib.common.system.SystemUtil;
+import cn.can.tvlib.common.text.StringUtils;
 
 /**
  * Created by shenpx on 2016/11/9 0009.
@@ -96,8 +94,8 @@ public class InstallPresenter implements InstallContract.Presenter {
 
     @Override
     public void getSDInfo() {
-        long freeSize = SystemUtil.getInternalAvailableSpace(mContext);
-        long totalSize = SystemUtil.getInternalTotalSpace(mContext);
+        long freeSize = SystemUtil.getInternalAvailableSpace();
+        long totalSize = SystemUtil.getInternalTotalSpace();
         int progress = (int) (((totalSize - freeSize) * 100) / totalSize);
         String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + StringUtils.formatFileSize(freeSize, false);
         mView.showSDProgressbar(progress, freeStorage);

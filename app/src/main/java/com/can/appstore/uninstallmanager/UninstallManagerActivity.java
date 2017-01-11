@@ -24,11 +24,11 @@ import com.dataeye.sdk.api.app.channel.DCPage;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.common.pm.PackageUtil;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
-import cn.can.tvlib.utils.PackageUtil;
 
 /**
  * 本地卸载管理页面

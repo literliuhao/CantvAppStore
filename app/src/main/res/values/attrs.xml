@@ -22,4 +22,17 @@
         <attr name="selectcolor" format="color"/>
         <attr name="unselectcolor" format="color"/>
     </declare-styleable>
+
+    <declare-styleable name="RoundCornerView2">
+        <attr name="cornerSize2" format="dimension"/>
+        <attr name="maskColor" format="color"/>
+        <attr name="maskSize" format="dimension"/>
+    </declare-styleable>
+
+    <declare-styleable name="GlideRoundCornerImageView2">
+        <attr name="background_res" format="reference|color"/>
+        <attr name="loading_res" format="reference"/>
+        <attr name="src" format="reference|color"/>
+    </declare-styleable>
+
 </resources>

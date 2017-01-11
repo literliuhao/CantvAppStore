@@ -12,7 +12,8 @@ import android.support.v4.app.FragmentActivity;
 import com.can.appstore.R;
 import com.dataeye.sdk.api.app.DCAgent;
 
-import cn.can.tvlib.utils.PromptUtils;
+import cn.can.tvlib.ui.PromptUtils;
+
 
 public abstract class BaseActivity extends FragmentActivity {
 

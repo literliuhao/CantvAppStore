@@ -9,7 +9,8 @@ import com.can.appstore.AppConstants;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.can.tvlib.utils.PackageUtil;
+import cn.can.tvlib.common.pm.PackageUtil;
+
 
 /**
  * Created by JasonF on 2016/11/16.

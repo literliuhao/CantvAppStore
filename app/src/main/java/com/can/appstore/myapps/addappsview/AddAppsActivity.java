@@ -16,11 +16,11 @@ import com.can.appstore.myapps.adapter.AddAppsRvAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.common.pm.PackageUtil;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
-import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 /**
  * Created by wei on 2016/10/26.
@@ -32,7 +32,7 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
     private AddAppsPresenter mAddAppsPresenter;
     private AddAppsRvAdapter mAddAppsRecyclerViewAdapter;
     //数据源
-    private ArrayList<AppInfo> mSelectAppInfo;
+    private ArrayList<PackageUtil.AppInfo> mSelectAppInfo;
     private int canSelect = 0;
     //焦点框
     private FocusMoveUtil mFocusMoveUtil;
@@ -86,7 +86,7 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
 
 
     @Override
-    public void loadAddAppInfoSuccess(List<AppInfo> infoList) {
+    public void loadAddAppInfoSuccess(List<PackageUtil.AppInfo> infoList) {
         if (mAddAppsRecyclerViewAdapter == null) {
             Log.d(TAG, "loadAddAppInfoSuccess" + "首次");
             mAddAppsRecyclerViewAdapter = new AddAppsRvAdapter(infoList);
@@ -159,7 +159,7 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
      * @param list
      */
     @Override
-    public void saveSelectInfo(List<AppInfo> list) {
+    public void saveSelectInfo(List<PackageUtil.AppInfo> list) {
         mAddAppsPresenter.saveSelectlist(list);
     }
 
@@ -244,9 +244,9 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
             @Override
             public boolean onSelectChanged(int position, boolean selected, Object data) {
                 Log.d(TAG, "setOnItemSelectListener.onSelectChanged" + "position" + position + "selected" + selected + "data" + data.toString());
-                AppInfo appInfo = (AppInfo) data;
+                PackageUtil.AppInfo appInfo = (PackageUtil.AppInfo) data;
                 if (mSelectAppInfo == null) {
-                    mSelectAppInfo = new ArrayList<AppInfo>();
+                    mSelectAppInfo = new ArrayList<PackageUtil.AppInfo>();
                 }
                 if (selected) {
                     if (mSelectAppInfo.size() >= canSelect) {

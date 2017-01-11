@@ -15,11 +15,11 @@ import com.can.appstore.myapps.utils.MyAppsListDataUtil;
 
 import java.util.List;
 
+import cn.can.tvlib.common.pm.PackageUtil.AppInfo;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
-import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 /**
  * 预置的有系统权限的应用，如：微信相册，文件管理器..等等

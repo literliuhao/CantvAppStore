@@ -4,7 +4,7 @@ package com.can.appstore.download;
 import cn.can.downloadlib.BuildConfig;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
-import cn.can.tvlib.utils.LogUtil;
+import cn.can.tvlib.common.log.LogUtil;
 
 /**
  * Created by laiforg on 2016/11/14.

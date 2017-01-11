@@ -16,9 +16,9 @@ import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.NetworkUtils;
-import cn.can.tvlib.utils.PromptUtils;
-import cn.can.tvlib.utils.StringUtils;
-import cn.can.tvlib.utils.SystemUtil;
+import cn.can.tvlib.common.system.SystemUtil;
+import cn.can.tvlib.common.text.StringUtils;
+import cn.can.tvlib.ui.PromptUtils;
 
 /**
  * Created by laiforg on 2016/10/31.
@@ -82,8 +82,8 @@ public class DownloadPresenterImpl implements DownloadContract.DownloadPresenter
 
     @Override
     public void caculateStorage() {
-        long freeSize = SystemUtil.getInternalAvailableSpace(mView.getContext());
-        long totalSize = SystemUtil.getInternalTotalSpace(mView.getContext());
+        long freeSize = SystemUtil.getInternalAvailableSpace();
+        long totalSize = SystemUtil.getInternalTotalSpace();
         int progress = (int) ((totalSize - freeSize) * 100 / totalSize);
         String freeStorage = mView.getContext().getResources().getString(R.string.uninsatll_manager_free_storage) +
                 StringUtils.formatFileSize(freeSize, false);

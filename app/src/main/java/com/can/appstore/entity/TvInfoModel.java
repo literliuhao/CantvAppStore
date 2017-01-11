@@ -7,7 +7,8 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
-import cn.can.tvlib.utils.PreferencesUtils;
+import cn.can.tvlib.common.storage.PreferencesUtils;
+
 
 /**
  * TMS机型信息
