@@ -17,6 +17,7 @@ import com.can.appstore.R;
 import com.can.appstore.appdetail.AppDetailContract;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
+import com.can.appstore.entity.SelectedAppInfo;
 import com.can.appstore.uninstallmanager.adapter.UninstallManagerAdapter;
 import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
@@ -244,7 +245,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     }
 
     @Override
-    public void loadAllAppInfoSuccess(List<PackageUtil.AppInfo> infoList) {
+    public void loadAllAppInfoSuccess(List<SelectedAppInfo> infoList) {
         mFocusMoveUtil.showFocus();
         Log.d(TAG, "loadAllAppInfoSuccess: infoList : " + infoList);
         if (infoList.size() == 0) {
