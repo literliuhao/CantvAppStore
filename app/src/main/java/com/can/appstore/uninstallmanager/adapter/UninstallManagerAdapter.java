@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.entity.SelectedAppInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +23,13 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
  * Created by JasonF on 2016/10/13.
  */
 
-public class UninstallManagerAdapter extends CanRecyclerViewAdapter<PackageUtil.AppInfo> {
+public class UninstallManagerAdapter extends CanRecyclerViewAdapter<SelectedAppInfo> {
     private static final String TAG = "UninstallManagerAdapter";
-    private List<PackageUtil.AppInfo> mInfos = new ArrayList<>();
+    private List<SelectedAppInfo> mInfos = new ArrayList<>();
     private Context mContext;
     private LayoutInflater mInflater;
 
-    public UninstallManagerAdapter(Context context, List<PackageUtil.AppInfo> datas) {
+    public UninstallManagerAdapter(Context context, List<SelectedAppInfo> datas) {
         super(datas);
         mContext = context;
         mInfos = datas;
@@ -42,7 +43,7 @@ public class UninstallManagerAdapter extends CanRecyclerViewAdapter<PackageUtil.
     }
 
     @Override
-    protected void bindContentData(PackageUtil.AppInfo mDatas, RecyclerView.ViewHolder holder, int position) {
+    protected void bindContentData(SelectedAppInfo mDatas, RecyclerView.ViewHolder holder, int position) {
         PackageUtil.AppInfo appInfo = mInfos.get(position);
         Log.d(TAG, "bindContentData: " + appInfo.toString());
         UninstallViewHolder uninstallViewHolder = ((UninstallViewHolder) holder);

@@ -17,6 +17,7 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 
 import com.can.appstore.R;
+import com.can.appstore.entity.SelectedAppInfo;
 import com.can.appstore.uninstallmanager.csutom.CustomAsyncTaskLoader;
 import com.can.appstore.widgets.CanDialog;
 
@@ -34,13 +35,13 @@ import cn.can.tvlib.common.text.StringUtils;
  * Created by JasonF on 2016/10/17.
  */
 
-public class UninstallManagerPresenter implements UninstallManagerContract.Presenter, LoaderManager.LoaderCallbacks<List<PackageUtil.AppInfo>>, AppInstallListener {
+public class UninstallManagerPresenter implements UninstallManagerContract.Presenter, LoaderManager.LoaderCallbacks<List<SelectedAppInfo>>, AppInstallListener {
     private static final String TAG = "UninstallManagerPresen";
     private static final int LOADER_ID = 0;
     private static final int COLUMN_COUNT = 3;
     private UninstallManagerContract.View mView;
     private Activity mContext;
-    private static List<PackageUtil.AppInfo> mAppInfoList;
+    private static List<SelectedAppInfo> mAppInfoList;
     private AppInstallReceiver mInstalledReceiver;
     public ArrayList<String> mSelectPackageName = new ArrayList<>();
     private LoaderManager mLoaderManager;
@@ -137,14 +138,14 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     }
 
     @Override
-    public Loader<List<PackageUtil.AppInfo>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<SelectedAppInfo>> onCreateLoader(int id, Bundle args) {
         Log.d(TAG, "onCreateLoader: " + " id : " + id);
         mView.showLoadingDialog();
         return new CustomAsyncTaskLoader(mContext, CustomAsyncTaskLoader.FILTER_LOSE_PRE_INSTALL_THIRD_APP);
     }
 
     @Override
-    public void onLoadFinished(Loader<List<PackageUtil.AppInfo>> loader, List<PackageUtil.AppInfo> data) {
+    public void onLoadFinished(Loader<List<SelectedAppInfo>> loader, List<SelectedAppInfo> data) {
         Log.d(TAG, "onLoadFinished: " + "data :" + data.size());
         mView.hideLoadingDialog();
         if (mAppInfoList == null) {
@@ -180,7 +181,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
 
 
     @Override
-    public void onLoaderReset(Loader<List<PackageUtil.AppInfo>> loader) {
+    public void onLoaderReset(Loader<List<SelectedAppInfo>> loader) {
         Log.d(TAG, "onLoaderReset: ");
     }
 
