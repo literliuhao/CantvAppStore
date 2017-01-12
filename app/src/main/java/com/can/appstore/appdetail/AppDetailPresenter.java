@@ -129,7 +129,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                         Url = mAppInfo.getUrl();
                         mTaskId = MD5.MD5(Url);
                         initDownloadButtonStatus();
-                        if (mAppInfo.getVersionCode() > PackageUtil.getMyVersionCode(mContext) && ApkUtils.isAvailable(mContext, mPackageName)) {
+                        if (mAppInfo.getVersionCode() > PackageUtil.getVersionCode(mContext, mPackageName) && ApkUtils.isAvailable(mContext, mPackageName)) {
                             isShowUpdateButton = true;
                             initUpdateButtonStatus();
                             mView.refreshUpdateButton(true);

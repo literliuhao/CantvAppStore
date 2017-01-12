@@ -18,8 +18,8 @@ android {
         applicationId "com.can.appstore"
         minSdkVersion 19
         targetSdkVersion 19
-        versionCode 106
-        versionName "v1.0.6_201701101500"
+        versionCode 107
+        versionName "v1.0.7_201701111908"
 
         // 开启multidex
         multiDexEnabled true
@@ -352,6 +352,6 @@ dependencies {
     //    compile(name: 'bugly_crashreport_upgrade-1.2.0', ext: 'aar')
     compile 'com.tencent.bugly:crashreport_upgrade:latest.release'
     //    compile 'com.tencent.bugly:nativecrashreport:latest.release' //其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.2.0
-    compile 'cn.can.tvlib:libCantv:1.0.5'
-    compile 'cn.can.tvlib:common:1.0.1-SNAPSHOT'
+    compile 'cn.can.tvlib:libCantv:1.0.6'
+    compile 'cn.can.tvlib:common:1.0.2'
 }
