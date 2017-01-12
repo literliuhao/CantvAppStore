@@ -119,7 +119,8 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
                     case 3:
                         boolean success = startAc("com.cantv.action.TV_HELPER", false);
                         if (!success) {
-                            success = startAc("com.cantv.wechatphoto.activity.QRCodePushActivity", false);
+                            success = startAc("com.cantv.wechatphoto",
+                                    "com.cantv.wechatphoto.activity.QRCodePushActivity", false);
                         }
                         if (!success) {
                             PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
@@ -185,16 +186,25 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
         return startAc(action, true);
     }
 
-    public void startAc(String packageName, String className) {
+    public boolean startAc(String packageName, String className) {
+        return startAc(packageName, className, true);
+    }
+
+    public boolean startAc(String packageName, String className, boolean tips) {
+        boolean success = false;
         Intent intent = new Intent();
         intent.setComponent(new ComponentName(packageName, className));
         intent.setAction(Intent.ACTION_VIEW);
         try {
             startActivity(intent);
+            success = true;
         } catch (Exception e) {
-            PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
+            if (tips) {
+                PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
+            }
             e.printStackTrace();
         }
+        return success;
     }
 
     @Override
