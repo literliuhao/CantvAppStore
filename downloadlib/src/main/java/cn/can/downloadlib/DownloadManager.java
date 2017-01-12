@@ -585,6 +585,11 @@ public class DownloadManager implements AppInstallListener {
         List<DownloadTask> list = loadAllDownloadTaskFromDB();
         if (list != null) {
             for (DownloadTask task : list) {
+                /** bugfix APPSTORE-245 点击下载一个应用，退出商城然后重新进入，查看下载管理页面，当该应用下载进度条满了之后实际仍在下载中 xzl 2017-1-12 17:10:25 start*/
+                if(getCurrentTaskById(task.getId())!=null){
+                    continue;
+                }
+                /** bugfix APPSTORE-245 点击下载一个应用，退出商城然后重新进入，查看下载管理页面，当该应用下载进度条满了之后实际仍在下载中 xzl 2017-1-12 17:10:25 end*/
                 task.setDownloadDao(mDownloadDao);
                 task.setHttpClient(mOkHttpClient);
                 task.setAppListener(this);

@@ -66,6 +66,7 @@
         <activity
             android:name=".index.IndexActivity"
             android:label="@string/app_name"
+            android:launchMode="singleTask"
             android:theme="@style/LaunchStyle">
             <intent-filter>
                 <action android:name="com.can.appstore.ACTION_INDEX" />
