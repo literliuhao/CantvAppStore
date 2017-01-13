@@ -12,6 +12,7 @@ import java.security.MessageDigest;
 
 import cn.can.downloadlib.utils.SdcardUtils;
 import cn.can.tvlib.common.shell.ShellUtils;
+import cn.can.tvlib.common.system.SystemUtil;
 import cn.can.tvlib.common.text.StringUtils;
 
 /**
@@ -135,15 +136,14 @@ public class UpgradeUtil {
         return dir;
     }
 
-
     /**
      * 静默安装
      */
     public static void installApk(Context mContext, String path, long size, InstallApkListener onInstallApkListener) {
-        long space = SdcardUtils.getSDCardAvailableSpace();
-        if (space < size) {
+        long space = SystemUtil.getInternalAvailableSpace();
+        if (space < size * 1.5) {
             onInstallApkListener.onInstallFail(mContext.getResources().getString(cn.can.downloadlib.R.string
-                    .error_msg));
+                    .error_upgrade_space));
             return;
         }
         ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r " + path, false);
@@ -172,6 +172,28 @@ public class UpgradeUtil {
         //执行安装
         mContext.startActivity(intent);
 
+    }
+
+    /**
+     * 判断储存空间是否可以安装
+     */
+    public static boolean checkInstallSize(long size) {
+        long space = SystemUtil.getInternalAvailableSpace();
+        if (space < size * 1.5) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 判断储存空间是否可以安装
+     */
+    public static boolean checkDownLoadSize(long size) {
+        long space = SystemUtil.getInternalAvailableSpace();
+        if (space < size) {
+            return false;
+        }
+        return true;
     }
 
 }

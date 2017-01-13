@@ -9,6 +9,7 @@ import android.view.Window;
 import android.widget.TextView;
 
 import com.can.appstore.R;
+import com.can.appstore.upgrade.UpgradeUtil;
 import com.can.appstore.upgrade.service.UpgradeService;
 import com.can.appstore.upgrade.widgets.UpgradeInfoNoticeCursor;
 import com.can.appstore.upgrade.widgets.UpgradeInfoScrollView;
@@ -56,6 +57,16 @@ public class UpgradeInfoActivity extends Activity {
         mSvUpgradeInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!UpgradeUtil.checkInstallSize(mUpgradeSize)){
+                    Intent intent = new Intent(UpgradeInfoActivity.this, UpgradeFailActivity.class);
+                    intent.putExtra(ProgressActivity.FAIL_REASON, UpgradeInfoActivity.this.getResources().getString(cn.can.downloadlib.R.string
+                            .error_upgrade_space));
+                    UpgradeInfoActivity.this.startActivity(intent);
+                    finish();
+                    return;
+                }
+
                 Intent intent = new Intent(UpgradeInfoActivity.this,ProgressActivity.class);
                 intent.putExtra(UpgradeService.FILE_NAME,mFileName);
                 intent.putExtra(UpgradeService.UPGRADE_SIZE,mUpgradeSize);
