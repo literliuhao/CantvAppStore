@@ -175,7 +175,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_DOWNLAODING, per);
             } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_CANCEL) {
                 mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, DOWNLOAD_INIT_PROGRESS);
-            } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {
+            } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR || downloadStatus == DownloadStatus.DOWNLOAD_STATUS_SPACE_NOT_ENOUGH) {
                 mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
             } else if (downloadStatus == AppInstallListener.APP_INSTALL_FAIL) {  //安装失败  重试
                 mView.refreshDownloadButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, DOWNLOAD_FINISH_PROGRESS);
@@ -206,7 +206,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_DOWNLAODING, per);
             } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_CANCEL) {
                 mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, per);
-            } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {
+            } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR || downloadStatus == DownloadStatus.DOWNLOAD_STATUS_SPACE_NOT_ENOUGH) {
                 mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
             } else if (downloadStatus == AppInstallListener.APP_INSTALL_FAIL) {//安装失败  重试
                 mView.refreshUpdateButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, DOWNLOAD_FINISH_PROGRESS);
@@ -279,6 +279,13 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
                 refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, DOWNLOAD_INIT_PROGRESS);
             }
             return;
+        } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_SPACE_NOT_ENOUGH) {//空间不足
+            if (!ApkUtils.isEnoughSpaceSize(mAppInfo.getSize())) {
+                mView.showToast(R.string.space_inequacy);
+                return;
+            }
+            clickRefreshButtonStatus(isClickUpdateButton, per);
+            mDownloadManager.resume(mTaskId);
         }
 
         if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_INIT || downloadStatus == DownloadStatus.DOWNLOAD_STATUS_PREPARE) {
@@ -439,7 +446,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_UNKONW_ERROR) {
                 mView.showToast(R.string.unkonw_error);
                 refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, per);
-            }else if(errorCode==DOWNLOAD_ERROR_NO_SPACE_ERROR){
+            } else if (errorCode == DOWNLOAD_ERROR_NO_SPACE_ERROR) {
                 mView.showToast(R.string.space_inequacy);
                 refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
             }
