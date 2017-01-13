@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.can.appstore.R;
 import com.can.appstore.base.BaseActivity;
+import com.can.appstore.entity.SelectedAppInfo;
 import com.can.appstore.myapps.adapter.AddAppsRvAdapter;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
     private AddAppsPresenter mAddAppsPresenter;
     private AddAppsRvAdapter mAddAppsRecyclerViewAdapter;
     //数据源
-    private ArrayList<PackageUtil.AppInfo> mSelectAppInfo;
+    private ArrayList<SelectedAppInfo> mSelectAppInfo;
     private int canSelect = 0;
     //焦点框
     private FocusMoveUtil mFocusMoveUtil;
@@ -86,7 +87,7 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
 
 
     @Override
-    public void loadAddAppInfoSuccess(List<PackageUtil.AppInfo> infoList) {
+    public void loadAddAppInfoSuccess(List<SelectedAppInfo> infoList) {
         if (mAddAppsRecyclerViewAdapter == null) {
             Log.d(TAG, "loadAddAppInfoSuccess" + "首次");
             mAddAppsRecyclerViewAdapter = new AddAppsRvAdapter(infoList);
@@ -159,7 +160,7 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
      * @param list
      */
     @Override
-    public void saveSelectInfo(List<PackageUtil.AppInfo> list) {
+    public void saveSelectInfo(List<SelectedAppInfo> list) {
         mAddAppsPresenter.saveSelectlist(list);
     }
 
@@ -244,9 +245,9 @@ public class AddAppsActivity extends BaseActivity implements AddAppsContract.Vie
             @Override
             public boolean onSelectChanged(int position, boolean selected, Object data) {
                 Log.d(TAG, "setOnItemSelectListener.onSelectChanged" + "position" + position + "selected" + selected + "data" + data.toString());
-                PackageUtil.AppInfo appInfo = (PackageUtil.AppInfo) data;
+                SelectedAppInfo appInfo = (SelectedAppInfo) data;
                 if (mSelectAppInfo == null) {
-                    mSelectAppInfo = new ArrayList<PackageUtil.AppInfo>();
+                    mSelectAppInfo = new ArrayList<>();
                 }
                 if (selected) {
                     if (mSelectAppInfo.size() >= canSelect) {

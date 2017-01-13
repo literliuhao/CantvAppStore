@@ -63,7 +63,7 @@ public class MyAppsFragPresenter implements MyAppsFramentContract.Presenter {
                 //初始化数据
                 mMyAppsListDataUtil = new MyAppsListDataUtil(mContext);
                 //所有的第三方应用
-                myAppList = PackageUtil.findAllThirdPartyApps(mContext, myAppList);
+                myAppList = PackageUtil.findAllThirdPartyAppsNoDelay(mContext, myAppList);
                 systemApp = mMyAppsListDataUtil.getSystemApp(null);
                 mShowList = mMyAppsListDataUtil.getShowList(mShowList, myAppList);
                 Log.d("TAG", "doInBackground   mShowList : " + mShowList.size());
