@@ -257,6 +257,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                     downloadTask.setPkg(mUpdateList.get(position).getPackageName());
                     downloadTask.setId(md5);
                     downloadTask.setUrl(downloadUrl);
+                    downloadTask.setIcon(mUpdateList.get(position).getIconUrl());
                     status.setText(getResources().getString(R.string.update_download_waitting));
                     status.setVisibility(View.VISIBLE);
                     mDownloadManager.addDownloadTask(downloadTask, new DownloadTaskListener() {

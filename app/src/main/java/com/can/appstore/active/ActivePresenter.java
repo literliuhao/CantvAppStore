@@ -187,6 +187,7 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
             downloadTask.setId(md5);
             downloadTask.setUrl(downloadUrl);
             downloadTask.setPkg(mAppInfo.getPackageName());
+            downloadTask.setIcon(mAppInfo.getIcon());
             if(!cn.can.downloadlib.utils.ApkUtils.isEnoughSpaceSize(mAppInfo.getSize())){
                 PromptUtils.toastShort(mContext,mContext.getString(R.string.space_inequacy));
                 return;
@@ -296,7 +297,6 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
         Log.d(TAG, "onInstallSucess(id " + id + ")");
         if (id.equalsIgnoreCase(MD5.MD5(mDownloadUrl))) {
             mOperationView.refreshTextProgressbarTextStatus(R.string.active_click_participate);
-            mOperationView.showActiveToast(R.string.install_success);
         }
     }
 
@@ -305,7 +305,6 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
         Log.d(TAG, "onInstallFail(id " + id + ")");
         if (id.equalsIgnoreCase(MD5.MD5(mDownloadUrl))) {
             mOperationView.refreshTextProgressbarTextStatus(R.string.downlaod_restart);
-            mOperationView.showActiveToast(R.string.install_fail);
         }
     }
 
