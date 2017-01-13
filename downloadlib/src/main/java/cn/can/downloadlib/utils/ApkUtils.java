@@ -377,7 +377,7 @@ public class ApkUtils {
      * @param apkSize apk大小 ，单位byte
      * @return
      */
-    public static boolean isEnoughInstallSpaceSize(long apkSize){
+    public static boolean isEnoughSpaceSize(long apkSize){
 
         File apkPath=new File("/data/app");
         if(!apkPath.exists()){
@@ -387,8 +387,7 @@ public class ApkUtils {
         if(!dataPath.exists()){
             return false;
         }
-        //如果可用空间大于于总空间10%并且apk包大小1.5倍小于可用空间
-        if((float)apkPath.getUsableSpace()/dataPath.getTotalSpace()>0.1&&apkSize*1.5<apkPath.getUsableSpace()){
+        if((float)apkPath.getUsableSpace()/dataPath.getTotalSpace()>0.1&&apkSize<(apkPath.getUsableSpace()-dataPath.getTotalSpace()*1/10)){
             return true;
         }
         return false;

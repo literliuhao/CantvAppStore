@@ -97,7 +97,8 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
             } else if (downloadStatus == AppInstallListener.APP_INSTALL_SUCESS) {
                 updateHolder.downloading.setVisibility(View.INVISIBLE);
                 updateHolder.progressbar.setVisibility(View.INVISIBLE);
-            } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR) {
+            } else if (downloadStatus == DownloadStatus.DOWNLOAD_STATUS_ERROR
+                    || downloadStatus == DownloadStatus.DOWNLOAD_STATUS_SPACE_NOT_ENOUGH) {
                 updateHolder.downloading.setVisibility(View.VISIBLE);
                 updateHolder.downloading.setText(MyApp.getContext().getResources().getString(R.string.update_download_false));
                 updateHolder.progressbar.setVisibility(View.INVISIBLE);
@@ -171,6 +172,9 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                         case DOWNLOAD_ERROR_UNKONW_ERROR:
                             PromptUtils.toast(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.unkonw_error));
                             break;
+                        case DOWNLOAD_ERROR_NO_SPACE_ERROR:
+                            PromptUtils.toast(MyApp.getContext(), MyApp.getContext().getResources().getString(R.string.space_inequacy));
+                            break;
                         default:
                             break;
                     }
@@ -178,74 +182,75 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                 }
             });
             mDownloadManager.setAppInstallListener(new AppInstallListener() {
-                @Override
-                public void onInstalling(DownloadTask downloadTask) {
-                    final int itemPosition = getItemPosition(downloadTask.getUrl());
-                    updateHolder.downloading.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (position == itemPosition) {
-                                updateHolder.downloading.setVisibility(View.VISIBLE);
-                                updateHolder.downloading.setText(MyApp.getContext().getResources().getString(R.string.update_download_installing));
-                                updateHolder.progressbar.setVisibility(View.INVISIBLE);
-                            }
-                        }
-                    });
-                }
+                                                       @Override
+                                                       public void onInstalling(DownloadTask downloadTask) {
+                                                           final int itemPosition = getItemPosition(downloadTask.getUrl());
+                                                           updateHolder.downloading.post(new Runnable() {
+                                                               @Override
+                                                               public void run() {
+                                                                   if (position == itemPosition) {
+                                                                       updateHolder.downloading.setVisibility(View.VISIBLE);
+                                                                       updateHolder.downloading.setText(MyApp.getContext().getResources().getString(R.string.update_download_installing));
+                                                                       updateHolder.progressbar.setVisibility(View.INVISIBLE);
+                                                                   }
+                                                               }
+                                                           });
+                                                       }
 
-                @Override
-                public void onInstallSucess(String id) {
-                    final int itemPosition = getItemPosition(id);
-                    getUpdateApkNum(0);
-                    updateHolder.downloading.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (position == itemPosition) {
-                                updateHolder.downloading.setVisibility(View.INVISIBLE);
-                                updateHolder.updatedIcon.setVisibility(View.VISIBLE);
-                                Log.i(TAG, "run: " + "安装成功");
-                            }
-                        }
-                    });
-                }
+                                                       @Override
+                                                       public void onInstallSucess(String id) {
+                                                           final int itemPosition = getItemPosition(id);
+                                                           getUpdateApkNum(0);
+                                                           updateHolder.downloading.post(new Runnable() {
+                                                               @Override
+                                                               public void run() {
+                                                                   if (position == itemPosition) {
+                                                                       updateHolder.downloading.setVisibility(View.INVISIBLE);
+                                                                       updateHolder.updatedIcon.setVisibility(View.VISIBLE);
+                                                                       Log.i(TAG, "run: " + "安装成功");
+                                                                   }
+                                                               }
+                                                           });
+                                                       }
 
-                @Override
-                public void onInstallFail(String id) {
-                    final int itemPosition = getItemPosition(id);
-                    updateHolder.downloading.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (position == itemPosition) {
-                                updateHolder.downloading.setVisibility(View.VISIBLE);
-                                updateHolder.downloading.setText(MyApp.getContext().getResources().getString(R.string.update_download_installfalse));
-                                updateHolder.updatedIcon.setVisibility(View.INVISIBLE);
-                                Log.i(TAG, "run: " + "安装失败");
+                                                       @Override
+                                                       public void onInstallFail(String id) {
+                                                           final int itemPosition = getItemPosition(id);
+                                                           updateHolder.downloading.post(new Runnable() {
+                                                               @Override
+                                                               public void run() {
+                                                                   if (position == itemPosition) {
+                                                                       updateHolder.downloading.setVisibility(View.VISIBLE);
+                                                                       updateHolder.downloading.setText(MyApp.getContext().getResources().getString(R.string.update_download_installfalse));
+                                                                       updateHolder.updatedIcon.setVisibility(View.INVISIBLE);
+                                                                       Log.i(TAG, "run: " + "安装失败");
 
-                            }
-                        }
-                    });
-                }
-                    @Override
-                    public void onUninstallSucess (String id){
+                                                                   }
+                                                               }
+                                                           });
+                                                       }
 
-                    }
+                                                       @Override
+                                                       public void onUninstallSucess(String id) {
 
-                    @Override
-                    public void onUninstallFail (String id){
+                                                       }
 
-                    }
-                }
+                                                       @Override
+                                                       public void onUninstallFail(String id) {
 
-                );
-            }else{
-                updateHolder.downloading.setVisibility(View.INVISIBLE);
-                updateHolder.progressbar.setVisibility(View.INVISIBLE);
-                updateHolder.updatedIcon.setVisibility(View.INVISIBLE);
-            }
+                                                       }
+                                                   }
+
+            );
+        } else {
+            updateHolder.downloading.setVisibility(View.INVISIBLE);
+            updateHolder.progressbar.setVisibility(View.INVISIBLE);
+            updateHolder.updatedIcon.setVisibility(View.INVISIBLE);
         }
+    }
 
     private void getInstallStatus(DownloadTask downloadTask, UpdateViewHolder updateHolder) {
-        int result = InstallPkgUtils.installApp(downloadTask.getSaveDirPath(),downloadTask.getTotalSize());
+        int result = InstallPkgUtils.installApp(downloadTask.getSaveDirPath(), downloadTask.getTotalSize());
         if (result == 0) {
             updateHolder.downloading.setVisibility(View.INVISIBLE);
             //updateHolder.downloading.setText("安装成功");
@@ -264,7 +269,10 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
             @Override
             public void run() {
                 refreshDownliadStatus(downloadTask.getDownloadStatus(), status);
-                if (downloadTask.getCompletedSize() > 0 && downloadTask.getCompletedSize() < downloadTask.getTotalSize() && downloadTask.getDownloadStatus() != DownloadStatus.DOWNLOAD_STATUS_ERROR) {
+                if (downloadTask.getCompletedSize() > 0
+                        && downloadTask.getCompletedSize() < downloadTask.getTotalSize()
+                        && downloadTask.getDownloadStatus() != DownloadStatus.DOWNLOAD_STATUS_ERROR
+                        && downloadTask.getDownloadStatus() != DownloadStatus.DOWNLOAD_STATUS_SPACE_NOT_ENOUGH) {
                     progress.setVisibility(View.VISIBLE);
                 } else {
                     progress.setVisibility(View.INVISIBLE);
@@ -302,6 +310,7 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
                 status.setVisibility(View.INVISIBLE);
                 break;
             case DownloadStatus.DOWNLOAD_STATUS_ERROR:
+            case DownloadStatus.DOWNLOAD_STATUS_SPACE_NOT_ENOUGH:
                 status.setVisibility(View.VISIBLE);
                 status.setText(MyApp.getContext().getResources().getString(R.string.update_download_false));
                 break;

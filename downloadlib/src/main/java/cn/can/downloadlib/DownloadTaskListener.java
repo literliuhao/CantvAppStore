@@ -22,5 +22,5 @@ public interface DownloadTaskListener {
     int DOWNLOAD_ERROR_IO_ERROR = -2;
     int DOWNLOAD_ERROR_NETWORK_ERROR = -3;
     int DOWNLOAD_ERROR_UNKONW_ERROR = -4;
-
+    int DOWNLOAD_ERROR_NO_SPACE_ERROR=-5;
 }

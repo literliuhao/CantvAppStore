@@ -15,6 +15,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.downloadlib.utils.ApkUtils;
 import cn.can.downloadlib.utils.ShellUtils;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -151,6 +152,11 @@ public class DownloadTask implements Runnable {
                     while ((length = bis.read(buffer)) > 0 && mDownloadStatus != DownloadStatus
                             .DOWNLOAD_STATUS_CANCEL && mDownloadStatus != DownloadStatus
                             .DOWNLOAD_STATUS_PAUSE) {
+                        if(!ApkUtils.isEnoughSpaceSize(mTotalSize-mDownloadedSize)){
+                            mDownloadStatus=DownloadStatus.DOWNLOAD_STATUS_SPACE_NOT_ENOUGH;
+                            onError(DownloadTaskListener.DOWNLOAD_ERROR_NO_SPACE_ERROR);
+                            break;
+                        }
                         mRandomAccessFile.write(buffer, 0, length);
                         mDownloadedSize += length;
                         buffOffset += length;

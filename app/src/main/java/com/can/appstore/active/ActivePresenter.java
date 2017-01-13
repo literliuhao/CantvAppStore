@@ -180,7 +180,7 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
             downloadTask.setId(md5);
             downloadTask.setUrl(downloadUrl);
             downloadTask.setPkg(mAppInfo.getPackageName());
-            if(!cn.can.downloadlib.utils.ApkUtils.isEnoughInstallSpaceSize(mAppInfo.getSize())){
+            if(!cn.can.downloadlib.utils.ApkUtils.isEnoughSpaceSize(mAppInfo.getSize())){
                 PromptUtils.toastShort(mContext,mContext.getString(R.string.space_inequacy));
                 return;
             }
@@ -265,6 +265,8 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
                 case DOWNLOAD_ERROR_UNKONW_ERROR:
                     mOperationView.showActiveToast(R.string.unkonw_error);
                     break;
+                case DOWNLOAD_ERROR_NO_SPACE_ERROR:
+                    mOperationView.showActiveToast(R.string.space_inequacy);
             }
             if (errorCode != DOWNLOAD_ERROR_NETWORK_ERROR) {
                 mOperationView.refreshTextProgressbarTextStatus(R.string.downlaod_restart);

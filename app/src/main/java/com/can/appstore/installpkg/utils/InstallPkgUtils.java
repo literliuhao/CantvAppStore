@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.can.downloadlib.utils.ApkUtils;
-import cn.can.downloadlib.utils.SdcardUtils;
 import cn.can.downloadlib.utils.ShellUtils;
 import cn.can.downloadlib.utils.ToastUtils;
 
@@ -226,7 +225,7 @@ public class InstallPkgUtils {
      * 更新管理静默安装1
      */
     public static int installApp(String path,long apkSize) {
-        if (ApkUtils.isEnoughInstallSpaceSize(apkSize)) {
+        if (ApkUtils.isEnoughSpaceSize(apkSize)) {
             ToastUtils.showMessageLong(MyApp.getContext(), cn.can.downloadlib.R.string.error_msg);
             return 1;
         }
@@ -258,7 +257,7 @@ public class InstallPkgUtils {
      */
     //final String path = Environment.getExternalStorageDirectory() + File.separator + "baidu"+File.separator + "360MobileSa
     public static int installApp2(String path,long appSize) {
-        if (!ApkUtils.isEnoughInstallSpaceSize(appSize)) {
+        if (!ApkUtils.isEnoughSpaceSize(appSize)) {
             ToastUtils.showMessageLong(MyApp.getContext(), R.string.space_inequacy);
             return -1;
         }

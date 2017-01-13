@@ -37,7 +37,6 @@ import cn.can.downloadlib.NetworkUtils;
 import cn.can.downloadlib.utils.ApkUtils;
 import cn.can.downloadlib.utils.FileUtils;
 import cn.can.tvlib.common.pm.PackageUtil;
-import cn.can.tvlib.common.system.SystemUtil;
 import retrofit2.Response;
 
 /**
@@ -290,7 +289,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             Task.setUrl(Url);
             Task.setIcon(mAppInfo.getIcon());
             Task.setPkg(mAppInfo.getPackageName());
-            if (mAppInfo.getSize() > SystemUtil.getInternalAvailableSpace()) {
+            if (!ApkUtils.isEnoughSpaceSize(mAppInfo.getSize())) {
                 mView.showToast(R.string.error_msg);
                 return;
             }
@@ -440,6 +439,9 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             } else if (errorCode == DownloadTaskListener.DOWNLOAD_ERROR_UNKONW_ERROR) {
                 mView.showToast(R.string.unkonw_error);
                 refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_PREPARE, per);
+            }else if(errorCode==DOWNLOAD_ERROR_NO_SPACE_ERROR){
+                mView.showToast(R.string.space_inequacy);
+                refreshButtonStatus(DOWNLOAD_BUTTON_STATUS_RESTART, per);
             }
         }
     }
@@ -551,7 +553,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
      */
     private void silentInstall(String appName) {
         Log.d(TAG, "silentInstall ");
-        if (!ApkUtils.isEnoughInstallSpaceSize(mAppInfo.getSize())) {  // 安装内存不足
+        if (!ApkUtils.isEnoughSpaceSize(mAppInfo.getSize())) {  // 安装内存不足
             showInsufficientStorageSpaceDialog();
             return;
         }

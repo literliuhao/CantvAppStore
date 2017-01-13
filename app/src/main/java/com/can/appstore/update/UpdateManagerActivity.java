@@ -326,6 +326,9 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                                 case DOWNLOAD_ERROR_UNKONW_ERROR:
                                     showToast(getResources().getString(R.string.unkonw_error));
                                     break;
+                                case DOWNLOAD_ERROR_NO_SPACE_ERROR:
+                                    showToast(R.string.space_inequacy);
+                                    break;
                                 default:
                                     break;
                             }
@@ -434,7 +437,10 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
             @Override
             public void run() {
                 refreshDownliadStatus(downloadTask.getDownloadStatus(), status);
-                if (downloadTask.getCompletedSize() > 0 && downloadTask.getCompletedSize() < downloadTask.getTotalSize() && downloadTask.getDownloadStatus() != DownloadStatus.DOWNLOAD_STATUS_ERROR) {
+                if (downloadTask.getCompletedSize() > 0
+                        && downloadTask.getCompletedSize() < downloadTask.getTotalSize()
+                        && downloadTask.getDownloadStatus() != DownloadStatus.DOWNLOAD_STATUS_ERROR
+                        && downloadTask.getDownloadStatus() != DownloadStatus.DOWNLOAD_STATUS_SPACE_NOT_ENOUGH) {
                     progress.setVisibility(View.VISIBLE);
                 } else {
                     progress.setVisibility(View.INVISIBLE);

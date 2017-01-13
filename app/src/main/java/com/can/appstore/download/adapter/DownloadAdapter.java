@@ -27,11 +27,11 @@ import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.NetworkUtils;
+import cn.can.downloadlib.utils.ApkUtils;
 import cn.can.downloadlib.utils.FileUtils;
 import cn.can.downloadlib.utils.StringUtils;
 import cn.can.tvlib.common.log.LogUtil;
 import cn.can.tvlib.common.pm.PackageUtil;
-import cn.can.tvlib.common.system.SystemUtil;
 import cn.can.tvlib.ui.PromptUtils;
 import cn.can.tvlib.ui.view.GlideRoundCornerImageView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
@@ -281,7 +281,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     appControlBtn.setText("继续");
                     break;
                 case DownloadStatus.DOWNLOAD_STATUS_ERROR:
-                case DownloadStatus.SPACE_NOT_ENOUGH:
+                case DownloadStatus.DOWNLOAD_STATUS_SPACE_NOT_ENOUGH:
                     appControlBtn.setText("重试");
                     break;
                 case DownloadStatus.DOWNLOAD_STATUS_COMPLETED:
@@ -322,7 +322,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                     appDownloadStatusTv.setText("等待中");
                     break;
                 case DownloadStatus.DOWNLOAD_STATUS_ERROR:
-                case DownloadStatus.SPACE_NOT_ENOUGH:
+                case DownloadStatus.DOWNLOAD_STATUS_SPACE_NOT_ENOUGH:
                 case DownloadStatus.DOWNLOAD_STATUS_CANCEL:
                     appDownloadStatusImgVi.setImageResource(R.mipmap.icon_download_fail);
                     appDownloadStatusTv.setText("失败");
@@ -453,7 +453,7 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                             PromptUtils.toastShort(v.getContext(), v.getContext().getString(R.string.no_network));
                             break;
                         }
-                        if(holder.downloadTask.getTotalSize()> SystemUtil.getInternalAvailableSpace()){
+                        if(!ApkUtils.isEnoughSpaceSize(holder.downloadTask.getTotalSize())){
                             PromptUtils.toastShort(v.getContext(),v.getContext().getString(R.string.error_msg));
                             break;
                         }
@@ -477,8 +477,11 @@ public class DownloadAdapter extends CanRecyclerViewAdapter<DownloadTask> {
                                     (holder.downloadTask, holder.downloadListener);
                         }
                         break;
-                    case DownloadStatus.SPACE_NOT_ENOUGH:
-                        holder.downloadTask.setDownloadStatus(DownloadStatus.DOWNLOAD_STATUS_PAUSE);
+                    case DownloadStatus.DOWNLOAD_STATUS_SPACE_NOT_ENOUGH:
+                        if(!ApkUtils.isEnoughSpaceSize(holder.downloadTask.getTotalSize())){
+                            PromptUtils.toastShort(v.getContext(),v.getContext().getString(R.string.error_msg));
+                            break;
+                        }
                         DownloadManager.getInstance(v.getContext()).resume(holder.downloadTask.getId());
                         break;
                     case AppInstallListener.APP_INSTALLING:
