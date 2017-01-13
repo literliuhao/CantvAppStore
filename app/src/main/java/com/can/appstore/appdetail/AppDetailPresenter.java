@@ -609,10 +609,12 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
      */
     public void downloadCount() {
         //dataEye统计下载量
-        if (mFromPage.equals(AppConstants.RESEARCH_PAGE)) {
-            DCResource.onDownloadFromSearch(mAppInfo.getName(), mValue);
-        } else if (mFromPage.equals(AppConstants.RESOURCES_POSITION)) {
-            DCResource.onDownloadFromResourceLocation(mAppInfo.getName(), mValue);
+        if (mFromPage != null && !TextUtils.isEmpty(mFromPage) && mValue != null && !TextUtils.isEmpty(mValue)) {
+            if (mFromPage.equals(AppConstants.RESEARCH_PAGE)) {
+                DCResource.onDownloadFromSearch(mAppInfo.getName(), mValue);
+            } else if (mFromPage.equals(AppConstants.RESOURCES_POSITION)) {
+                DCResource.onDownloadFromResourceLocation(mAppInfo.getName(), mValue);
+            }
         }
         //调用接口统计下载量
         HttpManager.getApiService().appDownloadReport(mAppId, mAppInfo.getVersionCode()).enqueue(new EmptyCallback());
