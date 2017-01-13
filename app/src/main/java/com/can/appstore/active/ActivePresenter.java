@@ -149,7 +149,14 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
                 mOperationView.showActiveToast(R.string.installing);
                 return;
             }
-
+            if(status == DownloadStatus.DOWNLOAD_STATUS_SPACE_NOT_ENOUGH){
+                if(!cn.can.downloadlib.utils.ApkUtils.isEnoughSpaceSize(mAppInfo.getSize())){
+                    PromptUtils.toastShort(mContext,mContext.getString(R.string.space_inequacy));
+                    return;
+                }
+                mDownloadManger.resume(downloadTask.getId());
+                mOperationView.showActiveToast(R.string.download_continue);
+            }
             if (status == DownloadStatus.DOWNLOAD_STATUS_ERROR) {
                 if (!NetworkUtils.isNetworkConnected(mContext)) {
                     mOperationView.showActiveToast(R.string.no_network);
