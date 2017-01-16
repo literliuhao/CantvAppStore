@@ -57,6 +57,14 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case START_SEARCH:
+                    mTopView.setVisibility(View.GONE);
+                    mSearAppList_recycle.setVisibility(View.GONE);
+                    mHotkeyRecycle.setVisibility(View.GONE);
+                    mSearch_null.setVisibility(View.GONE);
+                    mBottom_re_ll.setVisibility(View.GONE);  //热门推荐
+                    mRLNoNetworkView.setVisibility(View.GONE);
+                    // 添加偏移的loading框
+                    showLoadingDialog(getResources().getDimensionPixelSize(R.dimen.px400));
                     mCurrPageIndex = 1;
                     mSearchKeyStr = mSearch_con_view.getText().toString().trim();
                     mSearchPresenter.getSearchList(mSearchKeyStr, mCurrPageIndex);
@@ -250,7 +258,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
 
     }
 
-    private void setMrightTop(int position){
+    private void setMrightTop(int position) {
         //行数
         mCurrLineNumber = position / SEARCH_APP_SPANCOUNT + 1;
         //计算总行数
@@ -337,7 +345,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         mleft_top.setText(R.string.search_left_top_prompt2);
         if (null != list && list.size() > 0) {
             mSearchTotal = total;
-            if (mCurrPageIndex == 1){
+            if (mCurrPageIndex == 1) {
                 setMrightTop(mCurrPageIndex);
                 mright_top.setVisibility(View.VISIBLE);
                 mSearAppList_recycle.setAdapter(mAppListAdapter);
@@ -348,6 +356,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
             showGoneView(TAG_S_NULLAPP_G_TOP_APPLIST);
         }
     }
+
 
     /**
      * 设置首字母
@@ -498,6 +507,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
 
         //没有搜到内容
         if (tag == TAG_S_NULLAPP_G_TOP_APPLIST) {
+            hideLoading();
             mTopView.setVisibility(View.GONE); //"大家都在搜"
             mHotkeyRecycle.setVisibility(View.GONE);
             mHotkeyRecycle.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
@@ -509,15 +519,17 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
             mRLNoNetworkView.setVisibility(View.GONE);
         }
 
+        // TODO: 2017/1/16
         //搜到内容
         if (tag == TAG_S_TOP_APPLIST_G_BOTTOM) {
+            hideLoading();
             mTopView.setVisibility(View.VISIBLE); //"大家都在搜"
-            mHotkeyRecycle.setVisibility(View.GONE);
+            //mHotkeyRecycle.setVisibility(View.GONE);
             mSearAppList_recycle.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
             mSearAppList_recycle.setVisibility(View.VISIBLE);   //搜索结果对应的布局
-            mSearch_null.setVisibility(View.GONE);
-            mBottom_re_ll.setVisibility(View.GONE);  //热门推荐
-            mRLNoNetworkView.setVisibility(View.GONE);
+            //mSearch_null.setVisibility(View.GONE);
+            //mBottom_re_ll.setVisibility(View.GONE);  //热门推荐
+            //mRLNoNetworkView.setVisibility(View.GONE);
         }
 
     }
