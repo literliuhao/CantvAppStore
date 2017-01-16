@@ -97,7 +97,7 @@ def getDate() {
 }
 
 def getDateTime() {
-    return new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+    return new SimpleDateFormat("yyyyMMddHH").format(new Date());
 }
 
 apt {

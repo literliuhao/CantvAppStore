@@ -33,7 +33,6 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
 
 public class AllAppsActivity extends BaseActivity implements AllAppsContract.View {
 
-    public static final int MIN_DOWN_INTERVAL = 80;//响应点击事件的最小间隔事件
     public static final int UNINSTALL_LAST_POSITION_DELAYE = 490;//卸载最后一个位置延时请求焦点
     public static String TAG = "AllAppsActivity";
     private List<AppInfo> allAppList = null;
@@ -52,9 +51,7 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
     private FocusMoveUtil focusMoveUtil;
     private View mFocusedListChild;
     private MyFocusRunnable myFocusRunnable;
-    private boolean focusSearchFailed;
     private CanRecyclerViewAdapter.OnFocusChangeListener myFocusChangesListener;
-    private long mTime;
 
     /**
      * 打开全部应用
@@ -90,18 +87,24 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
     private void initView() {
         focusMoveUtil = new FocusMoveUtil(this, getWindow().getDecorView(), R.drawable.btn_focus);
         myFocusRunnable = new MyFocusRunnable();
-        mAllAppsRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(this, 5, GridLayoutManager.VERTICAL, false), new CanRecyclerView.OnFocusSearchCallback() {
-            @Override
-            public void onSuccess(View view, View focused, int focusDirection, RecyclerView.Recycler recycler, RecyclerView.State state) {
-                focusSearchFailed = false;
-            }
+        measureFocusActiveRegion();
+        mAllAppsRecyclerView.setLayoutManager(new CanRecyclerView.CanGridLayoutManager(this, 5, GridLayoutManager.VERTICAL, false));
+        mAllAppsRecyclerView.setKeyCodeEffectInterval(260);
+        mAllAppsRecyclerView.addItemDecoration(new CanRecyclerViewDivider(android.R.color.transparent, 40, 0));
+    }
 
+    private void measureFocusActiveRegion() {
+        mAllAppsRecyclerView.post(new Runnable() {
             @Override
-            public void onFail(View focused, int focusDirection, RecyclerView.Recycler recycler, RecyclerView.State state) {
-                focusSearchFailed = false;
+            public void run() {
+                int[] location = new int[2];
+                mAllAppsRecyclerView.getLocationInWindow(location);
+                //noinspection deprecation
+                focusMoveUtil.setFocusActiveRegion(0, location[1] + mAllAppsRecyclerView.getPaddingTop(), getWindowManager().
+                        getDefaultDisplay().getWidth(), location[1] + mAllAppsRecyclerView.getMeasuredHeight()
+                        - getResources().getDimensionPixelSize(R.dimen.dimen_40px));
             }
         });
-        mAllAppsRecyclerView.addItemDecoration(new CanRecyclerViewDivider(android.R.color.transparent, 40, 0));
     }
 
     @Override
@@ -166,23 +169,6 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
         });
     }
 
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            long time = System.currentTimeMillis();
-            if (mTime == 0) {
-                mTime = System.currentTimeMillis();
-                return super.dispatchKeyEvent(event);
-            } else if (time - mTime < MIN_DOWN_INTERVAL) {
-                Log.d(TAG, "dispatchKeyEvent: " + System.currentTimeMillis());
-                return true;
-            } else {
-                mTime = System.currentTimeMillis();
-            }
-        }
-        return super.dispatchKeyEvent(event);
-    }
-
     private void editItem(final View item, final int position) {
         Log.d(TAG, "editItem" + "POSITION" + position);
         butStrartapp.requestFocus();
@@ -243,7 +229,7 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
         Drawable mIcon = app.appIcon;
         final String mName = app.appName;
         final String mPackName = app.packageName;
-        if(mCanDialog != null){
+        if (mCanDialog != null) {
             mCanDialog.dismiss();
             mCanDialog.release();
             mCanDialog = null;
@@ -289,7 +275,7 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
 
     @Override
     protected void onHomeKeyDown() {
-        if(mCanDialog != null){
+        if (mCanDialog != null) {
             mCanDialog.dismiss();
             mCanDialog.release();
             mCanDialog = null;
@@ -303,7 +289,7 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
                 if (hasFocus) {
                     mFocusedListChild = view;
-                    mAllAppsRecyclerView.postDelayed(myFocusRunnable, 50);
+                    myFocusRunnable.run();
                     int cur = mAllAppsPresenter.calculateCurRows(position);
                     tvCurRows.setText(cur + "");
                 }
@@ -328,7 +314,7 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
 
     @Override
     protected void onDestroy() {
-        if(mCanDialog != null){
+        if (mCanDialog != null) {
             mCanDialog.dismiss();
             mCanDialog.release();
             mCanDialog = null;
@@ -349,11 +335,7 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
         @Override
         public void run() {
             if (mFocusedListChild != null) {
-                if (focusSearchFailed) {
-                    focusMoveUtil.startMoveFocus(mFocusedListChild);
-                } else {
-                    focusMoveUtil.startMoveFocus(mFocusedListChild, 0);
-                }
+                focusMoveUtil.startMoveFocus(mFocusedListChild, 2);
             }
         }
     }
