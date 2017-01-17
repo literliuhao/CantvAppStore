@@ -2,7 +2,7 @@
     <string name="app_name">downloadlib</string>
     <string name="error_upgrade_space">系统空间不足，升级失败</string>
     <string name="error_upgrade_install">下载失败，升级失败</string>
-    <string name="error_msg">存储空间不足</string>
+    <string name="error_msg">应用下载空间不足</string>
     <string name="error_install_space_not_enough">安装空间不足</string>
     <string name="error_install">安装失败</string>
     <string name="install_sucess">安装完成</string>
