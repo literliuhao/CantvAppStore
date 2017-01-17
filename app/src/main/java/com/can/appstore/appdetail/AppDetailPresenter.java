@@ -534,8 +534,10 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     @Override
     public void release() {
         DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(mTaskId);
-        if (downloadTask != null) {
-            mDownloadManager.removeDownloadListener(downloadTask, this);
+        if (mDownloadManager != null) {
+            if (downloadTask != null) {
+                mDownloadManager.removeDownloadListener(downloadTask, this);
+            }
             mDownloadManager.removeAppInstallListener(this);
         }
         if (mAppDetailCall != null) {
