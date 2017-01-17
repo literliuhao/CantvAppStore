@@ -160,6 +160,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         initView();
         initFocus();
         getAD();
+        getNavigation();
     }
 
     @Override
@@ -266,8 +267,12 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                     final Ad.Material material = listMaterial.get(AD_INDEX);
                     materialId = material.getMaterialid();
                     ImageLoader.getInstance().buildTask(imageAD, material.getMaterialurl()).placeholder(R.drawable.app_store).successCallback(new GlideLoadTask.SuccessCallback() {
+
                         @Override
                         public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            if (imageAD.getVisibility() != View.VISIBLE) {
+                                return true;
+                            }
                             isShowAD = true;
                             textTime.setText(String.valueOf(mShowTime));
                             imageAD.setImageDrawable(resource);
@@ -277,7 +282,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                                 @Override
                                 public boolean onKey(View view, int i, KeyEvent keyEvent) {
                                     if (keyEvent.ACTION_DOWN == keyEvent.getAction() && (keyEvent.KEYCODE_ENTER == keyEvent.getKeyCode() || keyEvent.KEYCODE_DPAD_CENTER == keyEvent.getKeyCode())) {
-                                        Log.i("IndexActivity", "view " + view.getId());
                                         mClickCount = 1;
                                         String action = material.getAction();
                                         if (action.equals("") || null == action) return true;
@@ -286,7 +290,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                                         try {
                                             JSONObject jsonParams = new JSONObject(new Gson().toJson(jsonElement));
                                             ActionUtils.getInstance().sendActionById(mContext, jsonParams.optString("appid"), jsonParams.optString("topicid"), jsonParams.optString("applist"), jsonParams.optString("activityid"), jsonParams.optString("topiclist"));
-                                            Log.i("IndexActivity", "onSuccess mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED) ");
                                             stopTimer();
                                             mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED);
                                         } catch (JSONException e) {
@@ -298,13 +301,11 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                             });
                             mTimer = new Timer();
                             mTimer.schedule(task, AD_SHOW_STEP, AD_SHOW_STEP);
-                            getNavigation();
                             return true;
                         }
                     }).failCallback(new GlideLoadTask.FailCallback() {
                         @Override
                         public boolean onFail(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                            getNavigation();
                             return false;
                         }
                     }).build().start(mContext);
@@ -314,7 +315,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             @Override
             public void onFailure(CanCall<ClassicResult<List<Ad>>> call, CanErrorWrapper errorWrapper) {
                 Log.i("IndexActivity", errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
-                getNavigation();
             }
         });
     }
