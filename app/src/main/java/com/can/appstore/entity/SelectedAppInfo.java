@@ -1,6 +1,6 @@
 package com.can.appstore.entity;
 
-import cn.can.tvlib.common.pm.PackageUtil.AppInfo;
+import cn.can.tvlib.common.pm.PackageUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 /**
@@ -13,20 +13,10 @@ import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
  * ================================================
  */
 
-public class SelectedAppInfo extends AppInfo implements CanRecyclerViewAdapter.Selectable {
+public class SelectedAppInfo extends PackageUtil.AppInfo implements CanRecyclerViewAdapter.Selectable {
     private boolean isSelected;
 
-    @Override
-    public boolean isSelected() {
-        return isSelected;
-    }
-
-    @Override
-    public void setSelected(boolean b) {
-        isSelected = b;
-    }
-
-    public static SelectedAppInfo wrap(AppInfo appInfo) {
+    public static SelectedAppInfo wrap(PackageUtil.AppInfo appInfo) {
         SelectedAppInfo selectedAppInfo = new SelectedAppInfo();
         selectedAppInfo.apkPath = appInfo.apkPath;
         selectedAppInfo.appName = appInfo.appName;
@@ -39,5 +29,15 @@ public class SelectedAppInfo extends AppInfo implements CanRecyclerViewAdapter.S
         selectedAppInfo.versionCode = appInfo.versionCode;
         selectedAppInfo.versionName = appInfo.versionName;
         return selectedAppInfo;
+    }
+
+    @Override
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    @Override
+    public void setSelected(boolean b) {
+        isSelected = b;
     }
 }

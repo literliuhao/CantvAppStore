@@ -40,7 +40,6 @@ import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadTaskCountListener;
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.PromptUtils;
-import retrofit2.http.HEAD;
 
 /**
  * Created by liuhao on 2016/10/21.
