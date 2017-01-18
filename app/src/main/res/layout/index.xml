@@ -65,7 +65,7 @@
             android:nextFocusLeft="@id/iv_index_ad"
             android:nextFocusRight="@id/iv_index_ad"
             android:nextFocusUp="@id/iv_index_ad"
-            android:background="@drawable/app_store"
+            android:src="@drawable/app_store"
             android:scaleType="centerCrop"/>
 
         <LinearLayout

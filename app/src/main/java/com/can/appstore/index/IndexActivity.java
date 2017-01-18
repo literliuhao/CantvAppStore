@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -114,7 +115,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private FocusScaleUtil mFocusScaleUtils;
     private IndexPagerAdapter mAdapter;
     private FocusMoveUtil mFocusUtils;
-    private RelativeLayout rlMessage;
+    private RelativeLayout rlMessage,mAdContentLayoutGroup;
     private TextView textTime;
     private ImageView imageAD;
     private LinearLayout adTimeLayout;
@@ -206,6 +207,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         textTime = (TextView) this.findViewById(R.id.tv_ad_time);
         imageAD = (ImageView) this.findViewById(R.id.iv_index_ad);
         adTimeLayout = (LinearLayout) findViewById(R.id.ll_ad_time);
+        mAdContentLayoutGroup= (RelativeLayout) findViewById(R.id.rl_content_ad);
         //搜索
         rlSearch = (RelativeLayout) this.findViewById(R.id.rl_search);
         rlSearch.setOnFocusChangeListener(this);
@@ -585,14 +587,18 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                     }
                     if (imageAD != null) {
                         imageAD.setVisibility(View.GONE);
+                        mAdContentLayoutGroup.removeAllViews();
                         adTimeLayout.removeAllViews();
                         adTimeLayout.setVisibility(View.GONE);
-                        BitmapDrawable bitmapDrawable = (BitmapDrawable)imageAD.getDrawable();
-                        if (bitmapDrawable != null) {
-                            Bitmap bm = bitmapDrawable.getBitmap();
-                            if (bm != null && bm.isRecycled()) {
-                                bm.recycle();
-                                bm = null;
+                        Drawable drawable=imageAD.getDrawable();
+                        if(drawable!=null&&drawable instanceof BitmapDrawable){
+                            BitmapDrawable bitmapDrawable=(BitmapDrawable) drawable;
+                            if (bitmapDrawable != null) {
+                                Bitmap bm = bitmapDrawable.getBitmap();
+                                if (bm != null && bm.isRecycled()) {
+                                    bm.recycle();
+                                    bm = null;
+                                }
                             }
                         }
                         imageAD = null;
