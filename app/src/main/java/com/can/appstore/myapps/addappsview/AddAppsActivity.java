@@ -17,7 +17,6 @@ import com.can.appstore.myapps.adapter.AddAppsRvAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.can.tvlib.common.pm.PackageUtil;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;

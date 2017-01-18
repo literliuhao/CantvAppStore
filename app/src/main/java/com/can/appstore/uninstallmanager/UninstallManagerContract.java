@@ -10,8 +10,6 @@ import com.can.appstore.entity.SelectedAppInfo;
 
 import java.util.List;
 
-import cn.can.tvlib.common.pm.PackageUtil;
-
 
 /**
  * Created by JasonF on 2016/10/17.

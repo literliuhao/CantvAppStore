@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -581,8 +583,21 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                     if (managerFragment != null) {
                         managerFragment.setAdapterFocus();
                     }
-                    adTimeLayout.setVisibility(View.GONE);
-                    imageAD.setVisibility(View.GONE);
+                    if (imageAD != null) {
+                        imageAD.setVisibility(View.GONE);
+                        adTimeLayout.removeAllViews();
+                        adTimeLayout.setVisibility(View.GONE);
+                        BitmapDrawable bitmapDrawable = (BitmapDrawable)imageAD.getDrawable();
+                        if (bitmapDrawable != null) {
+                            Bitmap bm = bitmapDrawable.getBitmap();
+                            if (bm != null && bm.isRecycled()) {
+                                bm.recycle();
+                                bm = null;
+                            }
+                        }
+                        imageAD = null;
+                    }
+
                     rlSearch.setFocusable(true);
                     rlMessage.setFocusable(true);
                     View first = mTitleBar.getFirstView();
