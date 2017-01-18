@@ -32,12 +32,11 @@ import com.can.appstore.myapps.utils.MyAppsListDataUtil;
 
 import java.util.List;
 
+import cn.can.tvlib.common.pm.PackageUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter.OnFocusChangeListener;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -98,12 +97,12 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
     }
 
     @Override
-    public void loadAppInfoSuccess(List<AppInfo> infoList, int mySppListSize) {
+    public void loadAppInfoSuccess(List<PackageUtil.AppInfo> infoList, int mySppListSize) {
         Log.d(TAG, "loadAppInfoSuccess: infoList : " + infoList.size() + "    mySppListSize : " + mySppListSize);
         mShowList = infoList;
         if (infoList.size() - LEAST_SHOW_COUNT < mySppListSize && infoList.size() < AT_MOST_SHOW_COUNT
                 && !infoList.get(infoList.size() - 1).appName.equals(getString(R.string.add_app))) {
-            infoList.add(new AppInfo(getResources().getString(R.string.add_app), getActivity().getResources().getDrawable(R.drawable.addapp_icon)));
+            infoList.add(new PackageUtil.AppInfo(getResources().getString(R.string.add_app), getActivity().getResources().getDrawable(R.drawable.addapp_icon)));
         }
         if (mMyAppsRvAdapter == null) {
             mMyAppsRvAdapter = new MyAppsRvAdapter(infoList);

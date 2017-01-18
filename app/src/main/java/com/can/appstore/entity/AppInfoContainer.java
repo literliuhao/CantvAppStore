@@ -4,7 +4,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-import cn.can.tvlib.utils.CollectionUtil;
+import cn.can.tvlib.common.custom.CollectionUtil;
+
 
 /**
  * 应用列表容器，用于排行列表、应用列表

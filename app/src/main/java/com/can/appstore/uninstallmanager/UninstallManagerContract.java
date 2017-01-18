@@ -6,10 +6,12 @@ import android.text.SpannableStringBuilder;
 import com.can.appstore.appdetail.AppDetailContract;
 import com.can.appstore.base.BasePresenter;
 import com.can.appstore.base.BaseView;
+import com.can.appstore.entity.SelectedAppInfo;
 
 import java.util.List;
 
-import cn.can.tvlib.utils.PackageUtil;
+import cn.can.tvlib.common.pm.PackageUtil;
+
 
 /**
  * Created by JasonF on 2016/10/17.
@@ -26,7 +28,7 @@ public interface UninstallManagerContract {
     }
 
     interface View extends BaseView<AppDetailContract.Presenter> {
-        void loadAllAppInfoSuccess(List<PackageUtil.AppInfo> infoList);
+        void loadAllAppInfoSuccess(List<SelectedAppInfo> infoList);
 
         void showCurStorageProgress(int progress, String storage);
 

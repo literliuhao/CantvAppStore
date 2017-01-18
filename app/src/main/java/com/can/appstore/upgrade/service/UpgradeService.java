@@ -8,6 +8,8 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 
 import com.can.appstore.upgrade.UpgradeUtil;
+import com.can.appstore.upgrade.activity.ProgressActivity;
+import com.can.appstore.upgrade.activity.UpgradeFailActivity;
 import com.can.appstore.upgrade.activity.UpgradeInfoActivity;
 import com.google.gson.Gson;
 import com.tencent.bugly.beta.Beta;
@@ -97,7 +99,15 @@ public class UpgradeService extends IntentService {
         } else {
             //先清空本地存放Apk的空间
             UpgradeUtil.delAllDateFile(mUpdatePath);
-            downLoadApk(mUpgradeInfo.apkUrl);
+            //判断剩余空间是否可以下载
+            if (UpgradeUtil.checkDownLoadSize(mUpgradeInfo.fileSize)) {
+                downLoadApk(mUpgradeInfo.apkUrl);
+            } else {
+                showInstallError(UpgradeService.this.getResources().getString(cn.can
+                        .downloadlib.R.string
+                        .error_upgrade_space));
+            }
+
         }
     }
 
@@ -168,7 +178,6 @@ public class UpgradeService extends IntentService {
             public void onCompleted(UpgradeTask downloadTask) {
                 Log.d(TAG, "DownloadManager=onCompleted");
                 onLoadingCompleted();
-//                mManager.deleteSigleTask(downloadTask.getId());
             }
 
             @Override
@@ -200,6 +209,14 @@ public class UpgradeService extends IntentService {
         intent.putExtra(UPGRADE_SIZE, mUpgradeInfo.fileSize);
         intent.putExtra(FILE_PATH, mUpdatePath);
         startActivity(intent);
+    }
+
+
+    private void showInstallError(String resean){
+        Intent intent = new Intent(UpgradeService.this, UpgradeFailActivity.class);
+        intent.putExtra(ProgressActivity.FAIL_REASON, resean);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        UpgradeService.this.startActivity(intent);
     }
 
     @Override

@@ -35,12 +35,12 @@ import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
+import cn.can.downloadlib.NetworkUtils;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
-import cn.can.tvlib.utils.NetworkUtils;
 
 /**
  * 更新管理
@@ -229,7 +229,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                     showToast(getResources().getString(R.string.no_network));
                     return;
                 }
-                if(mUpdateList.get(position).getUpdated()){
+                if (mUpdateList.get(position).getUpdated()) {
                     showToast(R.string.update_already_updated);
                     return;
                 }
@@ -253,9 +253,11 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                 } else {
                     downloadTask = new DownloadTask();
                     String md5 = MD5.MD5(downloadUrl);
-                    downloadTask.setFileName(mUpdateList.get(position).getAppName() + "1");
+                    downloadTask.setFileName(mUpdateList.get(position).getAppName());
+                    downloadTask.setPkg(mUpdateList.get(position).getPackageName());
                     downloadTask.setId(md5);
                     downloadTask.setUrl(downloadUrl);
+                    downloadTask.setIcon(mUpdateList.get(position).getIconUrl());
                     status.setText(getResources().getString(R.string.update_download_waitting));
                     status.setVisibility(View.VISIBLE);
                     mDownloadManager.addDownloadTask(downloadTask, new DownloadTaskListener() {
@@ -324,6 +326,9 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                                     break;
                                 case DOWNLOAD_ERROR_UNKONW_ERROR:
                                     showToast(getResources().getString(R.string.unkonw_error));
+                                    break;
+                                case DOWNLOAD_ERROR_NO_SPACE_ERROR:
+                                    showToast(R.string.space_inequacy);
                                     break;
                                 default:
                                     break;
@@ -433,7 +438,10 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
             @Override
             public void run() {
                 refreshDownliadStatus(downloadTask.getDownloadStatus(), status);
-                if (downloadTask.getCompletedSize() > 0 && downloadTask.getCompletedSize() < downloadTask.getTotalSize() && downloadTask.getDownloadStatus() != DownloadStatus.DOWNLOAD_STATUS_ERROR) {
+                if (downloadTask.getCompletedSize() > 0
+                        && downloadTask.getCompletedSize() < downloadTask.getTotalSize()
+                        && downloadTask.getDownloadStatus() != DownloadStatus.DOWNLOAD_STATUS_ERROR
+                        && downloadTask.getDownloadStatus() != DownloadStatus.DOWNLOAD_STATUS_SPACE_NOT_ENOUGH) {
                     progress.setVisibility(View.VISIBLE);
                 } else {
                     progress.setVisibility(View.INVISIBLE);
@@ -476,6 +484,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
                 break;
         }
     }
+
     protected void initData() {
         mPresenter.getSDInfo();
         mPresenter.getInstallPkgList();
@@ -674,16 +683,16 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         View childAt = mRecyclerView.getChildAt(itemPosition);
         final TextView status = (TextView) childAt.findViewById(R.id.tv_updateapp_downloading);
         final ImageView updateIcon = (ImageView) childAt.findViewById(R.id.iv_updateapp_updatedicon);
-        if(number == 0){
+        if (number == 0) {
             status.setVisibility(View.INVISIBLE);
             updateIcon.setVisibility(View.VISIBLE);
             mPresenter.getUpdateApkNum(itemPosition);
-            showToast(model.getAppname()+getResources().getString(R.string.install_success));
-        }else if(number == 1){
+            showToast(model.getAppname() + getResources().getString(R.string.install_success));
+        } else if (number == 1) {
             status.setVisibility(View.VISIBLE);
             status.setText(getResources().getString(R.string.update_download_installfalse));
             updateIcon.setVisibility(View.INVISIBLE);
-            showToast(model.getAppname()+getResources().getString(R.string.install_fail));
+            showToast(model.getAppname() + getResources().getString(R.string.install_fail));
         }
     }
 }

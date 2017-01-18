@@ -57,6 +57,14 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case START_SEARCH:
+                    mTopView.setVisibility(View.GONE);
+                    mSearAppList_recycle.setVisibility(View.GONE);
+                    mHotkeyRecycle.setVisibility(View.GONE);
+                    mSearch_null.setVisibility(View.GONE);
+                    mBottom_re_ll.setVisibility(View.GONE);  //热门推荐
+                    mRLNoNetworkView.setVisibility(View.GONE);
+                    // 添加偏移的loading框
+                    showLoadingDialog(getResources().getDimensionPixelSize(R.dimen.px400));
                     mCurrPageIndex = 1;
                     mSearchKeyStr = mSearch_con_view.getText().toString().trim();
                     mSearchPresenter.getSearchList(mSearchKeyStr, mCurrPageIndex);
@@ -227,8 +235,9 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
             public void onItemFocusChanged(View view, int position, boolean hasFocus) {
                 if (hasFocus) {
                     //显示出行数View
-                    mright_top.setVisibility(View.VISIBLE);
-                    //行数
+                    //mright_top.setVisibility(View.VISIBLE);
+                    setMrightTop(position);
+/*                    //行数
                     mCurrLineNumber = position / SEARCH_APP_SPANCOUNT + 1;
 //                        int totalItemCount = mSearAppList_recycle.getLayoutManager().getItemCount();
                     //计算总行数
@@ -236,16 +245,25 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                     //列数
 //                        int colNumber = (position + 1) % SEARCH_APP_SPANCOUNT == 0 ? SEARCH_APP_SPANCOUNT : (position + 1) % SEARCH_APP_SPANCOUNT;
 //                        mright_top.setText(colNumber + "/" + lineNumber + "行");
-                    mright_top.setText(mCurrLineNumber + "/" + mTotalLineCount + "行");
+                    mright_top.setText(mCurrLineNumber + "/" + mTotalLineCount + "行");*/
                     mFocusedListChild = view;
                     view.postDelayed(myFocusRunnable, 50);
-                } else {
-                    mright_top.setText(1 + "/" + mTotalLineCount + "行");
                 }
+                /*else {
+                    mright_top.setText(1 + "/" + mTotalLineCount + "行");
+                }*/
                 view.setSelected(hasFocus);
             }
         });
 
+    }
+
+    private void setMrightTop(int position) {
+        //行数
+        mCurrLineNumber = position / SEARCH_APP_SPANCOUNT + 1;
+        //计算总行数
+        mTotalLineCount = mSearchTotal / SEARCH_APP_SPANCOUNT + (mSearchTotal % SEARCH_APP_SPANCOUNT > 0 ? 1 : 0);
+        mright_top.setText(mCurrLineNumber + "/" + mTotalLineCount + "行");
     }
 
 
@@ -324,15 +342,21 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
      */
     @Override
     public void getAppList(List list, int total, boolean... isFirstSearch) {
-        mSearchTotal = total;
         mleft_top.setText(R.string.search_left_top_prompt2);
         if (null != list && list.size() > 0) {
+            mSearchTotal = total;
+            if (mCurrPageIndex == 1) {
+                setMrightTop(mCurrPageIndex);
+                mright_top.setVisibility(View.VISIBLE);
+                mSearAppList_recycle.setAdapter(mAppListAdapter);
+            }
             showGoneView(TAG_S_TOP_APPLIST_G_BOTTOM);
             mAppListAdapter.setDataList(list, isFirstSearch[0]);
         } else {
             showGoneView(TAG_S_NULLAPP_G_TOP_APPLIST);
         }
     }
+
 
     /**
      * 设置首字母
@@ -483,6 +507,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
 
         //没有搜到内容
         if (tag == TAG_S_NULLAPP_G_TOP_APPLIST) {
+            hideLoading();
             mTopView.setVisibility(View.GONE); //"大家都在搜"
             mHotkeyRecycle.setVisibility(View.GONE);
             mHotkeyRecycle.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
@@ -494,15 +519,17 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
             mRLNoNetworkView.setVisibility(View.GONE);
         }
 
+        // TODO: 2017/1/16
         //搜到内容
         if (tag == TAG_S_TOP_APPLIST_G_BOTTOM) {
+            hideLoading();
             mTopView.setVisibility(View.VISIBLE); //"大家都在搜"
-            mHotkeyRecycle.setVisibility(View.GONE);
+            //mHotkeyRecycle.setVisibility(View.GONE);
             mSearAppList_recycle.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
             mSearAppList_recycle.setVisibility(View.VISIBLE);   //搜索结果对应的布局
-            mSearch_null.setVisibility(View.GONE);
-            mBottom_re_ll.setVisibility(View.GONE);  //热门推荐
-            mRLNoNetworkView.setVisibility(View.GONE);
+            //mSearch_null.setVisibility(View.GONE);
+            //mBottom_re_ll.setVisibility(View.GONE);  //热门推荐
+            //mRLNoNetworkView.setVisibility(View.GONE);
         }
 
     }
@@ -559,7 +586,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                         Log.w("lastItem", lastItem + "");
                         Log.w("totalItemCount", totalItemCount + "");
                         if ((lastItem >= totalItemCount - 1 - SEARCH_APP_SPANCOUNT)
-                                && mCurrLineNumber == mTotalLineCount) {
+                                && mCurrLineNumber < mTotalLineCount) {
 //                            ToastUtil.toastShort("正在加载更多数据...");
                             mCurrPageIndex++;
                             mSearchPresenter.getSearchList(mSearch_con_view.getText().toString(), mCurrPageIndex);

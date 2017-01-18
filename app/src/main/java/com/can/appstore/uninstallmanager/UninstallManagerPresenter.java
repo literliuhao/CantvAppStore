@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.text.SpannableStringBuilder;
@@ -16,6 +17,7 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 
 import com.can.appstore.R;
+import com.can.appstore.entity.SelectedAppInfo;
 import com.can.appstore.uninstallmanager.csutom.CustomAsyncTaskLoader;
 import com.can.appstore.widgets.CanDialog;
 
@@ -25,21 +27,21 @@ import java.util.List;
 import cn.can.downloadlib.AppInstallListener;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadTask;
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.StringUtils;
-import cn.can.tvlib.utils.SystemUtil;
+import cn.can.tvlib.common.pm.PackageUtil;
+import cn.can.tvlib.common.system.SystemUtil;
+import cn.can.tvlib.common.text.StringUtils;
 
 /**
  * Created by JasonF on 2016/10/17.
  */
 
-public class UninstallManagerPresenter implements UninstallManagerContract.Presenter, LoaderManager.LoaderCallbacks<List<PackageUtil.AppInfo>>, AppInstallListener {
+public class UninstallManagerPresenter implements UninstallManagerContract.Presenter, LoaderManager.LoaderCallbacks<List<SelectedAppInfo>>, AppInstallListener {
     private static final String TAG = "UninstallManagerPresen";
     private static final int LOADER_ID = 0;
     private static final int COLUMN_COUNT = 3;
     private UninstallManagerContract.View mView;
     private Activity mContext;
-    private static List<PackageUtil.AppInfo> mAppInfoList;
+    private static List<SelectedAppInfo> mAppInfoList;
     private AppInstallReceiver mInstalledReceiver;
     public ArrayList<String> mSelectPackageName = new ArrayList<>();
     private LoaderManager mLoaderManager;
@@ -92,12 +94,17 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     /**
      * 计算当前的内存进度
      */
-    void calculateCurStoragePropgress() {
-        long freeSize = SystemUtil.getInternalAvailableSpace(mContext);
-        long totalSize = SystemUtil.getInternalTotalSpace(mContext) ;
-        int progress = (int) (((totalSize - freeSize) * 100) / totalSize);
-        String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + StringUtils.formatFileSize(freeSize, false);
-        mView.showCurStorageProgress(progress, freeStorage);
+    void calculateCurStoragePropgress(int delay) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                long freeSize = SystemUtil.getInternalAvailableSpace();
+                long totalSize = SystemUtil.getInternalTotalSpace();
+                int progress = (int) ((totalSize - freeSize) * 100 / totalSize);
+                String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + StringUtils.formatFileSize(freeSize, false);
+                mView.showCurStorageProgress(progress, freeStorage);
+            }
+        }, delay);
     }
 
     @Override
@@ -131,14 +138,14 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
     }
 
     @Override
-    public Loader<List<PackageUtil.AppInfo>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<SelectedAppInfo>> onCreateLoader(int id, Bundle args) {
         Log.d(TAG, "onCreateLoader: " + " id : " + id);
         mView.showLoadingDialog();
         return new CustomAsyncTaskLoader(mContext, CustomAsyncTaskLoader.FILTER_LOSE_PRE_INSTALL_THIRD_APP);
     }
 
     @Override
-    public void onLoadFinished(Loader<List<PackageUtil.AppInfo>> loader, List<PackageUtil.AppInfo> data) {
+    public void onLoadFinished(Loader<List<SelectedAppInfo>> loader, List<SelectedAppInfo> data) {
         Log.d(TAG, "onLoadFinished: " + "data :" + data.size());
         mView.hideLoadingDialog();
         if (mAppInfoList == null) {
@@ -174,7 +181,7 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
 
 
     @Override
-    public void onLoaderReset(Loader<List<PackageUtil.AppInfo>> loader) {
+    public void onLoaderReset(Loader<List<SelectedAppInfo>> loader) {
         Log.d(TAG, "onLoaderReset: ");
     }
 
@@ -216,10 +223,11 @@ public class UninstallManagerPresenter implements UninstallManagerContract.Prese
                 Log.d(TAG, "install packageName : " + packageName);
                 isAppInstallRefresh = true;
                 mLoaderManager.restartLoader(LOADER_ID, null, UninstallManagerPresenter.this);
+                calculateCurStoragePropgress(1000);
             } else if (intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)) {
                 String packageName = intent.getData().getSchemeSpecificPart();
                 Log.d(TAG, "uninstall packageName : " + packageName);
-                calculateCurStoragePropgress();
+                calculateCurStoragePropgress(1000);
                 if (!isClickBatchUninstall) {
                     refreshLastFocus(packageName);
                 }

@@ -14,7 +14,8 @@ import com.can.appstore.db.entity.MessageInfo;
 
 import java.util.List;
 
-import cn.can.tvlib.utils.DateUtil;
+import cn.can.tvlib.common.custom.DateUtil;
+
 
 /**
  * Created by HEKANG on 2016/11/14.

@@ -22,12 +22,11 @@ import cn.can.downloadlib.DownloadStatus;
 import cn.can.downloadlib.DownloadTask;
 import cn.can.downloadlib.DownloadTaskListener;
 import cn.can.downloadlib.MD5;
-import cn.can.tvlib.utils.ApkUtils;
-import cn.can.tvlib.utils.NetworkUtils;
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.PromptUtils;
-import cn.can.tvlib.utils.StringUtils;
-import cn.can.tvlib.utils.SystemUtil;
+import cn.can.downloadlib.NetworkUtils;
+import cn.can.tvlib.common.apk.ApkUtils;
+import cn.can.tvlib.common.pm.PackageUtil;
+import cn.can.tvlib.common.text.StringUtils;
+import cn.can.tvlib.ui.PromptUtils;
 import retrofit2.Response;
 
 /**
@@ -150,7 +149,14 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
                 mOperationView.showActiveToast(R.string.installing);
                 return;
             }
-
+            if(status == DownloadStatus.DOWNLOAD_STATUS_SPACE_NOT_ENOUGH){
+                if(!cn.can.downloadlib.utils.ApkUtils.isEnoughSpaceSize(mAppInfo.getSize())){
+                    PromptUtils.toastShort(mContext,mContext.getString(R.string.space_inequacy));
+                    return;
+                }
+                mDownloadManger.resume(downloadTask.getId());
+                mOperationView.showActiveToast(R.string.download_continue);
+            }
             if (status == DownloadStatus.DOWNLOAD_STATUS_ERROR) {
                 if (!NetworkUtils.isNetworkConnected(mContext)) {
                     mOperationView.showActiveToast(R.string.no_network);
@@ -180,8 +186,10 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
             downloadTask.setFileName(mAppInfo.getName());
             downloadTask.setId(md5);
             downloadTask.setUrl(downloadUrl);
-            if(mAppInfo.getSize()> SystemUtil.getInternalAvailableSpace(mContext)){
-                PromptUtils.toastShort(mContext,mContext.getString(R.string.error_msg));
+            downloadTask.setPkg(mAppInfo.getPackageName());
+            downloadTask.setIcon(mAppInfo.getIcon());
+            if(!cn.can.downloadlib.utils.ApkUtils.isEnoughSpaceSize(mAppInfo.getSize())){
+                PromptUtils.toastShort(mContext,mContext.getString(R.string.space_inequacy));
                 return;
             }
             mDownloadManger.addDownloadTask(downloadTask, ActivePresenter.this);
@@ -265,6 +273,8 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
                 case DOWNLOAD_ERROR_UNKONW_ERROR:
                     mOperationView.showActiveToast(R.string.unkonw_error);
                     break;
+                case DOWNLOAD_ERROR_NO_SPACE_ERROR:
+                    mOperationView.showActiveToast(R.string.space_inequacy);
             }
             if (errorCode != DOWNLOAD_ERROR_NETWORK_ERROR) {
                 mOperationView.refreshTextProgressbarTextStatus(R.string.downlaod_restart);
@@ -287,7 +297,6 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
         Log.d(TAG, "onInstallSucess(id " + id + ")");
         if (id.equalsIgnoreCase(MD5.MD5(mDownloadUrl))) {
             mOperationView.refreshTextProgressbarTextStatus(R.string.active_click_participate);
-            mOperationView.showActiveToast(R.string.install_success);
         }
     }
 
@@ -296,7 +305,6 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
         Log.d(TAG, "onInstallFail(id " + id + ")");
         if (id.equalsIgnoreCase(MD5.MD5(mDownloadUrl))) {
             mOperationView.refreshTextProgressbarTextStatus(R.string.downlaod_restart);
-            mOperationView.showActiveToast(R.string.install_fail);
         }
     }
 

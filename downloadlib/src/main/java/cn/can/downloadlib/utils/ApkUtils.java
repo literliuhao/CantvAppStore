@@ -372,6 +372,28 @@ public class ApkUtils {
         return channel;
     }
 
+    /**
+     * 判断apk安装控件是否充足
+     * @param apkSize apk大小 ，单位byte
+     * @return
+     */
+    public static boolean isEnoughSpaceSize(long apkSize){
+
+        File apkPath=new File("/data/app");
+        if(!apkPath.exists()){
+            return false;
+        }
+        File dataPath=apkPath.getParentFile();
+        if(!dataPath.exists()){
+            return false;
+        }
+        if((float)apkPath.getUsableSpace()/dataPath.getTotalSpace()>0.1&&apkSize<(apkPath.getUsableSpace()-dataPath.getTotalSpace()*1/10)){
+            return true;
+        }
+        return false;
+
+    }
+
 
     public static class ApkFile {
         Drawable apkIcon;

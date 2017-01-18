@@ -17,6 +17,7 @@ import com.can.appstore.R;
 import com.can.appstore.appdetail.AppDetailContract;
 import com.can.appstore.appdetail.custom.TextProgressBar;
 import com.can.appstore.base.BaseActivity;
+import com.can.appstore.entity.SelectedAppInfo;
 import com.can.appstore.uninstallmanager.adapter.UninstallManagerAdapter;
 import com.dataeye.sdk.api.app.DCEvent;
 import com.dataeye.sdk.api.app.channel.DCPage;
@@ -24,13 +25,11 @@ import com.dataeye.sdk.api.app.channel.DCPage;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.common.pm.PackageUtil;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerView;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewDivider;
-import cn.can.tvlib.utils.PackageUtil;
-
-import static cn.can.tvlib.ui.view.recyclerview.CanRecyclerView.KEYCODE_EFFECT_INTERVAL_UNLIMIT;
 
 /**
  * 本地卸载管理页面
@@ -76,6 +75,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     public void initFocus() {
         mFocusMoveUtil = new FocusMoveUtil(UninstallManagerActivity.this, getWindow().getDecorView(), R.mipmap.btn_focus);
         measureFocusActiveRegion();
+        mFocusMoveUtil.hideFocus();
         mListFocusMoveRunnable = new ListFocusMoveRunnable();
     }
 
@@ -113,13 +113,14 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         mBtBatchUninstall = (TextView) findViewById(R.id.bt_batch_uninstall);
         mTvItemCurRows = (TextView) findViewById(R.id.tv_cur_rows);
         mProgressStorage = (TextProgressBar) findViewById(R.id.progress_stroage);
+        mProgressStorage.setTextSize(getResources().getDimensionPixelSize(R.dimen.dimen_18px));
         mSelectCount = (TextView) findViewById(R.id.tv_select_count);
         mNotUninstallApp = (TextView) findViewById(R.id.tv_no_data);
         mLinearLayoutSelectApp = (LinearLayout) findViewById(R.id.ll_select_app);
         mLayoutManager = new CanRecyclerView.CanGridLayoutManager(UninstallManagerActivity.this, 3, CanRecyclerView.CanGridLayoutManager.VERTICAL, false);
         mCanRecyclerView.setLayoutManager(mLayoutManager);
         mCanRecyclerView.setKeyCodeEffectInterval(CanRecyclerView.KEYCODE_EFFECT_INTERVAL_NORMAL);
-        mPresenter.calculateCurStoragePropgress();
+        mPresenter.calculateCurStoragePropgress(0);
         addBatchUninstallListener();
     }
 
@@ -128,7 +129,8 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             @Override
             public void run() {
                 mBtBatchUninstall.setFocusable(true);
-                mBtBatchUninstall.requestFocus();
+                mFocusMoveUtil.showFocus();
+                mFocusMoveUtil.setFocusView(mBtBatchUninstall);
             }
         });
     }
@@ -243,7 +245,8 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     }
 
     @Override
-    public void loadAllAppInfoSuccess(List<PackageUtil.AppInfo> infoList) {
+    public void loadAllAppInfoSuccess(List<SelectedAppInfo> infoList) {
+        mFocusMoveUtil.showFocus();
         Log.d(TAG, "loadAllAppInfoSuccess: infoList : " + infoList);
         if (infoList.size() == 0) {
             mNotUninstallApp.setVisibility(View.VISIBLE);
@@ -281,8 +284,8 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
 
     @Override
     public void showCurStorageProgress(int progress, String storage) {
+        Log.d(TAG, "showCurStorageProgress: progress : " + progress + "  storage : " + storage);
         mProgressStorage.setProgress(progress);
-        mProgressStorage.setTextSize(getResources().getDimensionPixelSize(R.dimen.dimen_18px));
         mProgressStorage.setText(storage);
     }
 

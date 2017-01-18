@@ -6,7 +6,8 @@ import android.util.Log;
 import com.can.appstore.entity.ListResult;
 import com.can.appstore.entity.Navigation;
 
-import cn.can.tvlib.utils.PreferencesUtils;
+import cn.can.tvlib.common.storage.PreferencesUtils;
+
 
 /**
  * Created by liuhao on 2016/10/17.

@@ -14,10 +14,12 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import cn.can.downloadlib.DownloadManager;
-import cn.can.tvlib.utils.StringUtils;
-import cn.can.tvlib.utils.SystemUtil;
+import cn.can.downloadlib.DownloadTask;
+import cn.can.tvlib.common.system.SystemUtil;
+import cn.can.tvlib.common.text.StringUtils;
 
 /**
  * Created by shenpx on 2016/11/9 0009.
@@ -32,16 +34,16 @@ public class InstallPresenter implements InstallContract.Presenter {
     private List<AppInfoBean> mDatas;//安装包集合
     private static final int NO_DATA = 1;
     private static final int DATA = 2;
-    private Handler mHandler = new Handler(){
+    private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
+            switch (msg.what) {
                 case NO_DATA:
                     mView.hideLoading();
                     mView.showNoData();
                     break;
                 case DATA:
-                    List<AppInfoBean> appList = (List<AppInfoBean>)msg.obj;
+                    List<AppInfoBean> appList = (List<AppInfoBean>) msg.obj;
                     mView.hideLoading();
                     mView.hideNoData();
                     mDatas.addAll(appList);
@@ -92,8 +94,8 @@ public class InstallPresenter implements InstallContract.Presenter {
 
     @Override
     public void getSDInfo() {
-        long freeSize = SystemUtil.getInternalAvailableSpace(mContext);
-        long totalSize = SystemUtil.getInternalTotalSpace(mContext);
+        long freeSize = SystemUtil.getInternalAvailableSpace();
+        long totalSize = SystemUtil.getInternalTotalSpace();
         int progress = (int) (((totalSize - freeSize) * 100) / totalSize);
         String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + StringUtils.formatFileSize(freeSize, false);
         mView.showSDProgressbar(progress, freeStorage);
@@ -107,7 +109,6 @@ public class InstallPresenter implements InstallContract.Presenter {
     @Override
     public void deleteAll() {
         for (int i = mDatas.size() - 1; i >= 0; i--) {
-            AppInfoBean bean = mDatas.get(i);
             InstallPkgUtils.deleteApkPkg(mDatas.get(i).getFliePath());//可以删除安装包
             mDatas.remove(i);
         }
@@ -124,8 +125,7 @@ public class InstallPresenter implements InstallContract.Presenter {
     @Override
     public void deleteInstall() {
         for (int i = mDatas.size() - 1; i >= 0; i--) {
-            AppInfoBean bean = mDatas.get(i);
-            if (bean.getInstall()) {
+            if (mDatas.get(i).getInstall()) {
                 InstallPkgUtils.deleteApkPkg(mDatas.get(i).getFliePath());//可以删除安装包
                 mDatas.remove(i);
             }
@@ -216,7 +216,7 @@ public class InstallPresenter implements InstallContract.Presenter {
     }
 
     /**
-     *判断数据是否为空
+     * 判断数据是否为空
      */
     public boolean isNull() {
         if (mDatas.size() == 0 || mDatas == null) {
@@ -259,23 +259,41 @@ public class InstallPresenter implements InstallContract.Presenter {
      * 静默安装应用
      */
     public void installApp(int position) {
-        mDatas.get(position).setInstalling(true);//开始安装
-        String fliePath = mDatas.get(position).getFliePath();
+        AppInfoBean appInfoBean = getItem(position);
+        appInfoBean.setInstalling(true);//开始安装
         try {
-            int result = InstallPkgUtils.installApp2(fliePath);
+            int result = InstallPkgUtils.installApp2(appInfoBean.getFliePath(),appInfoBean.getAppSize());
             if (result == 0) {
-                mDatas.get(position).setInstalling(false);
-                mDatas.get(position).setInstall(true);
-                EventBus.getDefault().post(new InstallApkModel(mDatas.get(position).getAppName(),0));
+                appInfoBean.setInstalling(false);
+                appInfoBean.setInstall(true);
+                deleteDownloadTask(appInfoBean.getPackageName());
+                EventBus.getDefault().post(new InstallApkModel(appInfoBean.getAppName(), 0));
             } else {
-                mDatas.get(position).setInstalling(true);
-                mDatas.get(position).setInstall(false);
-                mDatas.get(position).setInstalledFalse(true);
-                EventBus.getDefault().post(new InstallApkModel(mDatas.get(position).getAppName(),1));
+                appInfoBean.setInstalling(true);
+                appInfoBean.setInstall(false);
+                appInfoBean.setInstalledFalse(true);
+                EventBus.getDefault().post(new InstallApkModel(appInfoBean.getAppName(), 1));
+
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean deleteDownloadTask(String pkgName) {
+        DownloadManager downloadManager = DownloadManager.getInstance(mContext.getApplicationContext());
+        Map<String, DownloadTask> currentTaskMap = downloadManager.getCurrentTaskList();
+        List<DownloadTask> currentList = new ArrayList<>();
+        if (currentTaskMap != null) {
+            currentList.addAll(currentTaskMap.values());
+            for (DownloadTask task : currentList) {
+                if (task.getPkg().equalsIgnoreCase(pkgName)) {
+                    downloadManager.deleteTask(task.getId());
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

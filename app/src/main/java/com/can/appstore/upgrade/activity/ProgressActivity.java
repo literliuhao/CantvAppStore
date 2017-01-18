@@ -102,6 +102,9 @@ public class ProgressActivity extends Activity {
     }
 
 
+
+
+
     private void install() {
         UpgradeUtil.installApk(this, mFileName, mUpgradeSize, new InstallApkListener() {
             @Override

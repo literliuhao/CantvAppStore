@@ -9,9 +9,11 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.can.appstore.MyApp;
+import com.can.appstore.R;
 import com.can.appstore.update.model.AppInfoBean;
 
 import java.io.ByteArrayOutputStream;
@@ -21,7 +23,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.can.downloadlib.utils.SdcardUtils;
+import cn.can.downloadlib.utils.ApkUtils;
 import cn.can.downloadlib.utils.ShellUtils;
 import cn.can.downloadlib.utils.ToastUtils;
 
@@ -40,6 +42,7 @@ public class InstallPkgUtils {
     private static int INSTALLED = 0; // 表示已经安装，且跟现在这个apk文件是一个版本
     private static int UNINSTALLED = 1; // 表示未安装
     private static int INSTALLED_UPDATE = 2; // 表示已经安装，版本比现在这个版本要低
+    private final static int LIMIT_INSTALL_SAPCE = 50 * 1024 * 1024; //
     public static List<AppInfoBean> myFiles = new ArrayList<AppInfoBean>();//安装包集合
 
     /**
@@ -78,7 +81,9 @@ public class InstallPkgUtils {
                     bean.setPackageName(packageName);
                     /** apk的绝对路劲 */
                     bean.setFliePath(file.getAbsolutePath());
-                    bean.setAppSize(new File(file.getAbsolutePath()).length() / 1024 / 1024 + "M");
+                    int size = (int) (new File(file.getAbsolutePath()).length() / 1024 / 1024);
+                    bean.setAppSize(size);
+                    bean.setAppSizeStr(size + "M");
                     /**获取文件名*/
                     //bean.setAppName(getFileNameNoEx(new File(file.getAbsolutePath()).getName()));
                     /**由包名获取应用名*/
@@ -143,7 +148,7 @@ public class InstallPkgUtils {
      */
     public static void deleteApkPkg(String path) {
         File deleteFile = new File(path);
-        if (deleteFile != null && deleteFile.exists()) {
+        if (deleteFile.exists()) {
             deleteFile.delete();
         }
     }
@@ -219,20 +224,18 @@ public class InstallPkgUtils {
     /**
      * 更新管理静默安装1
      */
-    public static int installApp(String path) {
-
-        long space = SdcardUtils.getSDCardAvailableSpace() / 1014 / 1024;
-        if (space < 50) {
+    public static int installApp(String path,long apkSize) {
+        if (ApkUtils.isEnoughSpaceSize(apkSize)) {
             ToastUtils.showMessageLong(MyApp.getContext(), cn.can.downloadlib.R.string.error_msg);
-            return 50;
+            return 1;
         }
         ShellUtils.CommandResult res = ShellUtils.execCommand("pm install -r" + path, false);
         Log.i("installPkgUtils", "installApp: " + res.result);
         //成功
-        if (res.result == 0) {
+        if (res.result == 0&& !TextUtils.isEmpty(res.successMsg) && res.successMsg.equals("Success")) {
             return 0;
         } else {
-            return res.result;
+            return 1;
         }
     }
 
@@ -253,19 +256,17 @@ public class InstallPkgUtils {
      * 安装包管理静默安装
      */
     //final String path = Environment.getExternalStorageDirectory() + File.separator + "baidu"+File.separator + "360MobileSa
-    public static int installApp2(String path) {
-
-        long space = SdcardUtils.getSDCardAvailableSpace() / 1014 / 1024;
-        if (space < 50) {
-            ToastUtils.showMessageLong(MyApp.getContext(), cn.can.downloadlib.R.string.error_msg);
-            return 50;
+    public static int installApp2(String path,long appSize) {
+        if (!ApkUtils.isEnoughSpaceSize(appSize)) {
+            ToastUtils.showMessageLong(MyApp.getContext(), R.string.space_inequacy);
+            return -1;
         }
 
         String result = execCommand("pm", "install", "-r", path);
         if (result.contains("Success")) {
             return 0;
         } else {
-            return 1;
+            return -1;
         }
     }
 

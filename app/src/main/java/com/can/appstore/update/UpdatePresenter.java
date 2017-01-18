@@ -25,10 +25,10 @@ import java.util.List;
 
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.MD5;
-import cn.can.tvlib.utils.NetworkUtils;
-import cn.can.tvlib.utils.PromptUtils;
-import cn.can.tvlib.utils.StringUtils;
-import cn.can.tvlib.utils.SystemUtil;
+import cn.can.downloadlib.NetworkUtils;
+import cn.can.tvlib.common.system.SystemUtil;
+import cn.can.tvlib.common.text.StringUtils;
+import cn.can.tvlib.ui.PromptUtils;
 import retrofit2.Response;
 
 /**
@@ -138,8 +138,8 @@ public class UpdatePresenter implements UpdateContract.Presenter {
 
     @Override
     public void getSDInfo() {
-        long freeSize = SystemUtil.getInternalAvailableSpace(mContext);
-        long totalSize = SystemUtil.getInternalTotalSpace(mContext);
+        long freeSize = SystemUtil.getInternalAvailableSpace();
+        long totalSize = SystemUtil.getInternalTotalSpace();
         int progress = (int) (((totalSize - freeSize) * 100) / totalSize);
         String freeStorage = mContext.getResources().getString(R.string.uninsatll_manager_free_storage) + StringUtils.formatFileSize(freeSize, false);
         mView.showSDProgressbar(progress, freeStorage);
@@ -231,7 +231,6 @@ public class UpdatePresenter implements UpdateContract.Presenter {
 
                 //发送数量
                 EventBus.getDefault().post(new UpdateApkModel(data.size()));
-                Log.i(TAG, "getUpdateApkNum: " + AutoUpdate.getInstance().mUpdateNumDatas.size());
             }
 
             @Override
@@ -284,7 +283,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
     public void installApp(String saveDirPath,int position,String url) {
         mDatas.get(position).setInstalling(true);//开始安装
         String fliePath = mDatas.get(position).getFliePath();
-        int result = InstallPkgUtils.installApp(saveDirPath);
+        int result = InstallPkgUtils.installApp(saveDirPath,mDatas.get(position).getAppSize());
         if (result == 0) {
             EventBus.getDefault().post(new UpdateApkInstallModel(0,mDatas.get(position).getAppName(),url));
         } else {

@@ -1,5 +1,6 @@
 package com.can.appstore.entity;
 
+import cn.can.tvlib.common.pm.PackageUtil.AppInfo;
 import cn.can.tvlib.ui.view.recyclerview.CanRecyclerViewAdapter;
 
 /**

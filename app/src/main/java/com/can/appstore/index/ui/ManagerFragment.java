@@ -39,7 +39,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import cn.can.downloadlib.DownloadManager;
 import cn.can.downloadlib.DownloadTaskCountListener;
 import cn.can.tvlib.imageloader.ImageLoader;
-import cn.can.tvlib.utils.PromptUtils;
+import cn.can.tvlib.ui.PromptUtils;
+import retrofit2.http.HEAD;
 
 /**
  * Created by liuhao on 2016/10/21.
@@ -117,7 +118,14 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
                         break;
                     //电视助手
                     case 3:
-                        PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
+                        boolean success = startAc("com.cantv.action.TV_HELPER", false);
+                        if (!success) {
+                            success = startAc("com.cantv.wechatphoto",
+                                    "com.cantv.wechatphoto.activity.QRCodePushActivity", false);
+                        }
+                        if (!success) {
+                            PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
+                        }
                         break;
                     //关于
                     case 4:
@@ -159,27 +167,45 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
         }
     }
 
-    public void startAc(String action) {
+    public boolean startAc(String action, boolean tips) {
+        boolean success = false;
         Intent intent = new Intent();
         intent.setAction(action);
         try {
             startActivity(intent);
+            success = true;
         } catch (Exception e) {
-            PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
+            if (tips) {
+                PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
+            }
             e.printStackTrace();
         }
+        return success;
     }
 
-    public void startAc(String packageName, String className) {
+    public boolean startAc(String action) {
+        return startAc(action, true);
+    }
+
+    public boolean startAc(String packageName, String className) {
+        return startAc(packageName, className, true);
+    }
+
+    public boolean startAc(String packageName, String className, boolean tips) {
+        boolean success = false;
         Intent intent = new Intent();
         intent.setComponent(new ComponentName(packageName, className));
         intent.setAction(Intent.ACTION_VIEW);
         try {
             startActivity(intent);
+            success = true;
         } catch (Exception e) {
-            PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
+            if (tips) {
+                PromptUtils.toast(ManagerFragment.this.getContext(), getResources().getString(R.string.index_nofind));
+            }
             e.printStackTrace();
         }
+        return success;
     }
 
     @Override
@@ -196,7 +222,7 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
     @Override
     public void onResume() {
         super.onResume();
-        DownloadManager downloadManager=DownloadManager.getInstance(getActivity());
+        DownloadManager downloadManager = DownloadManager.getInstance(getActivity());
         downloadManager.setTaskCntListener(this);
         gridAdapter.refreshUI(DOWNLOAD_INDEX, downloadManager.getCurrentTaskList().size());
     }
@@ -226,7 +252,7 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
     @Override
     public void getTaskCount(final int count) {
         Log.i("ManagerFragment", "count " + count);
-        if(gridView!=null){
+        if (gridView != null) {
             gridView.post(new Runnable() {
                 @Override
                 public void run() {

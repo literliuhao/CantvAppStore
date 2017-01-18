@@ -5,7 +5,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-import cn.can.tvlib.utils.CollectionUtil;
+import cn.can.tvlib.common.custom.CollectionUtil;
+
 
 public class MessageContainer {
 

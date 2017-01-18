@@ -3,11 +3,12 @@ package com.can.appstore.myapps.addappsview;
 
 import com.can.appstore.base.BasePresenter;
 import com.can.appstore.base.BaseView;
+import com.can.appstore.entity.SelectedAppInfo;
 
 import java.util.List;
 
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.PackageUtil.AppInfo;
+import cn.can.tvlib.common.pm.PackageUtil;
+
 
 /**
  * Created by wei on 2016/11/3.
@@ -24,11 +25,11 @@ public interface AddAppsContract {
 
     interface View extends BaseView{
 
-        void loadAddAppInfoSuccess(List<PackageUtil.AppInfo> infoList);
+        void loadAddAppInfoSuccess(List<SelectedAppInfo> infoList);
 
         void showCanSelectCount(int cansel, int alreadyshow);
 
-        void saveSelectInfo(List<AppInfo> list);
+        void saveSelectInfo(List<SelectedAppInfo> list);
 
         void setAlreadySelectApp(int[] alreadySelect);
     }

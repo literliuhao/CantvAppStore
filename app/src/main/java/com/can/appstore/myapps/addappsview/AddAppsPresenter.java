@@ -8,14 +8,15 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.can.appstore.R;
+import com.can.appstore.entity.SelectedAppInfo;
 import com.can.appstore.myapps.utils.MyAppsListDataUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.can.tvlib.common.pm.PackageUtil;
+import cn.can.tvlib.common.pm.PackageUtil.AppInfo;
 import cn.can.tvlib.ui.widgets.LoadingDialog;
-import cn.can.tvlib.utils.PackageUtil;
-import cn.can.tvlib.utils.PackageUtil.AppInfo;
 
 /**
  * Created by wei on 2016/11/3.
@@ -28,15 +29,16 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
     private Context mContext;
     //数据
     private MyAppsListDataUtil mMyAppListData;
-    private List<AppInfo> isShown;
-    private List<AppInfo> addShowList = new ArrayList<>();
-    private List<AppInfo> mAllAppList;
+    private List<PackageUtil.AppInfo> isShown;
+    private List<PackageUtil.AppInfo> addShowList = new ArrayList<>();
+    private List<PackageUtil.AppInfo> mAllAppList;
 
     private LoadingDialog mLoadingDialog;
     //当前被选择的应用
-    public List<AppInfo> mSelectAppInfo = new ArrayList<>();
+    public List<SelectedAppInfo> mSelectAppInfo = new ArrayList<>();
 
     private AddAppsPresenter.AppInstallReceiver mAppInstallReceiver;
+    private ArrayList<SelectedAppInfo> mAddShowList;
 
     public AddAppsPresenter(AddAppsContract.View view, Context context) {
         this.mView = view;
@@ -61,9 +63,9 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
                 }
                 isShown = mMyAppListData.getShowList(isShown, null);
                 mAllAppList = PackageUtil.findAllThirdPartyAppsNoDelay(mContext, mAllAppList);
-                for (AppInfo app : mAllAppList) {
+                for (PackageUtil.AppInfo app : mAllAppList) {
                     boolean inShown = false;
-                    for (AppInfo appInfo : isShown) {
+                    for (PackageUtil.AppInfo appInfo : isShown) {
                         if (app.packageName.equals(appInfo.packageName)) {
                             inShown = true;
                             break;
@@ -74,6 +76,10 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
                     }
                 }
 
+                mAddShowList = new ArrayList<>();
+                for (PackageUtil.AppInfo appInfo : addShowList) {
+                    mAddShowList.add(SelectedAppInfo.wrap(appInfo));
+                }
                 return null;
             }
 
@@ -81,7 +87,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
             @Override
             protected void onPostExecute(Void aVoid) {
                 Log.d(TAG, "onPostExecute");
-                mView.loadAddAppInfoSuccess(addShowList);
+                mView.loadAddAppInfoSuccess(mAddShowList);
                 mView.hideLoadingDialog();
             }
         }.execute();
@@ -148,7 +154,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
         for (int j = 0; j < addShowList.size(); j++) {
             if (packageName.equals(addShowList.get(j).packageName)) {
                 addShowList.remove(j);
-                mView.loadAddAppInfoSuccess(addShowList);
+                mView.loadAddAppInfoSuccess(mAddShowList);
             }
         }
     }
@@ -217,7 +223,7 @@ public class AddAppsPresenter implements AddAppsContract.Presenter {
     }
 
 
-    public void saveSelectlist(List<AppInfo> list) {
+    public void saveSelectlist(List<SelectedAppInfo> list) {
         isShown.addAll(list);
         mMyAppListData.saveShowList(isShown);
     }

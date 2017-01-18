@@ -18,18 +18,30 @@ android {
         applicationId "com.can.appstore"
         minSdkVersion 19
         targetSdkVersion 19
-        versionCode 104
-        versionName "v1.0.4_201612261918"
+        versionCode 108
+        versionName "v1.0.8_201701131808"
 
         // 开启multidex
         multiDexEnabled true
         // 以Proguard的方式手动加入要放到Main.dex中的类
-        // multiDexKeepProguard file("keep_in_main_dex.txt")
+         multiDexKeepProguard file("keep_in_main_dex.txt")
 
         // ndk 配置
         // ndk {
         //   abiFilters 'armeabi' // 'x86' , 'armeabi-v7a' , 'armeabi-v8a'
         // }
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
     }
 
     signingConfigs {
@@ -49,7 +61,6 @@ android {
         debug {
             debuggable true
             minifyEnabled false
-            signingConfig signingConfigs.debug
         }
     }
 
@@ -117,14 +128,14 @@ def bakPath = file("${buildDir}/bakApk/")
  */
 ext {
     // for some reason, you may want to ignore tinkerBuild, such as instant run debug build?
-    tinkerEnabled = false
+    tinkerEnabled = true
     // for normal build
     // old apk file to build patch apk
-    tinkerOldApkPath = "${bakPath}/app-debug.apk"
+    tinkerOldApkPath = "${bakPath}/AppStore_V106_20170110145248.apk"
     // proguard mapping file to build patch apk
     tinkerApplyMappingPath = "${bakPath}/app-release-1208-14-48-35-mapping.txt"
     // resource R.txt to build patch apk, must input if there is resource changed
-    tinkerApplyResourcePath = "${bakPath}/app-release-1208-14-48-35-R.txt"
+    tinkerApplyResourcePath = "${bakPath}/app-release-0110-14-52-48-R.txt"
     // only use for build all flavor, if not, just ignore this field
     tinkerBuildFlavorDirectory = "${bakPath}/app-release-1208-14-48-35"
 }
@@ -163,25 +174,25 @@ if (buildWithTinker()) {
     apply plugin: 'com.tencent.bugly.tinker-support'
 
     tinkerSupport {
-        // 开启tinker-support插件，默认值true
-        enable = true
-        // 是否编译完成后，归档apk到指定目录，默认值false
-        autoBackupApk = false
-        // 指定归档目录，默认值当前module的子目录tinker
-        // backupApkDir = 'tinker'
-        // 是否启用覆盖tinkerPatch配置功能，默认值false
-        // 开启后tinkerPatch配置不生效，即无需添加tinkerPatch
-        overrideTinkerPatchConfiguration = false
-        // 编译补丁包时，必需指定基线版本的apk，默认值为空
-        // 如果为空，则表示不是进行补丁包的编译
-        // @{link tinkerPatch.oldApk }
-        baseApk = "YOUR_OLD_APK"
-        // 对应tinker插件applyMapping
-        baseApkProguardMapping = "YOUR_OLD_APK_PROGUARD_FILE"
-        // 对应tinker插件applyResourceMapping
-        baseApkResourceMapping = "YOUR_OLD_APK_RES_MAPPING"
-        tinkerId = "YOUR_TINKER_ID"
-//        patchSigning = true
+//        // 开启tinker-support插件，默认值true
+//        enable = true
+//        // 是否编译完成后，归档apk到指定目录，默认值false
+//        autoBackupApk = false
+//        // 指定归档目录，默认值当前module的子目录tinker
+//        // backupApkDir = 'tinker'
+//        // 是否启用覆盖tinkerPatch配置功能，默认值false
+//        // 开启后tinkerPatch配置不生效，即无需添加tinkerPatch
+//        overrideTinkerPatchConfiguration = false
+//        // 编译补丁包时，必需指定基线版本的apk，默认值为空
+//        // 如果为空，则表示不是进行补丁包的编译
+//        // @{link tinkerPatch.oldApk }
+//        baseApk = "YOUR_OLD_APK"
+//        // 对应tinker插件applyMapping
+//        baseApkProguardMapping = "YOUR_OLD_APK_PROGUARD_FILE"
+//        // 对应tinker插件applyResourceMapping
+//        baseApkResourceMapping = "YOUR_OLD_APK_RES_MAPPING"
+//        tinkerId = "YOUR_TINKER_ID"
+////        patchSigning = true
     }
 
     // 全局信息相关配置项
@@ -194,7 +205,7 @@ if (buildWithTinker()) {
 //            applyMapping = getApplyMappingPath() //  可选，设置mapping文件，建议保持旧apk的proguard混淆方式
 //            applyResourceMapping = getApplyResourceMappingPath() // 可选，设置R.txt文件，通过旧apk文件保持ResId的分配
 //            tinkerId = gitSha() // 必选，默认为null
-            tinkerId = "dsfasdfadfadsssfassssssssdf"
+            tinkerId = "v1.0.6_201701101500"
         }
 
         // dex相关配置项
@@ -333,13 +344,14 @@ dependencies {
     compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
     compile 'org.greenrobot:greendao:3.0.1'
     compile 'org.greenrobot:greendao-generator:3.0.0'
-    compile project(':lib')
     compile project(':downloadlib')
     compile 'org.greenrobot:eventbus:3.0.0'
     apt 'org.greenrobot:eventbus-annotation-processor:3.0.1'
     // 多dex配置
-    compile "com.android.support:multidex:1.0.1"
-//    compile(name: 'bugly_crashreport_upgrade-1.2.0', ext: 'aar')
-    compile "com.tencent.bugly:crashreport_upgrade:latest.release"
-//    compile 'com.tencent.bugly:nativecrashreport:latest.release' //其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.2.0
+    compile 'com.android.support:multidex:1.0.1'
+    //    compile(name: 'bugly_crashreport_upgrade-1.2.0', ext: 'aar')
+    compile 'com.tencent.bugly:crashreport_upgrade:latest.release'
+    //    compile 'com.tencent.bugly:nativecrashreport:latest.release' //其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.2.0
+    compile 'cn.can.tvlib:libCantv:1.0.6'
+    compile 'cn.can.tvlib:common:1.0.2'
 }

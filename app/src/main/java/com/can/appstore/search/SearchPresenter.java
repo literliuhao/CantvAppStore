@@ -19,8 +19,8 @@ import com.dataeye.sdk.api.app.channel.DCResourcePair;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.can.tvlib.utils.NetworkUtils;
-import cn.can.tvlib.utils.PromptUtils;
+import cn.can.downloadlib.NetworkUtils;
+import cn.can.tvlib.ui.PromptUtils;
 import retrofit2.Response;
 
 /**

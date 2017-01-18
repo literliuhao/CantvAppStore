@@ -5,13 +5,13 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath 'com.android.tools.build:gradle:2.2.3'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'org.greenrobot:greendao-gradle-plugin:3.0.0'
         // tinker gradle插件
         classpath ('com.tencent.tinker:tinker-patch-gradle-plugin:1.7.5')
         // tinkersupport插件
-        classpath "com.tencent.bugly:tinker-support:latest.release"
+        classpath "com.tencent.bugly:tinker-support:1.0.2"
     }
 }
 

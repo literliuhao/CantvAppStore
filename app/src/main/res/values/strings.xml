@@ -145,7 +145,7 @@
     <string name="detail_app_installing">安装中</string>
     <string name="detail_app_click_pause">点击暂停下载</string>
     <string name="detail_app_click_continue">点击继续下载</string>
-    <string name="download_faild_memory_lack">内存不足%s下载失败</string>
+    <string name="download_faild_memory_lack">应用下载空间不足%s下载失败</string>
     <string name="install_faild_memory_lack">安装内存不足%s安装失败</string>
     <string name="install_apk_fail">安装失败</string>
     <string name="install_apk_exception">安装包异常</string>
@@ -173,7 +173,7 @@
     <string name="installing">"正在安装中，请稍后…"</string>
     <string name="recommend_apps_info">%1$s&#160;|&#160;%2$s</string>
     <string name="back">"返回"</string>
-    <string name="space_inequacy">存储空间不足</string>
+    <string name="space_inequacy">应用下载空间不足</string>
     <string name="space_inequacy_hint">您的存储空间不够用啦，请清理系统后在尝试安装吧～</string>
 
     <!--消息中心文本-->

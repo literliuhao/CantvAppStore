@@ -90,13 +90,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import cn.can.downloadlib.DownloadManager;
+import cn.can.downloadlib.NetworkUtils;
+import cn.can.tvlib.common.pm.PackageUtil;
 import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
+import cn.can.tvlib.ui.PromptUtils;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
-import cn.can.tvlib.utils.NetworkUtils;
-import cn.can.tvlib.utils.PackageUtils;
-import cn.can.tvlib.utils.PromptUtils;
 import retrofit2.Response;
 
 import static com.can.appstore.index.entity.FragmentEnum.INDEX;
@@ -250,10 +250,14 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
      * 广告无Action时，点击确定无效，但能退出应用；ok
      */
     private void getAD() {
+        textTime.setText(String.valueOf(mShowTime));
+        mTimer = new Timer();
+        mTimer.schedule(task, AD_SHOW_STEP, AD_SHOW_STEP);
+
         CommonAdParam commonAdParam = new CommonAdParam();
         commonAdParam.setAdPositionId(AD_POSITION_ID);
         commonAdParam.setMac(NetworkUtils.getMac());
-        commonAdParam.setVersionId(PackageUtils.getVersionName(mContext));
+        commonAdParam.setVersionId(PackageUtil.getMyVersionName(mContext));
         CanCall<ClassicResult<List<Ad>>> listAD = HttpManager.getAdService().getCommonAd(commonAdParam.toMap());
         listAD.enqueue(new CanCallback<ClassicResult<List<Ad>>>() {
             @Override
@@ -265,46 +269,44 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                     List<Ad.Material> listMaterial = listAD.get(AD_INDEX).getMaterial();
                     final Ad.Material material = listMaterial.get(AD_INDEX);
                     materialId = material.getMaterialid();
+
+                    isShowAD = true;
+                    imageAD.setFocusable(true);
+                    imageAD.requestFocus();
+                    imageAD.setOnKeyListener(new View.OnKeyListener() {
+                        @Override
+                        public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                            if (keyEvent.ACTION_DOWN == keyEvent.getAction() && (keyEvent.KEYCODE_ENTER == keyEvent.getKeyCode() || keyEvent.KEYCODE_DPAD_CENTER == keyEvent.getKeyCode())) {
+                                mClickCount = 1;
+                                String action = material.getAction();
+                                if (action.equals("") || null == action) return true;
+                                JsonObject jsonObject = material.getActionParam();
+                                JsonElement jsonElement = jsonObject.get("parameters");
+                                try {
+                                    JSONObject jsonParams = new JSONObject(new Gson().toJson(jsonElement));
+                                    ActionUtils.getInstance().sendActionById(mContext, jsonParams.optString("appid"), jsonParams.optString("topicid"), jsonParams.optString("applist"), jsonParams.optString("activityid"), jsonParams.optString("topiclist"));
+                                    stopTimer();
+                                    mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            return false;
+                        }
+                    });
                     ImageLoader.getInstance().buildTask(imageAD, material.getMaterialurl()).placeholder(R.drawable.app_store).successCallback(new GlideLoadTask.SuccessCallback() {
+
                         @Override
                         public boolean onSuccess(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            isShowAD = true;
-                            textTime.setText(String.valueOf(mShowTime));
+                            if (imageAD.getVisibility() != View.VISIBLE) {
+                                return true;
+                            }
                             imageAD.setImageDrawable(resource);
-                            imageAD.setFocusable(true);
-                            imageAD.requestFocus();
-                            imageAD.setOnKeyListener(new View.OnKeyListener() {
-                                @Override
-                                public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                                    if (keyEvent.ACTION_DOWN == keyEvent.getAction() && (keyEvent.KEYCODE_ENTER == keyEvent.getKeyCode() || keyEvent.KEYCODE_DPAD_CENTER == keyEvent.getKeyCode())) {
-                                        Log.i("IndexActivity", "view " + view.getId());
-                                        mClickCount = 1;
-                                        String action = material.getAction();
-                                        if (action.equals("") || null == action) return true;
-                                        JsonObject jsonObject = material.getActionParam();
-                                        JsonElement jsonElement = jsonObject.get("parameters");
-                                        try {
-                                            JSONObject jsonParams = new JSONObject(new Gson().toJson(jsonElement));
-                                            ActionUtils.getInstance().sendActionById(mContext, jsonParams.optString("appid"), jsonParams.optString("topicid"), jsonParams.optString("applist"), jsonParams.optString("activityid"), jsonParams.optString("topiclist"));
-                                            Log.i("IndexActivity", "onSuccess mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED) ");
-                                            stopTimer();
-                                            mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED);
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                    return false;
-                                }
-                            });
-                            mTimer = new Timer();
-                            mTimer.schedule(task, AD_SHOW_STEP, AD_SHOW_STEP);
-                            getNavigation();
                             return true;
                         }
                     }).failCallback(new GlideLoadTask.FailCallback() {
                         @Override
                         public boolean onFail(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                            getNavigation();
                             return false;
                         }
                     }).build().start(mContext);
@@ -314,7 +316,6 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             @Override
             public void onFailure(CanCall<ClassicResult<List<Ad>>> call, CanErrorWrapper errorWrapper) {
                 Log.i("IndexActivity", errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
-                getNavigation();
             }
         });
     }
@@ -343,7 +344,7 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         adReportParam.setMac(NetworkUtils.getMac());
         adReportParam.setModel(TvInfoModel.getInstance().getModelName());
         adReportParam.setChannel(TvInfoModel.getInstance().getChannelId() + "|");
-        adReportParam.setVersionId(PackageUtils.getVersionName(mContext));
+        adReportParam.setVersionId(PackageUtil.getMyVersionName(mContext));
         adReportParam.setUserAction(mClickCount);
         adReportParam.setMaterialId(materialId);
         adReportParam.setDuration(mDefaultTime);
@@ -577,20 +578,19 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case INIT_FOCUS:
-                    Log.i("IndexActivity", "mHandler....................... ");
                     if (managerFragment != null) {
                         managerFragment.setAdapterFocus();
                     }
+                    adTimeLayout.setVisibility(View.GONE);
+                    imageAD.setVisibility(View.GONE);
+                    rlSearch.setFocusable(true);
+                    rlMessage.setFocusable(true);
                     View first = mTitleBar.getFirstView();
                     if (first != null) {
                         mFocusUtils.setFocusView(first, SCALE);
                         first.requestFocus();
+                        mFocusUtils.showFocus(100);
                     }
-                    mFocusUtils.showFocus(100);
-                    rlSearch.setFocusable(true);
-                    rlMessage.setFocusable(true);
-                    adTimeLayout.setVisibility(View.GONE);
-                    imageAD.setVisibility(View.GONE);
                     reportAD();
                     break;
                 case HIDE_FOCUS:
@@ -720,22 +720,24 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     TimerTask task = new TimerTask() {
         @Override
         public void run() {
-            Log.i("IndexActivity", "mShowTime " + mShowTime);
+            if (mShowTime == 0) {
+                stopTimer();
+                mHandler.sendEmptyMessage(INIT_FOCUS);
+                isShowAD = false;
+                getNavigation();
+                return;
+            }
+
+            mShowTime--;
             runOnUiThread(new Runnable() {
                 @Override
-                public void run() {
+                public void run () {
                     textTime.setText(String.valueOf(mShowTime));
                     if (adTimeLayout.getVisibility() != View.VISIBLE) {
                         adTimeLayout.setVisibility(View.VISIBLE);
                     }
                 }
             });
-            mShowTime--;
-            if (mShowTime <= 0) {
-                stopTimer();
-                Log.i("IndexActivity", "mTimer mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED) ");
-                mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED);
-            }
         }
     };
 
