@@ -826,6 +826,15 @@ public class DownloadManager implements AppInstallListener {
     }
 
     /**
+     * 删除所有安装监听
+     */
+    public void removeAllAppInstallListener(){
+        if (mAppInstallListeners != null) {
+            mAppInstallListeners.clear();
+        }
+    }
+
+    /**
      * 安装APP
      *
      * @param downloadTask

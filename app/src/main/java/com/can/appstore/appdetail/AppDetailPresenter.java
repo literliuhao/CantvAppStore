@@ -79,6 +79,7 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
     private String mFromPage;
     private String mValue;
     private String mDetailRecommend;
+    private Handler mHander;
 
     public AppDetailPresenter(AppDetailContract.View view, Context context, Intent intent) {
         this.mView = view;
@@ -105,7 +106,8 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
             return;
         }
         mView.showLoadingDialog();
-        new Handler().postDelayed(new Runnable() {
+        mHander=new Handler();
+        mHander.postDelayed(new Runnable() {
             @Override
             public void run() {
                 mAppDetailCall = HttpManager.getApiService().getAppInfo(mAppId, mTopicId);
@@ -533,8 +535,11 @@ public class AppDetailPresenter implements AppDetailContract.Presenter, Download
 
     @Override
     public void release() {
-        DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(mTaskId);
+        if(mHander!=null){
+            mHander.removeCallbacksAndMessages(null);
+        }
         if (mDownloadManager != null) {
+            DownloadTask downloadTask = mDownloadManager.getCurrentTaskById(mTaskId);
             if (downloadTask != null) {
                 mDownloadManager.removeDownloadListener(downloadTask, this);
             }

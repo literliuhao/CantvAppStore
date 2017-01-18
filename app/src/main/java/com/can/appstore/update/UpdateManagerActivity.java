@@ -119,6 +119,15 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         mPresenter.release();
+        if(mDownloadManager!=null){
+            mDownloadManager.removeAllAppInstallListener();
+            for (AppInfoBean appInfo: mUpdateList ) {
+                DownloadTask downloadTask=mDownloadManager.getCurrentTaskById(MD5.MD5(appInfo.getDownloadUrl()));
+                if(downloadTask!=null){
+                    downloadTask.removeAllDownloadListener();
+                }
+            }
+        }
     }
 
     private void initFocusChange() {
@@ -695,4 +704,6 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
             showToast(model.getAppname() + getResources().getString(R.string.install_fail));
         }
     }
+
+
 }
