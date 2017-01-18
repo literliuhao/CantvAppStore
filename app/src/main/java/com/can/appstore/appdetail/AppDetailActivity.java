@@ -94,6 +94,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     private boolean isSwitchAnimatComplete = true;//底部动画是否切换完成
     private AppInfo mAppinfo;
     private Rect mFocusRegion;
+    private AppdetailRunnable mAppdetailRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -539,12 +540,8 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         setData();
         setIntroduceAdapter();
         setRecommendAdapter();
-        mIntroducGrid.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mLayoutAppDetail.setVisibility(View.VISIBLE);
-            }
-        }, 500);
+        mAppdetailRunnable = new AppdetailRunnable();
+        mIntroducGrid.postDelayed(mAppdetailRunnable, 500);
     }
 
     private void setIntroduceAdapter() {
@@ -758,7 +755,9 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy: ");
-        super.onDestroy();
+        if (mIntroducGrid != null) {
+            mIntroducGrid.removeCallbacks(mAppdetailRunnable);
+        }
         if (mHandler != null) {
             mHandler.removeMessages(MESSAGE_TYPE_UPDATE);
             mHandler.removeMessages(MESSAGE_TYPE_DOWNLAOD);
@@ -767,6 +766,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         mFocusMoveUtil.release();
         mAppDetailPresenter.release();
         mIvTabLine.clearAnimation();
+        super.onDestroy();
     }
 
     private class ListFocusMoveRunnable implements Runnable {
@@ -774,6 +774,15 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         public void run() {
             if (mFocusedListChild != null) {
                 mFocusMoveUtil.startMoveFocus(mFocusedListChild, 1.0f);
+            }
+        }
+    }
+
+    private class AppdetailRunnable implements Runnable {
+        @Override
+        public void run() {
+            if (mLayoutAppDetail != null) {
+                mLayoutAppDetail.setVisibility(View.VISIBLE);
             }
         }
     }
