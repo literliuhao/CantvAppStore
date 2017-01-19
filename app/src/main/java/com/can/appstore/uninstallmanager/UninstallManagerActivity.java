@@ -159,9 +159,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
                             mPresenter.batchUninstallApp(mSelectPackageName);
                         } else {
                             mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_NORMAL);
-                            if (mSelectPackageName != null) {
-                                mSelectPackageName.clear();
-                            }
+                            clearList();
                             hideSelectAppCount();
                             isSelect = !isSelect;
                         }
@@ -218,6 +216,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
                 mUninstallManagerAdapter.switchSelectMode(isSelect ? CanRecyclerViewAdapter.MODE_NORMAL : CanRecyclerViewAdapter.MODE_SELECT);
                 if (isSelect) {
                     hideSelectAppCount();
+                    clearList();
                 } else {
                     showSelectAppCount();
                 }
@@ -225,14 +224,18 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
             } else if (keyCode == KeyEvent.KEYCODE_BACK && isSelect && event.getAction() == KeyEvent.ACTION_DOWN) {
                 mUninstallManagerAdapter.switchSelectMode(CanRecyclerViewAdapter.MODE_NORMAL);
                 hideSelectAppCount();
-                if (mSelectPackageName != null) {
-                    mSelectPackageName.clear();
-                }
+                clearList();
                 isSelect = !isSelect;
                 return true;
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    public void clearList() {
+        if (mSelectPackageName != null) {
+            mSelectPackageName.clear();
+        }
     }
 
     private void showSelectAppCount() {
@@ -466,6 +469,10 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         super.onDestroy();
         mFocusMoveUtil.release();
         mPresenter.release();
+        if (mSelectPackageName != null) {
+            mSelectPackageName.clear();
+            mSelectPackageName = null;
+        }
     }
 
     /**
