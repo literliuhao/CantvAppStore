@@ -392,19 +392,18 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
     @Override
     public void getHotKeyList(List list) {
         //"大家都在搜"数据
-        mHotKeyAdapter.refresh(list);
-        mHotKeyAdapter.setOnInitialsListener(new HotKeyAdapter.OnInitialsListener() {
-            @Override
-            public void onInitials(String con) {
-                getInitials(con);
+        if (list != null && list.size() > 0){
+            mHotKeyAdapter.refresh(list);
+            mHotKeyAdapter.setOnInitialsListener(new HotKeyAdapter.OnInitialsListener() {
+                @Override
+                public void onInitials(String con) {
+                    getInitials(con);
+                }
+            });
+            showGoneView(TAG_SHOW_TOP_BOTTOM);
+            if (!setRightNextFocus) {
+                setRNextFocus();
             }
-        });
-
-        showGoneView(TAG_SHOW_TOP_BOTTOM);
-
-
-        if (!setRightNextFocus) {
-            setRNextFocus();
         }
     }
 
