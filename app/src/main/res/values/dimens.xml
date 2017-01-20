@@ -2001,8 +2001,6 @@
     <dimen name="px1999">1999.0px</dimen>
     <dimen name="px2000">2000.0px</dimen>
 
-    <dimen name="pxn16">-16px</dimen>
-
     <dimen name="px_minus_100">-100.0px</dimen>
     <dimen name="px_minus_99">-99.0px</dimen>
     <dimen name="px_minus_98">-98.0px</dimen>

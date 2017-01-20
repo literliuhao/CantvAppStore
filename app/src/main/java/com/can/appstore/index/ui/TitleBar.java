@@ -305,9 +305,9 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
      */
     private LiteText generateTextView(String text) {
         LiteText liteLayout = new LiteText(getContext());
-        liteLayout.setPadding((int) getResources().getDimension(R.dimen.px20), (int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px20), (int) getResources().getDimension(R.dimen.px0));
+        liteLayout.setPadding((int) getResources().getDimension(R.dimen.px20), 0, (int) getResources().getDimension(R.dimen.px20), 0);
         LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        textParams.setMargins((int) getResources().getDimension(R.dimen.px30), (int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px30), (int) getResources().getDimension(R.dimen.px0));
+        textParams.setMargins((int) getResources().getDimension(R.dimen.px30), 0, (int) getResources().getDimension(R.dimen.px30), 0);
         liteLayout.setClipToPadding(false);
         liteLayout.setClipChildren(false);
         liteLayout.setLayoutParams(textParams);
@@ -319,7 +319,7 @@ public class TitleBar extends LinearLayout implements View.OnFocusChangeListener
 
         RelativeLayout.LayoutParams txtParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         txtParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        txtParams.setMargins((int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px8), (int) getResources().getDimension(R.dimen.px0), (int) getResources().getDimension(R.dimen.px10));
+        txtParams.setMargins(0, (int) getResources().getDimension(R.dimen.px8), 0, (int) getResources().getDimension(R.dimen.px10));
         textView.setLayoutParams(txtParams);
 
         int textSize = (int) getResources().getDimension(R.dimen.px38);

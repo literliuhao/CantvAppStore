@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -33,6 +32,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.Target;
 import com.can.appstore.AppConstants;
 import com.can.appstore.R;
+import com.can.appstore.base.BaseActivity;
 import com.can.appstore.entity.Ad;
 import com.can.appstore.entity.AdReportParam;
 import com.can.appstore.entity.ClassicResult;
@@ -108,7 +108,7 @@ import static com.can.appstore.index.entity.FragmentEnum.NORMAL;
 /**
  * Created by liuhao on 2016/10/15.
  */
-public class IndexActivity extends FragmentActivity implements IAddFocusListener, View.OnClickListener, View.OnFocusChangeListener, IOnPagerKeyListener, IOnPagerListener, View.OnKeyListener, ViewPager.OnPageChangeListener {
+public class IndexActivity extends BaseActivity implements IAddFocusListener, View.OnClickListener, View.OnFocusChangeListener, IOnPagerKeyListener, IOnPagerListener, View.OnKeyListener, ViewPager.OnPageChangeListener {
     private CanCall<ListResult<Navigation>> mNavigationCall;
     private static final String TAG = "IndexActivity";
     private List<BaseFragment> mFragmentLists;
@@ -129,6 +129,8 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
     private final int DURATION_SMALL = 300;
     private final int INIT_FOCUS = 0X000001;
     private final int HIDE_FOCUS = 0X000002;
+    private final int MSG_SHOW_LOADING=0x3;
+    private final int MSG_HIDE_LOADING=0x4;
     private final int SCREEN_PAGE_LIMIT = 5;
     private final int PAGER_CURRENT = 0;
     private final int TOP_INDEX = 1;
@@ -373,17 +375,20 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
 
     public void getNavigation() {
         if (reqNavigationSuccess == false && NetworkUtils.isNetworkConnected(this)) {
+            mHandler.sendEmptyMessage(MSG_SHOW_LOADING);
             mNavigationCall = HttpManager.getApiService().getNavigations();
             mNavigationCall.enqueue(new CanCallback<ListResult<Navigation>>() {
                 @Override
                 public void onResponse(CanCall<ListResult<Navigation>> call, Response<ListResult<Navigation>> response) throws Exception {
                     ProxyCache(response);
+                    mHandler.sendEmptyMessage(MSG_HIDE_LOADING);
                 }
 
                 @Override
                 public void onFailure(CanCall<ListResult<Navigation>> call, CanErrorWrapper errorWrapper) {
                     Log.i("IndexActivity", errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
                     ProxyCache(null);
+                    mHandler.sendEmptyMessage(MSG_HIDE_LOADING);
                 }
             });
         } else {
@@ -397,6 +402,10 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             ListResult<Navigation> listResult;
             if (null != response) {
                 listResult = response.body();
+                if(listResult.getData()==null){
+                    listResult = new Gson().fromJson(DataUtils.getInstance(this).getCache(), new TypeToken<ListResult<Navigation>>() {
+                    }.getType());
+                }
             } else {
                 listResult = new Gson().fromJson(DataUtils.getInstance(this).getCache(), new TypeToken<ListResult<Navigation>>() {
                 }.getType());
@@ -616,6 +625,12 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
                     break;
                 case HIDE_FOCUS:
                     mFocusUtils.hideFocus();
+                    break;
+                case MSG_SHOW_LOADING:
+                    showLoadingDialog();
+                    break;
+                case MSG_HIDE_LOADING:
+                    hideLoadingDialog();
                     break;
             }
         }
@@ -937,4 +952,9 @@ public class IndexActivity extends FragmentActivity implements IAddFocusListener
             }
         }
     };
+
+    @Override
+    protected void onHomeKeyDown() {
+       // super.onHomeKeyDown();
+    }
 }

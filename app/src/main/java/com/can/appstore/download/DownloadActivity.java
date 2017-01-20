@@ -74,7 +74,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.D
         mFocusMoveUtil = new FocusMoveUtil(this, getWindow().getDecorView().findViewById(android.R.id.content),
                 R.mipmap.btn_focus);
         mStorageProgressBar = (TextProgressBar) findViewById(R.id.download_storage_progress);
-        mStorageProgressBar.setTextSize(getResources().getDimensionPixelSize(R.dimen.dimen_18px));
+        mStorageProgressBar.setTextSize(getResources().getDimensionPixelSize(R.dimen.px18));
 
         mNoDataTv = (TextView) findViewById(R.id.download_no_data_tv);
         mRowTv = (TextView) findViewById(R.id.download_row_tv);
