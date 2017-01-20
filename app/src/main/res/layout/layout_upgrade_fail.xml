@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/px65"
             android:textColor="@color/white_opa80"
-            android:textSize="36px"
+            android:textSize="@dimen/px36"
             android:includeFontPadding="true"
             />
         <LinearLayout

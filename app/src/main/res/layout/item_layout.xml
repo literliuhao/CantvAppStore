@@ -11,37 +11,37 @@
         <Button
             android:id="@+id/btn_id"
             android:focusable="true"
-            android:layout_width="300px"
-            android:layout_height="410px"
-            android:layout_marginLeft="10px"
+            android:layout_width="@dimen/px300"
+            android:layout_height="@dimen/px410"
+            android:layout_marginLeft="@dimen/px10"
             android:layout_marginTop="0px"
             android:text="推荐海报"/>
 
         <Button
-            android:layout_width="300px"
-            android:layout_height="200px"
-            android:layout_marginLeft="320px"
+            android:layout_width="@dimen/px300"
+            android:layout_height="@dimen/px200"
+            android:layout_marginLeft="@dimen/px320"
             android:layout_marginTop="0px"
             android:text="专题1"/>
 
         <Button
-            android:layout_width="300px"
-            android:layout_height="200px"
-            android:layout_marginLeft="320px"
-            android:layout_marginTop="210px"
+            android:layout_width="@dimen/px300"
+            android:layout_height="@dimen/px200"
+            android:layout_marginLeft="@dimen/px320"
+            android:layout_marginTop="@dimen/px210"
             android:text="专题2"/>
 
         <Button
-            android:layout_width="610px"
-            android:layout_height="200px"
-            android:layout_marginLeft="10px"
-            android:layout_marginTop="420px"
+            android:layout_width="@dimen/px610"
+            android:layout_height="@dimen/px200"
+            android:layout_marginLeft="@dimen/px10"
+            android:layout_marginTop="@dimen/px420"
             android:text="广告"/>
 
         <Button
-            android:layout_width="300px"
-            android:layout_height="410px"
-            android:layout_marginLeft="630px"
+            android:layout_width="@dimen/px300"
+            android:layout_height="@dimen/px410"
+            android:layout_marginLeft="@dimen/px630"
             android:layout_marginTop="0dp"
             android:text="活动页"/>
 

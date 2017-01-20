@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/iv_loading_image"
-        android:layout_width="136px"
-        android:layout_height="136px"
+        android:layout_width="@dimen/px136"
+        android:layout_height="@dimen/px136"
         android:layout_centerInParent="true"
         android:scaleType="fitXY"
         android:src="@mipmap/loading_app" />
@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/iv_loading_image"
-        android:layout_marginTop="40px"
+        android:layout_marginTop="@dimen/px40"
         android:text="正在获取更新信息..."
         android:textColor="#ccffffff"
         android:textSize="@dimen/px32" />
