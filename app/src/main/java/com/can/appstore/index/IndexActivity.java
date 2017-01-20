@@ -633,6 +633,12 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
                     break;
                 case MSG_SHOW_LOADING:
                     if (!reqNavigationSuccess) {
+                        if(imageAD!=null&&View.VISIBLE==imageAD.getVisibility()){
+                            return;
+                        }
+                        if(canDialog!=null&&canDialog.isShowing()){
+                            return;
+                        }
                         showLoadingDialog(new DialogInterface.OnCancelListener() {
                             @Override
                             public void onCancel(DialogInterface dialog) {
@@ -860,6 +866,7 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
                     mFocusUtils.showFocus();
                     canDialog.dismiss();
                     mHandler.sendEmptyMessage(MSG_SHOW_LOADING);
+
                 }
             });
             canDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
