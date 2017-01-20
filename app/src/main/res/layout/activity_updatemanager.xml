@@ -112,7 +112,7 @@
         android:layout_marginRight="@dimen/px168"
         android:layout_marginTop="@dimen/px80"
         android:textColor="#80ffffff"
-        android:textSize="32px"/>
+        android:textSize="@dimen/px32"/>
 
     <TextView
         android:id="@+id/tv_update_currentnum"

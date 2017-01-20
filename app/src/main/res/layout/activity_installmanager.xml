@@ -112,7 +112,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginEnd="@dimen/px142"
                 android:layout_marginStart="@dimen/px42"
-                android:layout_marginTop="-7px"
+                android:layout_marginTop="@dimen/px_minus_7"
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 android:paddingBottom="@dimen/px1"
@@ -130,7 +130,7 @@
         android:layout_marginRight="@dimen/px168"
         android:layout_marginTop="@dimen/px80"
         android:textColor="#80ffffff"
-        android:textSize="32px"/>
+        android:textSize="@dimen/px32"/>
 
     <TextView
         android:id="@+id/tv_install_currentnum"
