@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/btn_focus"
         android:layout_below="@+id/network_retry_tv"
-        android:layout_marginTop="@dimen/dimen_30px">
+        android:layout_marginTop="@dimen/px30">
         <Button
             android:id="@+id/network_retry_btn"
             android:layout_width="@dimen/px200"

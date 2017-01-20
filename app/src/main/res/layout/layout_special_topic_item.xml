@@ -13,17 +13,17 @@
         android:layout_height="match_parent"
         app:cornerSize2="@dimen/px8"
         app:maskColor="@color/black_opa80"
-        app:maskSize="@dimen/dimen_64px"
+        app:maskSize="@dimen/px64"
         />
 
     <TextView
         android:id="@+id/subject_item_title_tv"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_64px"
+        android:layout_height="@dimen/px64"
         android:paddingStart="@dimen/px16"
         android:paddingEnd="@dimen/px16"
-        android:textSize="@dimen/fontsize_30"
+        android:textSize="@dimen/px30"
         android:textColor="@color/white_opa80"
         android:gravity="center"
         style="@style/commen_textview"

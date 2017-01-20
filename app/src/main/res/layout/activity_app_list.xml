@@ -19,8 +19,8 @@
 
     <TextView
         android:id="@+id/tv_app_list_line"
-        android:layout_width="@dimen/dimen_220px"
-        android:layout_height="@dimen/dimen_40px"
+        android:layout_width="@dimen/px220"
+        android:layout_height="@dimen/px40"
         android:layout_alignParentRight="true"
         android:layout_marginRight="@dimen/px160"
         android:layout_marginTop="@dimen/px80"
@@ -73,7 +73,7 @@
         <ImageView
             android:id="@+id/iv_menu_top_shadow"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dimen_50px"
+            android:layout_height="@dimen/px50"
             android:layout_below="@id/tv_app_list_search"
             android:background="@mipmap/menu_top_shadow"
             android:visibility="gone"
@@ -82,7 +82,7 @@
         <ImageView
             android:id="@+id/iv_menu_bottom_shadow"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dimen_70px"
+            android:layout_height="@dimen/px70"
             android:layout_alignParentBottom="true"
             android:background="@mipmap/menu_bottom_shadow"
             android:visibility="gone"

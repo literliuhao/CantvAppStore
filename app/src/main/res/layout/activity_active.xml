@@ -29,7 +29,7 @@
             android:layout_height="@dimen/px142"
             android:background="@mipmap/active_participate"
             android:visibility="gone"
-            android:padding="@dimen/dimen_26px"
+            android:padding="@dimen/px26"
             android:layout_marginStart="@dimen/px340"
             android:layout_marginTop="@dimen/px815">
 
