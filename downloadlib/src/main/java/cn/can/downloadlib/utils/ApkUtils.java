@@ -390,7 +390,7 @@ public class ApkUtils {
     public static boolean isEnoughSpaceSize(long apkSize) {
 
         File dataPath = Environment.getDataDirectory();
-        float per = dataPath.getUsableSpace() / dataPath.getTotalSpace();
+        float per = (float)dataPath.getUsableSpace() / dataPath.getTotalSpace();
         float space = dataPath.getUsableSpace() - apkSize;
         if (per > 0.1 && apkSize < dataPath.getUsableSpace() && space > 50) {
             return true;
