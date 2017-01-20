@@ -863,7 +863,9 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
 
                 @Override
                 public void onClickNegative() {
-                    mFocusUtils.showFocus();
+                    if(reqNavigationSuccess){
+                        mFocusUtils.showFocus();
+                    }
                     canDialog.dismiss();
                     mHandler.sendEmptyMessage(MSG_SHOW_LOADING);
 
@@ -872,7 +874,9 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
             canDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialog) {
-                    mFocusUtils.showFocus();
+                    if(reqNavigationSuccess){
+                        mFocusUtils.showFocus();
+                    }
                     mHandler.sendEmptyMessage(MSG_SHOW_LOADING);
                 }
             });
