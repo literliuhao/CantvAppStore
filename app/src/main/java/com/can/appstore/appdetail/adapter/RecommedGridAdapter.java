@@ -2,7 +2,6 @@ package com.can.appstore.appdetail.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +44,6 @@ public class RecommedGridAdapter extends CanRecyclerViewAdapter {
     @Override
     protected void bindContentData(Object mDatas, RecyclerView.ViewHolder holder, int position) {
         AppInfo appInfo = mRecommedApps.get(position);
-        Log.d(TAG, "bindContentData: " + appInfo);
         final RecommendGridViewHolder recommendGridViewHolder = ((RecommendGridViewHolder) holder);
         String text = String.format(mRecommendAppsInfo, appInfo.getSizeStr(), appInfo.getDownloadCount());
         recommendGridViewHolder.itemName.setText(appInfo.getName());
