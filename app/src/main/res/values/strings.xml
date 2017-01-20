@@ -32,7 +32,7 @@
     <string name="index_app_update">个应用可更新</string>
     <string name="index_data_error">数据格式异常请重启应用商店</string>
     <string name="index_nofind">未找到相关应用</string>
-    <string name="index_exit_titile">确定要退出应用商店吗</string>
+    <string name="index_exit_titile">确定要退出应用商店吗？</string>
     <string name="index_exit">退出</string>
     <string name="index_cancel">取消</string>
     <!--首页管理-->
@@ -158,7 +158,7 @@
     <string name="app_introduce">应用简介&#160;:&#160;</string>
     <string name="add_funtion">新增功能&#160;:&#160;</string>
     <string name="update_introduce">更新功能&#160;:\n</string>
-    <string name="load_data_faild">加载数据失败,请稍候重试...</string>
+    <string name="load_data_faild">加载数据失败,请稍后重试...</string>
     <string name="not_update_log">修复了bug，完善了用户体验。</string>
 
     <!-- 活动页 -->
