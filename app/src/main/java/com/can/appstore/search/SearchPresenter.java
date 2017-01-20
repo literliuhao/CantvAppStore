@@ -156,7 +156,7 @@ public class SearchPresenter implements SearchContract.Presenter {
             @Override
             public void onFailure(CanCall<ListResult<PopularWord>> call, CanErrorWrapper errorWrapper) {
                 PromptUtils.toast(MyApp.getContext(), "加载数据失败,请稍后再试!");
-                mView.getHotKeyList(null);
+                //mView.getHotKeyList(null);
                 mView.hotKeyEnable(false);
                 mView.hideLoading();
             }
