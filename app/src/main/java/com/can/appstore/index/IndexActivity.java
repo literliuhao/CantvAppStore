@@ -98,6 +98,7 @@ import cn.can.tvlib.common.pm.PackageUtil;
 import cn.can.tvlib.imageloader.GlideLoadTask;
 import cn.can.tvlib.imageloader.ImageLoader;
 import cn.can.tvlib.ui.PromptUtils;
+import cn.can.tvlib.ui.ToastUtils;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 import cn.can.tvlib.ui.focus.FocusScaleUtil;
 import retrofit2.Response;
@@ -321,7 +322,7 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
 
             @Override
             public void onFailure(CanCall<ClassicResult<List<Ad>>> call, CanErrorWrapper errorWrapper) {
-                Log.i("IndexActivity", errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
+                Log.i(TAG, errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
             }
         });
     }
@@ -386,7 +387,11 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
 
                 @Override
                 public void onFailure(CanCall<ListResult<Navigation>> call, CanErrorWrapper errorWrapper) {
-                    Log.i("IndexActivity", errorWrapper.getReason() + " || " + errorWrapper.getThrowable());
+                    String msg = errorWrapper.getReason();
+                    Log.i(TAG, msg + " || " + errorWrapper.getThrowable());
+                    if (msg != null && msg.contains("域名解析错误")) {
+                        ToastUtils.showMessageLong(getContext(), "域名解析错误");
+                    }
                     ProxyCache(null);
                     mHandler.sendEmptyMessage(MSG_HIDE_LOADING);
                 }
@@ -627,7 +632,14 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
                     mFocusUtils.hideFocus();
                     break;
                 case MSG_SHOW_LOADING:
-                    showLoadingDialog();
+                    if (!reqNavigationSuccess) {
+                        showLoadingDialog(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                showExit();
+                            }
+                        });
+                    }
                     break;
                 case MSG_HIDE_LOADING:
                     hideLoadingDialog();
@@ -827,6 +839,10 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
 
     @Override
     public void onBackPressed() {
+        showExit();
+    }
+
+    private void showExit() {
         mFocusUtils.hideFocus();  //  隐藏焦点框
         if (null == canDialog) {
             canDialog = new CanDialog(this);
@@ -843,12 +859,14 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
                 public void onClickNegative() {
                     mFocusUtils.showFocus();
                     canDialog.dismiss();
+                    mHandler.sendEmptyMessage(MSG_SHOW_LOADING);
                 }
             });
             canDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialog) {
                     mFocusUtils.showFocus();
+                    mHandler.sendEmptyMessage(MSG_SHOW_LOADING);
                 }
             });
         }

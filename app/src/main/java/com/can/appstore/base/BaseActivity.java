@@ -3,6 +3,7 @@ package com.can.appstore.base;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -69,6 +70,16 @@ public abstract class BaseActivity extends FragmentActivity {
                     mMsgTextSize, mMsgTextColor, spaceInPixels);
         } else if (!mLoadingDialog.isShowing()) {
             mLoadingDialog.setCancelable(false);
+            mLoadingDialog.show();
+        }
+    }
+
+    public void showLoadingDialog(DialogInterface.OnCancelListener listener) {
+        if (mLoadingDialog == null) {
+            mLoadingDialog = PromptUtils.showLoadingDialog(this, loadingSize, getString(R.string.loading),
+                    mMsgTextSize, mMsgTextColor, spaceInPixels);
+            mLoadingDialog.setOnCancelListener(listener);
+        } else if (!mLoadingDialog.isShowing()) {
             mLoadingDialog.show();
         }
     }
