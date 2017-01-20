@@ -7,6 +7,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Environment;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -36,6 +37,7 @@ public class ApkUtils {
 
     /**
      * 调用系统安装接口，安装一个apk文件
+     *
      * @param context
      * @param uriFile
      */
@@ -48,6 +50,7 @@ public class ApkUtils {
 
     /**
      * 调用系统安装接口，卸载一个app
+     *
      * @param context
      * @param packageName
      */
@@ -60,6 +63,7 @@ public class ApkUtils {
 
     /**
      * 检查手机上是否安装了指定的软件
+     *
      * @param context
      * @param packageName
      * @return
@@ -84,6 +88,7 @@ public class ApkUtils {
 
     /**
      * 检查手机上是否安装了指定的软件
+     *
      * @param context
      * @param file
      * @return
@@ -94,6 +99,7 @@ public class ApkUtils {
 
     /**
      * 根据文件路径获取包名
+     *
      * @param context
      * @param filePath
      * @return
@@ -109,7 +115,8 @@ public class ApkUtils {
     }
 
     /**
-     *  从apk中获取版本信息
+     * 从apk中获取版本信息
+     *
      * @param context
      * @param channelPrefix
      * @return
@@ -154,6 +161,7 @@ public class ApkUtils {
 
     /**
      * 获取未安装APK文件的包名
+     *
      * @param context
      * @param apkPath
      * @return
@@ -175,6 +183,7 @@ public class ApkUtils {
 
     /**
      * 获取已安装的所有apk信息
+     *
      * @param context
      * @return
      */
@@ -374,24 +383,17 @@ public class ApkUtils {
 
     /**
      * 判断apk安装控件是否充足
+     *
      * @param apkSize apk大小 ，单位byte
      * @return
      */
-    public static boolean isEnoughSpaceSize(long apkSize){
+    public static boolean isEnoughSpaceSize(long apkSize) {
 
-        File apkPath=new File("/data/app");
-        if(!apkPath.exists()){
-            return false;
-        }
-        File dataPath=apkPath.getParentFile();
-        if(!dataPath.exists()){
-            return false;
-        }
-        if((float)apkPath.getUsableSpace()/dataPath.getTotalSpace()>0.1&&apkSize<(apkPath.getUsableSpace()-dataPath.getTotalSpace()*1/10)){
+        File dataPath = Environment.getDataDirectory();
+        if ((float) dataPath.getUsableSpace() / dataPath.getTotalSpace() > 0.1 && apkSize < dataPath.getUsableSpace()) {
             return true;
         }
         return false;
-
     }
 
 

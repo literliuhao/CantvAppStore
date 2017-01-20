@@ -63,7 +63,7 @@ public class IndexPagerAdapter extends PagerAdapter implements ViewPager.OnPageC
             FragmentTransaction ft = mFragmentManager.beginTransaction();
             ft.add(fragment, fragment.getClass().getSimpleName());
             if(ft != null) {
-                ft.commit();
+                ft.commitAllowingStateLoss();
                 mFragmentManager.executePendingTransactions();
             }
         }
