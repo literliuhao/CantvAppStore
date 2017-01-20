@@ -269,7 +269,7 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
         if (mClearCacheConfirmDialog == null) {
             Resources resources = getActivity().getResources();
             mClearCacheConfirmDialog = new CanDialog(getActivity())
-                    .setTitleToBottom(resources.getString(R.string.if_clear_cache), R.dimen.dimen_32px)
+                    .setTitleToBottom(resources.getString(R.string.if_clear_cache), R.dimen.px32)
                     .setMessageBackground(Color.TRANSPARENT)
                     .setPositiveButton(resources.getString(R.string.confirm))
                     .setNegativeButton(resources.getString(R.string.back))

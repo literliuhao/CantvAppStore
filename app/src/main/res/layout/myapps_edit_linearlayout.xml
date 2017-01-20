@@ -15,7 +15,7 @@
         android:focusable="true"
         android:text="@string/app_top"
         android:textColor="@drawable/edit_buttn_textcolor_delector"
-        android:textSize="@dimen/fontsize_30"
+        android:textSize="@dimen/px30"
         />
 
     <Button
@@ -27,7 +27,7 @@
         android:focusable="true"
         android:text="@string/app_remove"
         android:textColor="@drawable/edit_buttn_textcolor_delector"
-        android:textSize="@dimen/fontsize_30"
+        android:textSize="@dimen/px30"
 
         />
 

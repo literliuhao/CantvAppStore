@@ -852,7 +852,7 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
         mFocusUtils.hideFocus();  //  隐藏焦点框
         if (null == canDialog) {
             canDialog = new CanDialog(this);
-            canDialog.setTitleToBottom(getResources().getString(R.string.index_exit_titile), R.dimen.dimen_28px);
+            canDialog.setTitleToBottom(getResources().getString(R.string.index_exit_titile), R.dimen.px28);
             canDialog.setMessageBackground(Color.TRANSPARENT);
             canDialog.setPositiveButton(getResources().getString(R.string.index_exit)).setNegativeButton(getResources().getString(R.string.index_cancel)).setOnCanBtnClickListener(new CanDialog.OnClickListener() {
                 @Override

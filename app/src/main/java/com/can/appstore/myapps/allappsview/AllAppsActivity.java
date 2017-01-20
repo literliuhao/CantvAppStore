@@ -102,7 +102,7 @@ public class AllAppsActivity extends BaseActivity implements AllAppsContract.Vie
                 //noinspection deprecation
                 focusMoveUtil.setFocusActiveRegion(0, location[1] + mAllAppsRecyclerView.getPaddingTop(), getWindowManager().
                         getDefaultDisplay().getWidth(), location[1] + mAllAppsRecyclerView.getMeasuredHeight()
-                        - getResources().getDimensionPixelSize(R.dimen.dimen_40px));
+                        - getResources().getDimensionPixelSize(R.dimen.px40));
             }
         });
     }

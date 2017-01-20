@@ -218,8 +218,8 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
         dialogWindow.setGravity(Gravity.LEFT | Gravity.TOP);
         lp.x = location[0] + 1; // 新位置X坐标
         lp.y = location[1] + 1; // 新位置Y坐标
-        lp.width = (int) (getResources().getDimensionPixelSize(R.dimen.dimen_270px) * 1.095f); // 宽度
-        lp.height = (int) (getResources().getDimensionPixelSize(R.dimen.dimen_180px) * 1.093f); // 高度
+        lp.width = (int) (getResources().getDimensionPixelSize(R.dimen.px270) * 1.095f); // 宽度
+        lp.height = (int) (getResources().getDimensionPixelSize(R.dimen.px180) * 1.093f); // 高度
         dialogWindow.setAttributes(lp);
         dialog.show();
         editItem(position, item);
