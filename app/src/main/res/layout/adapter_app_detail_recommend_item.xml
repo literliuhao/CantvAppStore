@@ -2,8 +2,8 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.Android.com/apk/res-auto"
-    android:layout_width="@dimen/dimen_376px"
-    android:layout_height="@dimen/dimen_152px"
+    android:layout_width="@dimen/px376"
+    android:layout_height="@dimen/px152"
     android:background="@drawable/shape_bg_uninstall_manager_item"
     android:descendantFocusability="blocksDescendants"
     android:focusable="true"
@@ -12,13 +12,13 @@
 
     <cn.can.tvlib.ui.view.GlideRoundCornerImageView
         android:id="@+id/iv_recommend_item_icon"
-        android:layout_width="@dimen/dimen_120px"
-        android:layout_height="@dimen/dimen_120px"
+        android:layout_width="@dimen/px120"
+        android:layout_height="@dimen/px120"
         android:layout_centerVertical="true"
-        android:layout_marginStart="@dimen/dimen_24px"
+        android:layout_marginStart="@dimen/px24"
         android:background="@drawable/shap_detail_recommend_icon_bg"
         android:scaleType="fitXY"
-        custom:cornerSize="@dimen/dimen_20px"
+        custom:cornerSize="@dimen/px20"
         custom:placeholder="@mipmap/cibn_icon"
         />
 
@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginStart="@dimen/dimen_24px"
+        android:layout_marginStart="@dimen/px24"
         android:layout_toRightOf="@+id/iv_recommend_item_icon"
         android:orientation="vertical">
 
@@ -35,23 +35,23 @@
             android:id="@+id/tv_recommend_item_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/dimen_14px"
+            android:layout_marginRight="@dimen/px14"
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:singleLine="true"
             android:textColor="@color/uninstall_app_name_color"
-            android:textSize="@dimen/fontsize_34px"/>
+            android:textSize="@dimen/px34"/>
 
         <TextView
             android:id="@+id/tv_recommend_item_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dimen_12px"
+            android:layout_marginTop="@dimen/px12"
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:singleLine="true"
             android:textColor="@color/tv_app_version_color"
-            android:textSize="@dimen/fontsize_26px"/>
+            android:textSize="@dimen/px26"/>
 
     </LinearLayout>
 </RelativeLayout>

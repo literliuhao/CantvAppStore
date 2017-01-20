@@ -31,7 +31,7 @@ public class ImageScaleAdapter extends PagerAdapter {
         super();
         this.mContext = context;
         this.mUrlList = urlList;
-        mRoundSize = mContext.getResources().getDimensionPixelSize(R.dimen.dimen_8px);
+        mRoundSize = mContext.getResources().getDimensionPixelSize(R.dimen.px8);
         pageCount = mUrlList.size();
     }
 

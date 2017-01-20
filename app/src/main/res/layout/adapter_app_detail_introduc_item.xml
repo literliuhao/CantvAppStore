@@ -9,11 +9,11 @@
 
     <cn.can.tvlib.ui.view.GlideRoundCornerImageView
         android:id="@+id/iv_introduc_item"
-        android:layout_width="@dimen/dimen_513px"
-        android:layout_height="@dimen/dimen_288px"
+        android:layout_width="@dimen/px513"
+        android:layout_height="@dimen/px288"
         android:background="@drawable/shap_image_bg"
         android:scaleType="fitXY"
-        custom:cornerSize="@dimen/dimen_8px"
+        custom:cornerSize="@dimen/px8"
         custom:placeholder="@mipmap/cibn_picture"/>
 
 </LinearLayout>

@@ -88,7 +88,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
                 //noinspection deprecation
                 mFocusMoveUtil.setFocusActiveRegion(0, location[1] + mCanRecyclerView.getPaddingTop(), getWindowManager().
                         getDefaultDisplay().getWidth(), location[1] + mCanRecyclerView.getMeasuredHeight()
-                        - getResources().getDimensionPixelSize(R.dimen.dimen_32px));
+                        - getResources().getDimensionPixelSize(R.dimen.px32));
             }
         });
     }
@@ -113,7 +113,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
         mBtBatchUninstall = (TextView) findViewById(R.id.bt_batch_uninstall);
         mTvItemCurRows = (TextView) findViewById(R.id.tv_cur_rows);
         mProgressStorage = (TextProgressBar) findViewById(R.id.progress_stroage);
-        mProgressStorage.setTextSize(getResources().getDimensionPixelSize(R.dimen.dimen_18px));
+        mProgressStorage.setTextSize(getResources().getDimensionPixelSize(R.dimen.px18));
         mSelectCount = (TextView) findViewById(R.id.tv_select_count);
         mNotUninstallApp = (TextView) findViewById(R.id.tv_no_data);
         mLinearLayoutSelectApp = (LinearLayout) findViewById(R.id.ll_select_app);
@@ -343,7 +343,7 @@ public class UninstallManagerActivity extends BaseActivity implements UninstallM
     }
 
     public void addSetting() {
-        CanRecyclerViewDivider canRecyclerViewDivider = new CanRecyclerViewDivider(0, getResources().getDimensionPixelSize(R.dimen.dimen_32px), getResources().getDimensionPixelSize(R.dimen.dimen_40px));
+        CanRecyclerViewDivider canRecyclerViewDivider = new CanRecyclerViewDivider(0, getResources().getDimensionPixelSize(R.dimen.px32), getResources().getDimensionPixelSize(R.dimen.px40));
         mCanRecyclerView.addItemDecoration(canRecyclerViewDivider);
         mCanRecyclerView.setHasFixedSize(true);
         mCanRecyclerView.setItemAnimator(new DefaultItemAnimator());

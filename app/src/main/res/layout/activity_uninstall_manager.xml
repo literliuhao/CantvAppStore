@@ -5,10 +5,10 @@
 
     <TextView
         android:id="@+id/bt_batch_uninstall"
-        android:layout_width="@dimen/dimen_200px"
-        android:layout_height="@dimen/dimen_72px"
-        android:layout_marginLeft="@dimen/dimen_160px"
-        android:layout_marginTop="@dimen/dimen_150px"
+        android:layout_width="@dimen/px200"
+        android:layout_height="@dimen/px72"
+        android:layout_marginLeft="@dimen/px160"
+        android:layout_marginTop="@dimen/px150"
         android:focusable="true"
         android:gravity="center"
         android:background="@drawable/shape_bg_batch_uninstall_bt"
@@ -17,16 +17,16 @@
         android:nextFocusUp="@id/bt_batch_uninstall"
         android:text="@string/bt_batch_uninstall"
         android:textColor="@color/app_name_color"
-        android:textSize="@dimen/fontsize_34px"/>
+        android:textSize="@dimen/px34"/>
 
     <LinearLayout
         android:id="@+id/ll_select_app"
-        android:layout_width="@dimen/dimen_200px"
-        android:layout_height="@dimen/dimen_128px"
+        android:layout_width="@dimen/px200"
+        android:layout_height="@dimen/px128"
         android:layout_alignEnd="@+id/bt_batch_uninstall"
         android:layout_alignLeft="@+id/bt_batch_uninstall"
         android:layout_below="@+id/bt_batch_uninstall"
-        android:layout_marginTop="@dimen/dimen_10px"
+        android:layout_marginTop="@dimen/px10"
         android:background="@drawable/bjs"
         android:gravity="center_horizontal"
         android:orientation="vertical"
@@ -35,22 +35,22 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dimen_27px"
+            android:layout_marginTop="@dimen/px27"
             android:includeFontPadding="false"
             android:text="@string/select_app_count"
             android:textColor="@color/app_name_color"
-            android:textSize="@dimen/fontsize_26px"/>
+            android:textSize="@dimen/px26"/>
 
 
         <TextView
             android:id="@+id/tv_select_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dimen_11px"
+            android:layout_marginTop="@dimen/px11"
             android:includeFontPadding="false"
             android:text="4"
             android:textColor="@color/select_app_count"
-            android:textSize="@dimen/fontsize_44px"/>
+            android:textSize="@dimen/px44"/>
 
     </LinearLayout>
 
@@ -58,32 +58,32 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/dimen_80px"
+        android:layout_marginTop="@dimen/px80"
         android:layout_toRightOf="@+id/bt_batch_uninstall"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dimen_65px"
+            android:layout_marginStart="@dimen/px65"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawablePadding="@dimen/dimen_20px"
+                android:drawablePadding="@dimen/px20"
                 android:drawableStart="@mipmap/title_line"
                 android:text="@string/tv_uninstall_manager"
                 android:textColor="@color/tv_cur_rows_color"
-                android:textSize="@dimen/fontsize_38px"/>
+                android:textSize="@dimen/px38"/>
 
             <com.can.appstore.appdetail.custom.TextProgressBar
                 android:id="@+id/progress_stroage"
                 style="@android:style/Widget.ProgressBar.Horizontal"
-                android:layout_width="@dimen/dimen_340px"
-                android:layout_height="@dimen/dimen_24px"
-                android:layout_marginStart="@dimen/dimen_40px"
+                android:layout_width="@dimen/px340"
+                android:layout_height="@dimen/px24"
+                android:layout_marginStart="@dimen/px40"
                 android:max="100"
                 android:progressDrawable="@drawable/layer_list_progress_drawable"
                 />
@@ -102,7 +102,7 @@
                 android:layout_gravity="center"
                 android:text="@string/not_uinstall_data"
                 android:textColor="@color/uninstall_app_name_color"
-                android:textSize="@dimen/dimen_36px"
+                android:textSize="@dimen/px36"
                 android:textStyle="bold"
                 android:visibility="invisible"/>
 
@@ -111,13 +111,13 @@
                 android:id="@+id/crlv_grid"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/dimen_142px"
-                android:layout_marginStart="@dimen/dimen_42px"
-                android:layout_marginTop="@dimen/dimen_f7px"
+                android:layout_marginEnd="@dimen/px142"
+                android:layout_marginStart="@dimen/px42"
+                android:layout_marginTop="@dimen/px_minus_7"
                 android:clipChildren="false"
                 android:clipToPadding="false"
-                android:paddingLeft="@dimen/dimen_23px"
-                android:paddingTop="@dimen/dimen_23px"
+                android:paddingLeft="@dimen/px23"
+                android:paddingTop="@dimen/px23"
                 />
 
 
@@ -127,13 +127,13 @@
 
     <TextView
         android:id="@+id/tv_cur_rows"
-        android:layout_width="@dimen/dimen_120px"
-        android:layout_height="@dimen/dimen_40px"
+        android:layout_width="@dimen/px120"
+        android:layout_height="@dimen/px40"
         android:layout_alignParentRight="true"
-        android:layout_marginEnd="@dimen/dimen_160px"
-        android:layout_marginTop="@dimen/dimen_86px"
+        android:layout_marginEnd="@dimen/px160"
+        android:layout_marginTop="@dimen/px86"
         android:gravity="center_vertical|end"
         android:textColor="@color/color_96989D"
-        android:textSize="@dimen/fontsize_32px"/>
+        android:textSize="@dimen/px32"/>
 
 </RelativeLayout>

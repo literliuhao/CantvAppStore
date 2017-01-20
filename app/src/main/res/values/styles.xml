@@ -115,7 +115,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:textColor">@color/app_size_color</item>
-        <item name="android:textSize">@dimen/dimen_32px</item>
+        <item name="android:textSize">@dimen/px32</item>
     </style>
 
     <style name="CanDialog">

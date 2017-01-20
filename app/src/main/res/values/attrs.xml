@@ -17,10 +17,10 @@
     </declare-styleable>
 
     <declare-styleable name="pointview">
-        <attr name="pointradius" format="dimension"/>
-        <attr name="pointspace" format="dimension"/>
-        <attr name="selectcolor" format="color"/>
-        <attr name="unselectcolor" format="color"/>
+        <attr name="pointradius" format="dimension|reference"/>
+        <attr name="pointspace" format="dimension|reference"/>
+        <attr name="selectcolor" format="color|reference"/>
+        <attr name="unselectcolor" format="color|reference"/>
     </declare-styleable>
 
     <declare-styleable name="RoundCornerView2">

@@ -165,8 +165,8 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         mLayoutAppDetail = (LinearLayout) findViewById(R.id.ll_app_detail);
         mRecommendGrid = (CanRecyclerView) findViewById(R.id.crlv_recommed_grid);
         mIntroducGrid = (CanRecyclerView) findViewById(R.id.crlv_introduce_grid);
-        mButtonDownload.setTextSize(getResources().getDimensionPixelSize(R.dimen.dimen_36px));
-        mButtonUpdate.setTextSize(getResources().getDimensionPixelSize(R.dimen.dimen_36px));
+        mButtonDownload.setTextSize(getResources().getDimensionPixelSize(R.dimen.px36));
+        mButtonUpdate.setTextSize(getResources().getDimensionPixelSize(R.dimen.px36));
         setGridLayoutManager();
         addButtonListener();
     }
@@ -247,7 +247,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                 break;
             case R.id.ll_introduce_text:
                 if (hasFocus) {
-                    mFocusMoveUtil.setFocusActiveRegion(mFocusRegion.left - getResources().getDimensionPixelSize(R.dimen.dimen_20px),
+                    mFocusMoveUtil.setFocusActiveRegion(mFocusRegion.left - getResources().getDimensionPixelSize(R.dimen.px20),
                             mFocusRegion.top, mFocusRegion.right, mFocusRegion.bottom);
                 }
                 break;
@@ -412,8 +412,8 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
         for (int i = mRelativeLayuotOperatingEquipment.getChildCount() - 1; i > 0; i--) {
             mRelativeLayuotOperatingEquipment.removeViewAt(i);
         }
-        int width = getResources().getDimensionPixelSize(R.dimen.dimen_60px);
-        int leftMargin = getResources().getDimensionPixelSize(R.dimen.dimen_12px);
+        int width = getResources().getDimensionPixelSize(R.dimen.px60);
+        int leftMargin = getResources().getDimensionPixelSize(R.dimen.px12);
         for (int i = 0; i < type.size(); i++) {
             View childAt = mRelativeLayuotOperatingEquipment.getChildAt(i);
             RelativeLayout.LayoutParams controllerTypePic = new RelativeLayout.LayoutParams(width, width);
@@ -556,7 +556,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     }
 
     private void addIntroduceSetting() {
-        mIntroduceGridDivider = new CanRecyclerViewDivider(getResources().getDimensionPixelSize(R.dimen.dimen_32px));
+        mIntroduceGridDivider = new CanRecyclerViewDivider(getResources().getDimensionPixelSize(R.dimen.px32));
         mIntroducGrid.addItemDecoration(mIntroduceGridDivider);
         mIntroducGrid.setHasFixedSize(true);
         mIntroducGrid.setItemAnimator(new DefaultItemAnimator());
@@ -573,7 +573,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                     mFocusedListChild = view;
                     boolean isLastChild = position == mIntroducGridAdapter.getItemCount() - 1;
                     mFocusMoveUtil.setFocusActiveRegion(mFocusRegion.left, mFocusRegion.top,
-                            mFocusRegion.right - (isLastChild ? 0 : getResources().getDimensionPixelSize(R.dimen.dimen_32px)),
+                            mFocusRegion.right - (isLastChild ? 0 : getResources().getDimensionPixelSize(R.dimen.px32)),
                             mFocusRegion.bottom);
                     mListFocusMoveRunnable.run();
                 } else {
@@ -739,7 +739,7 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
     }
 
     private void addRecommendSetting() {
-        mRecommendGridDivider = new CanRecyclerViewDivider(0, getResources().getDimensionPixelSize(R.dimen.dimen_24px), getResources().getDimensionPixelSize(R.dimen.dimen_32px));
+        mRecommendGridDivider = new CanRecyclerViewDivider(0, getResources().getDimensionPixelSize(R.dimen.px24), getResources().getDimensionPixelSize(R.dimen.px32));
         mRecommendGrid.addItemDecoration(mRecommendGridDivider);
         mRecommendGrid.setHasFixedSize(true);
         mRecommendGrid.setItemAnimator(new DefaultItemAnimator());

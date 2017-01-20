@@ -10,6 +10,8 @@ import android.view.View;
 
 import com.can.appstore.R;
 
+import static com.tencent.bugly.crashreport.crash.c.m;
+
 /**
  * Created by JasonF on 2016/11/14.
  */
@@ -39,8 +41,8 @@ public class PointView extends View {
         super(context, attrs, defStyleAttr);
         mContext = context;
         TypedArray typedArray = mContext.obtainStyledAttributes(attrs, R.styleable.pointview);
-        mPonitRadius = typedArray.getDimensionPixelSize(R.styleable.pointview_pointradius, 8);
-        mPonitSpace = typedArray.getDimensionPixelSize(R.styleable.pointview_pointspace, 16);
+        mPonitRadius = typedArray.getDimensionPixelSize(R.styleable.pointview_pointradius, mContext.getResources().getDimensionPixelSize(R.dimen.px8));
+        mPonitSpace = typedArray.getDimensionPixelSize(R.styleable.pointview_pointspace, mContext.getResources().getDimensionPixelSize(R.dimen.px16));
         mSelectColor = typedArray.getColor(R.styleable.pointview_selectcolor, mContext.getResources().getColor(R.color.tv_cur_rows_color));
         mUnselectColor = typedArray.getColor(R.styleable.pointview_selectcolor, mContext.getResources().getColor(R.color.app_introduce_color));
         initPaint();
@@ -98,7 +100,7 @@ public class PointView extends View {
         if (mode == MeasureSpec.EXACTLY) {
             result = size;
         } else {
-            result = ((mPointCount * 2) - 1) * mPonitRadius * 2;//根据自己的需要更改
+            result = mPointCount * mPonitRadius * 2 + (mPointCount - 1) * mPonitSpace;//根据自己的需要更改
             if (mode == MeasureSpec.AT_MOST) {
                 result = Math.min(result, size);
             }

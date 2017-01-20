@@ -12,11 +12,11 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_616px"
+        android:layout_height="@dimen/px616"
         android:layout_gravity="center_horizontal"
-        android:layout_marginEnd="@dimen/dimen_460px"
-        android:layout_marginStart="@dimen/dimen_460px"
-        android:layout_marginTop="@dimen/dimen_230px"
+        android:layout_marginEnd="@dimen/px460"
+        android:layout_marginStart="@dimen/px460"
+        android:layout_marginTop="@dimen/px230"
         android:clipChildren="false">
     </android.support.v4.view.ViewPager>
 
@@ -24,7 +24,7 @@
         android:id="@+id/ll_point"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dimen_36px"
+        android:layout_marginTop="@dimen/px36"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
         >
@@ -32,9 +32,9 @@
         <com.can.appstore.appdetail.custom.PointView
             android:id="@+id/point_view"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/dimen_16px"
-            custom:pointradius="@dimen/dimen_16px"
-            custom:pointspace="@dimen/dimen_16px"
+            android:layout_height="@dimen/px16"
+            custom:pointradius="@dimen/px8"
+            custom:pointspace="@dimen/px16"
             custom:selectcolor="@color/tv_cur_rows_color"
             custom:unselectcolor="@color/app_introduce_color"/>
 

@@ -15,8 +15,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="155.0px"
-            android:paddingBottom="@dimen/dimen_15px"
+            android:layout_height="@dimen/px155"
+            android:paddingBottom="@dimen/px15"
             android:gravity="center">
 
             <cn.can.tvlib.ui.view.RoundCornerImageView
@@ -75,7 +75,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="@dimen/dimen_15px"
+            android:paddingTop="@dimen/px15"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -85,7 +85,7 @@
 
             <Button
                 android:id="@+id/btn_dialog_negative"
-                android:layout_marginStart="@dimen/dimen_40px"
+                android:layout_marginStart="@dimen/px40"
                 style="@style/CanDialog_Button"
                 />
         </LinearLayout>

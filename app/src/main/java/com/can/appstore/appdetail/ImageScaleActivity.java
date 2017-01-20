@@ -64,7 +64,7 @@ public class ImageScaleActivity extends BaseActivity {
         mPointView.setPointCount(mImageUrls.size());
         mPointView.setSelectPosition(mCurSelectPositon);
 
-        mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.dimen_210px));
+        mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.px210));
         Utils.controlViewPagerSpeed(ImageScaleActivity.this, mViewPager, 400);
         mViewPager.setOffscreenPageLimit(3);
         mScaleAdapter = new ImageScaleAdapter(ImageScaleActivity.this, mImageUrls);
