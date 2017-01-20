@@ -214,7 +214,6 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
     // -------------------------------- DownloadTaskListener Event -----------
     @Override
     public void onPrepare(DownloadTask downloadTask) {
-        Log.d(TAG, "onPrepare: " + downloadTask.getCompletedSize());
         if (downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_PREPARE) {
             if (downloadTask.getId().equalsIgnoreCase(MD5.MD5(mDownloadUrl))) {
                 mOperationView.refreshTextProgressbarTextStatus(R.string.detail_app_download_wait);
@@ -224,7 +223,6 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
 
     @Override
     public void onStart(DownloadTask downloadTask) {
-        Log.d(TAG, "onStart: " + downloadTask.getCompletedSize());
         if (downloadTask.getDownloadStatus() == DownloadStatus.DOWNLOAD_STATUS_START) {
             if (downloadTask.getId().equalsIgnoreCase(MD5.MD5(mDownloadUrl))) {
                 mOperationView.refreshTextProgressbarTextStatus(R.string.active_null_str);
@@ -285,7 +283,6 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
     //<!-----------------AppInstallListener--------------------->
     @Override
     public void onInstalling(DownloadTask downloadTask) {
-        Log.d(TAG, "onInstalling(downloadTask " + downloadTask.getCompletedSize() + ")");
         if (downloadTask.getId().equalsIgnoreCase(MD5.MD5(mDownloadUrl))) {
             mOperationView.refreshProgressbarProgress(0);
             mOperationView.refreshTextProgressbarTextStatus(R.string.detail_app_installing);
@@ -294,7 +291,6 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
 
     @Override
     public void onInstallSucess(String id) {
-        Log.d(TAG, "onInstallSucess(id " + id + ")");
         if (id.equalsIgnoreCase(MD5.MD5(mDownloadUrl))) {
             mOperationView.refreshTextProgressbarTextStatus(R.string.active_click_participate);
         }
@@ -302,7 +298,6 @@ public class ActivePresenter implements ActiveContract.TaskPresenter, DownloadTa
 
     @Override
     public void onInstallFail(String id) {
-        Log.d(TAG, "onInstallFail(id " + id + ")");
         if (id.equalsIgnoreCase(MD5.MD5(mDownloadUrl))) {
             mOperationView.refreshTextProgressbarTextStatus(R.string.downlaod_restart);
         }

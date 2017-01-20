@@ -84,7 +84,6 @@ public class AutoUpdate {
             @Override
             public void onResponse(CanCall<ListResult<AppInfo>> call, Response<ListResult<AppInfo>> response) throws Exception {
                 List<AppInfo> data = response.body().getData();
-                Log.i(TAG, "getUpdateApkNum: " + data.size());
                 //判断是否开启自动更新
                 EventBus.getDefault().post(new UpdateApkModel(data.size()));
             }

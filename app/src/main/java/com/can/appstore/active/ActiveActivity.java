@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -198,7 +197,6 @@ public class ActiveActivity extends BaseActivity implements ActiveContract.Opera
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            Log.d("ActiveAcitivity", "onPageFinished ...");
             if (isLoadingDialogShowing()) {
                 hideLoadingDialog();
             }

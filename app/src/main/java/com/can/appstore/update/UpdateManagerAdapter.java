@@ -351,11 +351,9 @@ public class UpdateManagerAdapter extends CanRecyclerViewAdapter<AppInfoBean> {
             AutoUpdate.getInstance().mUpdateApkNumDatas.remove(0);
             //发送数量
             EventBus.getDefault().post(new UpdateApkModel(AutoUpdate.getInstance().mUpdateApkNumDatas.size()));
-            Log.i(TAG, "getUpdateApkNum: " + AutoUpdate.getInstance().mUpdateApkNumDatas.size());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.i(TAG, "getUpdateApkNum: " + AutoUpdate.getInstance().mUpdateApkNumDatas.size());
     }
 
     class UpdateViewHolder extends RecyclerView.ViewHolder {

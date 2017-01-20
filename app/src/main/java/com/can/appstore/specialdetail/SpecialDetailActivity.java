@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -123,7 +122,6 @@ public class SpecialDetailActivity extends BaseActivity {
             @Override
             public void onResponse(CanCall<Result<SpecialTopic>> call, Response<Result<SpecialTopic>> response) throws Exception {
                 Result<SpecialTopic> info = response.body();
-                Log.d("SpecialDetailActivity", info.toString());
                 hideLoadingDialog();
                 if (info.getData() == null) {
                     loadDataFail(R.string.load_data_faild);
@@ -232,10 +230,4 @@ public class SpecialDetailActivity extends BaseActivity {
             mFocusMoveUtil = null;
         }
     }
-
-   /* @Override
-    protected void onHomeKeyDown() {
-        finish();
-        super.onHomeKeyDown();
-    }*/
 }

@@ -87,7 +87,6 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_home_rank, container, false);
-        Log.w("onCreateView", "onCreateView");
         return mView;
     }
 
@@ -103,7 +102,6 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.w("onActivityCreated", "onActivityCreated");
         mHomeRankPresenter.loadingData();
     }
 
@@ -252,7 +250,6 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
         mEnter = System.currentTimeMillis();
         DCPage.onEntry(AppConstants.HOME_CHARTS);
         DCEvent.onEvent(AppConstants.HOME_CHARTS);
-        Log.w("HomeRank_onResume", "");
     }
 
     @Override
@@ -260,7 +257,6 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
         super.onPause();
         DCPage.onExit(AppConstants.HOME_CHARTS);
         DCEvent.onEventDuration(AppConstants.HOME_CHARTS, (System.currentTimeMillis() - mEnter) / 1000);
-        Log.w("HomeRank_onPause", "");
     }
 
     @Override
