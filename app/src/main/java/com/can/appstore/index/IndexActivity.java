@@ -292,7 +292,7 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
                                 try {
                                     JSONObject jsonParams = new JSONObject(new Gson().toJson(jsonElement));
                                     ActionUtils.getInstance().sendActionById(mContext, jsonParams.optString("appid"), jsonParams.optString("topicid"), jsonParams.optString("applist"), jsonParams.optString("activityid"), jsonParams.optString("topiclist"));
-                                    stopTimer();
+                                    mShowTime=0;
                                     mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
