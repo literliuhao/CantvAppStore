@@ -606,7 +606,9 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
                 if(mFocusedView != null){
                     mFocusUtils.setFocusView(mFocusedView, mFocusedViewScale);
                 }
-                mFocusUtils.showFocus();
+                if(reqNavigationSuccess){
+                    mFocusUtils.showFocus();
+                }
             }
         } else {
             if(mFocusUtils != null){
