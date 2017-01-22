@@ -2,7 +2,6 @@ package com.can.appstore.index.ui;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,7 +72,6 @@ public class FragmentBody extends BaseFragment implements View.OnFocusChangeList
         Bundle arguments = getArguments();
         if (arguments != null) {
             mTitle = arguments.getString(BUNDLE_TITLE);
-            Log.i("onCreateView", mTitle);
         }
         return drawView(inflater.getContext(), this.converPosition(mNavigation, measureZoom(inflater.getContext())));
     }

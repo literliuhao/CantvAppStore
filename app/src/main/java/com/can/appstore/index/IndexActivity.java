@@ -362,7 +362,6 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
         reportCall.enqueue(new CanCallback<ClassicResult>() {
             @Override
             public void onResponse(CanCall<ClassicResult> call, Response<ClassicResult> response) throws Exception {
-                Log.i("IndexActivity", "IndexActivity ");
             }
 
             @Override
@@ -690,7 +689,7 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
      */
     @Override
     public void addFocusListener(View v, boolean hasFocus, FragmentEnum sourceEnum) {
-        Log.i(TAG, "addFocusListener: v = " + v.getClass().getSimpleName() + "| id = " + v.getId() + ", hasFocus = " + hasFocus + ", enum = " + sourceEnum.name());
+//        Log.i(TAG, "addFocusListener: v = " + v.getClass().getSimpleName() + "| id = " + v.getId() + ", hasFocus = " + hasFocus + ", enum = " + sourceEnum.name() + ", isIntercept = " + isIntercept);
         if (hasFocus) {
             if (isIntercept) {
                 isIntercept = false;

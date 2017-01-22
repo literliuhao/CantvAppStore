@@ -157,21 +157,6 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
             }
         }
 
-        //最左侧添加监听,为了找到前一页的最后一个
-        final LinearLayout firstView = (LinearLayout) views.get(0);
-        firstView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                RecyclerView firRecy = (RecyclerView) firstView.getChildAt(0);
-                RecyclerView.LayoutManager layoutManager = firRecy.getLayoutManager();
-                for (int i = 0; i < layoutManager.getItemCount(); i++) {
-                    if (null != layoutManager.getChildAt(i)) {
-                        layoutManager.getChildAt(i).setOnKeyListener(HomeRankFragment.this);
-                    }
-                }
-            }
-        }, 1500);
-
         //将最后一个分类的右侧边距去除
         final LinearLayout view = (LinearLayout) views.get(views.size() - 1);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams((int) getResources().getDimension(R.dimen.px490), LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -245,7 +230,28 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
         return mLastView;
     }
 
+    private boolean hasAddSwitchPageListener;
+
     public void onResume() {
+        if (!hasAddSwitchPageListener) {
+            //最左侧添加监听,为了找到前一页的最后一个
+            final LinearLayout firstView = (LinearLayout) mLinearLayout.getChildAt(0);
+            firstView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    RecyclerView firRecy = (RecyclerView) firstView.getChildAt(0);
+                    RecyclerView.LayoutManager layoutManager = firRecy.getLayoutManager();
+                    for (int i = 0; i < layoutManager.getItemCount(); i++) {
+                        if (null != layoutManager.getChildAt(i)) {
+                            hasAddSwitchPageListener = true;
+                            layoutManager.getChildAt(i).setOnKeyListener(HomeRankFragment.this);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }, 1500);
+        }
         super.onResume();
         mEnter = System.currentTimeMillis();
         DCPage.onEntry(AppConstants.HOME_CHARTS);
@@ -258,6 +264,8 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
         DCPage.onExit(AppConstants.HOME_CHARTS);
         DCEvent.onEventDuration(AppConstants.HOME_CHARTS, (System.currentTimeMillis() - mEnter) / 1000);
     }
+
+    private static final String TAG = "IndexActivity";
 
     @Override
     public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
