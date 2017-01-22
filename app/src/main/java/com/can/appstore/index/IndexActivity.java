@@ -285,6 +285,7 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
                         public boolean onKey(View view, int i, KeyEvent keyEvent) {
                             if (keyEvent.ACTION_DOWN == keyEvent.getAction() && (keyEvent.KEYCODE_ENTER == keyEvent.getKeyCode() || keyEvent.KEYCODE_DPAD_CENTER == keyEvent.getKeyCode())) {
                                 mClickCount = 1;
+                                isShowAD = false;
                                 String action = material.getAction();
                                 if (action.equals("") || null == action) return true;
                                 JsonObject jsonObject = material.getActionParam();
@@ -472,6 +473,10 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
         mFragmentLists.add(myAppsFragment);
     }
 
+    public void notifyAddManagerFragmentFocus(){
+        managerFragment.setAdapterFocus();
+    }
+
     /**
      * 首页与TitleBar的数据绑定
      *
@@ -514,7 +519,6 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
         mTitleBar.setViewPager(mViewPager, PAGER_CURRENT);
         fixedScroll();
         if (!isShowAD) {
-            Log.i("IndexActivity", "isShowAD mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED) ");
             mHandler.sendEmptyMessageDelayed(INIT_FOCUS, DELAYED);
         }
         loadMore();
@@ -592,6 +596,26 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
     }
     //------------注册首页监听---------------END
 
+    private View mFocusedView;
+    private float mFocusedViewScale = 1f;
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if(hasFocus) {
+            if(mFocusUtils != null){
+                if(mFocusedView != null){
+                    mFocusUtils.setFocusView(mFocusedView, mFocusedViewScale);
+                }
+                mFocusUtils.showFocus();
+            }
+        } else {
+            if(mFocusUtils != null){
+                mFocusUtils.hideFocus();
+            }
+        }
+    }
+
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -623,6 +647,8 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
                     View first = mTitleBar.getFirstView();
                     if (first != null) {
                         mFocusUtils.setFocusView(first, SCALE);
+                        mFocusedView = first;
+                        mFocusedViewScale = 1f;
                         first.requestFocus();
                         mFocusUtils.showFocus(100);
                     }
@@ -670,6 +696,8 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
                 isIntercept = false;
                 return;
             }
+            mFocusedView = v;
+            mFocusedViewScale = 1f;
             if (null == v) return;
             switch (sourceEnum) {
                 case INDEX:
@@ -701,6 +729,7 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
                     mViewPageContainFocus = true;
                     v.bringToFront();
                     mFocusUtils.setFocusRes(this, R.drawable.btn_focus);
+                    mFocusedViewScale = SCALE;
                     mFocusUtils.startMoveFocus(v, SCALE);
                     mFocusScaleUtils.scaleToLarge(v);
                     break;

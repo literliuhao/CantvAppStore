@@ -207,12 +207,6 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
         return success;
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(UpdateApkModel model) {
         gridAdapter.refreshUI(UPDATE_INDEX, model.getNumber());
@@ -220,8 +214,12 @@ public class ManagerFragment extends BaseFragment implements DownloadTaskCountLi
 
     @Override
     public void onResume() {
+        FragmentActivity activity = getActivity();
+        if(activity != null && activity instanceof IndexActivity){
+            ((IndexActivity)activity).notifyAddManagerFragmentFocus();
+        }
         super.onResume();
-        DownloadManager downloadManager = DownloadManager.getInstance(getActivity());
+        DownloadManager downloadManager = DownloadManager.getInstance(activity);
         downloadManager.setTaskCntListener(this);
         gridAdapter.refreshUI(DOWNLOAD_INDEX, downloadManager.getCurrentTaskList().size());
     }

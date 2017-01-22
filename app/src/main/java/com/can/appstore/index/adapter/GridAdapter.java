@@ -28,6 +28,7 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
     private View.OnClickListener mClickListener;
     private IOnPagerKeyListener mPagerKeyListener;
     private View[] mView;
+    private boolean hasAddFocus;
 
     public GridAdapter(Context context) {
         this.mContext = context;
@@ -99,8 +100,12 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
     }
 
     public void setFocusAll() {
+        if(hasAddFocus){
+            return;
+        }
         for (int i = 0; i < mView.length; i++) {
             if (null != mView[i]) {
+                hasAddFocus = true;
                 mView[i].setId(i);
                 mView[i].setClickable(true);
                 mView[i].setFocusable(true);
@@ -112,6 +117,8 @@ public class GridAdapter extends BaseAdapter implements View.OnFocusChangeListen
                         mView[i].setOnKeyListener(this);
                         break;
                 }
+            } else {
+                break;
             }
         }
     }
