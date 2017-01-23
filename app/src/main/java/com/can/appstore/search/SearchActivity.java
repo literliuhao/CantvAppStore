@@ -392,7 +392,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
     @Override
     public void getHotKeyList(List list) {
         //"大家都在搜"数据
-        if (list != null && list.size() > 0){
+        if (list != null && list.size() > 0) {
             mHotKeyAdapter.refresh(list);
             mHotKeyAdapter.setOnInitialsListener(new HotKeyAdapter.OnInitialsListener() {
                 @Override
@@ -579,18 +579,17 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                     RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
                     if (layoutManager instanceof GridLayoutManager) {
                         //分页加载数据
-                        int lastItem = ((GridLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition();
+                        //int lastItem = ((GridLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition();
                         int totalItemCount = layoutManager.getItemCount();
-
-                        Log.w("lastItem", lastItem + "");
-                        Log.w("totalItemCount", totalItemCount + "");
-                        if ((lastItem >= totalItemCount - 1 - SEARCH_APP_SPANCOUNT)
-                                && mCurrLineNumber < mTotalLineCount) {
-//                            ToastUtil.toastShort("正在加载更多数据...");
+                        //Log.w("lastItem", lastItem + "");
+                        //Log.w("totalItemCount", totalItemCount + "");
+                        if (totalItemCount < mSearchTotal) {
+                            showToast("正在加载更多数据...");
                             mCurrPageIndex++;
                             mSearchPresenter.getSearchList(mSearch_con_view.getText().toString(), mCurrPageIndex);
+                        } else if (mCurrLineNumber == mTotalLineCount) {
+                            showToast("没有更多数据!");
                         }
-
                     }
 
                 }

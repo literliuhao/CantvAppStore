@@ -1,7 +1,6 @@
 package com.can.appstore.search;
 
 import android.content.Context;
-import android.widget.Toast;
 
 import com.can.appstore.MyApp;
 import com.can.appstore.R;
@@ -66,13 +65,8 @@ public class SearchPresenter implements SearchContract.Presenter {
                     mView.hotKeyEnable(true);
                     mAppInfoList.clear();
                 }
-                if (!(data.size() > 0) && pageIndex != 1) {
-                    PromptUtils.toast(MyApp.getContext(), "没有更多数据!", Toast.LENGTH_LONG);
-                } else {
-                    mAppInfoList.addAll(data);
-                    mView.getAppList(mAppInfoList, body.getTotal(), pageIndex == 1);
-                }
-
+                mAppInfoList.addAll(data);
+                mView.getAppList(mAppInfoList, body.getTotal(), pageIndex == 1);
                 if (pageIndex == 1) {
                     //统计资源搜索
                     DCResource.onSearch(searCon);

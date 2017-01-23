@@ -266,7 +266,7 @@ public class AppListActivity extends BaseActivity implements AppListContract.Vie
                         return;
                     }
                     //判断应用列表是否滑到了低端
-                    int lastPosition = mAppListLM.findLastVisibleItemPosition();
+                    int lastPosition = mAppListLM.findLastCompletelyVisibleItemPosition();
                     int totalItemCount = mAppListLM.getItemCount();
                     if (lastPosition == totalItemCount - 1) {
                         mPresenter.loadMoreData();
