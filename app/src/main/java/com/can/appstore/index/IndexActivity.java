@@ -110,8 +110,9 @@ import static com.can.appstore.index.entity.FragmentEnum.NORMAL;
  * Created by liuhao on 2016/10/15.
  */
 public class IndexActivity extends BaseActivity implements IAddFocusListener, View.OnClickListener, View.OnFocusChangeListener, IOnPagerKeyListener, IOnPagerListener, View.OnKeyListener, ViewPager.OnPageChangeListener {
-    private CanCall<ListResult<Navigation>> mNavigationCall;
     private static final String TAG = "IndexActivity";
+    private CanCall<ListResult<Navigation>> mNavigationCall;
+    private CanCall<ClassicResult<List<Ad>>> mAdCall;
     private List<BaseFragment> mFragmentLists;
     private FocusScaleUtil mFocusScaleUtils;
     private IndexPagerAdapter mAdapter;
@@ -265,8 +266,8 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
         commonAdParam.setAdPositionId(AD_POSITION_ID);
         commonAdParam.setMac(NetworkUtils.getMac());
         commonAdParam.setVersionId(PackageUtil.getMyVersionName(mContext));
-        CanCall<ClassicResult<List<Ad>>> listAD = HttpManager.getAdService().getCommonAd(commonAdParam.toMap());
-        listAD.enqueue(new CanCallback<ClassicResult<List<Ad>>>() {
+        mAdCall = HttpManager.getAdService().getCommonAd(commonAdParam.toMap());
+        mAdCall.enqueue(new CanCallback<ClassicResult<List<Ad>>>() {
             @Override
             public void onResponse(CanCall<ClassicResult<List<Ad>>> call, Response<ClassicResult<List<Ad>>> response) throws Exception {
                 if (null != response) {
@@ -382,7 +383,9 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
                 @Override
                 public void onResponse(CanCall<ListResult<Navigation>> call, Response<ListResult<Navigation>> response) throws Exception {
                     ProxyCache(response);
-                    mHandler.sendEmptyMessage(MSG_HIDE_LOADING);
+                    if(mHandler!=null){
+                        mHandler.sendEmptyMessage(MSG_HIDE_LOADING);
+                    }
                 }
 
                 @Override
@@ -393,7 +396,9 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
                         ToastUtils.showMessageLong(getContext(), "域名解析错误");
                     }
                     ProxyCache(null);
-                    mHandler.sendEmptyMessage(MSG_HIDE_LOADING);
+                    if(mHandler!=null){
+                        mHandler.sendEmptyMessage(MSG_HIDE_LOADING);
+                    }
                 }
             });
         } else {
@@ -846,6 +851,12 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
 
     @Override
     protected void onDestroy() {
+        if(mAdCall!=null){
+            mAdCall.cancel();
+        }
+        if(mNavigationCall!=null){
+            mNavigationCall.cancel();
+        }
         if (mViewPager != null) {
             mViewPager.removeOnPageChangeListener(this);
         }

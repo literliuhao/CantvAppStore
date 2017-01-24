@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -93,7 +92,6 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.w("onViewCreated", "onViewCreated");
         mScrollView = (HorizontalScrollView) view.findViewById(R.id.homeran_scrollview);
         mLinearLayout = (LinearLayout) view.findViewById(R.id.ll_par_view);
         mNoNetWorkView = view.findViewById(R.id.rl_no_network);
@@ -159,17 +157,19 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
 
         //将最后一个分类的右侧边距去除
         final LinearLayout view = (LinearLayout) views.get(views.size() - 1);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams((int) getResources().getDimension(R.dimen.px490), LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.rightMargin = 0;
-        view.setLayoutParams(layoutParams);
-        view.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //得到最后一项分类的第一条数据
-                RecyclerView recyclerView = (RecyclerView) view.getChildAt(0);
-                mLastView = recyclerView.getChildAt(0);
-            }
-        }, 1500);
+        if (isAdded()) {
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams((int) getResources().getDimension(R.dimen.px490), LinearLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.rightMargin = 0;
+            view.setLayoutParams(layoutParams);
+            view.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //得到最后一项分类的第一条数据
+                    RecyclerView recyclerView = (RecyclerView) view.getChildAt(0);
+                    mLastView = recyclerView.getChildAt(0);
+                }
+            }, 1500);
+        }
     }
 
     @Override
