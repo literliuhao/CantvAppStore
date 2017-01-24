@@ -473,7 +473,9 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
     }
 
     public void notifyAddManagerFragmentFocus(){
-        managerFragment.setAdapterFocus();
+        if(managerFragment!=null){
+            managerFragment.setAdapterFocus();
+        }
     }
 
     /**

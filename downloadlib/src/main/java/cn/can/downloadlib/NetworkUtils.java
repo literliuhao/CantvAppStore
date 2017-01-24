@@ -41,7 +41,7 @@ public class NetworkUtils {
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = conManager.getActiveNetworkInfo();
             if (networkInfo != null) {
-                bisConnFlag = conManager.getActiveNetworkInfo().isAvailable();
+                bisConnFlag = networkInfo.isAvailable();
             }
         }
         return bisConnFlag;
