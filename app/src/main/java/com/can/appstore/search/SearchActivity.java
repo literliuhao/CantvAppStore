@@ -65,6 +65,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                     mRLNoNetworkView.setVisibility(View.GONE);
                     // 添加偏移的loading框
                     showLoadingDialog(getResources().getDimensionPixelSize(R.dimen.px400));
+                    isLoadMoreing = false;
                     mCurrPageIndex = 1;
                     mSearchKeyStr = mSearch_con_view.getText().toString().trim();
                     mSearchPresenter.getSearchList(mSearchKeyStr, mCurrPageIndex);
@@ -93,6 +94,7 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
     private int mWinH;
     private int mWinW;
     private boolean setRightNextFocus;  //设置右侧热词和热门推荐之间焦点跳转
+    private boolean isLoadMoreing;  //是否正在加载更多数据
     private View mRLNoNetworkView;
     private List mHotRomList = new ArrayList();
     private List mSearchList = new ArrayList();
@@ -353,6 +355,12 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
             showGoneView(TAG_S_TOP_APPLIST_G_BOTTOM);
             mAppListAdapter.setDataList(list, isFirstSearch[0]);
         } else {
+            // TODO: 2017/1/24
+            if(isLoadMoreing){
+                showToast("获取数据失败，请稍后重试");
+                isLoadMoreing = false;
+                return;
+            }
             showGoneView(TAG_S_NULLAPP_G_TOP_APPLIST);
         }
     }
@@ -581,10 +589,12 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
                         //分页加载数据
                         //int lastItem = ((GridLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition();
                         int totalItemCount = layoutManager.getItemCount();
+                        int mLineCount = totalItemCount / SEARCH_APP_SPANCOUNT + (totalItemCount % SEARCH_APP_SPANCOUNT > 0 ? 1 : 0);
                         //Log.w("lastItem", lastItem + "");
                         //Log.w("totalItemCount", totalItemCount + "");
-                        if (totalItemCount < mSearchTotal) {
+                        if (totalItemCount < mSearchTotal && mCurrLineNumber == mLineCount) {
                             showToast("正在加载更多数据...");
+                            isLoadMoreing = true;
                             mCurrPageIndex++;
                             mSearchPresenter.getSearchList(mSearch_con_view.getText().toString(), mCurrPageIndex);
                         } else if (mCurrLineNumber == mTotalLineCount) {
