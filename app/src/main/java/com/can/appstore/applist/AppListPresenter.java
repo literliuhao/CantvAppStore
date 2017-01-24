@@ -146,7 +146,7 @@ public class AppListPresenter implements AppListContract.Presenter {
                     response) throws Exception {
                 mPage++;
                 Result<AppInfoContainer> body = response.body();
-                Log.d(TAG, "onResponse: " + body.toString());
+                Log.d(TAG, "onResponse");
                 AppInfoContainer data = body.getData();
                 mTotalSize = data.getTotal();
                 String typeName = data.getTypeName();
