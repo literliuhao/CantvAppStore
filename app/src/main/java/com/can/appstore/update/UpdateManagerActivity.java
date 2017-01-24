@@ -529,7 +529,7 @@ public class UpdateManagerActivity extends BaseActivity implements UpdateContrac
 
     @Override
     public void showLoading() {
-        showLoadingDialog();
+        showLoadingDialog(getResources().getDimensionPixelSize(R.dimen.px150));
     }
 
     @Override

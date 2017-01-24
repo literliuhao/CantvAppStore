@@ -88,7 +88,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                         public void run() {
                             mView.showNoData();
                         }
-                    },100);
+                    },500);
                 } else {
                     mView.hideLoading();
                     mView.hideNoData();
@@ -110,7 +110,7 @@ public class UpdatePresenter implements UpdateContract.Presenter {
                     public void run() {
                         mView.showNoData();
                     }
-                },100);
+                },500);
                 //mView.showNoData();
             }
         });
