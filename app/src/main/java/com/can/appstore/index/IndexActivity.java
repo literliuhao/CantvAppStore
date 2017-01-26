@@ -131,6 +131,7 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
     private final int DURATION_SMALL = 300;
     private final int INIT_FOCUS = 0X000001;
     private final int HIDE_FOCUS = 0X000002;
+    private final int INIT_VIEW = 0x6;
     private final int MSG_SHOW_LOADING=0x3;
     private final int MSG_HIDE_LOADING=0x4;
     private final int SCREEN_PAGE_LIMIT = 5;
@@ -156,6 +157,7 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
     private String mAdtfid;
     private Timer mTimer;
     private final int AD_INDEX = 0;
+
     private final int AD_SHOW_STEP = 1000;
     private final String AD_POSITION_ID = "adyyscqd";
 
@@ -488,7 +490,7 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
      *
      * @param mPage 导航栏数据
      */
-    private void bindTtile(ListResult<Navigation> mPage) {
+    private void bindTitle(ListResult<Navigation> mPage) {
         List<String> mTitles = new ArrayList<>();
         boolean hasRank = false;
         String rankStr = getResources().getString(R.string.rank);
@@ -514,7 +516,7 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
      * mViewPager、mTitleBar 数据绑定与页面绑定
      */
     private void bindData(ListResult<Navigation> listResult) {
-        bindTtile(listResult);
+        bindTitle(listResult);
         mAdapter = new IndexPagerAdapter(this.getSupportFragmentManager(), mViewPager, mFragmentLists);
         mAdapter.setOnExtraPageChangeListener(this);
         mViewPager.setAdapter(mAdapter);
@@ -684,6 +686,9 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
                 case MSG_HIDE_LOADING:
                     hideLoadingDialog();
                     break;
+                case INIT_VIEW:
+                    getNavigation();
+                    break;
             }
         }
     };
@@ -814,8 +819,8 @@ public class IndexActivity extends BaseActivity implements IAddFocusListener, Vi
             if (mShowTime == 0) {
                 stopTimer();
                 mHandler.sendEmptyMessage(INIT_FOCUS);
+                mHandler.sendEmptyMessage(INIT_VIEW);
                 isShowAD = false;
-                getNavigation();
                 return;
             }
 
