@@ -241,12 +241,14 @@ public class HomeRankFragment extends BaseFragment implements HomeRankContract.V
                 public void run() {
                     RecyclerView firRecy = (RecyclerView) firstView.getChildAt(0);
                     RecyclerView.LayoutManager layoutManager = firRecy.getLayoutManager();
-                    for (int i = 0; i < layoutManager.getItemCount(); i++) {
-                        if (null != layoutManager.getChildAt(i)) {
-                            hasAddSwitchPageListener = true;
-                            layoutManager.getChildAt(i).setOnKeyListener(HomeRankFragment.this);
-                        } else {
-                            break;
+                    if(null != layoutManager){
+                        for (int i = 0; i < layoutManager.getItemCount(); i++) {
+                            if (null != layoutManager.getChildAt(i)) {
+                                hasAddSwitchPageListener = true;
+                                layoutManager.getChildAt(i).setOnKeyListener(HomeRankFragment.this);
+                            } else {
+                                break;
+                            }
                         }
                     }
                 }

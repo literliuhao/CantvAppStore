@@ -38,11 +38,13 @@ public class HomeRankPresenter implements HomeRankContract.Presenter {
             @Override
             public void onResponse(CanCall<ListResult<Ranking>> call, Response<ListResult<Ranking>> response) throws Exception {
                 ListResult<Ranking> body = response.body();
-                List<Ranking> data = body.getData();
-                if (data != null && data.size() > 0) {
-                    mView.getData(data);
-                } else {
-                    mView.getData(getDefaultList());
+                if(null != body){
+                    List<Ranking> data = body.getData();
+                    if (data != null && data.size() > 0) {
+                        mView.getData(data);
+                    } else {
+                        mView.getData(getDefaultList());
+                    }
                 }
             }
 
