@@ -19,7 +19,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 19
         versionCode 114
-        versionName "v1.1.4_201701261338"
+        versionName "v1.1.4_201702031618"
 
         // 开启multidex
         multiDexEnabled true

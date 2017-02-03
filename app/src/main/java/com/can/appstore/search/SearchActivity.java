@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import cn.can.downloadlib.NetworkUtils;
 import cn.can.tvlib.ui.focus.FocusMoveUtil;
 
 public class SearchActivity extends BaseActivity implements SearchContract.View, View.OnClickListener {
@@ -195,8 +196,10 @@ public class SearchActivity extends BaseActivity implements SearchContract.View,
 //                        mSearch_con_view.setText(s.toString().substring(0, 8));
 //                    } else {
                     mSerch_icon.setVisibility(View.GONE);
-                    mHandler.postDelayed(searchRunner, 2000);
-//                    }
+                    /**没连接网络时，不拉取数据 xzl 2017-2-3 16:48:51*/
+                    if(NetworkUtils.isNetworkConnected(SearchActivity.this)){
+                        mHandler.postDelayed(searchRunner, 2000);
+                    }
                 } else {
                     mSerch_icon.setVisibility(View.VISIBLE);
                 }
