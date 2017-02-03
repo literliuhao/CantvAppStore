@@ -299,7 +299,9 @@ public class AppDetailActivity extends BaseActivity implements AppDetailContract
                     return true;
                 }
             case KeyEvent.KEYCODE_DPAD_DOWN:
-                if (mBtRecommend.isFocused() && mAppinfo.getRecommend().size() == 0 || mAppinfo.getRecommend() == null) {
+                /**修复 bugly #110 空指针bug 2017-2-3 11:31:38 xzl*/
+                if (mAppinfo.getRecommend() == null
+                        || mBtRecommend.isFocused() && mAppinfo.getRecommend().size() == 0) {
                     return true;
                 }
                 break;

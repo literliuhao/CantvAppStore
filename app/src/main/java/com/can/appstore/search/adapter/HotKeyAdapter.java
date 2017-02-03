@@ -46,7 +46,8 @@ public class HotKeyAdapter extends RecyclerView.Adapter<HotKeyAdapter.HotKeyView
 
     @Override
     public int getItemCount() {
-        return mDataList.size();
+        /**修复 bugly #568 空指针bug 2017-2-3 11:31:38 xzl*/
+        return mDataList != null ? mDataList.size() : 0;
     }
 
     /**
