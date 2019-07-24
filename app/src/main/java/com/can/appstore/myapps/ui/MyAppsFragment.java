@@ -182,7 +182,7 @@ public class MyAppsFragment extends BaseFragment implements MyAppsFramentContrac
                     } else {
                         Log.d(TAG, "OPENAPP__PACKAGENAME:" + mShowList.get(position).packageName);
                         try {
-                            PackageUtil.openApp(getActivity(), mShowList.get(position).packageName);
+                            PackageUtil.openApp(getContext(), mShowList.get(position).packageName);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
